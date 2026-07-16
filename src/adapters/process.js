@@ -106,6 +106,9 @@ export function isPidRunning(pid) {
 
   try {
     process.kill(normalizedPid, 0);
+    if (process.platform !== 'win32' && isPosixZombie(normalizedPid)) {
+      return false;
+    }
     return true;
   } catch (error) {
     if (error?.code === 'EPERM') {
@@ -118,6 +121,26 @@ export function isPidRunning(pid) {
       pid: normalizedPid
     });
   }
+}
+
+function isPosixZombie(pid) {
+  if (process.platform === 'linux') {
+    try {
+      const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+      const commandEnd = stat.lastIndexOf(')');
+      if (commandEnd !== -1) {
+        return stat.slice(commandEnd + 2, commandEnd + 3) === 'Z';
+      }
+    } catch {
+      // Fall through to ps when procfs is unavailable or the process changed state.
+    }
+  }
+
+  const result = spawnSync('ps', ['-p', String(pid), '-o', 'stat='], {
+    encoding: 'utf8',
+    timeout: DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS
+  });
+  return !result.error && result.status === 0 && /^\s*Z/.test(result.stdout);
 }
 
 export function getLiveness(pid) {

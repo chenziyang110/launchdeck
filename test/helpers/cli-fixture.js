@@ -28,7 +28,7 @@ export function createCliFixture(options = {}) {
 
 export function createTempProject(options = {}) {
   const prefix = options.prefix ?? tempProjectPrefix;
-  return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  return canonicalPath(fs.mkdtempSync(path.join(os.tmpdir(), prefix)));
 }
 
 export function removeTempProject(projectRoot) {
@@ -91,8 +91,8 @@ export function parseJson(stdout) {
 }
 
 export function assertSafeTempProject(projectRoot) {
-  const resolved = path.resolve(projectRoot);
-  const tempRoot = path.resolve(os.tmpdir());
+  const resolved = canonicalPath(projectRoot);
+  const tempRoot = canonicalPath(os.tmpdir());
   const relative = path.relative(tempRoot, resolved);
 
   if (
@@ -102,6 +102,15 @@ export function assertSafeTempProject(projectRoot) {
     || !path.basename(resolved).startsWith(tempProjectPrefix)
   ) {
     throw new Error(`Refusing to remove non-Launchdeck temp project: ${projectRoot}`);
+  }
+}
+
+function canonicalPath(value) {
+  const resolved = path.resolve(value);
+  try {
+    return fs.realpathSync.native(resolved);
+  } catch {
+    return resolved;
   }
 }
 

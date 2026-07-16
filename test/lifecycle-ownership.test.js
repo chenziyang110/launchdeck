@@ -84,7 +84,8 @@ test('stop --json refuses unknown ownership without stopping the fixture process
         fixture,
         port,
         pid: child.pid,
-        command: 'node scripts/unmanaged-server.js',
+        command: 'node scripts/not-the-server.js',
+        cwd: fixture.path('tmp', 'unknown-owner'),
         ownershipConfidence: 'unknown',
         ownershipProof: {
           confidence: 'unknown',
@@ -461,7 +462,7 @@ function spawnExternalServer(fixture, port) {
   });
 }
 
-function runRecord({ runId, project, fixture, port, pid, command, ownershipConfidence, ownershipProof }) {
+function runRecord({ runId, project, fixture, port, pid, command, cwd = fixture.projectRoot, ownershipConfidence, ownershipProof }) {
   return {
     runId,
     transactionId: `tx_${runId}`,
@@ -470,7 +471,7 @@ function runRecord({ runId, project, fixture, port, pid, command, ownershipConfi
     projectRoot: fixture.projectRoot,
     task: 'dev',
     command,
-    cwd: fixture.projectRoot,
+    cwd,
     pid,
     status: 'running',
     ownershipConfidence,

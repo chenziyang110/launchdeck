@@ -35,8 +35,8 @@ test('normalizes string and object task definitions', () => {
   assert.equal(config.clean.risky[0].description, 'dependency install output');
 });
 
-test('loads config by searching upward from a child directory', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-'));
+test('loads config by searching upward from a child directory', (t) => {
+  const root = createTempRoot(t);
   const child = path.join(root, 'packages', 'app');
   fs.mkdirSync(child, { recursive: true });
   fs.writeFileSync(
@@ -54,8 +54,8 @@ tasks:
   assert.equal(config.projectRoot, root);
 });
 
-test('refuses clean targets outside the project root', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-'));
+test('refuses clean targets outside the project root', (t) => {
+  const root = createTempRoot(t);
 
   assert.throws(
     () =>
@@ -71,8 +71,8 @@ test('refuses clean targets outside the project root', () => {
   );
 });
 
-test('refuses to clean the project root itself', () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-'));
+test('refuses to clean the project root itself', (t) => {
+  const root = createTempRoot(t);
 
   assert.throws(
     () =>
@@ -87,3 +87,9 @@ test('refuses to clean the project root itself', () => {
     /refuses to clean the project root/
   );
 });
+
+function createTempRoot(t) {
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-')));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  return root;
+}

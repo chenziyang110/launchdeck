@@ -160,14 +160,23 @@ function parseJson(stdout) {
 }
 
 function createTempProject() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-cli-'));
+  return canonicalPath(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-cli-')));
 }
 
 function removeTempProject(projectRoot) {
-  const resolved = path.resolve(projectRoot);
-  const tempRoot = path.resolve(os.tmpdir());
+  const resolved = canonicalPath(projectRoot);
+  const tempRoot = canonicalPath(os.tmpdir());
   if (resolved.startsWith(tempRoot) && path.basename(resolved).startsWith('launchdeck-cli-')) {
     removeWithRetry(resolved);
+  }
+}
+
+function canonicalPath(value) {
+  const resolved = path.resolve(value);
+  try {
+    return fs.realpathSync.native(resolved);
+  } catch {
+    return resolved;
   }
 }
 
