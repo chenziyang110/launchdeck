@@ -24,6 +24,7 @@ test('CI runs the repository checks and the maintained lifecycle smoke on every 
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /macos-latest/);
   assert.match(workflow, /ubuntu-latest/);
+  assert.match(workflow, /\n  workflow_dispatch:/);
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /npm run check/);
   assert.match(workflow, /npm test/);
