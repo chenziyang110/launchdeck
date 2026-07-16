@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T023",
+  "story": "US1",
+  "repair_for": ["T004", "T009"],
+  "description": "Add regression tests for JSON-mode foreground stdout isolation and config-resolved failure context.",
+  "agent": "test-engineer",
+  "depends_on": ["T008"],
+  "parallel_safe": false,
+  "context_navigation": [
+    "implementation-review/reviews.ndjson#T009-2026-07-07T15:55:26.4024567+08:00",
+    "contracts/cli-json-contract.md",
+    "test/cli-contract.test.js"
+  ],
+  "write_scope": [
+    "test/cli-contract.test.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/cli-json-contract.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/error-codes-v1.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson",
+    "test/helpers/cli-fixture.js",
+    "test/cli-contract.test.js",
+    "src/cli.js",
+    "src/runtime.js"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "production code changes",
+    "deferred product surfaces"
+  ],
+  "expected_outputs": [
+    "test/cli-contract.test.js (modified)"
+  ],
+  "anti_goals": [
+    "Do not edit production code.",
+    "Do not weaken existing CLI contract tests.",
+    "Do not change v1 scope."
+  ],
+  "does_not_remove": [
+    "init",
+    "doctor",
+    "tasks",
+    "run",
+    "aliases",
+    "JSON/errors",
+    "child exit-code coverage"
+  ],
+  "capability_operations": [
+    "validates run JSON contract",
+    "validates config-resolved failure context"
+  ],
+  "acceptance_criteria": [
+    "Tests cover `run --json` with a foreground task that writes stdout and assert stdout remains a single parseable JSON object.",
+    "Tests cover config-resolved `task_not_found` JSON failure and assert `projectRoot` plus `configPath` are present.",
+    "New tests fail against the pre-repair implementation for the reviewed gaps, not because of syntax or fixture failure."
+  ],
+  "verify_commands": [
+    "node --test test/cli-contract.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": ["CA-003", "CA-020"],
+  "mp_ids": ["MP-014"],
+  "consumer_surfaces": [
+    "launchdeck run --json",
+    "launchdeck run <missing> --json"
+  ],
+  "required_evidence": [
+    "expected_red_before_repair",
+    "real_entrypoint_evidence"
+  ],
+  "stop_and_reopen": [
+    "Regression requires changing v1 JSON contract.",
+    "Regression cannot be expressed through real CLI entrypoints.",
+    "Task requires source edits outside test write scope."
+  ],
+  "status": "ready"
+}

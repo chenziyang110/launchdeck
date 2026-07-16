@@ -1,0 +1,12 @@
+{
+  "id": "E-SCHEMA-001",
+  "source_path": "schema/launchdeck.schema.json",
+  "summary": "JSON Schema for .launchdeck.yml",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "sampled",
+  "confidence": "high",
+  "findings": {
+    "summary": "JSON Schema for .launchdeck.yml"
+  }
+}

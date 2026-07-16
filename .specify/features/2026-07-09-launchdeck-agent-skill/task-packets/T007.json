@@ -1,0 +1,87 @@
+{
+  "task_id": "T007",
+  "id": "T007",
+  "title": "Create eval-prompts reference",
+  "agent": "test-engineer",
+  "depends_on": [
+    "T002",
+    "T003",
+    "T004",
+    "T005",
+    "T006"
+  ],
+  "parallel_safe": false,
+  "objective": "Create prompt/eval coverage for trigger routing, non-trigger rejection, lifecycle safety behavior, and compact output posture.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/quickstart.md",
+    ".agents/skills/launchdeck-agent/references/*.md"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    ".env",
+    "credential files",
+    "executable eval fixtures"
+  ],
+  "context_navigation": {
+    "success_criteria": "spec.md#Measurable-Success-Criteria",
+    "quickstart_scenarios": "quickstart.md#3-Simulate-Should-Trigger-Prompts through quickstart.md#9-Validate-Compact-Output-Posture",
+    "reference_behavior": ".agents/skills/launchdeck-agent/references/*.md",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not add executable eval scripts or benchmark harnesses in v0."
+  ],
+  "does_not_remove": [
+    "MP-013",
+    "SC-001",
+    "SC-002",
+    "SC-003",
+    "SC-004",
+    "SC-005"
+  ],
+  "capability_operations": [
+    "validates trigger routing",
+    "validates non-trigger rejection",
+    "validates behavior safety",
+    "validates compact output posture"
+  ],
+  "consumer_surfaces": [
+    "eval prompt reference loaded by reviewers and future skill-creator loop"
+  ],
+  "required_evidence": [
+    "trigger_evidence",
+    "behavior_safety_evidence",
+    "compact_output_evidence"
+  ],
+  "acceptance_criteria": [
+    "At least 8 should-trigger prompts including English and Chinese.",
+    "At least 6 should-not-trigger prompts.",
+    "Behavior prompts cover adoption, repeat start, duplicate prevention, conflicts, external or unknown owners, stale state, stop failure, safe clean, risky clean, and reset refusal.",
+    "Compact-output prompts verify --json --compact and concise user summaries.",
+    "No expected behavior authorizes raw OS process kill for unknown or external owners."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\references\\eval-prompts.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\references\\eval-prompts.md -Pattern 'should-trigger|should-not-trigger|behavior|compact|unknown|external|reset|启动'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

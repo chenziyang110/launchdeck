@@ -1,0 +1,33 @@
+{
+  "status": "success",
+  "task_id": "T028",
+  "agent": "executor",
+  "completed_at": "2026-07-07T17:54:31.9888317+08:00",
+  "changed_files": [
+    "src/config.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check src/config.js",
+      "exit_code": 0
+    },
+    "config_clean_boundary_tests": {
+      "command": "node --test test/config-contract.test.js test/clean-safety.test.js",
+      "exit_code": 0,
+      "tests": 18,
+      "passed": 18,
+      "failed": 0
+    },
+    "npm_test": {
+      "command": "npm test",
+      "exit_code": 0,
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [],
+  "config_boundary_repair_evidence": "src/config.js now normalizes clean.safe and clean.risky entries to raw runtime-planning metadata only: {kind, rawPath} plus optional description. It no longer resolves paths, checks existence or canonical paths, or emits clean safety refusal decisions during config load. Task cwd/log containment validation remains unchanged.",
+  "clean_safety_contract_evidence": "Targeted clean/config tests pass. loadConfig preserves '.', '..', and absolute clean entries; resolveCleanTargets produces refused plans for unsafe targets; CLI clean safety tests confirm refused targets do not delete approved targets."
+}

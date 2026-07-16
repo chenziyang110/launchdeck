@@ -1,0 +1,43 @@
+{
+  "taskId": "T022",
+  "reviewId": "T022-review-final",
+  "type": "task_review",
+  "status": "accepted_expected_red",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "test/lifecycle-ownership.test.js"
+  ],
+  "validation": [
+    {
+      "command": "node --check test/lifecycle-ownership.test.js",
+      "result": "pass",
+      "summary": "Lifecycle ownership test file parses successfully."
+    },
+    {
+      "command": "node --test test/lifecycle-ownership.test.js",
+      "result": "expected_red",
+      "summary": "8 tests run, 0 passed, 8 failed; failures map to missing T023/T024 lifecycle behavior and output contracts."
+    }
+  ],
+  "controllerChecks": [
+    "Tests cover verified-owned stop and stopped evidence.",
+    "Tests cover probable-owned, unknown, and external refusal without stopping non-verified processes.",
+    "Tests cover force-stop preserving the verified ownership gate.",
+    "Tests cover restart stop-wait-start transaction evidence.",
+    "Tests cover port_release_timeout and stop_failed persistence/events.",
+    "No product code was modified by the test task.",
+    "No inline node -e long-running fixture was introduced; tests use generated fixture scripts.",
+    "Leader process scan found no lifecycle test fixture processes left after the RED run."
+  ],
+  "acceptedResidualRisks": [
+    "The RED suite depends on T023/T024 changing current legacy stop/restart payloads and force-stop routing.",
+    "The stop_failed fixture intentionally requires a future non-forceful stop path before force escalation can be represented."
+  ],
+  "followUpWork": [
+    "T023 implement ownership-gated lifecycle actions in src/control-plane/actions.js, src/control-plane/runs.js, and src/runtime.js.",
+    "T024 wire lifecycle CLI commands and refusal next actions."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_expected_red"
+}

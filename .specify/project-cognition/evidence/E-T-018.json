@@ -1,0 +1,41 @@
+{
+  "id": "E-T-018",
+  "source_path": "test/managed-cli.test.js",
+  "summary": "托管 CLI 测试 — dev/start/stop/ps/logs/restart 命令合约",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-018",
+    "source_path": "test/managed-cli.test.js",
+    "summary": "托管 CLI 测试 — dev/start/stop/ps/logs/restart 命令合约",
+    "test_groups": [
+      "dev --json 以生命周期信封启动默认托管任务",
+      "start --json 以生命周期信封启动命名托管任务",
+      "start --json 返回托管运行的 run identity 和 readiness 字段",
+      "start --json 将 launchdeck 运行标记注入托管任务环境",
+      "start --json 将第二次拥有的 start 视为幂等而不衍生其他进程",
+      "restart --json 当停止成功但启动失败时报告 partial_failure",
+      "ps --json 刷新托管记录而不删除陈旧证据",
+      "ps --json 在状态 JSON 损坏时报告 runtime_state_invalid",
+      "logs --json 使用合约 payload 名称返回托管日志内容",
+      "stop --json 停止一个托管任务并带有进程 payload",
+      "stop --json 停止所有运行的托管任务并带有每个任务的结果",
+      "start --json 以前台任务返回 task_not_managed"
+    ],
+    "key_assertions": [
+      "dev 和 start 都返回 ok=true, process={task, command, cwd, status=running, logPath}",
+      "runId 匹配 /^run_/, transactionId 匹配 /^tx_/",
+      "readiness.status=running, 有 readiness 字段",
+      "环境变量 LAUNCHDECK_HOME, LAUNCHDECK_TASK, LAUNCHDECK_RUN_ID, LAUNCHDECK_PROJECT_ID 被注入",
+      "重复 start 返回相同 runId/pid, spawned=false",
+      "restart partial_failure 返回 status=partial, error.code=partial_failure, results=[...]",
+      "ps 返回 process count 和 lastRefresh",
+      "损坏的 state.json 返回 runtime_state_invalid",
+      "stop 返回 process.task, .status=stopped, .stoppedAt",
+      "停止全部返回 results [{task, ok, status}]",
+      "前台任务 start 返回 task_not_managed"
+    ]
+  }
+}

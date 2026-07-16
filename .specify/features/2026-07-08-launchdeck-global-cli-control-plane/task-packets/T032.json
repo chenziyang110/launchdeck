@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "task_id": "T032",
+  "title": "Join US5 safe clean validation with ledger update",
+  "phase": "Phase 7",
+  "story": "US5",
+  "priority": "P3",
+  "agent": "executor",
+  "depends_on": [
+    "T031: clean integration"
+  ],
+  "parallel_safe": false,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Safe clean scenario",
+      "ref": "spec.md#secondary-scenario---safe-clean"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "implementation-review/ledger.json (modify)"
+  ],
+  "anti_goals": [
+    "Do not implement new behavior in this join task."
+  ],
+  "does_not_remove": [
+    "Clean/reset separation and path safety invariant"
+  ],
+  "capability_operations": [
+    "validates safe clean path"
+  ],
+  "consumer_surfaces": [
+    "safe clean CLI journey"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "join_point_validation"
+  ],
+  "acceptance_criteria": [
+    "Focused validation proves clean never stops services, never removes registry/project roots/unknown/external paths, and preserves running/latest failure evidence."
+  ],
+  "verify_commands": [
+    "node --test test/clean-control-plane.test.js test/runtime-state.test.js",
+    "npm run check"
+  ],
+  "guardrails": [
+    "G-CLEAN-SAFE"
+  ],
+  "mp": [
+    "MP-010",
+    "MP-015"
+  ],
+  "ca": [
+    "CA-CP-015"
+  ],
+  "fr": [
+    "FR-040",
+    "FR-041",
+    "FR-042",
+    "FR-043",
+    "FR-055"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+    ],
+    "validation_output": {
+      "node --test test/clean-control-plane.test.js test/runtime-state.test.js": "<paste relevant output>",
+      "npm run check": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

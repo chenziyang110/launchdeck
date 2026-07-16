@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T007",
+  "agent_type": "executor",
+  "agent_id": "019f3b86-724f-74a0-bab9-f4062dcbf050",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/src/cli.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check src/cli.js",
+      "status": "passed"
+    },
+    "owned_cli_contract_tests": {
+      "command": "node --test --test-name-pattern \"^(init|doctor|tasks)\" test/cli-contract.test.js",
+      "status": "passed",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "full_cli_contract_tests": {
+      "command": "node --test test/cli-contract.test.js",
+      "status": "expected_downstream_failures",
+      "tests": 11,
+      "passed": 8,
+      "failed": 3,
+      "remaining_failures": [
+        "run <task> --json emits a success envelope for a foreground task",
+        "run <task> --json preserves a foreground child exit code in the failure envelope",
+        "lifecycle aliases execute matching foreground tasks through the run contract"
+      ],
+      "classification": "remaining failures are T008-owned run/alias envelope behavior"
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [
+    "Full CLI contract suite remains nonzero until T008 implements foreground run and alias JSON envelopes."
+  ],
+  "recovery_hints": [
+    "T008 should wrap foreground run success/failure and alias calls with shared output helpers while preserving child exit codes."
+  ],
+  "real_entrypoint_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "node src/cli.js init --json",
+      "producer": "src/cli.js initCommand",
+      "transformer": "createSuccessEnvelope",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "owned CLI contract tests passed"
+    },
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "node src/cli.js doctor --json",
+      "producer": "src/cli.js doctorCommand",
+      "transformer": "buildDoctorReport + createSuccessEnvelope",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "owned CLI contract tests passed"
+    },
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "node src/cli.js tasks --json",
+      "producer": "src/cli.js tasksCommand",
+      "transformer": "toTaskInventoryItem + createSuccessEnvelope",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "owned CLI contract tests passed"
+    }
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-006", "CA-010", "CA-018"],
+      "evidence": "`init --json` creates v1 config and refuses existing/ancestor config with `config_exists`."
+    },
+    {
+      "ids": ["MP-007", "CA-011"],
+      "evidence": "`doctor --json` emits read-only checks and summary through stable envelopes."
+    },
+    {
+      "ids": ["MP-008", "CA-012"],
+      "evidence": "`tasks --json` lists inventory without executing configured commands."
+    },
+    {
+      "ids": ["MP-014", "CA-020", "CA-021"],
+      "evidence": "Classified failures use stable envelope fields and known public error codes."
+    }
+  ],
+  "result_summary": "T007 init/doctor/tasks CLI implementation completed and verified."
+}

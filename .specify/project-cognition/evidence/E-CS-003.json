@@ -1,0 +1,134 @@
+{
+  "id": "E-CS-003",
+  "source_path": "src/adapters/process.js",
+  "summary": "Cross-platform process lifecycle adapter — spawn, manage, inspect, and terminate processes with platform-specific implementations.",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-003",
+    "source_path": "src/adapters/process.js",
+    "summary": "Cross-platform process lifecycle adapter — spawn, manage, inspect, and terminate processes with platform-specific implementations.",
+    "symbols": [
+      "DEFAULT_STOP_TIMEOUT_MS (const: 2000)",
+      "DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS (const: 750)",
+      "STOP_POLL_INTERVAL_MS (const: 50)"
+    ],
+    "exports": [
+      {
+        "name": "spawnForeground",
+        "kind": "function",
+        "signature": "(command, options = {}) => Promise<{ code, signal }>",
+        "description": "Spawns process with inherit stdio, returns exit promise"
+      },
+      {
+        "name": "spawnManaged",
+        "kind": "function",
+        "signature": "(command, options = {}) => { child, pid, command, startedAt }",
+        "description": "Spawns detached process, unrefs it, returns control record"
+      },
+      {
+        "name": "spawnShellCommand",
+        "kind": "function",
+        "signature": "(command, options = {}) => ChildProcess",
+        "description": "Low-level spawn with smart shell detection (bypasses shell for known node executables)"
+      },
+      {
+        "name": "waitForExit",
+        "kind": "function",
+        "signature": "(child) => Promise<{ code, signal }>",
+        "description": "Promise wrapper for child process exit"
+      },
+      {
+        "name": "isPidRunning",
+        "kind": "function",
+        "signature": "(pid) => boolean",
+        "description": "Uses process.kill(pid, 0) — EPERM means alive, ESRCH means dead"
+      },
+      {
+        "name": "getLiveness",
+        "kind": "function",
+        "signature": "(pid) => 'running' | 'stale' | 'unknown'",
+        "description": "Wraps isPidRunning with try-catch"
+      },
+      {
+        "name": "getProcessEvidence",
+        "kind": "function",
+        "signature": "(pid, options = {}) => ProcessEvidence",
+        "description": "Returns detailed process info: Windows uses CIM/WMI, POSIX uses ps + procfs"
+      },
+      {
+        "name": "listPortListeners",
+        "kind": "function",
+        "signature": "(options = {}) => Listener[]",
+        "description": "Lists TCP/UDP port listeners: Windows uses netstat -ano, POSIX tries lsof -> ss -> netstat fallback chain"
+      },
+      {
+        "name": "stopProcessTree",
+        "kind": "function",
+        "signature": "(pid, options = {}) => Promise<{ pid, ok, status, method }>",
+        "description": "Async process tree termination: Windows uses taskkill /T, POSIX sends signal to negative PID (process group)"
+      },
+      {
+        "name": "stopProcessTreeSync",
+        "kind": "function",
+        "signature": "(pid, options = {}) => { pid, ok, status, method }",
+        "description": "Synchronous version of stopProcessTree"
+      },
+      {
+        "name": "normalizePid",
+        "kind": "function",
+        "signature": "(pid, options = {}) => number | undefined",
+        "description": "Validates PID is a positive integer; with allowMissing returns undefined for empty/null"
+      },
+      {
+        "name": "normalizePort",
+        "kind": "function",
+        "signature": "(port) => number",
+        "description": "Validates port is an integer 1-65535"
+      },
+      {
+        "name": "classifyAdapterError",
+        "kind": "function",
+        "signature": "(error, message, details) => LaunchdeckError",
+        "description": "Wraps non-LaunchdeckError into LaunchdeckError with code 'adapter_failed'"
+      }
+    ],
+    "internal_functions": [
+      "normalizeCommand(command) — validates non-empty string",
+      "planSpawn(command, shell) — optimizes out shell wrapper for known node executables",
+      "parseSimpleCommand(command) — tokenizes command, returns null if shell metacharacters present",
+      "isNodeExecutable(command) — compares against 'node', 'node.exe', process.execPath",
+      "listWindowsPortListeners(port) — parses netstat -ano output",
+      "windowsProcessEvidence(pid, options) — Get-CimInstance Win32_Process via PowerShell",
+      "posixProcessEvidence(pid, options) — ps -o lstart,command, plus /proc/pid/cwd",
+      "posixProcessCwd(pid) — reads /proc/pid/cwd symlink",
+      "parseWindowsNetstatLine(line) — parses one netstat line (TCP state=LISTENING or UDP)",
+      "listPosixPortListeners(port) — fallback chain: lsof -> ss -> netstat",
+      "parseLsofLine / parseSsLine / parsePosixNetstatLine",
+      "parseEndpoint(endpoint) — parses 'addr:port' including IPv6 [addr]:port",
+      "dedupeListeners(listeners) — deduplicates by protocol+address+port+pid+state+source",
+      "taskkillProcessTree(pid, options) — /T /F, with ETIMEDOUT fallback to process.kill",
+      "signalPosixProcessTree(pid, signal) — negative-PID kill with single-PID fallback",
+      "waitForNotRunning / waitForNotRunningSync — polling loops with 50ms interval",
+      "classifyStopFailure / signalToExitCode / delay / sleepSync"
+    ],
+    "dependencies": [
+      "node:child_process",
+      "node:fs",
+      "src/errors.js"
+    ],
+    "lines": 798,
+    "key_design_points": [
+      "Shell optimization: detects node executables and spawns directly without shell wrapping, reducing process overhead",
+      "Shell metacharacter detection: if command contains |&;<>()`, always uses shell",
+      "Three-tier port listener fallback on POSIX (lsof -> ss -> netstat) for maximum compatibility",
+      "Process tree termination: Windows taskkill /T /F with timeout fallback; POSIX kill(-pid) with single-pid fallback",
+      "Process evidence via platform-native tools: Windows CIM, POSIX ps + procfs",
+      "All cross-platform branching is explicit: if (platform === 'win32') patterns",
+      "Comprehensive error classification — all errors wrapped into LaunchdeckError with code 'adapter_failed' or 'stop_failed'",
+      "sleepSync uses Atomics.wait on SharedArrayBuffer (blocking, no setTimeout)"
+    ]
+  }
+}

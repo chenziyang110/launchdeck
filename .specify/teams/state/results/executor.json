@@ -1,0 +1,18 @@
+{
+  "task_id": "T016",
+  "status": "success",
+  "summary": "Centralized global status, process, port, conflict, inspect-port, and run-index read views in src/control-plane/inspect.js while keeping src/global-runtime.js as the compatibility facade used by the CLI.",
+  "changed_files": [
+    "src/control-plane/inspect.js",
+    "src/global-runtime.js",
+    ".specify/teams/state/results/executor.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/inspect.js": "passed",
+    "node --check src/global-runtime.js": "passed",
+    "node --check src/cli.js": "passed",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js": "passed: 34 tests, 34 pass, 0 fail"
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

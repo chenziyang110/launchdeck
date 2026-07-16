@@ -1,0 +1,32 @@
+{
+  "id": "E-T-019",
+  "source_path": "test/recovery-observability.test.js",
+  "summary": "恢复和可观测性测试 — logs、stale status、reconcile、events、--follow、secret redaction",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-019",
+    "source_path": "test/recovery-observability.test.js",
+    "summary": "恢复和可观测性测试 — logs、stale status、reconcile、events、--follow、secret redaction",
+    "test_groups": [
+      "logs project:task 继续读取现有托管日志内容",
+      "status --all 标记消失的拥有运行为 stale 并附带 reconcile next 操作",
+      "reconcile --json 将陈旧运行标记而不杀死同一端口上的新外部监听器",
+      "events --json 读取目标的有界结构化事件历史",
+      "logs --follow --json 为追加的托管日志输出发射可见的 JSON Lines",
+      "clean --safe 保留运行日志、最新失败日志和失败链接事件",
+      "logs --follow --json 在流式传输前修正秘密外观的托管输出"
+    ],
+    "key_assertions": [
+      "logs 返回 project.name, task, logPath, content",
+      "status stale 返回 status=stale, 有 reconcile 和 inspect 的 next actions",
+      "reconcile 标记 stale runs, 不杀死 external listener",
+      "events 返回按 eventId 过滤的事件列表, schemaVersion=1",
+      "--follow 发射 JSON Lines {schemaVersion, runId, task, projectId, timestamp}",
+      "clean --safe 保留运行中和失败的日志",
+      "秘密值 (ld_secret_value_must_not_stream) 在 --follow 输出中被替换为 [REDACTED]"
+    ]
+  }
+}

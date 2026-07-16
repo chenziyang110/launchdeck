@@ -1,0 +1,30 @@
+version: 1
+project:
+  name: launchdeck-hands-on-demo
+tasks:
+  build:
+    command: node scripts/build.js
+    cwd: .
+    description: Generate a tiny demo build artifact
+    risk: low
+  fail:
+    command: node scripts/fail.js
+    cwd: .
+    description: Exit with code 7 to show JSON failure handling
+    risk: low
+  dev:
+    command: node scripts/dev.js
+    cwd: .
+    env:
+      PORT: "4317"
+    description: Start a managed local demo process
+    longRunning: true
+    ports: [4317]
+    risk: low
+    log: .launchdeck/logs/dev.log
+clean:
+  safe:
+    - { path: dist, description: Demo build output }
+    - { path: .launchdeck, description: Launchdeck demo runtime state and logs }
+  risky:
+    - { path: demo-cache, description: Placeholder for user-created scratch data }

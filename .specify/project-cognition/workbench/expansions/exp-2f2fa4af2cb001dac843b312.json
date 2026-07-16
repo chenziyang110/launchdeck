@@ -1,0 +1,187 @@
+{
+  "id": "exp-2f2fa4af2cb001dac843b312",
+  "active_generation_id": "GEN-greenfield-20260706T073915.616696000Z",
+  "candidate_universe_version": 1,
+  "query_fingerprint": "2f2fa4af2cb001dac843b312",
+  "sections": {
+    "coverage_gaps": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "graph_neighbors": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "raw_candidates": {
+      "state": "available",
+      "estimated_items": 8
+    },
+    "related_paths": {
+      "state": "available",
+      "estimated_items": 3
+    }
+  },
+  "section_payloads": {
+    "coverage_gaps": [],
+    "graph_neighbors": [],
+    "raw_candidates": [
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-cli-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-cli-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/cli.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-cli-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-cli-test-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/cli.test.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-config-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-config-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/config.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-config-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-config-test-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/config.test.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-errors-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-errors-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/errors.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "errors.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-package-json"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-package-json",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "package.json"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "package.json"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-runtime-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-runtime-js",
+        "matched_terms": [
+          "cli",
+          "json"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/runtime.js"
+        ],
+        "score": 20,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "runtime.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo--launchdeck-yml"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo--launchdeck-yml",
+        "matched_terms": [
+          "launchdeck"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/.launchdeck.yml"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": ".launchdeck.yml"
+      }
+    ],
+    "related_paths": [
+      "src/cli.js",
+      "test/cli.test.js",
+      "src/config.js"
+    ]
+  },
+  "created_at": "1995-02-01T15:11:43Z"
+}

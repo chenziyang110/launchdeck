@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T022",
+  "story": "polish",
+  "description": "Run full local checks plus quickstart smoke and record verification evidence.",
+  "agent": "verifier",
+  "depends_on": [
+    "T020",
+    "T021"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "quickstart.md",
+    "plan.md#research-adoption-check"
+  ],
+  "write_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson (append)"
+  ],
+  "anti_goals": [
+    "Do not claim cross-platform-ready without all-OS evidence.",
+    "Do not skip failed verification."
+  ],
+  "does_not_remove": [
+    "verification claim levels"
+  ],
+  "capability_operations": [
+    "validates full v1 lifecycle"
+  ],
+  "acceptance_criteria": [
+    "Full checks pass, quickstart smoke result is recorded, claim level is named honestly."
+  ],
+  "verify_commands": [
+    "npm run check",
+    "npm test",
+    "quickstart.md lifecycle smoke"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-006",
+    "CA-010",
+    "CA-017",
+    "CA-022"
+  ],
+  "mp_ids": [
+    "MP-005",
+    "MP-006",
+    "MP-013"
+  ],
+  "consumer_surfaces": [
+    "release claim evidence"
+  ],
+  "required_evidence": [
+    "full_verification_evidence",
+    "claim_level_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

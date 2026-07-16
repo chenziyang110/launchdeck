@@ -1,0 +1,46 @@
+{
+  "status": "completed",
+  "changed_files": [
+    "F:/github/launchdeck/test/cli-control-plane-contract.test.js",
+    "F:/github/launchdeck/.specify/teams/state/results/019f4146-cee0-7bd1-9c21-6a02823134c6.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test/cli-control-plane-contract.test.js",
+      "status": 0,
+      "summary": "Syntax check passed with no stdout or stderr output."
+    },
+    {
+      "command": "node --test test/cli-control-plane-contract.test.js",
+      "status": 1,
+      "summary": "Focused contract test target remains RED. Failures are missing control-plane JSON contract fields and public codes: schemaVersion/data/next undefined, top-level failure code/message/details undefined, missing required ERROR_CODES entries, and clean --all --json schemaVersion undefined. No syntax or harness failure was introduced."
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    "Implement the missing control-plane JSON contract behavior in production code to satisfy the existing RED assertions.",
+    "Keep the clean --all --json refusal non-interactive: stderr must not contain prompt text, stdout must remain one parseable JSON object, and configured clean targets must not be deleted without --yes."
+  ],
+  "concerns": [
+    "The focused target has multiple pre-existing RED contract assertions beyond T006, so this repair cannot produce a GREEN test run without production implementation outside the assigned write scope."
+  ],
+  "consumer_evidence": {
+    "task": "T006 JSON contract RED-test no-prompt assertion repair",
+    "test_strengthened": "clean --all --json refuses without prompting and returns structured next actions",
+    "assertions_added": [
+      "stderr does not contain interactive prompt-like text",
+      "stdout is exactly one parseable JSON object matching result.json",
+      "stdout does not contain common terminal prompt fragments"
+    ],
+    "preserved_assertions": [
+      "status",
+      "schemaVersion",
+      "code",
+      "message",
+      "details",
+      "next",
+      "dist and node_modules are preserved"
+    ]
+  }
+}

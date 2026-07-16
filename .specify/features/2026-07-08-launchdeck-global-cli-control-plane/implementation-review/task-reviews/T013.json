@@ -1,0 +1,34 @@
+{
+  "task_id": "T013",
+  "verdict": "accepted",
+  "review_id": "T013-review-3",
+  "review_agent": "019f41dd-562f-76b3-88d4-c60abf19cfb2",
+  "accepted_at": "2026-07-08",
+  "changed_files": [
+    "test/managed-cli.test.js",
+    "test/global-runtime.test.js"
+  ],
+  "validation": [
+    "node --check test/global-runtime.test.js passed",
+    "node --check test/managed-cli.test.js passed",
+    "node --test test/managed-cli.test.js test/global-runtime.test.js expected RED: 32 tests, 22 passed, 10 failed"
+  ],
+  "expected_red_failures": [
+    "test/global-runtime.test.js: start project:task writes a global run index record with lifecycle identity",
+    "test/global-runtime.test.js: start project:task injects global run markers into the managed task environment",
+    "test/global-runtime.test.js: start project:task returns the existing run without spawning a second process",
+    "test/global-runtime.test.js: start project:task reports HTTP readiness separately from process liveness",
+    "test/global-runtime.test.js: start project:task falls back to process-alive readiness when no port is declared",
+    "test/global-runtime.test.js: status --all exposes safe next actions for active owned runs",
+    "test/global-runtime.test.js: project remove refuses to unregister a project with active owned runs",
+    "test/managed-cli.test.js: start --json returns run identity and readiness fields for the managed run",
+    "test/managed-cli.test.js: start --json injects launchdeck run markers into the managed task environment",
+    "test/managed-cli.test.js: start --json treats a second owned start as idempotent without spawning another process"
+  ],
+  "review_notes": [
+    "Duplicate-start contradiction repaired by removing the legacy task_already_running expectation.",
+    "Cross-file/order pollution repaired with shared runtime lock threshold and fixture-local pid cleanup.",
+    "Previously flaky green lanes passed in the accepted combined run: ps --all, ports, status --all summarizes, and logs project:task."
+  ],
+  "findings": []
+}

@@ -1,0 +1,51 @@
+{
+  "taskId": "T023",
+  "reviewId": "T023-review-final",
+  "type": "task_review",
+  "status": "accepted_with_t024_residuals",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    "src/runtime.js",
+    "test/lifecycle-ownership.test.js"
+  ],
+  "validation": [
+    {
+      "command": "node --check src/control-plane/actions.js; node --check src/control-plane/runs.js; node --check src/runtime.js; node --check test/lifecycle-ownership.test.js",
+      "result": "pass",
+      "summary": "Syntax checks passed for the T023 action/runtime/test surfaces."
+    },
+    {
+      "command": "node --test test/control-plane-ownership.test.js",
+      "result": "pass",
+      "summary": "4 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+      "result": "expected_t024_residuals",
+      "summary": "21 tests run, 17 passed, 4 failed. Remaining failures are CLI/output routing or JSON payload shape residuals owned by T024."
+    }
+  ],
+  "controllerChecks": [
+    "Ownership-gated stop now refuses probable-owned, unknown, external, and matching-PID/listener-without-trusted-spawn-proof cases without killing the listener.",
+    "Verified stop for Launchdeck-spawned processes uses a trusted spawn proof or current verified ownership evidence; PID/port/local-state-only evidence is not upgraded to verified ownership.",
+    "Force semantics were not allowed to grant ownership and no CLI force-stop route was added in this task.",
+    "Stop and restart action-layer paths acquire project/task locks through the existing lock surfaces.",
+    "Stopped and stop_failed state/event evidence is persisted through runtime evidence.",
+    "Source-code sniffing for stop failure was removed; stop_failed is based on process liveness, declared port listeners, stop result, and timeout evidence.",
+    "Leader process scan found no lifecycle test fixture processes left after validation."
+  ],
+  "acceptedResidualRisks": [
+    "T024 must route stop/force-stop/restart through the action-layer commands and normalize JSON payloads/error codes.",
+    "The remaining failing lifecycle tests are expected until T024 updates CLI/output wiring: stop payload stopped[]/failed[], force-stop routing, restart stoppedRun/startedRun/transactionId, and port_release_timeout mapping.",
+    "Cross-platform stop semantics remain best-effort and must still be covered by later smoke evidence before a release claim."
+  ],
+  "followUpWork": [
+    "T024 wire lifecycle commands and refusal next actions in src/cli.js, src/output.js, and src/errors.js.",
+    "T025 join US3 owned stop/restart validation after T024."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_with_t024_residuals"
+}

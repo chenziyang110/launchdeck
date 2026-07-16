@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "task_id": "T020",
+  "changed_files": [
+    "src/cli.js",
+    "src/global-runtime.js",
+    "src/control-plane/inspect.js",
+    ".specify/teams/state/results/executor-t020.json"
+  ],
+  "validation_output": {
+    "node --check src/cli.js": "passed with no output",
+    "node --check src/global-runtime.js": "passed with no output",
+    "node --check src/control-plane/inspect.js": "passed with no output",
+    "node --test test/inspect-cli.test.js test/global-runtime.test.js": "tests 30; pass 30; fail 0; duration_ms 85247.8318"
+  },
+  "concerns": [
+    "Initial combined/global-runtime reruns timed out because a previous timed-out test process left a stale launchdeck-managed-runtime-test.lock; confirmed the recorded PID was gone, removed only that stale test lock, and reran successfully."
+  ],
+  "recovery_hints": []
+}

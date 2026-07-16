@@ -1,0 +1,48 @@
+{
+  "status": "DONE",
+  "changed_files": [
+    "F:/github/launchdeck/test/helpers/control-plane-fixture.js"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test/helpers/control-plane-fixture.js",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 0,
+      "evidence": "Syntax check passed with no output."
+    },
+    {
+      "command": "node --input-type=module -e \"import { managedProjectConfig } from './test/helpers/control-plane-fixture.js'; import { normalizeConfig } from './src/config.js'; const normalized = normalizeConfig(managedProjectConfig(), { projectRoot: process.cwd() }); const task = normalized.tasks.dev; if (task.ports.length !== 1 || task.ports[0] !== 4173 || !task.command.includes(' 4173')) { throw new Error(JSON.stringify({ ports: task.ports, command: task.command })); } console.log(JSON.stringify({ ok: true, port: task.ports[0], command: task.command }));\"",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 0,
+      "evidence": "{\"ok\":true,\"port\":4173,\"command\":\"node scripts/dev-server.js 4173\"}"
+    },
+    {
+      "command": "node --input-type=module -e \"import { managedProjectConfig } from './test/helpers/control-plane-fixture.js'; import { normalizeConfig } from './src/config.js'; const config = managedProjectConfig({ port: 53217 }); const normalized = normalizeConfig(config, { projectRoot: process.cwd() }); const task = normalized.tasks.dev; if (task.ports.length !== 1 || task.ports[0] !== 53217 || !task.command.endsWith(' 53217')) { throw new Error(JSON.stringify({ ports: task.ports, command: task.command })); } console.log(JSON.stringify({ ok: true, port: task.ports[0], command: task.command }));\"",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 0,
+      "evidence": "{\"ok\":true,\"port\":53217,\"command\":\"node scripts/dev-server.js 53217\"}"
+    },
+    {
+      "command": "node --input-type=module -e \"import { writeManagedFixtureProject } from './test/helpers/control-plane-fixture.js'; import { normalizeConfig } from './src/config.js'; let capturedConfig; let capturedScript; const fixture = { writeConfig: (config) => { capturedConfig = config; }, writeScript: (scriptPath, content) => { capturedScript = { scriptPath, content }; }, path: (relativePath) => 'ABS/' + relativePath }; const result = writeManagedFixtureProject(fixture, { port: 53217 }); const normalized = normalizeConfig(capturedConfig, { projectRoot: process.cwd() }); const task = normalized.tasks.dev; if (result.port !== 53217 || result.command !== 'node scripts/dev-server.js 53217' || task.ports[0] !== 53217 || task.command !== result.command || capturedScript.scriptPath !== 'scripts/dev-server.js' || !capturedScript.content.includes('createServer')) { throw new Error(JSON.stringify({ result, task, capturedScriptPath: capturedScript?.scriptPath })); } console.log(JSON.stringify({ ok: true, port: result.port, command: result.command, configPorts: task.ports, scriptPath: capturedScript.scriptPath }));\"",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 0,
+      "evidence": "{\"ok\":true,\"port\":53217,\"command\":\"node scripts/dev-server.js 53217\",\"configPorts\":[53217],\"scriptPath\":\"scripts/dev-server.js\"}"
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [
+    {
+      "assumption": "A PowerShell one-liner could safely include a JavaScript template literal for the fake fixture path callback.",
+      "impact": "The first extra write-path validation command failed before exercising project code because PowerShell consumed the backtick expression.",
+      "recovery": "Reran the same validation using plain string concatenation; the recovered command passed."
+    }
+  ],
+  "recovery_guidance": [],
+  "concerns": [],
+  "consumer_evidence": {
+    "default_behavior": "managedProjectConfig() now normalizes successfully with declared port 4173 and command \"node scripts/dev-server.js 4173\".",
+    "override_behavior": "Explicit port 53217 is preserved by managedProjectConfig() and writeManagedFixtureProject() in both ports and command.",
+    "script_fixture_behavior": "writeManagedFixtureProject() still writes scripts/dev-server.js using fixtureServerScriptContent; no inline long-running node -e fixture was introduced.",
+    "result_path": "F:/github/launchdeck/.specify/teams/state/results/019f4135-b317-7b30-ac87-ca7380bd9613.json"
+  }
+}

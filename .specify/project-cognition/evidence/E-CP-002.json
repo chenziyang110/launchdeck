@@ -1,0 +1,22 @@
+{
+  "id": "E-CP-002",
+  "source_path": "src/control-plane/actions.js",
+  "summary": "三层锁机制：registry锁 -> project锁 -> task锁（withRegistryLock、withProjectLock、withTaskLock），支持精确的并发控制",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-002",
+    "source_path": "src/control-plane/actions.js",
+    "summary": "三层锁机制：registry锁 -> project锁 -> task锁（withRegistryLock、withProjectLock、withTaskLock），支持精确的并发控制",
+    "symbols": [
+      "withRegistryLock",
+      "withProjectLock",
+      "withTaskLock",
+      "reconcileRunsInScope"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

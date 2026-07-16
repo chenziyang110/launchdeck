@@ -1,0 +1,65 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude session-start"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude user-prompt-submit"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude post-tool-session-state"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude stop-monitor"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude pre-tool-read"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"let d=process.cwd(),p=require('path'),f=require('fs'),u=require('url');while(!f.existsSync(p.join(d,'.specify','bin','specify-hook.mjs'))){let n=p.dirname(d);if(n===d){console.error('Missing .specify/bin/specify-hook.mjs. Run specify integration repair.');process.exit(2)}d=n}import(u.pathToFileURL(p.join(d,'.specify','bin','specify-hook.mjs')).href)\" specify-hook claude pre-tool-bash"
+          }
+        ]
+      }
+    ]
+  }
+}

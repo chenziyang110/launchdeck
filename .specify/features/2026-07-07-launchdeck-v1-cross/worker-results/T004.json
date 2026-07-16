@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T004",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3b7b-db7b-7d73-8cfe-29939593196e",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/cli-contract.test.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check test/cli-contract.test.js",
+      "status": "passed"
+    },
+    "red_check": {
+      "command": "node --test test/cli-contract.test.js",
+      "exit_status": 1,
+      "classification": "expected_red_missing_contract_behavior"
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [
+    "Current prototype JSON output lacks several contract envelope fields; this is expected RED behavior for downstream implementation tasks."
+  ],
+  "recovery_hints": [
+    "Implement tasks --json, route CLI JSON through src/output.js, normalize public error codes, preserve foreground child exits, and keep aliases using the run contract."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-006", "MP-007", "MP-008", "MP-014"],
+      "evidence": "CLI contract tests cover init, doctor, tasks, run, aliases, read-only inspection, and JSON/error compatibility."
+    },
+    {
+      "ids": ["CA-003", "CA-010", "CA-011", "CA-012", "CA-013", "CA-018", "CA-020"],
+      "evidence": "Tests assert real CLI entrypoints, JSON success/failure envelopes, config_exists, foreground child exit preservation, and read-only task inventory."
+    }
+  ],
+  "result_summary": "T004 CLI contract tests added and verified as expected RED."
+}

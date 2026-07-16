@@ -1,0 +1,317 @@
+---
+name: "sp-implement"
+description: "Execute the implementation plan by dispatching subagents and integrating their results"
+argument-hint: "Optional implementation guidance or task filter"
+compatibility: "Requires spec-kit project structure with .specify/ directory"
+metadata:
+  author: "github-spec-kit"
+  source: "templates/commands/implement.md"
+user-invocable: true
+---
+## Invocation Syntax
+
+- In this integration, invoke workflow skills with `/sp-plan`-style syntax.
+- References such as `/sp.plan`, `/sp.tasks`, or `next_command: /sp.plan` are canonical workflow-state identifiers and handoff values.
+- Preserve those canonical state tokens exactly in artifacts and workflow state; do not rewrite them to this integration's invocation syntax.
+
+
+
+## Workflow Contract Summary
+
+- **When to use**: `tasks.md` is ready and the feature should move from planning into tracked execution batches.
+- **Primary objective**: Execute the ready batches while preserving tracker state, subagent contracts, verification discipline, and resumability.
+- **Primary outputs**: Verified code, test, and documentation changes plus compact execution state, one task lifecycle record per executed task, conditional drift/repair records, and `implementation-summary.md` for the active feature.
+- **Default handoff**: Continue with the next ready batch, route blockers into /sp-debug, or after technical closeout hand human product acceptance to /sp.accept and stop.
+- **Execution note**: This summary is routing metadata only. Follow the full contract below end-to-end rather than inferring behavior from the description alone.
+
+## Blocked Exit Contract
+
+If blocked after safe recovery, read and follow
+`.specify/templates/workflow-blocker-template.md` and its JSON schema. Never
+return only an error or “ask a human”; preserve state and keep agent-capable
+repair agent-owned. Set `human_action_required: true` only for authority,
+credentials, protected systems, human decisions/reviews, or physical access.
+Tailor steps, expected results, failure paths, evidence, and resume action to
+CI, visual review, or product decisions. Never claim completion.
+
+## User Input
+
+```text
+$ARGUMENTS
+```
+
+You **MUST** consider the user input before proceeding (if not empty).
+
+## Objective
+
+Advance the current feature through tracked implementation batches while keeping execution state, subagent work, verification evidence, and recovery paths explicit.
+
+## Context
+
+- Primary inputs: canonical `task-index.json` or the light leader-direct task list, current execution state, the current task's required refs, and live repository evidence for the touched area. The full plan/spec package is fallback evidence, not default intake.
+- The leader owns tracker truth, execution strategy, join points, blocker handling, and final validation.
+- Delegated workers own bounded implementation lanes only; they do not own the overall implementation state.
+
+
+## Claude Code Project Cognition Advisory Gate
+
+**Current-Task Navigation Repair**: Reuse the current task's required refs and live touched-area evidence. Only when a required ref is stale, missing, or contradicted by live code, run at most one `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement --query=\"$ARGUMENTS\" --format json` before any implementation actions. Read and carry `epistemic_contract`; require `graph_role=route_candidate_only`, `fact_source_of_truth=live_repository`, `live_verification_required=true`, `graph_only_claims_allowed=false`, and `unverified_claim_action=withhold`. The contract cannot authorize source changes and cannot prove current behavior; contradictory live evidence overrides the route candidate. Graph claims are indexed assertions; even `verified_in_graph_generation` is only an active graph-generation state, not current repository truth. Graph claims cannot authorize source changes and cannot set workflow `claim_ready=true`; bounded live evidence and the separate workflow final-claim gate remain required. Use `compass_state`, `minimal_live_reads`, `first_pass_paths`, `coverage_diagnostics`, and `expansion_ref` only to repair current-task context; they do not replace live proof or authorize broader implementation scope.
+- Read and carry `epistemic_contract`; require `graph_role=route_candidate_only`, `fact_source_of_truth=live_repository`, `live_verification_required=true`, `graph_only_claims_allowed=false`, and `unverified_claim_action=withhold`. The contract cannot authorize source changes and cannot prove current behavior; contradictory live evidence overrides the route candidate. Graph claims are indexed assertions; even `verified_in_graph_generation` is only an active graph-generation state, not current repository truth. Graph claims cannot authorize source changes and cannot set workflow `claim_ready=true`; bounded live evidence and the separate workflow final-claim gate remain required.
+- Interpret returned readiness: `query_ready` reads top-level `minimal_live_reads` first and then lane-level `first_pass_paths`; `review` permits only returned `minimal_live_reads` plus `coverage_diagnostics`; `needs_rebuild` treats map output as advisory, continues with live repository evidence, and recommends `{{invoke:map-scan}}`, then `{{invoke:map-build}}` only for brownfield first/missing/unusable baseline, schema failure, schema v1 or old broad-schema rebuild-required readiness, zero active-generation `path_index` rows outside a `greenfield_empty` baseline, missing or invalid `alias_index`, `explicit_rebuild_requested`, or `baseline_identity_invalid`; `blocked` reports the runtime issue as advisory map state and continues with live repository evidence; `unsupported_runtime` continues with live evidence and records that compass intake was unavailable. If `baseline_kind=greenfield_empty`, continue with workflow artifacts and live requirements instead of treating absent graph paths as `needs_rebuild`. If the user's actual request is to fix cognition runtime state, report the blocked state and follow the same map-update-first routing policy.
+- Use `map-update` for ordinary existing-baseline gaps. If `baseline_kind=greenfield_empty`, do not recommend map-scan -> map-build solely because the graph has no paths; continue with workflow artifacts and live requirements. Use `map-scan -> map-build` only for brownfield first/missing/unusable baseline, schema failure, schema v1 or old broad-schema rebuild-required readiness, zero active-generation `path_index` rows outside `greenfield_empty`, missing or invalid `alias_index`, `explicit_rebuild_requested`, or `baseline_identity_invalid`.
+- Treat the project cognition compass packet as advisory navigation for brownfield context; do not fall back to chat memory or ad hoc repository instincts when compass-backed runtime coverage should guide the route.
+- Treat this as advisory navigation, not a hard gate; continue with live repository evidence when the bundle is weak, stale, or missing, and use map maintenance only when it is actually useful.
+- Mutation closeout is separate from entry routing: entry stale may continue, but workflow-owned mutation closeout is not an external map-maintenance handoff. If the workflow changes source/runtime truth-owning surfaces, shared surfaces, command/route/contract boundaries, verification entry points, runtime assumptions, or other project-related behavior surfaces, final state must run inline project cognition update from changed paths, affected surfaces, and verification evidence.
+- Inline project cognition update uses `project-cognition delta append` followed by `project-cognition update --delta-session "$DELTA_SESSION_ID" --reason workflow-finalize --format json` when a delta session exists, or `project-cognition update --payload-file ".specify/project-cognition/updates/<update-id>.json" --reason workflow-finalize --format json` when no delta session exists.
+- The payload-file path must include changed_paths, behavior_surfaces, generated_surfaces, state_contracts, verification, known_unknowns, and confidence_notes so the update is equivalent to `sp-map-update`, not just a path stamp; `verification_evidence` and `generated_surface_notes` are accepted compatibility aliases.
+- Use `known_unknowns` only for blockers that make the cognition update unsafe to trust. If unrelated dirty or untracked working-tree paths were excluded by explicit workflow-owned paths, record that as `confidence_notes` or `boundary.initial_dirty_paths`, not as blocking `known_unknowns`.
+- clean closeout keys on `result_state`, not `update_id`, `last_update_id`, or freshness alone. Treat `ready` and `no_op` as clean, `partial_refresh` as recorded but not fully clean, `needs_rebuild` as a map-scan/map-build route, `blocked` as blocked, and `recorded` as legacy recorded-only output that is never clean completion.
+- Use `project-cognition mark-dirty --reason "<reason>" --format json` only when inline update cannot complete. Dirty only when inline update cannot complete.
+- `sp-map-update` is for manual/external maintenance and follow-up repair after user edits, interrupted workflows, or explicit operator map-maintenance requests. It is not routine cleanup for changes this workflow just made.
+- A project-cognition compass intake is not complete when it returns JSON. It is complete only when readiness drives routing, `minimal_live_reads` constrains inspection, lane-level `first_pass_paths` reasons are considered, and relevant facts are carried into the next workflow artifact or execution state.
+- Carry forward only the current task's selected capability, minimal live reads, boundary constraints, required references, validation route, and evidence gaps into its lifecycle record or just-in-time `WorkerTaskPacket`.
+
+## Process
+
+- Recover compact execution state, validate the task-graph revision, and identify the current ready batch.
+- If the feature lane is not explicit, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify lane resolve --command implement --ensure-worktree`; use the returned execution context/materialized worktree and stop on `uncertain`.
+- Read `FEATURE_DIR/workflow-state.md` when present. If its canonical `next_command` still points to `/sp.analyze`, stop and honor that pending diagnostic gate rather than self-authorizing implementation from chat memory.
+- On resume, audit terminal-looking tracker/task state before trusting completion; checked tasks are claims until validation, handoff, join point, and consumer evidence prove them. When `real_entrypoint_evidence` is required, synthetic-only consumer proof is not sufficient.
+- Carry every `CA-###` consequence obligation from packets into dispatch, implementation evidence, result acceptance, tracker open gaps, and stop-and-reopen routing.
+- Choose leader-direct or delegated execution. Compile and validate a WorkerTaskPacket just in time only for delegated work; do not require packets for leader-direct tasks.
+- Integrate worker results into one task lifecycle record with validation, review verdict, blockers, and recovery; keep execution truth current without duplicating task briefs, review packages, and ledgers.
+- Continue automatically until the feature is complete or blocked by a real blocker.
+
+## Output Contract
+
+- Produce verified implementation changes plus updated compact execution state for the active feature.
+- Keep one task lifecycle record per executed task aligned with what actually happened. Additional review or repair records are event-triggered rather than mandatory for every batch.
+- Report blockers, retries, and completion honestly rather than inferring success from partial progress.
+- On successful technical closeout, keep `active_command: sp-implement`, mark implementation `status: completed` with `phase_mode: execution-only`, set canonical `next_command: /sp.accept`, report `human-acceptance.json`, and hand off to `/sp-accept`. This is the default post-implement stage; do not pre-fill a human PASS, set `active_command: sp-accept` early, or continue into acceptance within the same invocation.
+- For any blocked, approval-gated, timeout-gated, or nonzero-verification exit, include an **Actionable Blocker Resolution** section instead of a bare blocked summary. It must name each blocker, `owner: agent | user | maintainer | external-system`, `exact_next_action`, `approval_question` when human approval is the next step, artifact or log evidence, `unblock_criteria`, and whether the rest of implementation can continue.
+- Do not leave the user to infer whether to handle the blocker. Say whether the blocker is mandatory for completion, optional cleanup, external baseline maintenance, or a follow-up risk, and name the next command or approval decision when one is known.
+- Preserve any `MP-*` obligations carried in task packets, implementation state, or result handoff expectations.
+- Worker result handoffs must include must-preserve evidence when packet obligations require it.
+- If implementation discovers a conflict with an `MP-*` obligation, return a blocked result instead of silently changing the protected discussion decision.
+
+## Guardrails
+
+- Do not dispatch from raw task text alone; compile and validate the packet first.
+- Do not bypass tracker truth, result handoffs, or verification gates.
+- Do not declare completion because tasks look checked off if the implementation contract is not actually satisfied.
+
+## Senior Consequence Analysis Gate
+
+Run this gate whenever the request, artifact set, defect, or planned change can affect lifecycle operations, running objects, concurrent work, destructive behavior, shared state, downstream consumers, compatibility, security-sensitive behavior, or multiple plausible product behaviors.
+
+Project cognition first. Use the project cognition runtime to identify ownership, consumers, state surfaces, change-propagation facts, verification routes, conflicts, known unknowns, and coverage gaps. Senior consequence analysis second. Turn those facts into explicit product and implementation obligations instead of treating the graph as the decision-maker.
+
+Project cognition readiness provides routing advice. If readiness is `query_ready`, read top-level `minimal_live_reads` first, then use lane-level `first_pass_paths` reasons. If readiness is `review`, inspect the returned `minimal_live_reads` before continuing and treat `coverage_diagnostics` as confidence and closeout signals. If readiness is `needs_rebuild`, continue with live repository evidence and recommend `/sp-map-scan -> /sp-map-build` only for brownfield first/missing/unusable baseline, schema failure, schema v1 or old broad-schema rebuild-required readiness, zero active-generation `path_index` rows outside `greenfield_empty`, missing or invalid `alias_index`, `explicit_rebuild_requested`, or `baseline_identity_invalid`. If readiness is `blocked`, report the blocked state and continue with live repository evidence unless the user's actual request is to fix cognition runtime state. If readiness is `unsupported_runtime`, continue with live evidence and record that compass intake was unavailable. If `baseline_kind=greenfield_empty`, continue with workflow artifacts and live requirements; do not recommend map-scan -> map-build solely because the graph has no paths. Carry relevant project cognition facts, returned `minimal_live_reads`, inference notes, and coverage gaps into the workflow's artifacts or durable state, but back consequence claims with live code, tests, scripts, configuration, or authoritative docs. Mutation closeout is separate from entry routing: entry stale may continue, but that does not allow source/runtime mutation workflows to defer closeout. Workflow-owned mutation closeout is not an external map-maintenance handoff; after changing project-related files or behavior, the workflow must run inline project cognition update from its changed paths, affected surfaces, and verification evidence, with `project-cognition mark-dirty` only as fallback when inline update cannot complete. `sp-map-update` is for manual/external maintenance and follow-up repair; it is external map maintenance, not routine closeout for this workflow's own changes. In shared routing summaries, sp-map-update is for manual/external maintenance and ordinary existing-baseline gaps.
+
+Required output when the gate triggers:
+
+- **Affected Object Map**: name each object, record, worker, queue, artifact, command, API, file surface, user-visible state, or downstream consumer that can be affected.
+- **State-Behavior Matrix**: describe behavior for each important lifecycle state, including created, queued, running, paused, failed, cancelled, completed, resumed, archived, missing, stale, or partially refreshed states when relevant.
+- **Dependency Impact Table**: map direct dependencies, indirect consumers, shared state, compatibility surfaces, validation routes, and adjacent workflows that can break if semantics change.
+- **Recovery And Validation Contract**: state rollback, retry, idempotency, cleanup, migration, observability, and validation evidence required before handoff or completion.
+- **Coverage Gaps**: list what project cognition or live evidence cannot prove, who must resolve each gap, the latest safe resolve phase, the stop-and-reopen condition, and the routing decision: current workflow may continue with an assumption, must ask the user, must route to clarification or deep research, or must request map maintenance.
+- **Consequence Obligations**: assign stable `CA-###` IDs to every obligation that must survive downstream handoff, task generation, worker packets, verification, or debug closeout. Each `CA-###` must include claim, affected objects, owner workflow, latest resolve phase, status, and stop-and-reopen condition.
+
+Stand down only for docs-only wording changes, trivial isolated fixes, or local refactors that cannot affect lifecycle operations, running state, destructive operations, shared state, downstream consumers, compatibility, security, or multiple behavior choices. Record the no-trigger reason or stand-down reason in the workflow's durable artifact or closeout before skipping the required outputs.
+
+If the gate triggers and the current workflow cannot preserve the required outputs, stop and route to the workflow that can. Do not mark ready, resolved, handoff-ready, planning-ready, or complete while triggered consequence obligations remain unresolved, unmapped, or unsupported by validation evidence.
+
+## Agent Phase Handoff
+
+Phase handoff is an agent-only control surface. Human-facing explanation belongs in the visible reply or in project documents that have independent review value; it must not be duplicated into a handoff.
+
+- The previous phase's canonical JSON contract is the next phase's primary input.
+- Use the compact transition shape from `.specify/templates/agent-phase-transition-schema.json`: `status`, `source_ref`, `semantic_delta`, `required_refs`, `blockers`, `next_action`, and recovery only when blocked.
+- Carry the minimum sufficient context: include a fact only when omitting it could change the next action, lose a requirement or obligation, force rediscovery, weaken verification, or prevent safe recovery.
+- Preserve decisions, acceptance criteria, evidence provenance, `MP-*`, `CA-###`, and stop/reopen conditions by stable reference. Do not copy their full bodies into every downstream artifact.
+- Protected `MP-*` and `CA-###` obligations must not drop between phases. A downstream phase may resolve or reopen them, but may not silently omit them.
+- Carry the locked implementation-target reference. A cross-project transition must not silently point to the current repository when the confirmed target differs.
+- Consume project rules and Learning through `learning start --command <classic-command-name> -> list -> show`; run selected `show_argv` only. Constitution remains at `.specify/memory/constitution.md`; never parse Learning storage.
+- Capture at owning closeout only when the lesson would change a future action; prefer `learning capture-auto`.
+- A rendered Markdown view is never an agent handoff authority. Do not require Markdown/JSON companion agreement.
+- Revalidate upstream truth only when its revision changed, evidence became stale, live repository facts contradict it, or the current phase discovers a scope, boundary, feasibility, or risk change.
+- If `semantic_delta` is empty, do not repeat upstream questions, approach selection, or user confirmation.
+
+## Deterministic Workflow Runtime
+
+For a feature-bearing `specify -> plan -> tasks -> implement -> accept` stage,
+the CLI owns phase order and `workflow-state.md`. Do not author or advance
+`workflow-state.md` by hand.
+
+- After `FEATURE_DIR` is known, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow show --feature-dir <feature-dir> --format json`. If state is missing at the first feature stage, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow enter --command specify --feature-dir <feature-dir> --format json`.
+- On entry to `plan`, `tasks`, `implement`, or `accept`, use the current revision with `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow transition --to <this-stage> --feature-dir <feature-dir> --expected-revision <revision> --format json` before writing that stage's artifacts. The command validates the completed source-stage artifacts and refuses skips, stale revisions, or incomplete handoffs with exit `10`.
+- The destination command owns the transition. A completed stage recommends the next command but must not execute `workflow transition` to that next stage in the same invocation.
+- Use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow next --feature-dir <feature-dir> --format json` for the compact next action. Execute only its structured `next_argv`; do not reconstruct flags from prose.
+- After safe agent recovery is exhausted, persist the blocker through `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow block --input <blocker-json-or-> --format json`. Obtain its exact input shape with `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify api schema workflow-block-input --format json`; preserve the returned resume argv and human tutorial.
+- After explicit human acceptance and the acceptance-owned closeout both succeed, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify workflow closeout --feature-dir <feature-dir> --expected-revision <revision> --format json`. It validates acceptance artifacts before marking the feature workflow complete.
+
+For every blocked exit, including a pre-feature discussion that cannot use the
+feature runtime yet, follow
+`.specify/templates/workflow-blocker-template.md` and its schema. Report the
+exact cause, sanitized evidence, attempted recovery and result, affected scope,
+smallest next action, observable unblock criteria, and exact resume point. Keep
+agent-capable repair agent-owned. When authority, credentials, a protected
+system, physical access, or human judgment is genuinely required, add the full
+Human Action Guide: goal, prerequisites, safety notes, numbered exact actions,
+expected result and safe failure branch for every action, independent
+verification, sanitized evidence to return, and the exact resume command.
+
+[AGENT] For project-cognition-backed semantic intake, routing, audit, resume, or final-claim gates, read `references/semantic-work-contract.md`.
+
+## Main Flow
+
+1. Run `.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` to resolve the task-bearing feature context, then read canonical `task-index.json` or the light leader-direct task list, compact execution state, and current branch/worktree status. Load the current task plus its required refs; do not ingest the full upstream package when revisions are unchanged.
+2. Validate the task-graph revision and current ready batch. Compile delegated WorkerTaskPackets just in time from live code, establish RED-first validation for behavior changes, and do not claim completion from chat narration.
+3. Use `choose_subagent_dispatch(command_name="implement", snapshot, workload_shape)` for safe worker lanes, use the current integration's native subagent lifecycle where available, and keep leader ownership of tracker state.
+4. Execute the current task or ready batch, update tracker fields, resolve blockers through bounded repair, and route unknown root cause to `/sp-debug`.
+5. Run event-triggered review for repository drift, parallel joins, write-scope drift, validation failure, worker concerns, obligation conflicts, or sequential change-window limits. Maintain one task lifecycle record containing packet/ref, result, validation, review verdict, and recovery; report completion only when changed paths, validation evidence, review status, and mutation closeout are complete.
+6. For UI work, record task-lifecycle `ui_verification` with concrete evidence
+   refs after the real-entrypoint visual convergence loop. Set
+   `evidence_scope: task` and persist typed `structure_snapshot`,
+   `visual_capture`, and `runtime_diagnostics` evidence plus passing runtime
+   status. Use
+   `pending-human-review` only when objective visual evidence cannot close the
+   criterion; it blocks accepted closeout until resolved. Route an invalid,
+   bootstrap, or missing design source to `sp-design` instead of inventing one.
+7. After successful technical closeout, ensure `human-acceptance.json` was prepared from the fresh `implementation-summary.md`, recommend `/sp-accept`, and stop. Do not claim that automated verification or implementation completion equals human product acceptance.
+
+### Inline Project Cognition Update
+
+Workflow-owned mutation closeout is not an external map-maintenance handoff and is not external map maintenance. It is the workflow-local form of `/sp-map-update`. If this workflow changed project-related source, runtime, templates, generated assets, config, tests, state contracts, shared surfaces, or behavior-bearing docs, closeout MUST run inline project cognition update for the workflow-owned changed paths and affected surfaces before claiming clean completion.
+
+Call the planner first:
+
+```text
+project-cognition closeout-plan --workflow "$ACTIVE_WORKFLOW" --format json
+```
+
+When `DELTA_SESSION_ID` exists, pass it into the planner:
+
+```text
+project-cognition closeout-plan --workflow "$ACTIVE_WORKFLOW" --delta-session "$DELTA_SESSION_ID" --format json
+```
+
+Consume `workflow_canonical`, `update_mode`, `payload_draft`, `required_agent_fields`, `unknown_paths`, `unknown_path_dispositions`, `delta_append_draft`, display-only `delta_append_command`, `update_argv`, display-only `update_command`, and `recommended_next_command`.
+
+Before running `update`, fill the fields listed in `required_agent_fields` from live evidence from this workflow. Supported agent-owned evidence fields include:
+
+- `verification`
+- `behavior_surfaces`
+- `generated_surfaces`
+- `state_contracts`
+- `known_unknowns`
+- `confidence_notes`
+- `user_decisions`
+- `boundary`
+
+If a field appears in `required_agent_fields`, provide live-evidence-backed content for it. Fields not listed by `required_agent_fields`, such as `known_unknowns` and `boundary`, are populated only when live evidence supports them; do not invent them to satisfy the shape.
+Use `known_unknowns` only for blockers that make the cognition update unsafe to trust. If the working tree contains unrelated dirty/untracked paths and the workflow uses explicit workflow-owned paths, record that as `confidence_notes` or `boundary.initial_dirty_paths`, not as a blocking `known_unknowns` item.
+
+For each `unknown_path_dispositions[]` item, set `agent_disposition` to exactly one allowed value:
+
+- `adoptable`: verified new path inside this workflow-owned scope; it may be recorded in changed/scope paths and verified adoptable paths do not become blocking `known_unknowns`.
+- `review_only`: path informed review but is not adopted into changed coverage.
+- `ignored`: path remains excluded and must not enter payloads, records, route indexes, evidence, aliases, or minimal live reads.
+- `blocking_known_unknown`: record it as a known unknown and report partial or blocked cognition closeout.
+
+`agent_disposition=adoptable` is an agent accounting decision, not proof that runtime indexing already succeeded. Runtime adoption still requires a usable active project-cognition DB, at least one passing verification evidence item, and no blocking `known_unknowns`. After `update_argv` runs, inspect `result_state`, `adopted_paths`, `review_paths`, `minimal_live_reads`, and `partial_refresh_reasons`; do not explain a remaining `partial_refresh` as "path_index missing" until those fields show which adoption gate failed.
+
+If `update_mode=delta_session`, complete `delta_append_draft.argv_prefix` with agent-owned repeatable flags such as `--behavior-surface`, `--generated-surface`, `--verification`, and accepted `--known-unknown` values from `delta_append_draft.argv_placeholders`. Then append the delta event and run `update_argv`. `delta_append_command` and `update_command` are display-only placeholders, not execution strings.
+
+If `update_mode=payload_file`, write the completed `payload_draft` to the planner's `payload_path`. Then run `update_argv`. `update_command` is a display-only placeholder, not an execution string.
+
+Completed payload drafts preserve the planner-owned `changed_paths` and `scope_paths` and add agent-owned evidence fields before recording.
+
+Structured `update` invalidates related claims and returns their stable IDs in `affected_graph_claims`. This is separate from update readiness: generic workflow verification and `result_state=ready` must not re-promote stale or contradicted graph claims. Only when this workflow already has decisive claim-specific bounded live evidence for an exact returned claim ID may it submit semantic reconciliation intent and run:
+
+```text
+project-cognition claim-reconcile prepare --input <intent.json> --format json
+project-cognition claim-reconcile apply --input <prepared_packet_path> --format json
+```
+
+Provide only reconciliation intent: workflow, stable `claim_id`, reason, and evidence containing repository-relative `source_path`, bounded line `span`, and `supporting` or `contradicting` role. Add verification only when it is claim-specific. The runtime owns the contract version, active generation, expected state and revision, UTC observation and expiry, source kind, content hashes, repository snapshot, IDs, and prepared packet path. Do not author or edit those integrity fields; execute the returned `apply_argv` exactly. If no such evidence exists, leave the claim stale. If reconciliation returns ready, rerun Compass once so later routing consumes the current evidence basis; partial or blocked reconciliation remains withheld and follows `recommended_next_action`.
+
+For compatibility with worker handoffs and delta packets, the runtime also accepts `verification_evidence` as an alias for `verification` and `generated_surface_notes` as an alias for `generated_surfaces`. Verification evidence may be an array of objects (`command`, `result`, `artifact`) or an array of command-result strings, but clean closeout still requires passing verification evidence; failed verification cannot produce a clean `ready` closeout.
+
+Clean closeout keys on `result_state`, not `status=ok`, `update_id`, `last_update_id`, or freshness alone:
+
+- `ready` or `no_op`: project cognition closeout may be clean when ordinary verification also passed.
+- `partial_refresh`: useful update data was written, but the final workflow state must report partial cognition closeout, `partial_refresh_reasons`, and the returned `minimal_live_reads`. If `partial_refresh_reasons` includes `missing_passing_verification_result`, repair the payload or delta evidence and rerun `update_argv` before final closeout; do not route that to `sp-map-update`. If verified workflow-owned paths still remain in `review_paths` after the update, report implementation completion separately from project-cognition maintenance and name `/sp-map-update` as follow-up repair.
+- `needs_rebuild`: report the exact rebuild condition and route to `/sp-map-scan`, then `/sp-map-build`.
+- `blocked`: report the runtime or validation blocker and the exact recovery command.
+- `recorded`: legacy recorded-only output; treat it as partial or blocked, never as clean completion.
+
+Never run the `complete-refresh` or `clear-dirty` helper after `result_state=partial_refresh`, `needs_rebuild`, `blocked`, or legacy `recorded`; those helpers are only for states that the runtime and validation prove ready.
+
+Dirty fallback command shape: `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason \"<reason>\" --format json`.
+Use `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason \"workflow-closeout-failed\" --format json` only when inline update cannot complete: when the planner or update command is unavailable, cannot record useful update data, cannot identify workflow-owned scope, or cannot be trusted because verification/workflow completion is not trustworthy. Dirty only when inline update cannot complete.
+
+sp-map-update is for manual/external maintenance and follow-up repair. `/sp-map-update` remains the external/manual workflow for user edits, interrupted workflow repair, explicit map maintenance, and follow-up repair. It is not routine cleanup for changes this workflow just made. If `sp-map-update` already ran `project-cognition update --reason map-update` for the same changed paths, do not run a second `workflow-finalize` closeout update for those paths.
+
+## Detailed References
+
+Read [Reference index](references/INDEX.md) before applying detailed contracts.
+
+- [task intake and tracker](references/task-intake-and-tracker.md)
+- [red first and validation](references/red-first-and-validation.md)
+- [subagent worker contract](references/subagent-worker-contract.md)
+- [join point review](references/join-point-review.md)
+- [safe repair loop](references/safe-repair-loop.md)
+- [final reconciliation and closeout](references/branch-review-and-closeout.md)
+
+## Claude Code Leader Gate
+
+When running `sp-implement` in Claude Code, you are the leader and own route selection, execution-state truth, acceptance, and recovery.
+
+**Current-Task Navigation Repair**: Reuse the current task's required refs and live touched-area evidence. Only when a required ref is stale, missing, or contradicted by live code, run at most one `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement --query=\"$ARGUMENTS\" --format json` before any implementation actions. Read and carry `epistemic_contract`; require `graph_role=route_candidate_only`, `fact_source_of_truth=live_repository`, `live_verification_required=true`, `graph_only_claims_allowed=false`, and `unverified_claim_action=withhold`. The contract cannot authorize source changes and cannot prove current behavior; contradictory live evidence overrides the route candidate. Graph claims are indexed assertions; even `verified_in_graph_generation` is only an active graph-generation state, not current repository truth. Graph claims cannot authorize source changes and cannot set workflow `claim_ready=true`; bounded live evidence and the separate workflow final-claim gate remain required. Use `compass_state`, `minimal_live_reads`, `first_pass_paths`, `coverage_diagnostics`, and `expansion_ref` only to repair current-task context; they do not replace live proof or authorize broader implementation scope.
+
+Before implementation actions:
+- Read canonical `task-index.json` or the light direct task list, compact execution state, and the current task's required refs.
+- **Resume Audit**: If the tracker is `resolved`, all tasks appear checked, or the previous session exit is unknown, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify implement resume-audit --feature-dir \"$FEATURE_DIR\" --format json` before trusting completion.
+- Treat completed task markers as claims until changed paths, validation, required consumer evidence, review status, and mutation closeout prove them.
+- Choose `leader-direct` for a small or tightly coupled ready task when delegation adds no quality or critical-path benefit and no high-risk trigger calls for an independent lane.
+- Choose `one-subagent` for one independent bounded task and `parallel-subagents` only for validated lanes with isolated write sets and an explicit join point.
+- Compile and validate a `WorkerTaskPacket` just in time only for delegated work; leader-direct work does not require one.
+- If dispatch fails, record the event and re-evaluate route safety. Use leader-direct only if the task independently qualifies; otherwise repair the packet/surface or block truthfully.
+- Wait for every subagent's structured handoff before accepting the join point, closing the batch, or declaring completion.
+- Do not treat an idle subagent as done work; idle without a consumed handoff means the result channel is still unresolved.
+- Require consumer evidence when a worker creates a reusable UI, route, provider, registry, factory, config, API, or test surface; a created but not wired file is not complete.
+- When a packet requires `real_entrypoint_evidence`, require `consumer_evidence` with `kind: real_entrypoint`, `entrypoint`, `producer`, `transformer`, `consumer`, `boundary_or_executor`, and `validation`; synthetic-only component, reducer, helper, or hand-built state evidence is not enough.
+- The leader must not edit a delegated lane's write scope while that subagent is active.
+- On technical blockers, attempt the smallest safe autonomous recovery or specialist lane before asking for manual intervention.
+
+## Claude Code Subagent Dispatch Contract
+
+- Execution model: `adaptive`
+- Dispatch shape: `one-subagent`, `parallel-subagents`, or `subagent-blocked`
+- Execution surface: `native-subagents`, `managed-team`, or `leader-inline`
+- Delegation surface contract: preserve the native dispatch, fallback, worker result contract, and handoff path below.
+- Native subagent capability discovery: Before recording `subagent-blocked`, check the active tool surface for the integration-native subagent or task-dispatch entrypoint and record the exact missing surface if unavailable.
+- Do not record `subagent-blocked` until this capability discovery step is complete and the exact unavailable or unsafe surface is recorded.
+- Native subagent dispatch: Dispatch subagents through the integration's native subagent support using the shared prompt contract.
+- Join behavior: Use the integration-native join point, then integrate results back on the leader path.
+- Managed-team fallback: No in-command team fallback for `sp-implement`; if subagents cannot proceed safely, stay on the leader path and record why.
+- Leader-direct route: valid for a small or tightly coupled task when it independently passes the workflow safety gate; record the selected route in the current lifecycle record.
+- Worker result contract: WorkerTaskResult contract with status, changed files, validation evidence, blockers, failed assumptions, and recovery guidance.
+- Result contract: WorkerTaskResult contract with status, changed files, validation evidence, blockers, failed assumptions, and recovery guidance.
+- Result handoff path: FEATURE_DIR/worker-results/<task-id>.json
+
+## Claude Code Subagent Result Contract
+
+- Worker result contract: preserve the shared `WorkerTaskResult` semantics even when the runtime calls lanes subagents.
+- Preferred result contract: WorkerTaskResult contract with status, changed files, validation evidence, blockers, failed assumptions, and recovery guidance.
+- Result file handoff path: FEATURE_DIR/worker-results/<task-id>.json
+- For filesystem handoffs, use `specify result path` with the concrete workflow identifiers such as `--feature-dir`/`--task-id`, `--workspace`/`--lane-id`, or `--session-slug`/`--lane-id`.
+- `specify result path` emits JSON and does not accept `--format`; do not append `--format`.
+- Normalize subagent-reported statuses like `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, and `NEEDS_CONTEXT` into the shared `WorkerTaskResult` contract before the leader accepts the handoff.
+- Keep `reported_status` when normalization occurs so runtime-specific subagent language can be reconciled with canonical orchestration state.
+- Wait for every subagent's structured handoff before accepting the join point, closing the batch, or declaring completion.
+- Do not treat an idle subagent as done work; idle without a consumed handoff means the result channel is still unresolved.
+- Do not interrupt or shut down subagent work before the handoff has been written or explicitly reported as `BLOCKED` or `NEEDS_CONTEXT`.
+- Treat `DONE_WITH_CONCERNS` as completed work plus follow-up concerns, not as silent success.
+- Treat `NEEDS_CONTEXT` as a blocked handoff that must carry the missing context or failed assumption explicitly.

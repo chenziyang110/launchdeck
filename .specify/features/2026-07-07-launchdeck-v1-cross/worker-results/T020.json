@@ -1,0 +1,36 @@
+{
+  "status": "success",
+  "task_id": "T020",
+  "agent": "writer",
+  "completed_at": "2026-07-07T18:12:44.7833608+08:00",
+  "changed_files": [
+    "README.md",
+    "examples/node-vite.launchdeck.yml",
+    "examples/python-fastapi.launchdeck.yml",
+    "schema/launchdeck.schema.json"
+  ],
+  "validation_output": {
+    "schema_json_parse": "passed",
+    "example_yaml_parse": {
+      "examples/node-vite.launchdeck.yml": "passed",
+      "examples/python-fastapi.launchdeck.yml": "passed"
+    },
+    "npm_test": {
+      "command": "npm test",
+      "exit_code": 0,
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    },
+    "leader_join_validation": {
+      "command": "npm run check; npm test",
+      "exit_code": 0,
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    }
+  },
+  "documentation_review_evidence": "README documents the v1 CLI-first local single-project flow: init, doctor, tasks, run aliases, managed dev/start/restart/ps/logs/stop, clean dry-run/safe/all, JSON envelopes, runtime state/log paths, public error-code vocabulary, and honest release claim levels. The examples show usable .launchdeck.yml configs with description, cwd, env, longRunning, ports, log, and clean object entries. The schema matches current v1 behavior by defaulting risk to medium and restricting env values to strings while still allowing runtime to reject unsafe clean targets.",
+  "concerns": [],
+  "recovery_hints": []
+}

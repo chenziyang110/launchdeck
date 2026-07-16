@@ -1,0 +1,29 @@
+{
+  "id": "E-T-016",
+  "source_path": "test/inspect-cli.test.js",
+  "summary": "Inspect CLI 测试 — 端口/PID/任务的检查和诊断分类",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-016",
+    "source_path": "test/inspect-cli.test.js",
+    "summary": "Inspect CLI 测试 — 端口/PID/任务的检查和诊断分类",
+    "test_groups": [
+      "start 拒绝外部占用的声明端口而不停止外部监听器",
+      "inspect-port 对外部占用的声明端口保持兼容",
+      "inspect port: 解释外部冲突为只检查",
+      "inspect pid: 报告外部监听器为只检查",
+      "inspect task: 报告 Launchdeck 拥有的托管运行",
+      "inspect pid: 当 pid 匹配运行证据时报告 Launchdeck 拥有的托管运行"
+    ],
+    "key_assertions": [
+      "inspect-port 返回 ownerType=external, conflicts=[external_port_occupied]",
+      "inspect port: 有 safeActions (不含 stop/kill/restart) 和 blockedActions",
+      "inspect pid: 外部 pid 返回 safeActions 不含 stop/kill",
+      "inspect task: 有项目、任务和运行证据，safeActions 包含 logs 和 stop, blockedActions=[]",
+      "所有 inspect 结果包含 sections: safeActions, blockedActions, target, ownership"
+    ]
+  }
+}

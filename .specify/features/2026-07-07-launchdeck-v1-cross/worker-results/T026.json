@@ -1,0 +1,37 @@
+{
+  "status": "success",
+  "task_id": "T026",
+  "agent": "executor",
+  "completed_at": "2026-07-07T17:12:14.1463730+08:00",
+  "changed_files": [
+    "src/cli.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check src/cli.js",
+      "exit_code": 0
+    },
+    "repair_tests": {
+      "command": "node --test test/cli.test.js test/managed-cli.test.js",
+      "exit_code": 0,
+      "tests": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    "npm_run_check": {
+      "command": "npm run check",
+      "exit_code": 0
+    },
+    "npm_test": {
+      "command": "npm test",
+      "exit_code": 0,
+      "tests": 46,
+      "passed": 46,
+      "failed": 0
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [],
+  "json_contract_evidence": "ps --json corrupt runtime state now rethrows with config context, so the failure envelope includes command/status/error plus projectRoot and configPath. stop --json partial_failure now emits createPartialEnvelope('stop', ...), producing ok:false, status:'partial', error.code:'partial_failure', projectRoot, configPath, and per-task stop_failed results.",
+  "review_blocker_repair_evidence": "T015 ps configPath blocker is covered by the passing regression: ps --json reports runtime_state_invalid with config context when state JSON is corrupt. Stop partial handling was added in src/cli.js without modifying runtime.js or tests, mapping error.details.failures to `{task, ok:false, status:'stop_failed', error}` and returning exit code 1."
+}

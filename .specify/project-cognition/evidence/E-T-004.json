@@ -1,0 +1,39 @@
+{
+  "id": "E-T-004",
+  "source_path": "test/cli-contract.test.js",
+  "summary": "CLI 合约测试 — 所有命令的 JSON 信封和错误代码合约",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-004",
+    "source_path": "test/cli-contract.test.js",
+    "summary": "CLI 合约测试 — 所有命令的 JSON 信封和错误代码合约",
+    "test_groups": [
+      "init --json 创建 v1 配置并返回成功信封",
+      "init --json 拒绝已有/祖先配置返回 config_exists",
+      "doctor --json 报告只读检查和摘要",
+      "doctor --json 缺少配置时分类为 config_not_found",
+      "tasks --json 列出前台和托管任务而不运行",
+      "run --json 前台任务发射成功信封",
+      "run --json --compact 更小的信封",
+      "run --json 前台任务写入 stdout 时发射单个 JSON",
+      "run --json 未知任务返回 task_not_found",
+      "logs --json --compact 保持默认 dev 任务",
+      "lifecycle 别名通过 run 合约执行匹配的前台任务",
+      "JSON 失败信封使用稳定的公共错误代码"
+    ],
+    "key_assertions": [
+      "init 返回 created=true, path=.launchdeck.yml",
+      "已存在的 config 返回 status=1, error.code=config_exists",
+      "doctor 返回 checks 数组和 summary {ok, warn, error}",
+      "tasks 返回项目名和任务列表 [{name, type}]",
+      "run build 前台任务成功执行，code=0，build-output.txt 被创建",
+      "compact 模式省略 data/projectRoot/configPath",
+      "task_not_found 包含 error.details.task",
+      "CONTRACT_ERROR_CODES 包含 42 个已知错误代码",
+      "生命周期别名 build 映射到 run, alias=build"
+    ]
+  }
+}

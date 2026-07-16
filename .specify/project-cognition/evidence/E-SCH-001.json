@@ -1,0 +1,27 @@
+{
+  "id": "E-SCH-001",
+  "source_path": "schema/launchdeck.schema.json",
+  "summary": "JSON Schema for .launchdeck.yml configuration files (Draft 2020-12)",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-SCH-001",
+    "source_path": "schema/launchdeck.schema.json",
+    "summary": "JSON Schema for .launchdeck.yml configuration files (Draft 2020-12)",
+    "symbols": [
+      "$defs/task",
+      "$defs/cleanList"
+    ],
+    "exports": [],
+    "dependencies": [],
+    "notes": [
+      "Top-level required fields: version (const 1), tasks (min 1)",
+      "Optional fields: project (with name), clean (with safe/risky arrays)",
+      "Task definition supports: command (required), description, cwd, env, longRunning, ports (1-65535), risk (low/medium/high/destructive), log",
+      "cleanList items can be strings or objects with path + optional description",
+      "additionalProperties: false at all levels for strict validation"
+    ]
+  }
+}

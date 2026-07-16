@@ -1,0 +1,527 @@
+{
+  "packet_id": "lane-core-services",
+  "family_id": "core-services",
+  "assigned_paths": [
+    "src/agent-installer.js",
+    "src/adapters/path.js",
+    "src/adapters/process.js",
+    "scripts/smoke-lifecycle.js",
+    ".github/workflows/ci.yml"
+  ],
+  "paths_read": [
+    "src/agent-installer.js",
+    "src/adapters/path.js",
+    "src/adapters/process.js",
+    "scripts/smoke-lifecycle.js",
+    ".github/workflows/ci.yml"
+  ],
+  "ledger": {
+    "todo": [],
+    "doing": [],
+    "done": [
+      "src/agent-installer.js",
+      "src/adapters/path.js",
+      "src/adapters/process.js",
+      "scripts/smoke-lifecycle.js",
+      ".github/workflows/ci.yml"
+    ],
+    "blocked": [],
+    "overflow": []
+  },
+  "coverage": [
+    {
+      "path": "src/agent-installer.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CS-001"
+      ]
+    },
+    {
+      "path": "src/adapters/path.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CS-002"
+      ]
+    },
+    {
+      "path": "src/adapters/process.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CS-003"
+      ]
+    },
+    {
+      "path": "scripts/smoke-lifecycle.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CS-004"
+      ]
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CS-005"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-CS-001",
+      "source_path": "src/agent-installer.js",
+      "summary": "Agent skill installer — copies the 'launchdeck-agent' skill into AI coding agent CLI toolchains (Codex CLI, Claude Code, GitHub Copilot, Visual Studio) at project or user scope.",
+      "symbols": [
+        "ADAPTERS (const)",
+        "AGENT_SKILL_NAME (const)",
+        "moduleDir (const)",
+        "defaultPackageRoot (const)"
+      ],
+      "exports": [
+        {
+          "name": "AGENT_SKILL_NAME",
+          "kind": "const",
+          "value": "'launchdeck-agent'"
+        },
+        {
+          "name": "listAgentTargets",
+          "kind": "function",
+          "signature": "(options = {}) => { source, targets }",
+          "description": "Returns all 8 target descriptors (4 adapters x 2 scopes) plus validated canonical source"
+        },
+        {
+          "name": "doctorAgentInstaller",
+          "kind": "function",
+          "signature": "(options = {}) => { ok, status, summary, source, targets, checks }",
+          "description": "Health check: validates source existence, manifest validity, and adapter matrix completeness"
+        },
+        {
+          "name": "installAgentSkill",
+          "kind": "function",
+          "signature": "(options = {}) => { agent, scope, dryRun, force, source, target, result }",
+          "description": "Main install function. Validates source manifest, resolves target, compares directories, plans actions, applies if not dryRun."
+        },
+        {
+          "name": "supportedAgents",
+          "kind": "function",
+          "signature": "() => string[]",
+          "description": "Returns ['codex', 'claude-code', 'github-copilot', 'visual-studio']"
+        }
+      ],
+      "internal_functions": [
+        "requireAgent(agentId) — validates agent ID against ADAPTERS",
+        "normalizeScope(scope) — validates 'project' or 'user'",
+        "validateCanonicalSource(options) — checks source dir + SKILL.md manifest declares name: launchdeck-agent",
+        "targetDescriptor(adapter, scope, projectRoot, homeDir) — builds target path descriptor",
+        "explicitTargetDescriptor(adapter, scope, target, projectRoot) — builds custom target path",
+        "compareSkillDirectories(sourceDir, targetDir) — binary-content diff between source and target dirs",
+        "listFiles(root) / collectFiles(root, relativeDir, files) — recursive file listing, rejects symlinks",
+        "sameFileContent(left, right) — Buffer.equals comparison",
+        "planInstallActions(sourceDir, target, comparison, force) — mkdir, copy_file, update_file",
+        "applyInstallActions(actions) — executes planned filesystem actions",
+        "installStatus(comparison, actions, dryRun) — 'already_installed' | 'planned' | 'installed'"
+      ],
+      "dependencies": [
+        "node:fs",
+        "node:os",
+        "node:path",
+        "node:url",
+        "src/errors.js"
+      ],
+      "lines": 405,
+      "key_design_points": [
+        "Adapter matrix: 4 agents x 2 scopes = 8 install targets",
+        "Source is always .agents/skills/launchdeck-agent/ in the package root",
+        "Binary content comparison using Buffer.equals (not mtime/size)",
+        "Refuses to install if source SKILL.md is missing or invalid",
+        "Refuses to install if target diverges from source without --force",
+        "Dry-run mode returns planned actions without applying them",
+        "Symbolic links in agent skill packages are rejected with error"
+      ]
+    },
+    {
+      "id": "E-CS-002",
+      "source_path": "src/adapters/path.js",
+      "summary": "Cross-platform path safety adapter — path canonicalization, containment assertions, and clean-target validation with platform-aware case sensitivity.",
+      "symbols": [
+        "CASE_INSENSITIVE_PLATFORMS (const Set: ['win32'])"
+      ],
+      "exports": [
+        {
+          "name": "canonicalPath",
+          "kind": "function",
+          "signature": "(targetPath, options = {}) => string",
+          "description": "Resolves relative to basePath, normalizes, optionally checks existence and resolves symlinks"
+        },
+        {
+          "name": "canonicalProjectRoot",
+          "kind": "function",
+          "signature": "(projectRoot, options = {}) => string",
+          "description": "Convenience wrapper around canonicalPath with project-root defaults"
+        },
+        {
+          "name": "resolveProjectPath",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => string",
+          "description": "Resolves a path and asserts it stays inside project root"
+        },
+        {
+          "name": "pathContains",
+          "kind": "function",
+          "signature": "(parentPath, targetPath, options = {}) => boolean",
+          "description": "Returns true if target is under parent (allowRoot controls root-match behavior)"
+        },
+        {
+          "name": "assertContainedPath",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => string",
+          "description": "Throws LaunchdeckError with code 'project_root_escape' if path escapes project root"
+        },
+        {
+          "name": "isSamePath",
+          "kind": "function",
+          "signature": "(left, right, options = {}) => boolean",
+          "description": "Compares two paths for equality (case-insensitive on win32)"
+        },
+        {
+          "name": "assertProjectRelativePath",
+          "kind": "function",
+          "signature": "(targetPath, options = {}) => string",
+          "description": "Throws if path is absolute (checks win32 and posix isAbsolute)"
+        },
+        {
+          "name": "resolveCleanTarget",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => { path, absolutePath }",
+          "description": "Validates relative, contained, non-root path for clean operations"
+        },
+        {
+          "name": "planCleanTarget",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => CleanTargetRecord",
+          "description": "Full planning pipeline: validates, resolves, checks existence, symlinks, containment, returns status 'planned'|'refused'|'skipped_missing'"
+        },
+        {
+          "name": "assertSafeCleanTarget",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => { path, absolutePath }",
+          "description": "Variant that also refuses project root itself as a clean target"
+        },
+        {
+          "name": "toProjectRelativePath",
+          "kind": "function",
+          "signature": "(projectRoot, targetPath, options = {}) => string",
+          "description": "Converts absolute path to project-relative"
+        },
+        {
+          "name": "pathForPlatform",
+          "kind": "function",
+          "signature": "(platform = process.platform) => path.win32 | path.posix",
+          "description": "Returns the appropriate path API module for the platform"
+        }
+      ],
+      "internal_functions": [
+        "normalizePathValue(value, label, code)",
+        "comparablePath(value, platform) — normalizes and lowercases for case-insensitive platforms",
+        "safeCanonicalProjectRoot(projectRoot, platform) — returns undefined on failure",
+        "refusedCleanTarget(record, refusalCode, extra)",
+        "isSameComparablePath(left, right, platform)",
+        "pathContainsComparable(parentPath, targetPath, options)"
+      ],
+      "dependencies": [
+        "node:fs",
+        "node:path",
+        "src/errors.js"
+      ],
+      "lines": 348,
+      "key_design_points": [
+        "Case-insensitive path comparison for win32 using comparablePath (normalize + toLowerCase)",
+        "refusalCode system for planCleanTarget: 'clean_target_empty', 'clean_target_ambiguous', 'clean_target_root', 'clean_target_outside_project'",
+        "symlink resolution via fs.realpathSync.native for canonical containment checks",
+        "Dual isAbsolute check (win32 + posix) ensures correct behavior on all platforms",
+        "planCleanTarget handles both string and object targetPath inputs",
+        "safeCanonicalProjectRoot guards against project root resolution failures"
+      ]
+    },
+    {
+      "id": "E-CS-003",
+      "source_path": "src/adapters/process.js",
+      "summary": "Cross-platform process lifecycle adapter — spawn, manage, inspect, and terminate processes with platform-specific implementations.",
+      "symbols": [
+        "DEFAULT_STOP_TIMEOUT_MS (const: 2000)",
+        "DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS (const: 750)",
+        "STOP_POLL_INTERVAL_MS (const: 50)"
+      ],
+      "exports": [
+        {
+          "name": "spawnForeground",
+          "kind": "function",
+          "signature": "(command, options = {}) => Promise<{ code, signal }>",
+          "description": "Spawns process with inherit stdio, returns exit promise"
+        },
+        {
+          "name": "spawnManaged",
+          "kind": "function",
+          "signature": "(command, options = {}) => { child, pid, command, startedAt }",
+          "description": "Spawns detached process, unrefs it, returns control record"
+        },
+        {
+          "name": "spawnShellCommand",
+          "kind": "function",
+          "signature": "(command, options = {}) => ChildProcess",
+          "description": "Low-level spawn with smart shell detection (bypasses shell for known node executables)"
+        },
+        {
+          "name": "waitForExit",
+          "kind": "function",
+          "signature": "(child) => Promise<{ code, signal }>",
+          "description": "Promise wrapper for child process exit"
+        },
+        {
+          "name": "isPidRunning",
+          "kind": "function",
+          "signature": "(pid) => boolean",
+          "description": "Uses process.kill(pid, 0) — EPERM means alive, ESRCH means dead"
+        },
+        {
+          "name": "getLiveness",
+          "kind": "function",
+          "signature": "(pid) => 'running' | 'stale' | 'unknown'",
+          "description": "Wraps isPidRunning with try-catch"
+        },
+        {
+          "name": "getProcessEvidence",
+          "kind": "function",
+          "signature": "(pid, options = {}) => ProcessEvidence",
+          "description": "Returns detailed process info: Windows uses CIM/WMI, POSIX uses ps + procfs"
+        },
+        {
+          "name": "listPortListeners",
+          "kind": "function",
+          "signature": "(options = {}) => Listener[]",
+          "description": "Lists TCP/UDP port listeners: Windows uses netstat -ano, POSIX tries lsof -> ss -> netstat fallback chain"
+        },
+        {
+          "name": "stopProcessTree",
+          "kind": "function",
+          "signature": "(pid, options = {}) => Promise<{ pid, ok, status, method }>",
+          "description": "Async process tree termination: Windows uses taskkill /T, POSIX sends signal to negative PID (process group)"
+        },
+        {
+          "name": "stopProcessTreeSync",
+          "kind": "function",
+          "signature": "(pid, options = {}) => { pid, ok, status, method }",
+          "description": "Synchronous version of stopProcessTree"
+        },
+        {
+          "name": "normalizePid",
+          "kind": "function",
+          "signature": "(pid, options = {}) => number | undefined",
+          "description": "Validates PID is a positive integer; with allowMissing returns undefined for empty/null"
+        },
+        {
+          "name": "normalizePort",
+          "kind": "function",
+          "signature": "(port) => number",
+          "description": "Validates port is an integer 1-65535"
+        },
+        {
+          "name": "classifyAdapterError",
+          "kind": "function",
+          "signature": "(error, message, details) => LaunchdeckError",
+          "description": "Wraps non-LaunchdeckError into LaunchdeckError with code 'adapter_failed'"
+        }
+      ],
+      "internal_functions": [
+        "normalizeCommand(command) — validates non-empty string",
+        "planSpawn(command, shell) — optimizes out shell wrapper for known node executables",
+        "parseSimpleCommand(command) — tokenizes command, returns null if shell metacharacters present",
+        "isNodeExecutable(command) — compares against 'node', 'node.exe', process.execPath",
+        "listWindowsPortListeners(port) — parses netstat -ano output",
+        "windowsProcessEvidence(pid, options) — Get-CimInstance Win32_Process via PowerShell",
+        "posixProcessEvidence(pid, options) — ps -o lstart,command, plus /proc/pid/cwd",
+        "posixProcessCwd(pid) — reads /proc/pid/cwd symlink",
+        "parseWindowsNetstatLine(line) — parses one netstat line (TCP state=LISTENING or UDP)",
+        "listPosixPortListeners(port) — fallback chain: lsof -> ss -> netstat",
+        "parseLsofLine / parseSsLine / parsePosixNetstatLine",
+        "parseEndpoint(endpoint) — parses 'addr:port' including IPv6 [addr]:port",
+        "dedupeListeners(listeners) — deduplicates by protocol+address+port+pid+state+source",
+        "taskkillProcessTree(pid, options) — /T /F, with ETIMEDOUT fallback to process.kill",
+        "signalPosixProcessTree(pid, signal) — negative-PID kill with single-PID fallback",
+        "waitForNotRunning / waitForNotRunningSync — polling loops with 50ms interval",
+        "classifyStopFailure / signalToExitCode / delay / sleepSync"
+      ],
+      "dependencies": [
+        "node:child_process",
+        "node:fs",
+        "src/errors.js"
+      ],
+      "lines": 798,
+      "key_design_points": [
+        "Shell optimization: detects node executables and spawns directly without shell wrapping, reducing process overhead",
+        "Shell metacharacter detection: if command contains |&;<>()`, always uses shell",
+        "Three-tier port listener fallback on POSIX (lsof -> ss -> netstat) for maximum compatibility",
+        "Process tree termination: Windows taskkill /T /F with timeout fallback; POSIX kill(-pid) with single-pid fallback",
+        "Process evidence via platform-native tools: Windows CIM, POSIX ps + procfs",
+        "All cross-platform branching is explicit: if (platform === 'win32') patterns",
+        "Comprehensive error classification — all errors wrapped into LaunchdeckError with code 'adapter_failed' or 'stop_failed'",
+        "sleepSync uses Atomics.wait on SharedArrayBuffer (blocking, no setTimeout)"
+      ]
+    },
+    {
+      "id": "E-CS-004",
+      "source_path": "scripts/smoke-lifecycle.js",
+      "summary": "CLI lifecycle smoke test — runs the official demo through the complete Launchdeck CLI lifecycle in an isolated temporary workspace.",
+      "symbols": [
+        "REPO_ROOT, CLI_PATH, OFFICIAL_DEMO_PATH, DEMO_ALIAS, DEMO_TASK, DEMO_TARGET, DEMO_PORT (consts)",
+        "HELP (const docstring)"
+      ],
+      "exports": [],
+      "internal_functions": [
+        "parseArgs(argv) — --mode quick|full, --quickstart, --keep, --json, --help",
+        "createWorkspace() — mkdtemp, cp demo with .launchdeck/scratch filter, create clean-safe artifact",
+        "buildEnv(home) — sets LAUNCHDECK_HOME + NO_COLOR",
+        "runCli(step, args, context, options) — spawns CLI, captures stdout/stderr, pushes result to context.steps",
+        "parseJson(stepResult) — JSON.parse with error wrapper",
+        "assertExit(result, expectedCode) / assertJsonOk(result) / checkedStep(context, step, args)",
+        "assertExistingRun(result) — verifies spawned=false in duplicate start",
+        "stopDemoIfOwned(context) — attempts stop in finally block",
+        "runSmoke(options) — full lifecycle pipeline with mode branching",
+        "printHuman(evidence) / main()"
+      ],
+      "dependencies": [
+        "node:fs",
+        "node:os",
+        "node:path",
+        "node:child_process",
+        "node:url"
+      ],
+      "lines": 408,
+      "key_design_points": [
+        "Mode quick: project add, start, duplicate start, status, inspect (task+port), restart, stop, reconcile, clean --safe",
+        "Mode full adds: projects, ps, ports, conflicts, logs, events, project remove",
+        "Temporary workspace + isolated LAUNCHDECK_HOME — never mutates source demo",
+        "Finally block always attempts cleanup stop + rm -rf temp workspace (unless --keep)",
+        "--json mode outputs structured evidence object; --quickstart maps to --mode full",
+        "Safety guarantees documented in evidence output: local evidence only, cross-platform claim=false, no privileged hooks, no arbitrary process kill",
+        "Step results tracked as array of { step, command, cwd, exitCode, signal, stdout, stderr, expectedFailure }"
+      ]
+    },
+    {
+      "id": "E-CS-005",
+      "source_path": ".github/workflows/ci.yml",
+      "summary": "CI workflow — 3 OS matrix (windows-latest, macos-latest, ubuntu-latest) running check, test, and inline lifecycle smoke.",
+      "exports": [],
+      "dependencies": [],
+      "lines": 41,
+      "key_design_points": [
+        "Matrix: windows-latest, macos-latest, ubuntu-latest with fail-fast: false",
+        "Node.js 20 with npm cache via setup-node@v4",
+        "Steps: Checkout -> Setup Node -> npm ci -> npm run check -> npm test -> lifecycle smoke",
+        "Lifecycle smoke is a large inline Node script (not a script reference), creating a CI smoke project from scratch",
+        "Inline smoke covers: doctor, tasks (build/dev/fail), run build, run fail (expects exit 7), start dev, duplicate start (expects conflict), ps, logs, stop, second stop, clean dry-run, clean --safe, clean --all (expects confirmation needed)",
+        "No artifact uploads — smoke test is purely exit-code-gated"
+      ]
+    },
+    {
+      "id": "E-CS-006",
+      "source_path": "src/errors.js",
+      "summary": "Shared error system — defines all Launchdeck error codes, aliases, and the LaunchdeckError class with payload serialization.",
+      "exports": [
+        {
+          "name": "ERROR_CODES",
+          "kind": "const Set",
+          "description": "Canonical set of ~50 known error codes"
+        },
+        {
+          "name": "ERROR_CODE_ALIASES",
+          "kind": "const Map",
+          "description": "Maps legacy/variant codes to canonical codes (e.g. 'invalid_arguments' -> 'command_usage_error')"
+        },
+        {
+          "name": "LaunchdeckError",
+          "kind": "class",
+          "description": "extends Error with .code and .details properties"
+        },
+        {
+          "name": "isKnownErrorCode",
+          "kind": "function",
+          "signature": "(code) => boolean"
+        },
+        {
+          "name": "toContractErrorCode",
+          "kind": "function",
+          "signature": "(code) => string",
+          "description": "Maps any code to canonical via ERROR_CODE_ALIASES, defaulting to 'internal_error'"
+        },
+        {
+          "name": "toErrorPayload",
+          "kind": "function",
+          "signature": "(error, options) => { code, message, details?, next? }"
+        },
+        {
+          "name": "toContractErrorPayload",
+          "kind": "function",
+          "signature": "(error) => { code, message }",
+          "description": "toErrorPayload with contractCode: true"
+        }
+      ],
+      "dependencies": [],
+      "lines": 110,
+      "key_design_points": [
+        "Error codes defined as a Set for O(1) lookup",
+        "Alias map allows graceful migration of error codes",
+        "toContractErrorPayload provides a stable public API surface",
+        "LaunchdeckError stores arbitrary .details object and .next (action suggestions) array"
+      ]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      "src/agent-installer.js",
+      "src/adapters/path.js",
+      "src/adapters/process.js",
+      "src/errors.js",
+      "scripts/smoke-lifecycle.js",
+      ".github/workflows/ci.yml"
+    ],
+    "edges": [
+      {
+        "from": "src/agent-installer.js",
+        "to": "src/errors.js"
+      },
+      {
+        "from": "src/adapters/path.js",
+        "to": "src/errors.js"
+      },
+      {
+        "from": "src/adapters/process.js",
+        "to": "src/errors.js"
+      },
+      {
+        "from": "scripts/smoke-lifecycle.js",
+        "to": "src/cli.js"
+      },
+      {
+        "from": ".github/workflows/ci.yml",
+        "to": "src/cli.js"
+      }
+    ],
+    "shared_core_dependency": "src/errors.js"
+  },
+  "summary": {
+    "total_lines": 1860,
+    "total_exports": 38,
+    "total_internal_functions": 56,
+    "modules_analyzed": 5,
+    "modules_extra_read": 1,
+    "family_theme": "Core services abstraction layer — platform-aware adapters for path safety, process lifecycle, and agent toolchain installation, backed by a shared error system. Validated by a comprehensive smoke lifecycle script and a 3-OS CI matrix."
+  },
+  "confidence": "high",
+  "acceptance": "pass",
+  "return_event": {
+    "packet_id": "lane-core-services",
+    "status": "accepted",
+    "acceptance": "pass",
+    "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-core-services.json"
+  }
+}

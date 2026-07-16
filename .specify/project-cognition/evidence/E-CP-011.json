@@ -1,0 +1,41 @@
+{
+  "id": "E-CP-011",
+  "source_path": "src/control-plane/runs.js",
+  "summary": "Run生命周期管理：startManagedRun(启动+readiness探活)、createRunContext(创建运行上下文)、readRunIndex/updateRunRecord(持久化)、observedRun(观测健康状态)",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-011",
+    "source_path": "src/control-plane/runs.js",
+    "summary": "Run生命周期管理：startManagedRun(启动+readiness探活)、createRunContext(创建运行上下文)、readRunIndex/updateRunRecord(持久化)、observedRun(观测健康状态)",
+    "symbols": [
+      "startManagedRun",
+      "createRunContext",
+      "projectIdentityForLocalConfig",
+      "readRunIndex",
+      "updateRunRecord",
+      "observedRun",
+      "isActiveRunStatus"
+    ],
+    "exports": [
+      "startManagedRun",
+      "createRunContext",
+      "projectIdentityForLocalConfig",
+      "readRunIndex",
+      "updateRunRecord",
+      "observedRun",
+      "isActiveRunStatus"
+    ],
+    "dependencies": [
+      "crypto",
+      "fs",
+      "path",
+      "errors.js (LaunchdeckError)",
+      "runtime.js (isPidRunning, listProcesses, readState, startManagedTask, writeState)",
+      "state.js (controlPlanePaths)",
+      "locks.js (withLock)"
+    ]
+  }
+}

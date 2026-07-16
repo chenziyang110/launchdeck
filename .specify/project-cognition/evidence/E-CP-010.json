@@ -1,0 +1,19 @@
+{
+  "id": "E-CP-010",
+  "source_path": "src/control-plane/ownership.js",
+  "summary": "五种ownership置信度常量：verified-owned(完美匹配), probable-owned(PID证据不可用但process证据吻合), stale-owned(进程已死但记录存在), external(监听者PID与run PID不同), unknown(证据不足)",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-010",
+    "source_path": "src/control-plane/ownership.js",
+    "summary": "五种ownership置信度常量：verified-owned(完美匹配), probable-owned(PID证据不可用但process证据吻合), stale-owned(进程已死但记录存在), external(监听者PID与run PID不同), unknown(证据不足)",
+    "symbols": [
+      "OWNERSHIP_CONFIDENCE"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

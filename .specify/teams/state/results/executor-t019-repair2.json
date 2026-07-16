@@ -1,0 +1,34 @@
+{
+  "status": "complete",
+  "task_id": "T019-repair2",
+  "changed_files": [
+    "src/adapters/process.js",
+    "src/control-plane/ownership.js",
+    "src/control-plane/inspect.js",
+    "test/control-plane-ownership.test.js",
+    ".specify/teams/state/results/executor-t019-repair2.json"
+  ],
+  "validation_output": {
+    "node --check src/adapters/process.js": "passed",
+    "node --check src/control-plane/ownership.js": "passed",
+    "node --check src/control-plane/inspect.js": "passed",
+    "node --test test/control-plane-ownership.test.js": "passed: 4 tests",
+    "node --test --test-name-pattern \"ports reports declared|inspect-port reports|status --all summarizes\" test/global-runtime.test.js": "passed: 4 tests in 11.6s",
+    "node --test test/global-runtime.test.js": "passed: 24 tests in 58.9s",
+    "node --test test/inspect-cli.test.js test/global-runtime.test.js": "expected red: 26 passed, 4 failed unknown_command inspect tests in 59.9s"
+  },
+  "expected_red": [
+    "test/inspect-cli.test.js: inspect port:<port> explains external conflict as inspect-only with safe and blocked actions -> unknown_command",
+    "test/inspect-cli.test.js: inspect pid:<pid> reports an external listener as inspect-only -> unknown_command",
+    "test/inspect-cli.test.js: inspect task:<alias:task> reports a Launchdeck-owned managed run with evidence and actions -> unknown_command",
+    "test/inspect-cli.test.js: inspect pid:<pid> reports a Launchdeck-owned managed run when pid matches run evidence -> unknown_command"
+  ],
+  "concerns": [
+    "No lsp_diagnostics tool is available in this session; syntax checks were run instead.",
+    "Launchdeck is untracked under the broader F:/github git root, so normal git diff/status output is not scoped like a standalone tracked repository."
+  ],
+  "recovery_hints": [
+    "If process evidence remains slow on a machine, lower DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS in src/adapters/process.js; unavailable evidence still fails closed to unknown.",
+    "T020 should add the unified inspect CLI command; the four inspect-cli unknown_command failures are preserved expected RED."
+  ]
+}

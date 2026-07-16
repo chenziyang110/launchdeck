@@ -1,0 +1,36 @@
+{
+  "task_id": "T006",
+  "review_id": "T006-review-2",
+  "type": "task_review",
+  "verdict": "accepted",
+  "spec_verdict": "pass",
+  "quality_verdict": "pass",
+  "findings": [],
+  "validation_evidence": [
+    {
+      "source": "test/cli-control-plane-contract.test.js",
+      "evidence": "clean --all --json refusal asserts no interactive prompt text on stderr/stdout and stdout is one parseable JSON object."
+    },
+    {
+      "command": "node --check test/cli-control-plane-contract.test.js",
+      "result": "pass"
+    },
+    {
+      "command": "node --test test/cli-control-plane-contract.test.js",
+      "result": "expected_red",
+      "evidence": "Failures are missing schemaVersion/data/next envelope fields, top-level failure code/message/details, and required public error codes."
+    }
+  ],
+  "controller_checks": [
+    "previous no-prompt finding repaired",
+    "RED state is expected for missing JSON envelope and public error-code behavior",
+    "syntax and harness are healthy",
+    "acceptance coverage retains schemaVersion, data, next, legacy mirrors, stable failure surface, public error codes, and non-interactive JSON refusal",
+    "scope discipline preserved for RED test task"
+  ],
+  "accepted_residual_risks": [
+    "Production envelope behavior remains missing until T010.",
+    "Broader no-prompt coverage depends on later command suites."
+  ],
+  "final_assessment": "accepted"
+}

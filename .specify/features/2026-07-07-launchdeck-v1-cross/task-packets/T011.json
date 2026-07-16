@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T011",
+  "story": "US2",
+  "description": "Add platform adapter and managed CLI lifecycle tests.",
+  "agent": "test-engineer",
+  "depends_on": [
+    "T002",
+    "T003"
+  ],
+  "parallel_safe": true,
+  "context_navigation": [
+    "contracts/runtime-state-v1.md",
+    "contracts/cli-json-contract.md",
+    "src/cli.js",
+    "src/runtime.js"
+  ],
+  "write_scope": [
+    "test/managed-cli.test.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "test/managed-cli.test.js (new)"
+  ],
+  "anti_goals": [
+    "Do not edit production code.",
+    "Do not mock away every real entrypoint."
+  ],
+  "does_not_remove": [
+    "dev/start/restart/ps/logs/stop"
+  ],
+  "capability_operations": [
+    "validates managed CLI entrypoints"
+  ],
+  "acceptance_criteria": [
+    "Tests cover start/dev, duplicate start, restart partial, ps, logs, stop, stop all, and task_not_managed."
+  ],
+  "verify_commands": [
+    "node --test test/managed-cli.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-002",
+    "CA-007",
+    "CA-013",
+    "CA-014",
+    "CA-016"
+  ],
+  "mp_ids": [
+    "MP-009",
+    "MP-010",
+    "MP-012"
+  ],
+  "consumer_surfaces": [
+    "launchdeck dev/start/restart/ps/logs/stop"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "expected_red_before_implementation"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

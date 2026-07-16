@@ -1,0 +1,44 @@
+{
+  "taskId": "T026",
+  "reviewId": "T026-review-final",
+  "type": "task_review",
+  "status": "accepted_expected_red",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "test/recovery-observability.test.js"
+  ],
+  "validation": [
+    {
+      "command": "node --check test/recovery-observability.test.js",
+      "result": "pass",
+      "summary": "Recovery/observability test file parses successfully."
+    },
+    {
+      "command": "node --test test/recovery-observability.test.js",
+      "result": "expected_red",
+      "summary": "7 tests run, 1 passed, 6 failed; failures map to missing US4 recovery, events, logs-follow, retention, and redaction behavior."
+    }
+  ],
+  "controllerChecks": [
+    "Tests preserve existing logs project:task coverage.",
+    "Tests cover stale run detection and reconcile next actions.",
+    "Tests cover reconcile marking stale runs without killing a new external listener on the same port.",
+    "Tests cover bounded events command output.",
+    "Tests cover logs --follow --json visible JSONL streaming and secret redaction.",
+    "Tests cover clean retention for active logs, latest failed logs, and failure-linked events even when a broad safe clean target overlaps logs.",
+    "No product code was modified by the test task.",
+    "No inline node -e long-running fixture was introduced.",
+    "Leader process scan found no recovery/log-follow fixture processes left after the RED run."
+  ],
+  "acceptedResidualRisks": [
+    "logs --follow JSONL expectations will require careful bounded test cleanup to avoid hanging processes.",
+    "Clean retention expectations intentionally constrain future clean implementation to preserve diagnostic evidence before removing configured generated targets."
+  ],
+  "followUpWork": [
+    "T027 implement reconcile and stale state recovery.",
+    "T028 wire events/log-follow/readability and redaction surfaces."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_expected_red"
+}

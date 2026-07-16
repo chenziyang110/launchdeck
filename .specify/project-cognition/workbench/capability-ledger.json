@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "capabilities": {
+    "project-lifecycle": {
+      "id": "capability-project-lifecycle",
+      "title": "Project Lifecycle Control",
+      "commands": ["init", "doctor", "tasks", "run", "build", "test", "dev", "setup", "package", "lint", "typecheck"],
+      "modules": ["src/cli.js", "src/config.js", "src/runtime.js"],
+      "coverage": "complete",
+      "evidence_count": 3
+    },
+    "process-management": {
+      "id": "capability-process-management",
+      "title": "Managed Process Management",
+      "commands": ["start", "stop", "force-stop", "restart", "reconcile", "ps"],
+      "modules": ["src/control-plane/runs.js", "src/control-plane/ownership.js", "src/control-plane/locks.js", "src/control-plane/state.js", "src/global-runtime.js"],
+      "coverage": "complete",
+      "evidence_count": 5
+    },
+    "registry": {
+      "id": "capability-registry",
+      "title": "Project Registry Management",
+      "commands": ["project add", "project remove", "project repair", "project scan", "projects"],
+      "modules": ["src/cli.js"],
+      "coverage": "complete",
+      "evidence_count": 1
+    },
+    "inspect-observability": {
+      "id": "capability-inspect-observability",
+      "title": "Inspect & Observability",
+      "commands": ["status", "ps", "ports", "conflicts", "inspect", "inspect-port", "logs", "events"],
+      "modules": ["src/control-plane/inspect.js", "src/control-plane/events.js"],
+      "coverage": "complete",
+      "evidence_count": 2
+    },
+    "clean-safety": {
+      "id": "capability-clean-safety",
+      "title": "Clean & Safety",
+      "commands": ["clean", "clean --safe", "clean --all --yes"],
+      "modules": ["src/cli.js"],
+      "coverage": "complete",
+      "evidence_count": 1
+    },
+    "agent-installer": {
+      "id": "capability-agent-installer",
+      "title": "Agent Skill Installer",
+      "commands": ["agent paths", "agent doctor", "agent install"],
+      "modules": ["src/agent-installer.js"],
+      "coverage": "complete",
+      "evidence_count": 1
+    },
+    "json-output": {
+      "id": "capability-json-output",
+      "title": "JSON Machine-Readable Output",
+      "commands": ["--json", "--json --compact"],
+      "modules": ["src/output.js", "src/errors.js"],
+      "coverage": "complete",
+      "evidence_count": 2
+    }
+  }
+}

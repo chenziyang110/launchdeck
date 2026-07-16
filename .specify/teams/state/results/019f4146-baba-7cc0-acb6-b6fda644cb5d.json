@@ -1,0 +1,39 @@
+{
+  "status": "completed",
+  "changed_files": [
+    "test/control-plane-locks.test.js",
+    ".specify/teams/state/results/019f4146-baba-7cc0-acb6-b6fda644cb5d.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test\\control-plane-locks.test.js",
+      "exit_code": 0,
+      "summary": "Syntax check passed with no output."
+    },
+    {
+      "command": "node --test test\\control-plane-locks.test.js",
+      "exit_code": 1,
+      "summary": "Remains RED for intended missing owner module: Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'F:\\github\\launchdeck\\src\\control-plane\\locks.js' imported from F:\\github\\launchdeck\\test\\control-plane-locks.test.js."
+    },
+    {
+      "command": "node --input-type=module -e \"import assert from 'node:assert/strict'; import fs from 'node:fs'; import path from 'node:path'; import { createLaunchdeckHome } from './test/helpers/control-plane-fixture.js'; const fixture = createLaunchdeckHome(); const basename = path.basename(fixture.homeDir); assert.equal(basename.startsWith('launchdeck-cli-'), true); fs.writeFileSync(path.join(fixture.homeDir, 'cleanup-smoke.txt'), 'ok'); fixture.cleanup(); assert.equal(fs.existsSync(fixture.homeDir), false); console.log(JSON.stringify({ cleaned: true, basename }));\"",
+      "exit_code": 0,
+      "summary": "Cleanup smoke passed without requiring locks module; output showed cleaned=true and basename launchdeck-cli-control-plane-home-45b5pA."
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [
+    "The previous custom fixture prefix 'launchdeck-control-plane-locks-' was not compatible with removeTempProject(), which only accepts temp basenames beginning with 'launchdeck-cli-'."
+  ],
+  "recovery_guidance": [
+    "No production recovery is needed for this lane. Implement src/control-plane/locks.js in the owning task to move test/control-plane-locks.test.js from RED to GREEN."
+  ],
+  "concerns": [
+    "test/control-plane-locks.test.js is currently untracked in git status, so this repair preserved the existing untracked test while changing only the unsafe fixture prefix."
+  ],
+  "consumer_evidence": {
+    "repair": "withLockFixture() now calls createLaunchdeckHome() with the default control-plane prefix, which resolves to a basename starting with 'launchdeck-cli-'.",
+    "red_target_preserved": "The test file still imports ../src/control-plane/locks.js and node --test fails only because that module is missing.",
+    "cleanup_verified": "A focused smoke created a Launchdeck home with the repaired prefix, wrote a file inside it, called cleanup(), and asserted the directory no longer exists."
+  }
+}

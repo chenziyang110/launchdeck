@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T003",
+  "agent_type": "executor",
+  "agent_id": "019f3b76-8f1a-71f2-bd45-85fe05359981",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/src/output.js",
+    "F:/github/launchdeck/src/errors.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check src/output.js src/errors.js",
+      "status": "passed"
+    },
+    "runtime_import_smoke": {
+      "command": "node --input-type=module -e ...",
+      "status": "passed"
+    },
+    "debug_leftover_scan": {
+      "command": "rg \"console\\\\.log|debugger|TODO|FIXME\" -n src/output.js src/errors.js",
+      "status": "passed",
+      "matches": 0
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "Downstream CLI tasks can import createSuccessEnvelope, createFailureEnvelope, createPartialEnvelope, and writeJson from src/output.js.",
+    "Existing callers can keep using LaunchdeckError and toErrorPayload(error)."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-014"],
+      "evidence": "JSON and error helpers are centralized in src/output.js and src/errors.js."
+    },
+    {
+      "ids": ["CA-003", "CA-020"],
+      "evidence": "Success, failure, and partial envelope builders exist; partial envelopes use status partial and partial_failure."
+    },
+    {
+      "ids": ["CA-009", "CA-021"],
+      "evidence": "Contract error vocabulary is represented by ERROR_CODES; unknown codes normalize to internal_error for contract payloads."
+    }
+  ],
+  "result_summary": "T003 output/error helpers created and verified while preserving existing LaunchdeckError API."
+}

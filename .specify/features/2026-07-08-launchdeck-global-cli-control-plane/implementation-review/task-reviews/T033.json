@@ -1,0 +1,49 @@
+{
+  "taskId": "T033",
+  "reviewId": "T033-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "examples/demo-api/.launchdeck.yml",
+    "examples/demo-api/package.json",
+    "examples/demo-api/scripts/server.js",
+    "examples/demo-api/README.md",
+    ".specify/teams/state/results/executor-t033.json"
+  ],
+  "validation": [
+    {
+      "command": "node --check examples/demo-api/scripts/server.js",
+      "result": "pass",
+      "summary": "Demo server script parses successfully."
+    },
+    {
+      "command": "node src/cli.js project add examples/demo-api --alias demo --json",
+      "result": "pass",
+      "summary": "Demo project registered successfully with isolated LAUNCHDECK_HOME."
+    },
+    {
+      "command": "leader demo smoke",
+      "result": "pass",
+      "summary": "Isolated add/start/duplicate/inspect/logs/events/stop/clean smoke passed; duplicate start returned existing run instead of spawning a second server."
+    }
+  ],
+  "controllerChecks": [
+    "Demo uses checked-in examples/demo-api/scripts/server.js for long-running behavior and no inline node -e command.",
+    "Demo has no external service dependencies.",
+    "Server exposes /health, /events, and /_demo/exit for readiness, observability, and stale recovery demonstrations.",
+    "README documents project add, start, duplicate existing-run behavior, inspect, restart/stop, stale recovery, logs/events, and safe clean.",
+    "Leader smoke confirmed add/start/duplicate/inspect/logs/events/stop/clean through real CLI entrypoints.",
+    "Leader cleanup removed isolated LAUNCHDECK_HOME and demo scratch output; no demo server process or port 8888 listener remained."
+  ],
+  "acceptedResidualRisks": [
+    "Demo smoke was Windows-local and does not satisfy macOS/Linux cross-platform release evidence.",
+    "T034 must align the root README with this demo and current CLI surface."
+  ],
+  "followUpWork": [
+    "T034 update README command reference and safety documentation."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

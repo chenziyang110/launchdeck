@@ -1,0 +1,42 @@
+{
+  "name": "launchdeck",
+  "version": "0.1.0",
+  "description": "Universal lifecycle control for local software projects.",
+  "keywords": [
+    "cli",
+    "developer-tools",
+    "lifecycle",
+    "process-manager"
+  ],
+  "homepage": "https://github.com/chenziyang110/launchdeck#readme",
+  "bugs": {
+    "url": "https://github.com/chenziyang110/launchdeck/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenziyang110/launchdeck.git"
+  },
+  "type": "module",
+  "bin": {
+    "launchdeck": "./src/cli.js"
+  },
+  "files": [
+    "src/",
+    "schema/",
+    ".agents/skills/launchdeck-agent/"
+  ],
+  "scripts": {
+    "check": "node scripts/check-syntax.js",
+    "test": "node --test --test-concurrency=1",
+    "smoke": "node scripts/smoke-lifecycle.js --mode quick --json",
+    "package:check": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "yaml": "^2.5.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "author": "chenziyang110"
+}

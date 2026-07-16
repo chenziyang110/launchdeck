@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T025",
+  "story": "US2",
+  "repair_for": [
+    "T015"
+  ],
+  "description": "Update legacy CLI smoke expectations and add regression coverage for config-resolved runtime state failures.",
+  "agent": "test-engineer",
+  "depends_on": [
+    "T014"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "implementation-review/reviews.ndjson#T015-2026-07-07T16:54:43.4923339+08:00",
+    "contracts/cli-json-contract.md",
+    "contracts/runtime-state-v1.md",
+    "test/cli.test.js",
+    "test/managed-cli.test.js"
+  ],
+  "write_scope": [
+    "test/cli.test.js",
+    "test/managed-cli.test.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    "src/",
+    "test/",
+    "package.json"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "test/cli.test.js (modified)",
+    "test/managed-cli.test.js (modified if regression belongs there)"
+  ],
+  "anti_goals": [
+    "Do not edit production code.",
+    "Do not weaken managed CLI contract coverage.",
+    "Do not restore legacy process_already_running or stopped[] payload expectations."
+  ],
+  "does_not_remove": [
+    "end-to-end lifecycle smoke",
+    "managed CLI contract coverage"
+  ],
+  "capability_operations": [
+    "repairs repository-wide test alignment",
+    "validates config-resolved runtime failure context"
+  ],
+  "acceptance_criteria": [
+    "Legacy CLI smoke asserts current US2 contract fields: task_already_running, logs task/logPath/content, and stop process/results payloads.",
+    "A regression test proves ps --json with corrupt runtime state includes projectRoot and configPath when config resolution succeeded.",
+    "Tests fail only for current missing implementation behavior before T026, if any."
+  ],
+  "verify_commands": [
+    "node --test test/cli.test.js test/managed-cli.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-003",
+    "CA-014",
+    "CA-020"
+  ],
+  "mp_ids": [
+    "MP-009",
+    "MP-010",
+    "MP-014"
+  ],
+  "consumer_surfaces": [
+    "npm test",
+    "launchdeck ps --json",
+    "legacy lifecycle smoke"
+  ],
+  "required_evidence": [
+    "expected_red_before_repair",
+    "real_entrypoint_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

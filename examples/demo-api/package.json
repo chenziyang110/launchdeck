@@ -1,0 +1,16 @@
+{
+  "name": "launchdeck-demo-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Official Launchdeck demo API fixture.",
+  "scripts": {
+    "start": "node scripts/server.js --port 8888",
+    "check": "node --check scripts/server.js",
+    "clean:targets": "node scripts/server.js --write-clean-targets"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

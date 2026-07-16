@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/executor-t025.json"
+  ],
+  "validation_output": {
+    "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js": "PASS. 21 tests passed, 0 failed; duration_ms 26388.5905. Passed coverage included verified-owned stop/stopped evidence, probable-owned refusal, unknown refusal, matching-pid/listener-without-trusted-spawn-proof refusal, external-process refusal, force-stop verified-ownership gate, restart stop-wait-start transaction, port_release_timeout, stop_failed evidence, managed dev/start envelopes, duplicate owned-start idempotency, partial restart failure, ps stale refresh, corrupt runtime-state reporting, logs payload names, stop one/all managed task paths, and foreground task_not_managed refusal.",
+    "npm run check": "PASS. launchdeck@0.1.0 check completed successfully: node --check passed for src/errors.js, src/cli.js, src/config.js, src/adapters/process.js, src/global-runtime.js, src/runtime.js, src/control-plane/state.js, src/control-plane/locks.js, src/control-plane/events.js, test/config.test.js, test/cli.test.js, test/global-runtime.test.js, test/control-plane-state.test.js, test/control-plane-locks.test.js, test/control-plane-events.test.js, and test/cli-control-plane-contract.test.js."
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

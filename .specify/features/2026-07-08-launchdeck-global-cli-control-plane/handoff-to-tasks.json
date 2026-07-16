@@ -1,0 +1,1881 @@
+{
+  "version": 1,
+  "status": "ready-for-implement",
+  "feature": {
+    "name": "Launchdeck Global CLI Control Plane",
+    "feature_dir": "F:\\github\\launchdeck\\.specify\\features\\2026-07-08-launchdeck-global-cli-control-plane",
+    "next_command": "/sp.implement"
+  },
+  "execution_model": "adaptive",
+  "execution_mode": "standard",
+  "workflow_status": "ready",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": false,
+  "delegated_task_generation_lanes": [],
+  "confirmed_delivery_boundary": [
+    "Phase 0-2 foundation",
+    "US1-US5 complete",
+    "demo/docs/smoke/final review complete"
+  ],
+  "feature_delivery_shape": "serial phases with intra-phase parallel batches and high-risk join points",
+  "task_count": 38,
+  "story_counts": {
+    "US1": 6,
+    "US2": 4,
+    "US3": 4,
+    "US4": 4,
+    "US5": 3,
+    "setup_foundation_final": 17
+  },
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Record implementation guardrail and embedded review baseline in .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+      "phase": "Phase 0",
+      "story": null,
+      "packet": "task-packets/T001.json",
+      "depends_on": [],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "Test-Path .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "mp": [
+        "MP-001",
+        "MP-003",
+        "MP-005",
+        "MP-007",
+        "MP-011",
+        "MP-013"
+      ],
+      "ca": [
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-019",
+        "FR-020",
+        "FR-021"
+      ]
+    },
+    {
+      "id": "T002",
+      "title": "Create reusable control-plane test fixture helpers in test/helpers/control-plane-fixture.js",
+      "phase": "Phase 1",
+      "story": null,
+      "packet": "task-packets/T002.json",
+      "depends_on": [],
+      "write_scope": [
+        "test/helpers/control-plane-fixture.js"
+      ],
+      "verify_commands": [
+        "node --check test/helpers/control-plane-fixture.js"
+      ],
+      "mp": [
+        "MP-016"
+      ],
+      "ca": [
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-053",
+        "FR-056"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "Add state store and registry migration failing tests in test/control-plane-state.test.js",
+      "phase": "Phase 1",
+      "story": null,
+      "packet": "task-packets/T003.json",
+      "depends_on": [
+        "T002: fixture helpers"
+      ],
+      "write_scope": [
+        "test/control-plane-state.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/control-plane-state.test.js"
+      ],
+      "mp": [
+        "MP-002",
+        "MP-004",
+        "MP-014"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-002",
+        "CA-CP-013"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-051",
+        "FR-052"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Add lock and transaction failing tests in test/control-plane-locks.test.js",
+      "phase": "Phase 1",
+      "story": null,
+      "packet": "task-packets/T004.json",
+      "depends_on": [
+        "T002: fixture helpers"
+      ],
+      "write_scope": [
+        "test/control-plane-locks.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/control-plane-locks.test.js"
+      ],
+      "mp": [
+        "MP-003",
+        "MP-005"
+      ],
+      "ca": [
+        "CA-CP-010",
+        "CA-CP-012"
+      ],
+      "fr": [
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-015",
+        "FR-050"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Add event store and redaction failing tests in test/control-plane-events.test.js",
+      "phase": "Phase 1",
+      "story": null,
+      "packet": "task-packets/T005.json",
+      "depends_on": [
+        "T002: fixture helpers"
+      ],
+      "write_scope": [
+        "test/control-plane-events.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/control-plane-events.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-010",
+        "CA-CP-016"
+      ],
+      "fr": [
+        "FR-013",
+        "FR-035",
+        "FR-036",
+        "FR-039",
+        "FR-048"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Add JSON envelope and error-code contract failing tests in test/cli-control-plane-contract.test.js",
+      "phase": "Phase 1",
+      "story": null,
+      "packet": "task-packets/T006.json",
+      "depends_on": [
+        "T002: fixture helpers"
+      ],
+      "write_scope": [
+        "test/cli-control-plane-contract.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/cli-control-plane-contract.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-014"
+      ],
+      "ca": [
+        "CA-CP-014",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-045",
+        "FR-046",
+        "FR-047",
+        "FR-049",
+        "FR-052"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "Implement versioned control-plane state store in src/control-plane/state.js",
+      "phase": "Phase 2",
+      "story": null,
+      "packet": "task-packets/T007.json",
+      "depends_on": [
+        "T003: state tests"
+      ],
+      "write_scope": [
+        "src/control-plane/state.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/state.js",
+        "node --test test/control-plane-state.test.js"
+      ],
+      "mp": [
+        "MP-002",
+        "MP-004",
+        "MP-014"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-002",
+        "CA-CP-013"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-004",
+        "FR-051",
+        "FR-052"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Implement daemonless lock manager in src/control-plane/locks.js",
+      "phase": "Phase 2",
+      "story": null,
+      "packet": "task-packets/T008.json",
+      "depends_on": [
+        "T004: lock tests"
+      ],
+      "write_scope": [
+        "src/control-plane/locks.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/locks.js",
+        "node --test test/control-plane-locks.test.js"
+      ],
+      "mp": [
+        "MP-003",
+        "MP-005"
+      ],
+      "ca": [
+        "CA-CP-010",
+        "CA-CP-012"
+      ],
+      "fr": [
+        "FR-010",
+        "FR-011",
+        "FR-012",
+        "FR-015",
+        "FR-050"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Implement append-only event store in src/control-plane/events.js",
+      "phase": "Phase 2",
+      "story": null,
+      "packet": "task-packets/T009.json",
+      "depends_on": [
+        "T005: event tests"
+      ],
+      "write_scope": [
+        "src/control-plane/events.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/events.js",
+        "node --test test/control-plane-events.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-010",
+        "CA-CP-016"
+      ],
+      "fr": [
+        "FR-013",
+        "FR-035",
+        "FR-036",
+        "FR-039",
+        "FR-048"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Implement stable envelope and domain errors in src/output.js and src/errors.js",
+      "phase": "Phase 2",
+      "story": null,
+      "packet": "task-packets/T010.json",
+      "depends_on": [
+        "T006: JSON contract tests"
+      ],
+      "write_scope": [
+        "src/output.js",
+        "src/errors.js"
+      ],
+      "verify_commands": [
+        "node --check src/output.js",
+        "node --check src/errors.js",
+        "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-014"
+      ],
+      "ca": [
+        "CA-CP-014",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-045",
+        "FR-046",
+        "FR-047",
+        "FR-049",
+        "FR-052"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Join foundational modules and syntax checks in package.json and src/control-plane imports",
+      "phase": "Phase 2",
+      "story": null,
+      "packet": "task-packets/T011.json",
+      "depends_on": [
+        "T007: state store",
+        "T008: locks",
+        "T009: events",
+        "T010: output/errors"
+      ],
+      "write_scope": [
+        "package.json",
+        "src/control-plane/state.js",
+        "src/control-plane/locks.js",
+        "src/control-plane/events.js"
+      ],
+      "verify_commands": [
+        "npm run check",
+        "node --test test/control-plane-state.test.js test/control-plane-locks.test.js test/control-plane-events.test.js test/cli-control-plane-contract.test.js"
+      ],
+      "mp": [
+        "MP-005",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-010",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-009",
+        "FR-010",
+        "FR-045"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Add registry alias, repair, and active-remove refusal tests in test/global-runtime.test.js",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T012.json",
+      "depends_on": [
+        "T011: foundational join"
+      ],
+      "write_scope": [
+        "test/global-runtime.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-004"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-002",
+        "CA-CP-003"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "Add run index, duplicate-start, and readiness tests in test/managed-cli.test.js and test/global-runtime.test.js",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T013.json",
+      "depends_on": [
+        "T011: foundational join"
+      ],
+      "write_scope": [
+        "test/managed-cli.test.js",
+        "test/global-runtime.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/managed-cli.test.js test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-006",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-004",
+        "CA-CP-005",
+        "CA-CP-009"
+      ],
+      "fr": [
+        "FR-009",
+        "FR-014",
+        "FR-017",
+        "FR-023",
+        "FR-024"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Implement registry identity actions in src/control-plane/actions.js and src/global-runtime.js",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T014.json",
+      "depends_on": [
+        "T012: registry tests",
+        "T007: state store",
+        "T008: locks"
+      ],
+      "write_scope": [
+        "src/control-plane/actions.js",
+        "src/global-runtime.js",
+        "src/cli.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/actions.js",
+        "node --check src/global-runtime.js",
+        "node --check src/cli.js",
+        "node --test test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-004",
+        "MP-006"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-002",
+        "CA-CP-003"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-002",
+        "FR-003",
+        "FR-004",
+        "FR-005",
+        "FR-006",
+        "FR-007",
+        "FR-008"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Implement global run index and managed start orchestration in src/control-plane/runs.js and src/runtime.js",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T015.json",
+      "depends_on": [
+        "T013: run tests",
+        "T007: state store",
+        "T008: locks",
+        "T009: events"
+      ],
+      "write_scope": [
+        "src/control-plane/runs.js",
+        "src/runtime.js",
+        "src/cli.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/runs.js",
+        "node --check src/runtime.js",
+        "node --check src/cli.js",
+        "node --test test/managed-cli.test.js test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-003",
+        "MP-005",
+        "MP-006",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-004",
+        "CA-CP-005",
+        "CA-CP-009",
+        "CA-CP-013"
+      ],
+      "fr": [
+        "FR-009",
+        "FR-011",
+        "FR-013",
+        "FR-014",
+        "FR-016",
+        "FR-017",
+        "FR-023",
+        "FR-024",
+        "FR-025"
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Implement status, ps, and ports views over the run index in src/control-plane/inspect.js and src/global-runtime.js",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T016.json",
+      "depends_on": [
+        "T014: registry actions",
+        "T015: run index start"
+      ],
+      "write_scope": [
+        "src/control-plane/inspect.js",
+        "src/global-runtime.js",
+        "src/cli.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/inspect.js",
+        "node --check src/global-runtime.js",
+        "node --check src/cli.js",
+        "node --test test/global-runtime.test.js test/managed-cli.test.js"
+      ],
+      "mp": [
+        "MP-009",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-011",
+        "CA-CP-018",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-026",
+        "FR-027",
+        "FR-028",
+        "FR-029",
+        "FR-033",
+        "FR-045"
+      ]
+    },
+    {
+      "id": "T017",
+      "title": "Join US1 primary scenario with focused CLI validation and ledger update",
+      "phase": "Phase 3",
+      "story": "US1",
+      "packet": "task-packets/T017.json",
+      "depends_on": [
+        "T014: registry actions",
+        "T015: run index start",
+        "T016: global views"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "node --test test/global-runtime.test.js test/managed-cli.test.js",
+        "npm run check"
+      ],
+      "mp": [
+        "MP-001",
+        "MP-006",
+        "MP-009",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-004",
+        "CA-CP-005",
+        "CA-CP-011",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-009",
+        "FR-017",
+        "FR-026",
+        "FR-027",
+        "FR-028"
+      ]
+    },
+    {
+      "id": "T018",
+      "title": "Add external conflict and unified inspect failing tests in test/inspect-cli.test.js",
+      "phase": "Phase 4",
+      "story": "US2",
+      "packet": "task-packets/T018.json",
+      "depends_on": [
+        "T017: US1 join"
+      ],
+      "write_scope": [
+        "test/inspect-cli.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/inspect-cli.test.js"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-008",
+        "MP-009",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-005",
+        "CA-CP-011",
+        "CA-CP-017",
+        "CA-CP-018"
+      ],
+      "fr": [
+        "FR-020",
+        "FR-021",
+        "FR-028",
+        "FR-029",
+        "FR-030",
+        "FR-031",
+        "FR-032"
+      ]
+    },
+    {
+      "id": "T019",
+      "title": "Implement ownership evidence and port observation in src/control-plane/ownership.js and src/adapters/process.js",
+      "phase": "Phase 4",
+      "story": "US2",
+      "packet": "task-packets/T019.json",
+      "depends_on": [
+        "T018: inspect tests",
+        "T016: inspect view foundation"
+      ],
+      "write_scope": [
+        "src/control-plane/ownership.js",
+        "src/adapters/process.js",
+        "src/control-plane/inspect.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/ownership.js",
+        "node --check src/adapters/process.js",
+        "node --check src/control-plane/inspect.js",
+        "node --test test/inspect-cli.test.js test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-008",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-005",
+        "CA-CP-011",
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-025",
+        "FR-028",
+        "FR-031",
+        "FR-055"
+      ]
+    },
+    {
+      "id": "T020",
+      "title": "Wire unified inspect command and inspect-port compatibility in src/cli.js and src/global-runtime.js",
+      "phase": "Phase 4",
+      "story": "US2",
+      "packet": "task-packets/T020.json",
+      "depends_on": [
+        "T019: ownership evidence"
+      ],
+      "write_scope": [
+        "src/cli.js",
+        "src/global-runtime.js",
+        "src/control-plane/inspect.js"
+      ],
+      "verify_commands": [
+        "node --check src/cli.js",
+        "node --check src/global-runtime.js",
+        "node --test test/inspect-cli.test.js test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-009",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-011",
+        "CA-CP-018",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-030",
+        "FR-031",
+        "FR-032",
+        "FR-033",
+        "FR-045"
+      ]
+    },
+    {
+      "id": "T021",
+      "title": "Join US2 external conflict and inspect validation with ledger update",
+      "phase": "Phase 4",
+      "story": "US2",
+      "packet": "task-packets/T021.json",
+      "depends_on": [
+        "T019: ownership evidence",
+        "T020: inspect command"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "node --test test/inspect-cli.test.js test/global-runtime.test.js",
+        "npm run check"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-008",
+        "MP-009"
+      ],
+      "ca": [
+        "CA-CP-005",
+        "CA-CP-011",
+        "CA-CP-017",
+        "CA-CP-018"
+      ],
+      "fr": [
+        "FR-020",
+        "FR-021",
+        "FR-029",
+        "FR-030",
+        "FR-031",
+        "FR-032"
+      ]
+    },
+    {
+      "id": "T022",
+      "title": "Add stop, force-stop, and restart ownership matrix failing tests in test/lifecycle-ownership.test.js",
+      "phase": "Phase 5",
+      "story": "US3",
+      "packet": "task-packets/T022.json",
+      "depends_on": [
+        "T021: US2 join"
+      ],
+      "write_scope": [
+        "test/lifecycle-ownership.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/lifecycle-ownership.test.js"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-011",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-006",
+        "CA-CP-007",
+        "CA-CP-008",
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-018",
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-022",
+        "FR-025"
+      ]
+    },
+    {
+      "id": "T023",
+      "title": "Implement ownership-gated stop, force-stop, and restart actions in src/control-plane/actions.js",
+      "phase": "Phase 5",
+      "story": "US3",
+      "packet": "task-packets/T023.json",
+      "depends_on": [
+        "T022: lifecycle ownership tests",
+        "T019: ownership evidence",
+        "T015: run index"
+      ],
+      "write_scope": [
+        "src/control-plane/actions.js",
+        "src/control-plane/runs.js",
+        "src/runtime.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/actions.js",
+        "node --check src/control-plane/runs.js",
+        "node --check src/runtime.js",
+        "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-011",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-006",
+        "CA-CP-007",
+        "CA-CP-008",
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-018",
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-022",
+        "FR-025",
+        "FR-050",
+        "FR-055"
+      ]
+    },
+    {
+      "id": "T024",
+      "title": "Wire lifecycle commands and refusal next actions in src/cli.js and src/output.js",
+      "phase": "Phase 5",
+      "story": "US3",
+      "packet": "task-packets/T024.json",
+      "depends_on": [
+        "T023: lifecycle actions",
+        "T010: output envelope"
+      ],
+      "write_scope": [
+        "src/cli.js",
+        "src/output.js",
+        "src/errors.js"
+      ],
+      "verify_commands": [
+        "node --check src/cli.js",
+        "node --check src/output.js",
+        "node --check src/errors.js",
+        "node --test test/lifecycle-ownership.test.js test/cli-control-plane-contract.test.js"
+      ],
+      "mp": [
+        "MP-011",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-006",
+        "CA-CP-007",
+        "CA-CP-008",
+        "CA-CP-014",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-018",
+        "FR-019",
+        "FR-022",
+        "FR-045",
+        "FR-046",
+        "FR-047",
+        "FR-049"
+      ]
+    },
+    {
+      "id": "T025",
+      "title": "Join US3 owned restart and stop validation with ledger update",
+      "phase": "Phase 5",
+      "story": "US3",
+      "packet": "task-packets/T025.json",
+      "depends_on": [
+        "T023: lifecycle actions",
+        "T024: CLI wiring"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+        "npm run check"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-011"
+      ],
+      "ca": [
+        "CA-CP-006",
+        "CA-CP-007",
+        "CA-CP-008",
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-018",
+        "FR-019",
+        "FR-020",
+        "FR-021",
+        "FR-022"
+      ]
+    },
+    {
+      "id": "T026",
+      "title": "Add reconcile, stale state, events, and logs-follow failing tests in test/recovery-observability.test.js",
+      "phase": "Phase 6",
+      "story": "US4",
+      "packet": "task-packets/T026.json",
+      "depends_on": [
+        "T025: US3 join"
+      ],
+      "write_scope": [
+        "test/recovery-observability.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/recovery-observability.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-009",
+        "CA-CP-010",
+        "CA-CP-016"
+      ],
+      "fr": [
+        "FR-034",
+        "FR-035",
+        "FR-036",
+        "FR-037",
+        "FR-038",
+        "FR-039",
+        "FR-044",
+        "FR-048"
+      ]
+    },
+    {
+      "id": "T027",
+      "title": "Implement reconcile and stale run repair in src/control-plane/runs.js and src/control-plane/actions.js",
+      "phase": "Phase 6",
+      "story": "US4",
+      "packet": "task-packets/T027.json",
+      "depends_on": [
+        "T026: recovery tests",
+        "T019: ownership evidence",
+        "T023: lifecycle actions"
+      ],
+      "write_scope": [
+        "src/control-plane/runs.js",
+        "src/control-plane/actions.js",
+        "src/control-plane/inspect.js",
+        "src/cli.js"
+      ],
+      "verify_commands": [
+        "node --check src/control-plane/runs.js",
+        "node --check src/control-plane/actions.js",
+        "node --check src/control-plane/inspect.js",
+        "node --check src/cli.js",
+        "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js"
+      ],
+      "mp": [
+        "MP-007",
+        "MP-009",
+        "MP-012"
+      ],
+      "ca": [
+        "CA-CP-009",
+        "CA-CP-011",
+        "CA-CP-017"
+      ],
+      "fr": [
+        "FR-016",
+        "FR-025",
+        "FR-033",
+        "FR-044"
+      ]
+    },
+    {
+      "id": "T028",
+      "title": "Implement events command, logs --follow JSONL, and retention policy in src/cli.js and src/control-plane/events.js",
+      "phase": "Phase 6",
+      "story": "US4",
+      "packet": "task-packets/T028.json",
+      "depends_on": [
+        "T026: recovery tests",
+        "T009: events store",
+        "T027: reconcile"
+      ],
+      "write_scope": [
+        "src/cli.js",
+        "src/control-plane/events.js",
+        "src/runtime.js",
+        "src/global-runtime.js"
+      ],
+      "verify_commands": [
+        "node --check src/cli.js",
+        "node --check src/control-plane/events.js",
+        "node --check src/runtime.js",
+        "node --test test/recovery-observability.test.js test/global-runtime.test.js"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-010",
+        "CA-CP-016",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-034",
+        "FR-035",
+        "FR-036",
+        "FR-037",
+        "FR-038",
+        "FR-039",
+        "FR-048"
+      ]
+    },
+    {
+      "id": "T029",
+      "title": "Join US4 recovery and observability validation with ledger update",
+      "phase": "Phase 6",
+      "story": "US4",
+      "packet": "task-packets/T029.json",
+      "depends_on": [
+        "T027: reconcile",
+        "T028: events/logs"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "node --test test/recovery-observability.test.js",
+        "npm run check"
+      ],
+      "mp": [
+        "MP-012",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-009",
+        "CA-CP-010",
+        "CA-CP-016",
+        "CA-CP-019"
+      ],
+      "fr": [
+        "FR-034",
+        "FR-035",
+        "FR-036",
+        "FR-039",
+        "FR-044",
+        "FR-048"
+      ]
+    },
+    {
+      "id": "T030",
+      "title": "Add safe clean and retention evidence tests in test/clean-control-plane.test.js",
+      "phase": "Phase 7",
+      "story": "US5",
+      "packet": "task-packets/T030.json",
+      "depends_on": [
+        "T029: US4 join"
+      ],
+      "write_scope": [
+        "test/clean-control-plane.test.js"
+      ],
+      "verify_commands": [
+        "node --test test/clean-control-plane.test.js"
+      ],
+      "mp": [
+        "MP-010",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-015"
+      ],
+      "fr": [
+        "FR-040",
+        "FR-041",
+        "FR-042",
+        "FR-043",
+        "FR-055"
+      ]
+    },
+    {
+      "id": "T031",
+      "title": "Implement clean control-plane safety integration in src/runtime.js and src/cli.js",
+      "phase": "Phase 7",
+      "story": "US5",
+      "packet": "task-packets/T031.json",
+      "depends_on": [
+        "T030: clean tests",
+        "T028: retention/events"
+      ],
+      "write_scope": [
+        "src/runtime.js",
+        "src/cli.js",
+        "src/control-plane/actions.js",
+        "src/control-plane/inspect.js"
+      ],
+      "verify_commands": [
+        "node --check src/runtime.js",
+        "node --check src/cli.js",
+        "node --check src/control-plane/actions.js",
+        "node --test test/clean-control-plane.test.js test/runtime-state.test.js"
+      ],
+      "mp": [
+        "MP-010",
+        "MP-011",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-015",
+        "CA-CP-016"
+      ],
+      "fr": [
+        "FR-040",
+        "FR-041",
+        "FR-042",
+        "FR-043",
+        "FR-055"
+      ]
+    },
+    {
+      "id": "T032",
+      "title": "Join US5 safe clean validation with ledger update",
+      "phase": "Phase 7",
+      "story": "US5",
+      "packet": "task-packets/T032.json",
+      "depends_on": [
+        "T031: clean integration"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "node --test test/clean-control-plane.test.js test/runtime-state.test.js",
+        "npm run check"
+      ],
+      "mp": [
+        "MP-010",
+        "MP-015"
+      ],
+      "ca": [
+        "CA-CP-015"
+      ],
+      "fr": [
+        "FR-040",
+        "FR-041",
+        "FR-042",
+        "FR-043",
+        "FR-055"
+      ]
+    },
+    {
+      "id": "T033",
+      "title": "Create official demo project in examples/demo-api with checked-in fixture scripts",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T033.json",
+      "depends_on": [
+        "T032: US5 join"
+      ],
+      "write_scope": [
+        "examples/demo-api/.launchdeck.yml",
+        "examples/demo-api/package.json",
+        "examples/demo-api/scripts/server.js",
+        "examples/demo-api/README.md"
+      ],
+      "verify_commands": [
+        "node --check examples/demo-api/scripts/server.js",
+        "node src/cli.js project add examples/demo-api --alias demo --json"
+      ],
+      "mp": [
+        "MP-016"
+      ],
+      "ca": [
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-053",
+        "FR-054"
+      ]
+    },
+    {
+      "id": "T034",
+      "title": "Update README command reference and safety documentation in README.md",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T034.json",
+      "depends_on": [
+        "T032: US5 join"
+      ],
+      "write_scope": [
+        "README.md"
+      ],
+      "verify_commands": [
+        "rg -n \"inspect|force-stop|reconcile|events|schemaVersion|no external|clean\" README.md"
+      ],
+      "mp": [
+        "MP-001",
+        "MP-008",
+        "MP-010",
+        "MP-012",
+        "MP-013",
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-018",
+        "CA-CP-019",
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-054"
+      ]
+    },
+    {
+      "id": "T035",
+      "title": "Add cross-platform lifecycle smoke script and evidence template in scripts/smoke-lifecycle.js and docs/cross-platform-smoke.md",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T035.json",
+      "depends_on": [
+        "T032: US5 join"
+      ],
+      "write_scope": [
+        "scripts/smoke-lifecycle.js",
+        "docs/cross-platform-smoke.md"
+      ],
+      "verify_commands": [
+        "node --check scripts/smoke-lifecycle.js",
+        "node scripts/smoke-lifecycle.js --help"
+      ],
+      "mp": [
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-017",
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-056"
+      ]
+    },
+    {
+      "id": "T036",
+      "title": "Update package syntax checks and full test coverage in package.json",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T036.json",
+      "depends_on": [
+        "T033: demo",
+        "T034: docs",
+        "T035: smoke script"
+      ],
+      "write_scope": [
+        "package.json"
+      ],
+      "verify_commands": [
+        "npm run check",
+        "npm test"
+      ],
+      "mp": [
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-053",
+        "FR-056"
+      ]
+    },
+    {
+      "id": "T037",
+      "title": "Run quickstart release smoke and record implementation-review final evidence",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T037.json",
+      "depends_on": [
+        "T036: package verification update"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+      ],
+      "verify_commands": [
+        "npm run check",
+        "npm test",
+        "node scripts/smoke-lifecycle.js --quickstart"
+      ],
+      "mp": [
+        "MP-016",
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-053",
+        "FR-056"
+      ]
+    },
+    {
+      "id": "T038",
+      "title": "Perform final embedded review repair window and task closeout in implementation-review/branch-review.md",
+      "phase": "Final",
+      "story": null,
+      "packet": "task-packets/T038.json",
+      "depends_on": [
+        "T037: quickstart smoke"
+      ],
+      "write_scope": [
+        ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/branch-review.md"
+      ],
+      "verify_commands": [
+        "npm run check",
+        "npm test"
+      ],
+      "mp": [
+        "MP-001",
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-001",
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-001",
+        "FR-056"
+      ]
+    }
+  ],
+  "parallel_batches": [
+    {
+      "id": "B0",
+      "tasks": [
+        "T001"
+      ],
+      "join": "JP0",
+      "validation": "Test-Path .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+    },
+    {
+      "id": "B1",
+      "tasks": [
+        "T002"
+      ],
+      "join": "JP1",
+      "validation": "node --check test/helpers/control-plane-fixture.js"
+    },
+    {
+      "id": "B2",
+      "tasks": [
+        "T003",
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "join": "JP2",
+      "validation": "node --test test/control-plane-state.test.js test/control-plane-locks.test.js test/control-plane-events.test.js test/cli-control-plane-contract.test.js"
+    },
+    {
+      "id": "B3",
+      "tasks": [
+        "T007",
+        "T008",
+        "T009",
+        "T010"
+      ],
+      "join": "JP3",
+      "validation": "focused foundational tests plus node --check on new modules"
+    },
+    {
+      "id": "B4",
+      "tasks": [
+        "T011"
+      ],
+      "join": "JP4",
+      "validation": "npm run check and focused foundational tests"
+    },
+    {
+      "id": "B5",
+      "tasks": [
+        "T012",
+        "T013"
+      ],
+      "join": "JP5",
+      "validation": "node --test test/global-runtime.test.js test/managed-cli.test.js"
+    },
+    {
+      "id": "B6",
+      "tasks": [
+        "T014",
+        "T015",
+        "T016",
+        "T017"
+      ],
+      "join": "JP6",
+      "validation": "US1 focused validation"
+    },
+    {
+      "id": "B7",
+      "tasks": [
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ],
+      "join": "JP7",
+      "validation": "US2 focused validation"
+    },
+    {
+      "id": "B8",
+      "tasks": [
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ],
+      "join": "JP8",
+      "validation": "US3 focused validation"
+    },
+    {
+      "id": "B9",
+      "tasks": [
+        "T026",
+        "T027",
+        "T028",
+        "T029"
+      ],
+      "join": "JP9",
+      "validation": "US4 focused validation"
+    },
+    {
+      "id": "B10",
+      "tasks": [
+        "T030",
+        "T031",
+        "T032"
+      ],
+      "join": "JP10",
+      "validation": "US5 focused validation"
+    },
+    {
+      "id": "B11",
+      "tasks": [
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "join": "JP11",
+      "validation": "demo/docs/smoke assets validate independently"
+    },
+    {
+      "id": "B12",
+      "tasks": [
+        "T036",
+        "T037",
+        "T038"
+      ],
+      "join": "JP12",
+      "validation": "npm run check, npm test, quickstart smoke"
+    }
+  ],
+  "guardrails": [
+    {
+      "id": "G-BOUNDARY",
+      "rule": "Extend existing CLI/runtime/adapter modules and add src/control-plane only for global orchestration.",
+      "task_ids": [
+        "T001",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T014",
+        "T015",
+        "T016",
+        "T019",
+        "T020",
+        "T023",
+        "T024",
+        "T027",
+        "T028",
+        "T031"
+      ]
+    },
+    {
+      "id": "G-NO-DAEMON",
+      "rule": "Do not add daemon/service/GUI/TUI/MCP in this feature.",
+      "task_ids": [
+        "T001",
+        "T008",
+        "T015",
+        "T028",
+        "T034"
+      ]
+    },
+    {
+      "id": "G-OWNED-ONLY",
+      "rule": "Stop/restart/force-stop require verified Launchdeck ownership; port/PID alone is insufficient.",
+      "task_ids": [
+        "T018",
+        "T019",
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ]
+    },
+    {
+      "id": "G-STATE-VERSION",
+      "rule": "State files are versioned; newer versions fail closed for dangerous mutations.",
+      "task_ids": [
+        "T003",
+        "T007",
+        "T010",
+        "T011"
+      ]
+    },
+    {
+      "id": "G-CLEAN-SAFE",
+      "rule": "Clean is hygiene only and never reset/delete roots/kill processes.",
+      "task_ids": [
+        "T030",
+        "T031",
+        "T032"
+      ]
+    },
+    {
+      "id": "G-JSON",
+      "rule": "JSON envelope, error codes, next actions, JSONL streams are compatibility surfaces.",
+      "task_ids": [
+        "T005",
+        "T006",
+        "T009",
+        "T010",
+        "T020",
+        "T024",
+        "T028"
+      ]
+    },
+    {
+      "id": "G-REDACT",
+      "rule": "Events/output/log metadata must avoid secret leakage.",
+      "task_ids": [
+        "T005",
+        "T009",
+        "T026",
+        "T028",
+        "T031"
+      ]
+    },
+    {
+      "id": "G-DEMO",
+      "rule": "Demo and tests use checked-in fixture scripts, not inline node -e long-running processes.",
+      "task_ids": [
+        "T002",
+        "T033",
+        "T035",
+        "T037"
+      ]
+    },
+    {
+      "id": "G-CROSS",
+      "rule": "Cross-platform-ready claims require Windows/macOS/Linux lifecycle smoke evidence.",
+      "task_ids": [
+        "T035",
+        "T037",
+        "T038"
+      ]
+    }
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-001",
+      "task_ids": [
+        "T003",
+        "T007",
+        "T011",
+        "T012",
+        "T014"
+      ],
+      "affected": "Registry writes, migration, atomic state",
+      "references": "plan.md#operational-consequence-design",
+      "validation": "registry migration/add/remove tests",
+      "stop_and_reopen": "Unsupported registry mutation or missing atomic write routes back to /sp.plan"
+    },
+    {
+      "id": "CA-CP-002",
+      "task_ids": [
+        "T003",
+        "T007",
+        "T012",
+        "T014"
+      ],
+      "affected": "Project identity and alias uniqueness",
+      "references": "data-model.md#entity-projectregistration",
+      "validation": "alias collision tests",
+      "stop_and_reopen": "If projectId/alias identity cannot be made stable"
+    },
+    {
+      "id": "CA-CP-003",
+      "task_ids": [
+        "T012",
+        "T014",
+        "T017"
+      ],
+      "affected": "Active remove refusal",
+      "references": "contracts/cli-contract.md#project-commands",
+      "validation": "active owned remove refusal test",
+      "stop_and_reopen": "If removal must delete files or force-remove running tasks"
+    },
+    {
+      "id": "CA-CP-004",
+      "task_ids": [
+        "T013",
+        "T015",
+        "T017"
+      ],
+      "affected": "Start state machine",
+      "references": "plan.md#lifecycle-transaction-order",
+      "validation": "duplicate-start tests",
+      "stop_and_reopen": "If starting state cannot be recorded before concurrent spawn risk"
+    },
+    {
+      "id": "CA-CP-005",
+      "task_ids": [
+        "T013",
+        "T015",
+        "T018",
+        "T019",
+        "T021"
+      ],
+      "affected": "Port preflight and conflict refusal",
+      "references": "data-model.md#entity-portobservation",
+      "validation": "external conflict tests",
+      "stop_and_reopen": "If external conflict requires kill behavior"
+    },
+    {
+      "id": "CA-CP-006",
+      "task_ids": [
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ],
+      "affected": "Stop state machine",
+      "references": "contracts/cli-contract.md#lifecycle-commands",
+      "validation": "stop failure fixture test",
+      "stop_and_reopen": "If stop cannot preserve stop_failed evidence"
+    },
+    {
+      "id": "CA-CP-007",
+      "task_ids": [
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ],
+      "affected": "Force-stop ownership gate",
+      "references": "plan.md#ownership-model",
+      "validation": "force-owned matrix tests",
+      "stop_and_reopen": "If force-stop needs to target unverified owners"
+    },
+    {
+      "id": "CA-CP-008",
+      "task_ids": [
+        "T022",
+        "T023",
+        "T025"
+      ],
+      "affected": "Restart transaction",
+      "references": "plan.md#lifecycle-transaction-order",
+      "validation": "restart tests",
+      "stop_and_reopen": "If restart cannot be serialized safely"
+    },
+    {
+      "id": "CA-CP-009",
+      "task_ids": [
+        "T013",
+        "T015",
+        "T026",
+        "T027",
+        "T029"
+      ],
+      "affected": "Ready vs running and reconcile",
+      "references": "data-model.md#entity-managedrun",
+      "validation": "ready/stale tests",
+      "stop_and_reopen": "If readiness collapses into PID alive only"
+    },
+    {
+      "id": "CA-CP-010",
+      "task_ids": [
+        "T005",
+        "T009",
+        "T026",
+        "T028",
+        "T029"
+      ],
+      "affected": "Append-only events",
+      "references": "data-model.md#entity-eventrecord",
+      "validation": "JSONL stream tests",
+      "stop_and_reopen": "If events need mutable database/daemon"
+    },
+    {
+      "id": "CA-CP-011",
+      "task_ids": [
+        "T016",
+        "T018",
+        "T019",
+        "T020",
+        "T021"
+      ],
+      "affected": "Unified inspect",
+      "references": "contracts/cli-contract.md#inspect-commands",
+      "validation": "inspect payload tests",
+      "stop_and_reopen": "If inspect mutates lifecycle state"
+    },
+    {
+      "id": "CA-CP-012",
+      "task_ids": [
+        "T004",
+        "T008",
+        "T011"
+      ],
+      "affected": "Lock metadata and stale recovery",
+      "references": "data-model.md#entity-lockrecord",
+      "validation": "lock contention tests",
+      "stop_and_reopen": "If stale lock takeover cannot be proven safely"
+    },
+    {
+      "id": "CA-CP-013",
+      "task_ids": [
+        "T003",
+        "T007",
+        "T015"
+      ],
+      "affected": "State versions fail closed",
+      "references": "data-model.md#storage-namespaces",
+      "validation": "version compatibility tests",
+      "stop_and_reopen": "If newer state must be mutated blindly"
+    },
+    {
+      "id": "CA-CP-014",
+      "task_ids": [
+        "T006",
+        "T010",
+        "T024"
+      ],
+      "affected": "Non-interactive no prompts",
+      "references": "contracts/cli-contract.md#contract-rules",
+      "validation": "CLI contract tests",
+      "stop_and_reopen": "If command requires prompt in automation mode"
+    },
+    {
+      "id": "CA-CP-015",
+      "task_ids": [
+        "T030",
+        "T031",
+        "T032"
+      ],
+      "affected": "Clean path safety",
+      "references": "contracts/cli-contract.md#clean-commands",
+      "validation": "clean safety tests",
+      "stop_and_reopen": "If clean expands into reset"
+    },
+    {
+      "id": "CA-CP-016",
+      "task_ids": [
+        "T005",
+        "T009",
+        "T026",
+        "T028",
+        "T029",
+        "T031"
+      ],
+      "affected": "Redaction",
+      "references": "research.md#r8-evolve-json-output-centrally",
+      "validation": "redaction tests",
+      "stop_and_reopen": "If events/log metadata requires secrets"
+    },
+    {
+      "id": "CA-CP-017",
+      "task_ids": [
+        "T018",
+        "T019",
+        "T021",
+        "T022",
+        "T023",
+        "T025",
+        "T035"
+      ],
+      "affected": "Cross-platform fail-closed ownership",
+      "references": "research.md#r5-treat-ownership-as-evidence-not-a-boolean",
+      "validation": "ownership matrix + smoke",
+      "stop_and_reopen": "If platform evidence cannot support safe stop"
+    },
+    {
+      "id": "CA-CP-018",
+      "task_ids": [
+        "T016",
+        "T020",
+        "T021"
+      ],
+      "affected": "inspect-port compatibility",
+      "references": "contracts/cli-contract.md#launchdeck-inspect-port-port---json",
+      "validation": "compatibility tests",
+      "stop_and_reopen": "If wrapper must be removed"
+    },
+    {
+      "id": "CA-CP-019",
+      "task_ids": [
+        "T006",
+        "T010",
+        "T016",
+        "T020",
+        "T024",
+        "T028"
+      ],
+      "affected": "Stable JSON envelope",
+      "references": "contracts/cli-contract.md#json-envelope",
+      "validation": "JSON contract tests",
+      "stop_and_reopen": "If legacy compatibility cannot be maintained"
+    },
+    {
+      "id": "CA-CP-020",
+      "task_ids": [
+        "T033",
+        "T034",
+        "T035",
+        "T036",
+        "T037",
+        "T038"
+      ],
+      "affected": "Demo/docs/cross-platform proof",
+      "references": "quickstart.md#release-smoke-checklist",
+      "validation": "quickstart smoke",
+      "stop_and_reopen": "If release lacks demo or smoke evidence"
+    }
+  ],
+  "user_confirmed_deferrals": [],
+  "stop_and_reopen_conditions": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "embedded_review": {
+    "embedded_review_gate": "required",
+    "auto_repair_tasks": true,
+    "review_window_policy": {
+      "max_completed_tasks_before_review": 5,
+      "max_unreviewed_changed_paths": 8,
+      "max_unreviewed_validation_failures": 0
+    },
+    "visible_review_command": "none"
+  },
+  "next_command": "/sp.implement"
+}

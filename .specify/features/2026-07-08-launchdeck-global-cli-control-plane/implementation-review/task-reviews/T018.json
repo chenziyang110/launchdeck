@@ -1,0 +1,26 @@
+{
+  "task_ids": [
+    "T018"
+  ],
+  "verdict": "accepted_expected_red",
+  "review_id": "T018-review-final",
+  "review_agent": "019f4248-9dff-7b50-8af1-b39581da2235",
+  "accepted_at": "2026-07-08",
+  "changed_files": [
+    "test/inspect-cli.test.js"
+  ],
+  "validation": [
+    "node --check test/inspect-cli.test.js passed",
+    "node --test test/inspect-cli.test.js expected RED: 6 tests, 2 passed, 4 failed",
+    "Four failing tests stop at unknown_command because unified launchdeck inspect is not wired yet"
+  ],
+  "findings": [],
+  "accepted_residual_risks": [
+    "The RED tests intentionally do not directly pin next actions, even though FR-031 includes next actions in inspect output.",
+    "Helper assertions use substring matching to stay contract-level and avoid over-constraining deferred field names."
+  ],
+  "follow_up_work": [
+    "T019 should implement ownership evidence and port observation without adding the inspect command.",
+    "T020 should wire unified inspect and turn the expected RED inspect cases green."
+  ]
+}

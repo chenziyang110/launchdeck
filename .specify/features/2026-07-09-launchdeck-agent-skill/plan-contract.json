@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "status": "ready-for-tasks",
+  "feature_dir": ".specify/features/2026-07-09-launchdeck-agent-skill",
+  "entry_source": "sp-plan",
+  "created_at": "2026-07-09T17:06:30+08:00",
+  "workflow_status": "ready",
+  "execution_model": "adaptive",
+  "execution_mode": "light",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": false,
+  "delegated_planning_lanes": "none",
+  "source_artifacts": {
+    "spec": ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    "alignment": ".specify/features/2026-07-09-launchdeck-agent-skill/alignment.md",
+    "context": ".specify/features/2026-07-09-launchdeck-agent-skill/context.md",
+    "references": ".specify/features/2026-07-09-launchdeck-agent-skill/references.md",
+    "handoff_to_specify": ".specify/features/2026-07-09-launchdeck-agent-skill/brainstorming/handoff-to-specify.json",
+    "research": ".specify/features/2026-07-09-launchdeck-agent-skill/research.md",
+    "quickstart": ".specify/features/2026-07-09-launchdeck-agent-skill/quickstart.md"
+  },
+  "target_boundary": {
+    "current_project_root": "F:/github/launchdeck",
+    "target_project_root": "F:/github/launchdeck",
+    "target_kind": "project-local skill package",
+    "target_paths": [
+      ".agents/skills/launchdeck-agent/SKILL.md",
+      ".agents/skills/launchdeck-agent/references/intent-routing.md",
+      ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+      ".agents/skills/launchdeck-agent/references/discovery-rules.md",
+      ".agents/skills/launchdeck-agent/references/command-flows.md",
+      ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+      ".agents/skills/launchdeck-agent/references/clean-safety.md",
+      ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+    ]
+  },
+  "confirmed_delivery_scope": [
+    "one launchdeck-agent router skill",
+    "seven reference files",
+    "bilingual natural lifecycle trigger coverage",
+    "Launchdeck-only lifecycle command guidance",
+    "eval prompts for trigger, non-trigger, behavior safety, and compact output"
+  ],
+  "user_confirmed_deferrals": [
+    "scanner scripts",
+    "executable eval fixtures",
+    "monorepo-first management",
+    "six public subskills",
+    "MCP server",
+    "GUI or product installer",
+    "Launchdeck runtime or CLI behavior changes"
+  ],
+  "must_preserve": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010",
+    "MP-011",
+    "MP-012",
+    "MP-013",
+    "MP-014"
+  ],
+  "capability_plan": [
+    {
+      "capability": "intent-routing",
+      "entry_point": ".agents/skills/launchdeck-agent/SKILL.md",
+      "proof": "should-trigger and should-not-trigger eval prompts"
+    },
+    {
+      "capability": "unknown-project-adoption",
+      "entry_point": ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+      "proof": "adoption eval prompts across exact, strong, weak, and conflicting evidence"
+    },
+    {
+      "capability": "discovery-rules",
+      "entry_point": ".agents/skills/launchdeck-agent/references/discovery-rules.md",
+      "proof": "Node, Python, Docker Compose, Make, Just, and Taskfile prompt coverage"
+    },
+    {
+      "capability": "command-flows",
+      "entry_point": ".agents/skills/launchdeck-agent/references/command-flows.md",
+      "proof": "start, repeat start, restart, stop, force-stop, logs, and events prompt coverage"
+    },
+    {
+      "capability": "recovery-playbooks",
+      "entry_point": ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+      "proof": "port conflict, stale state, and ownership refusal prompt coverage"
+    },
+    {
+      "capability": "clean-safety",
+      "entry_point": ".agents/skills/launchdeck-agent/references/clean-safety.md",
+      "proof": "safe clean, risky clean, and reset refusal prompt coverage"
+    },
+    {
+      "capability": "eval-prompts",
+      "entry_point": ".agents/skills/launchdeck-agent/references/eval-prompts.md",
+      "proof": "SC-001 through SC-005 satisfied"
+    }
+  ],
+  "ca_obligations": [
+    {
+      "id": "CA-AS-001",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "A reference bypasses Launchdeck for lifecycle mutation."
+    },
+    {
+      "id": "CA-AS-002",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Unknown project adoption mutates config before confidence classification."
+    },
+    {
+      "id": "CA-AS-003",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Stop/restart/force-stop lacks ownership proof."
+    },
+    {
+      "id": "CA-AS-004",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Start/dev/run can duplicate a matching managed run."
+    },
+    {
+      "id": "CA-AS-005",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Agent loop guidance ignores compact JSON where available."
+    },
+    {
+      "id": "CA-AS-006",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Reference boundaries blur safety posture."
+    },
+    {
+      "id": "CA-AS-007",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Clean becomes risky clean or reset by default."
+    },
+    {
+      "id": "CA-AS-008",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Discovery ignores .launchdeck.yml authority or common v0 ecosystem files."
+    },
+    {
+      "id": "CA-AS-009",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Users must explicitly name the skill or Launchdeck."
+    },
+    {
+      "id": "CA-AS-010",
+      "plan_section": "Operational Consequence Design",
+      "stop_and_reopen_condition": "Repeat-run flow ignores persisted config, registry, runtime, logs, or events."
+    }
+  ],
+  "skipped_artifacts": {
+    "data_model": {
+      "required": false,
+      "reason": "No persistent application entities, database schema, or runtime state model are introduced by this skill package."
+    },
+    "contracts": {
+      "required": false,
+      "reason": "No external API, wire protocol, or cross-service interface is introduced."
+    }
+  },
+  "validation_strategy": [
+    "parse plan-contract.json as JSON",
+    "check required planning artifacts have no template placeholders",
+    "after implementation, check required skill files exist",
+    "after implementation, compare command names against node src/cli.js --help",
+    "after implementation, review eval prompts against SC-001 through SC-005",
+    "after implementation, scan references for raw kill-by-port/PID guidance"
+  ],
+  "forbidden_actions": [
+    "edit CLI source or tests for this feature",
+    "add new dependencies",
+    "start demo services",
+    "write direct process-kill recipes",
+    "create scanner scripts without renewed user confirmation"
+  ],
+  "next_command": "/sp.tasks"
+}

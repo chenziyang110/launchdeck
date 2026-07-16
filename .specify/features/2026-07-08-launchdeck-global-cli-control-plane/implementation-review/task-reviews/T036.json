@@ -1,0 +1,47 @@
+{
+  "taskId": "T036",
+  "reviewId": "T036-review-final",
+  "type": "task_review",
+  "status": "accepted_after_leader_repair",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "package.json",
+    "test/cli.test.js",
+    ".specify/teams/state/results/executor-t036.json"
+  ],
+  "validation": [
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Syntax checks cover current source files, control-plane modules, smoke script, demo scripts, test files, and test helpers."
+    },
+    {
+      "command": "node --test test/cli.test.js",
+      "result": "pass",
+      "summary": "Focused local CLI lifecycle test passed 2/2 after duplicate-start assertion repair."
+    },
+    {
+      "command": "npm test",
+      "result": "pass",
+      "summary": "Broad Node test entrypoint passed 136/136."
+    }
+  ],
+  "controllerChecks": [
+    "package.json preserves `npm run check` and `npm test`.",
+    "`npm run check` now includes new control-plane source, smoke script, official demo script, hands-on demo scripts, helpers, and test files.",
+    "`npm test` remains the broad `node --test` entrypoint.",
+    "No dependency was added.",
+    "Leader repair updated a legacy local duplicate-start assertion to match the accepted product contract: duplicate owned starts return the existing run without spawning another process.",
+    "No cross-platform-ready claim was made from Windows-local validation."
+  ],
+  "acceptedResidualRisks": [
+    "Future JavaScript files must be added to the explicit check script unless the project adopts an accepted dynamic checker.",
+    "Release smoke and final branch review remain T037/T038."
+  ],
+  "followUpWork": [
+    "T037 run quickstart release smoke and record final ledger evidence."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_after_leader_repair"
+}

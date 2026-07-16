@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T024",
+  "story": "US1",
+  "repair_for": ["T008", "T009"],
+  "description": "Fix foreground run JSON stdout isolation and config-resolved task_not_found context.",
+  "agent": "executor",
+  "depends_on": ["T023"],
+  "parallel_safe": false,
+  "context_navigation": [
+    "implementation-review/reviews.ndjson#T009-2026-07-07T15:55:26.4024567+08:00",
+    "contracts/cli-json-contract.md",
+    "src/cli.js",
+    "src/runtime.js"
+  ],
+  "write_scope": [
+    "src/cli.js",
+    "src/runtime.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/cli-json-contract.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/error-codes-v1.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson",
+    "test/cli-contract.test.js",
+    "src/cli.js",
+    "src/runtime.js",
+    "src/output.js",
+    "src/errors.js"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "test edits",
+    "deferred product surfaces"
+  ],
+  "expected_outputs": [
+    "src/cli.js (modified)",
+    "src/runtime.js (modified if needed)"
+  ],
+  "anti_goals": [
+    "Do not edit tests.",
+    "Do not swallow child exit codes.",
+    "Do not make non-json foreground output less useful.",
+    "Do not add dependencies."
+  ],
+  "does_not_remove": [
+    "foreground run",
+    "alias execution",
+    "child exit-code preservation",
+    "JSON failure envelopes"
+  ],
+  "capability_operations": [
+    "repairs run JSON contract",
+    "repairs config-resolved failure context"
+  ],
+  "acceptance_criteria": [
+    "`node --test test/cli-contract.test.js` passes including T023 regressions.",
+    "`run --json` emits exactly one JSON object to stdout even if the child task writes stdout.",
+    "Config-resolved `task_not_found` failure envelopes include `projectRoot` and `configPath`.",
+    "Foreground child exit codes remain preserved."
+  ],
+  "verify_commands": [
+    "node --check src/cli.js src/runtime.js",
+    "node --test test/cli-contract.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": ["CA-003", "CA-013", "CA-020"],
+  "mp_ids": ["MP-009", "MP-014"],
+  "consumer_surfaces": [
+    "launchdeck run --json",
+    "launchdeck build --json",
+    "launchdeck run <missing> --json"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "child_exit_evidence",
+    "contract_test_pass"
+  ],
+  "stop_and_reopen": [
+    "Repair requires changing public JSON contract.",
+    "Repair cannot preserve foreground child exit codes.",
+    "Task requires edits outside write scope."
+  ],
+  "status": "ready"
+}

@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "reported_status": "DONE",
+  "task_id": "T006",
+  "lane": "B2 / implement-slot-4",
+  "changed_files": [
+    "test/cli-control-plane-contract.test.js"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --test test/cli-control-plane-contract.test.js",
+      "exit_code": 1,
+      "result": "RED",
+      "summary": "7 tests executed: 1 passed, 6 failed. Failures are assertion failures for missing schemaVersion, data, next, top-level error code/message/details, and missing required control-plane ERROR_CODES.",
+      "red_evidence": [
+        "success envelope includes schemaVersion 1: undefined !== 1",
+        "success envelope nests structured payload under data: actual undefined",
+        "success envelope includes an empty next action list by default: undefined !== []",
+        "failure envelope exposes stable code message details and next at the contract surface: top-level code/message/details/schemaVersion are undefined",
+        "required control-plane error codes are public contract codes: missing alias_conflict, duplicate_run, external_process, lock_busy, ownership_not_verified, port_release_timeout, project_has_active_runs, registry_lock_busy, run_not_found, start_in_progress, state_version_unsupported, task_lock_busy, unknown_process_owner",
+        "clean --all --json refuses without prompting and returns structured next actions: schemaVersion is undefined"
+      ]
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    "Implement JSON envelope v1 in src/output.js with schemaVersion: 1, data payload nesting, and next defaulting to an array while preserving legacy top-level mirrored payload fields.",
+    "Move failure envelope code, message, details, and next to the top-level contract surface while preserving any legacy nested error compatibility required by older tests.",
+    "Add the required control-plane error codes to the public ERROR_CODES registry without removing legacy codes.",
+    "Add next actions for confirmation-required/refusal flows such as clean --all --json."
+  ],
+  "concerns": [
+    "git status reports src/output.js and src/errors.js as untracked in this worktree view, but this lane only read those files and did not edit production source."
+  ],
+  "consumer_evidence": {
+    "contract_refs": [
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md#JSON Envelope",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md#Error Codes",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md#JSON Envelope",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md#Entity NextAction"
+    ],
+    "test_surfaces": [
+      "createSuccessEnvelope direct helper contract",
+      "createFailureEnvelope direct helper contract",
+      "ERROR_CODES public registry",
+      "clean --all --json CLI refusal path through createControlPlaneFixture"
+    ]
+  }
+}

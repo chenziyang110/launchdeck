@@ -1,0 +1,32 @@
+{
+  "id": "E-T-002",
+  "source_path": "test/clean-control-plane.test.js",
+  "summary": "Clean 命令控制平面安全测试 — 路径逃逸、符号链接、运行时证据保留",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-002",
+    "source_path": "test/clean-control-plane.test.js",
+    "summary": "Clean 命令控制平面安全测试 — 路径逃逸、符号链接、运行时证据保留",
+    "test_groups": [
+      "clean --safe 拒绝路径逃逸而不删除已批准目标",
+      "clean --safe 拒绝符号链接逃逸而不删除已批准目标",
+      "clean --safe 拒绝项目根目标而不删除已批准目标",
+      "clean --safe 拒绝未知空目标而不删除已批准目标",
+      "clean --safe 保留运行中的证据(cache/…/logs)",
+      "clean --safe 保留最新的失败证据",
+      "reset 命令不存在且不执行清理行为"
+    ],
+    "key_assertions": [
+      "路径 '..' 返回 clean_target_outside_project 且 dist 不被删除",
+      "符号链接到外部目录返回 clean_target_outside_project",
+      "目标 '.' 返回 clean_target_root",
+      "空/空白目标返回 clean_target_empty",
+      "运行中的进程日志不受 clean --safe 影响 (partially_removed)",
+      "最新的 failure log (dev.failed.log) 被保留",
+      "reset 命令返回 unknown_command 或 command_usage_error"
+    ]
+  }
+}

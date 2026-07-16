@@ -1,0 +1,105 @@
+{
+  "status": "success",
+  "task_id": "T039",
+  "changed_files": [
+    "src/control-plane/state.js",
+    "src/global-runtime.js",
+    "src/cli.js",
+    ".specify/teams/state/results/019f415e-d147-7ae0-8897-c6e1d9e93a84.json"
+  ],
+  "validation_evidence": {
+    "node --check src/control-plane/state.js": {
+      "status": 0,
+      "result": "passed"
+    },
+    "node --check src/global-runtime.js": {
+      "status": 0,
+      "result": "passed"
+    },
+    "node --check src/cli.js": {
+      "status": 0,
+      "result": "passed"
+    },
+    "node --test test/control-plane-state.test.js": {
+      "status": 0,
+      "result": "passed 5/5",
+      "summary": "tests 5, pass 5, fail 0"
+    },
+    "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js": {
+      "status": 0,
+      "result": "passed 20/20",
+      "summary": "tests 20, pass 20, fail 0"
+    },
+    "node --test test/global-runtime.test.js": {
+      "status": 0,
+      "result": "passed 11/11",
+      "summary": "compatibility check for existing add/list/remove/scan and global consumers"
+    },
+    "debug_leftover_scan": {
+      "command": "rg \"console\\.log|debugger|TODO|FIXME\" src/control-plane/state.js src/global-runtime.js src/cli.js",
+      "status": 1,
+      "result": "no matches"
+    }
+  },
+  "red_state_evidence": {
+    "command": "node --test test/control-plane-state.test.js",
+    "status": 1,
+    "summary": "tests 5, pass 0, fail 5",
+    "failures": [
+      "project add created legacy/no v2 payload shape",
+      "legacy v1 read/migration was not bridged through CLI/global-runtime",
+      "project repair route failed before implementation",
+      "unsupported newer v2 registry was not surfaced through state_version_unsupported",
+      "repair path/config/alias behavior was absent"
+    ]
+  },
+  "green_state_evidence": {
+    "command": "node --test test/control-plane-state.test.js",
+    "status": 0,
+    "summary": "tests 5, pass 5, fail 0",
+    "covered": [
+      "project add creates LAUNCHDECK_HOME/registry/projects.json as v2",
+      "legacy LAUNCHDECK_HOME/projects.json is read when v2 is absent and migrated on mutation",
+      "alias repair preserves projectId and alias collisions emit alias_conflict with existingProjectId",
+      "unsupported newer registry version emits state_version_unsupported with repair next action",
+      "project repair updates alias/projectRoot/configPath while preserving projectId"
+    ]
+  },
+  "blockers": [],
+  "concerns": [
+    "No lsp_diagnostics tool is exposed in this runtime; Node syntax checks and targeted tests were used for verification.",
+    "git status reports the touched source paths as untracked from the current git root, so git diff did not provide tracked-file patch output."
+  ],
+  "changed_paths": [
+    "src/control-plane/state.js",
+    "src/global-runtime.js",
+    "src/cli.js"
+  ],
+  "behavior_surfaces": [
+    "launchdeck project add",
+    "launchdeck project repair",
+    "launchdeck projects",
+    "launchdeck project remove",
+    "launchdeck project scan",
+    "JSON failure envelope data mirrors for CLI errors"
+  ],
+  "state_contracts": [
+    "Global project registry reads v2 from LAUNCHDECK_HOME/registry/projects.json first.",
+    "Global project registry reads legacy v1 LAUNCHDECK_HOME/projects.json only when v2 is absent.",
+    "Mutations write only the v2 registry/projects.json path.",
+    "v2 project records preserve projectId plus legacy id/key/name mirrors for existing consumers.",
+    "project add is idempotent by projectRoot/key and rejects alias conflicts for other projectIds.",
+    "project repair changes alias/projectRoot/configPath while preserving projectId.",
+    "Unsupported newer registry versions surface state_version_unsupported with foundVersion, supportedVersion, statePath, and repair guidance."
+  ],
+  "verification": {
+    "required": "all requested commands passed",
+    "extra": "test/global-runtime.test.js passed as consumer-preservation evidence",
+    "result_file_parse": "passed with node -e JSON.parse(fs.readFileSync(...))"
+  },
+  "confidence_notes": [
+    "Scope stayed within the allowed source files plus this result file.",
+    "No tests, docs, locks, events, runtime files, package metadata, or feature workflow artifacts were edited.",
+    "src/control-plane/actions.js was not created."
+  ]
+}

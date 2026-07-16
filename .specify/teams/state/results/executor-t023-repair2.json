@@ -1,0 +1,89 @@
+{
+  "status": "completed_with_expected_residuals",
+  "changed_files": [
+    "src/runtime.js",
+    "src/control-plane/actions.js",
+    "test/lifecycle-ownership.test.js",
+    ".specify/teams/state/results/executor-t023-repair2.json"
+  ],
+  "validation_output": {
+    "source_sniffing_removed": true,
+    "source_sniffing_check": {
+      "command": "rg -n \"assertNoExplicitStopHandler|nodeScriptPath|parseCommandTokens|isNodeCommand|process\\.on\\(\\s*['\\\"]SIG(?:TERM|INT)|readFileSync\\(scriptPath\" src/runtime.js test/lifecycle-ownership.test.js",
+      "status": 1,
+      "summary": "No matches. Runtime no longer parses user command text or managed script source to infer stop failure."
+    },
+    "syntax": [
+      {
+        "command": "node --check src/runtime.js",
+        "status": 0,
+        "summary": "passed"
+      },
+      {
+        "command": "node --check src/control-plane/runs.js",
+        "status": 0,
+        "summary": "passed"
+      },
+      {
+        "command": "node --check src/control-plane/actions.js",
+        "status": 0,
+        "summary": "passed"
+      },
+      {
+        "command": "node --check test/lifecycle-ownership.test.js",
+        "status": 0,
+        "summary": "passed"
+      }
+    ],
+    "tests": [
+      {
+        "command": "node --test test/control-plane-ownership.test.js",
+        "status": 0,
+        "summary": "4 passed, 0 failed"
+      },
+      {
+        "command": "node --test --test-name-pattern \"stop --json preserves stop_failed evidence\" test/lifecycle-ownership.test.js",
+        "status": 0,
+        "summary": "1 passed, 0 failed; stop_failed regression passes with runtime port evidence"
+      },
+      {
+        "command": "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+        "status": 1,
+        "summary": "17 passed, 4 failed. Remaining failures are CLI/output routing or payload shape residuals, not T023 stop safety behavior.",
+        "remaining_failures": [
+          {
+            "test": "stop --json stops a verified-owned run and records stopped evidence",
+            "actual": "successful stop payload returns process directly",
+            "expected": "payload includes stopped[]"
+          },
+          {
+            "test": "force-stop --json preserves the verified ownership gate",
+            "actual": "unknown_command",
+            "expected": "external_process"
+          },
+          {
+            "test": "restart --json stops, waits for port release, and starts a new run in one transaction",
+            "actual": "restart payload omits stoppedRun",
+            "expected": "payload includes stoppedRun"
+          },
+          {
+            "test": "restart --json records port_release_timeout when the stopped task leaves its port occupied",
+            "actual": "partial_failure",
+            "expected": "port_release_timeout"
+          }
+        ]
+      }
+    ]
+  },
+  "concerns": [
+    "No source-code sniffing remains in runtime stop failure classification.",
+    "stop_failed is now based on real runtime evidence: process stop result, PID liveness, declared port listeners, and timeout/stable-free checks.",
+    "The lifecycle stop_failed fixture now models a managed parent that owns the declared port initially and a detached child that claims the port after parent termination, so the ownership gate remains intact and the failure is detected from post-stop listener evidence.",
+    "Restart keeps a separate port_release_timeout path by opting out of runtime's direct-stop port verification during its stop phase."
+  ],
+  "recovery_hints": [
+    "Do not reintroduce command parsing or managed script source reads for stop classification.",
+    "T024 should handle the remaining CLI/output residuals in src/cli.js/src/output.js without weakening the ownership gate.",
+    "If port takeover behavior is adjusted later, keep the test fixture's pre-stop listener owned by the managed PID so ownership verification stays meaningful."
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "status": "ready-for-plan",
+  "entry_source": "sp-specify",
+  "source_handoff": ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.md",
+  "source_handoff_json": ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.json",
+  "discussion_slug": "launchdeck-agent-skill-suite",
+  "source_files_read": [
+    ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.json",
+    ".specify/discussions/launchdeck-agent-skill-suite/discussion-log.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/requirements.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/technical-options.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/project-context.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/open-questions.md",
+    "package.json",
+    "README.md",
+    "src/cli.js",
+    "test/cli-contract.test.js",
+    "test/cli-control-plane-contract.test.js",
+    "test/global-runtime.test.js",
+    "test/clean-safety.test.js"
+  ],
+  "source_signal_disposition": [
+    {
+      "signal": "v0 launchdeck-agent skill package",
+      "source": "handoff MP-001",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#Requirements FR-001",
+      "user_confirmed": true,
+      "reopen_trigger": "Scope becomes CLI, MCP, or GUI instead of skill package."
+    },
+    {
+      "signal": "one router skill with bundled references",
+      "source": "handoff MP-002",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#Confirmed Scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Multiple public skills are proposed for v0."
+    },
+    {
+      "signal": "natural user intent routes internally",
+      "source": "handoff MP-003",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#Requirements FR-003-FR-006",
+      "user_confirmed": true,
+      "reopen_trigger": "User must name Launchdeck or skill names."
+    },
+    {
+      "signal": "Launchdeck execution authority",
+      "source": "handoff MP-004",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Boundary Constraints",
+      "user_confirmed": true,
+      "reopen_trigger": "Skill directly owns processes."
+    },
+    {
+      "signal": ".launchdeck.yml lifecycle authority and persisted knowledge",
+      "source": "handoff MP-005",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-007-FR-014",
+      "user_confirmed": true,
+      "reopen_trigger": "Skill remains one-off command runner."
+    },
+    {
+      "signal": "observe before mutate",
+      "source": "handoff MP-006",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-017-FR-024",
+      "user_confirmed": true,
+      "reopen_trigger": "Lifecycle mutation skips evidence."
+    },
+    {
+      "signal": "ownership proof before stop restart force-stop",
+      "source": "handoff MP-007",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-019-FR-021",
+      "user_confirmed": true,
+      "reopen_trigger": "Port or PID alone authorizes stop."
+    },
+    {
+      "signal": "unknown or external processes inspect-only",
+      "source": "handoff MP-008",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-022-FR-023",
+      "user_confirmed": true,
+      "reopen_trigger": "Automatic kill is introduced."
+    },
+    {
+      "signal": "safe clean risky clean reset separation",
+      "source": "handoff MP-009",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-026-FR-028",
+      "user_confirmed": true,
+      "reopen_trigger": "Clean can delete secrets data or reset state."
+    },
+    {
+      "signal": "compact JSON agent loops",
+      "source": "handoff MP-010",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-015-FR-016",
+      "user_confirmed": true,
+      "reopen_trigger": "Compact output is unavailable for required flow."
+    },
+    {
+      "signal": "Node Python Docker Compose Make Just Taskfile discovery",
+      "source": "handoff MP-011",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#Requirements FR-011-FR-012",
+      "user_confirmed": true,
+      "reopen_trigger": "V0 must cover a different ecosystem first."
+    },
+    {
+      "signal": "scanner scripts",
+      "source": "handoff MP-012",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#Deferred Or Future Scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Evals prove prose discovery is unreliable."
+    },
+    {
+      "signal": "eval prompt groups",
+      "source": "handoff MP-013",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#Requirements FR-029-FR-030",
+      "user_confirmed": true,
+      "reopen_trigger": "Verification ignores behavior safety."
+    },
+    {
+      "signal": "exact skill install path",
+      "source": "handoff MP-014",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#Requirements FR-001",
+      "user_confirmed": true,
+      "reopen_trigger": ".codex/skills is invalid for local installation."
+    },
+    {
+      "signal": "monorepo-first behavior",
+      "source": "open-questions.md",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#Deferred Or Future Scope",
+      "user_confirmed": true,
+      "reopen_trigger": "V0 must manage multiple launchable apps in one repo."
+    },
+    {
+      "signal": "separate public subskills",
+      "source": "technical-options.md",
+      "disposition": "dropped",
+      "artifact_location": "spec.md#Out of Scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Post-v0 evals prove split is needed."
+    },
+    {
+      "signal": "GUI MCP-first direct OS process killing reset automation",
+      "source": "handoff rejected alternatives",
+      "disposition": "dropped",
+      "artifact_location": "spec.md#Out of Scope",
+      "user_confirmed": true,
+      "reopen_trigger": "User changes product target."
+    }
+  ],
+  "discussion_decision_digest": {
+    "locked_direction": [
+      "One launchdeck-agent router skill with bundled references.",
+      "Natural user intent routes internally.",
+      "First-run discovery persists lifecycle knowledge.",
+      "Launchdeck remains execution authority."
+    ],
+    "rejected_alternatives": [
+      "Six public skills for v0.",
+      "Direct agent-managed process killing.",
+      "GUI/MCP-first.",
+      "Clean-as-reset.",
+      "Automatic destructive cleanup."
+    ],
+    "accepted_tradeoffs": [
+      "Weak-confidence discovery stays conservative.",
+      "References remain internal until trigger behavior is proven.",
+      "Scanner scripts are deferred until evals prove need."
+    ],
+    "experience_commitments": [
+      "Users express intent, not skill names.",
+      "Agent reports conclusion, evidence, and safe next action.",
+      "Agent avoids duplicate local services."
+    ],
+    "review_criteria_carried_forward": [
+      "Goal matches user intent.",
+      "Target project and roles are correct.",
+      "No hard unknowns remain.",
+      "Soft unknowns are safe to resolve during specification.",
+      "Safety and consequence obligations cover drift-prone decisions."
+    ],
+    "must_not_dilute": [
+      "Observe before mutate.",
+      "Ownership proof before stop/restart/force-stop.",
+      "Inspect-only for unknown/external processes.",
+      "Safe clean only by default.",
+      "Compact JSON for agent loops."
+    ]
+  },
+  "must_preserve": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010",
+    "MP-011",
+    "MP-012",
+    "MP-013",
+    "MP-014"
+  ],
+  "coverage_status": "complete",
+  "planning_gate_status": "ready",
+  "hard_unknown_count": 0,
+  "open_conflict_count": 0,
+  "quality_gate": {
+    "status": "user_confirmed",
+    "user_review_required": true,
+    "user_confirmed": true,
+    "user_confirmed_at": "2026-07-09T17:06:30+08:00",
+    "blocked_reasons": []
+  }
+}

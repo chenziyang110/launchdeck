@@ -1,0 +1,44 @@
+{
+  "id": "E-CP-013",
+  "source_path": "src/control-plane/state.js",
+  "summary": "注册表持久化层：支持v2和v1(legacy)格式，atomic write + rename保证写入完整性，版本检查和迁移",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-013",
+    "source_path": "src/control-plane/state.js",
+    "summary": "注册表持久化层：支持v2和v1(legacy)格式，atomic write + rename保证写入完整性，版本检查和迁移",
+    "symbols": [
+      "controlPlanePaths",
+      "projectControlPlanePaths",
+      "taskControlPlanePaths",
+      "readRegistryState",
+      "writeRegistryState",
+      "updateRegistryState",
+      "normalizeProjectRegistration",
+      "assertAliasAvailable",
+      "unsupportedStateVersionError"
+    ],
+    "exports": [
+      "controlPlanePaths",
+      "projectControlPlanePaths",
+      "taskControlPlanePaths",
+      "readRegistryState",
+      "writeRegistryState",
+      "updateRegistryState",
+      "normalizeProjectRegistration",
+      "assertAliasAvailable",
+      "unsupportedStateVersionError",
+      "REGISTRY_STATE_VERSION"
+    ],
+    "dependencies": [
+      "crypto",
+      "fs",
+      "os",
+      "path",
+      "errors.js (LaunchdeckError)"
+    ]
+  }
+}

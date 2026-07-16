@@ -1,0 +1,43 @@
+{
+  "task_id": "T013-repair",
+  "status": "DONE_WITH_EXPECTED_RED",
+  "summary": "Verified the managed CLI/global runtime harness now serializes managed-process tests with the shared runtime lock. The focused ports lane passes, and the combined managed/global runtime command fails only on the intended T012/T013 RED behavior assertions.",
+  "files_changed": [
+    ".specify/teams/state/results/test-engineer-t013-repair.json"
+  ],
+  "validations": [
+    {
+      "command": "node --check test/managed-cli.test.js",
+      "exit_code": 0,
+      "summary": "Syntax check passed."
+    },
+    {
+      "command": "node --check test/global-runtime.test.js",
+      "exit_code": 0,
+      "summary": "Syntax check passed."
+    },
+    {
+      "command": "node --test --test-name-pattern \"ports reports declared ports\" test/global-runtime.test.js",
+      "exit_code": 0,
+      "summary": "Focused ports test passed: 1 passed, 0 failed."
+    },
+    {
+      "command": "node --test test/managed-cli.test.js test/global-runtime.test.js",
+      "exit_code": 1,
+      "summary": "Combined run passed the ports lane and failed 10 intended RED assertions: 23 passed, 10 failed, 0 unexpected harness failures."
+    }
+  ],
+  "expected_red_failures": [
+    "test/global-runtime.test.js: start project:task writes a global run index record with lifecycle identity",
+    "test/global-runtime.test.js: start project:task injects global run markers into the managed task environment",
+    "test/global-runtime.test.js: start project:task returns the existing run without spawning a second process",
+    "test/global-runtime.test.js: start project:task reports HTTP readiness separately from process liveness",
+    "test/global-runtime.test.js: start project:task falls back to process-alive readiness when no port is declared",
+    "test/global-runtime.test.js: status --all exposes safe next actions for active owned runs",
+    "test/global-runtime.test.js: project remove refuses to unregister a project with active owned runs",
+    "test/managed-cli.test.js: start --json returns run identity and readiness fields for the managed run",
+    "test/managed-cli.test.js: start --json injects launchdeck run markers into the managed task environment",
+    "test/managed-cli.test.js: start --json treats a second owned start as idempotent without spawning another process"
+  ],
+  "unexpected_failures": []
+}

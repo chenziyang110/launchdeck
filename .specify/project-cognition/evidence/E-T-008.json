@@ -1,0 +1,27 @@
+{
+  "id": "E-T-008",
+  "source_path": "test/config.test.js",
+  "summary": "配置解析单元测试 — normalizeConfig、loadConfig、resolveCleanTargets",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-008",
+    "source_path": "test/config.test.js",
+    "summary": "配置解析单元测试 — normalizeConfig、loadConfig、resolveCleanTargets",
+    "test_groups": [
+      "规范化字符串和对象的任务定义",
+      "从子目录向上搜索加载配置",
+      "拒绝项目根外的 clean targets",
+      "拒绝清理项目根本身"
+    ],
+    "key_assertions": [
+      "字符串任务 'npm run build' 被规范化为 {command: 'npm run build'}",
+      "端口 '5173' 字符串被转换为数字 5173",
+      "从子目录 packages/app/ 加载到 .launchdeck.yml 的项目根",
+      "../outside 的 clean target 抛出 /inside the project root/",
+      "'.' 的 clean target 抛出 /refuses to clean the project root/"
+    ]
+  }
+}

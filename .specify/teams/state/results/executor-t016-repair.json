@@ -1,0 +1,17 @@
+{
+  "status": "success",
+  "task_id": "T016-repair",
+  "changed_files": [
+    "src/control-plane/inspect.js",
+    "src/cli.js",
+    "test/global-runtime.test.js",
+    ".specify/teams/state/results/executor-t016-repair.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/inspect.js": "passed (no output)",
+    "node --check src/cli.js": "passed (no output)",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js": "passed: 36 tests, 0 failures, duration_ms 67699.8341"
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

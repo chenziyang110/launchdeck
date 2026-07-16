@@ -1,0 +1,25 @@
+{
+  "id": "E-CP-005",
+  "source_path": "src/control-plane/events.js",
+  "summary": "敏感数据脱敏：基于正则匹配key/value中的secret/token/password/credential/API key模式，递归处理嵌套对象和数组",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-005",
+    "source_path": "src/control-plane/events.js",
+    "summary": "敏感数据脱敏：基于正则匹配key/value中的secret/token/password/credential/API key模式，递归处理嵌套对象和数组",
+    "symbols": [
+      "redactValue",
+      "shouldRedactKey",
+      "shouldRedactValue",
+      "redactString",
+      "SECRET_KEY_PATTERN",
+      "CAMEL_SECRET_KEY_PATTERN",
+      "SECRET_VALUE_PATTERN"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "status": "success",
+  "task_id": "T016",
+  "agent": "test-engineer",
+  "completed_at": "2026-07-07T17:22:37.0747575+08:00",
+  "changed_files": [
+    "test/clean-safety.test.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check test/clean-safety.test.js",
+      "exit_code": 0
+    },
+    "clean_safety_tests": {
+      "command": "node --test test/clean-safety.test.js",
+      "exit_code": 1,
+      "tests": 7,
+      "passed": 0,
+      "failed": 7,
+      "expected_failures": [
+        "clean JSON output lacks command/status/projectRoot/configPath envelope fields",
+        "clean JSON output lacks mode/targets/removed contract payload shape",
+        "refusal responses lack dry-run plan context",
+        "absolute clean targets are currently accepted instead of refused as clean_target_ambiguous"
+      ]
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "T017 should implement canonical clean target planning/refusal and missing-target statuses in src/runtime.js and src/adapters/path.js.",
+    "T018 should wrap clean command output in the shared JSON envelope and expose dryRun/mode/targets/removed."
+  ],
+  "real_entrypoint_evidence": "Tests use createCliFixture().runCliJson(), spawning node src/cli.js through the reusable CLI fixture.",
+  "expected_red_before_implementation": "All seven clean-safety tests fail before T017/T018 because clean output lacks the contract envelope and canonical clean planner/refusal behavior."
+}

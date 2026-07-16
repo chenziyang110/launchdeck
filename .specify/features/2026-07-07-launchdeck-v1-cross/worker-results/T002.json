@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T002",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3b76-3a4b-7f30-8f83-be51e48fb4bd",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/helpers/cli-fixture.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check test/helpers/cli-fixture.js",
+      "status": "passed"
+    },
+    "helper_smoke": {
+      "command": "node --input-type=module",
+      "status": "passed",
+      "summary": "Created temp project, wrote config/script, ran local CLI doctor --json, parsed JSON, cleaned fixture."
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "Future tests can import createCliFixture, runCli, runCliJson, writeConfig, writeScript, parseJson, and removeTempProject.",
+    "Cleanup is intentionally limited to os.tmpdir() entries with the launchdeck-cli- prefix."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-006"],
+      "evidence": "Helper writes explicit `.launchdeck.yml` configs in isolated temp projects."
+    },
+    {
+      "ids": ["MP-014", "CA-020"],
+      "evidence": "Helper preserves process status/stdout/stderr and parsed JSON together for JSON and exit-code assertions."
+    },
+    {
+      "ids": ["CA-010"],
+      "evidence": "Helper supports first-run temp project flows with local CLI invocation."
+    }
+  ],
+  "result_summary": "T002 fixture helper created and verified."
+}

@@ -1,0 +1,35 @@
+{
+  "id": "E-T-005",
+  "source_path": "test/cli-control-plane-contract.test.js",
+  "summary": "CLI 控制平面合约测试 — 成功/失败信封结构和 next actions",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-005",
+    "source_path": "test/cli-control-plane-contract.test.js",
+    "summary": "CLI 控制平面合约测试 — 成功/失败信封结构和 next actions",
+    "test_groups": [
+      "成功信封包含 schemaVersion 1",
+      "成功信封在 data 下嵌套结构化 payload",
+      "成功信封默认包含空的 next 列表",
+      "成功信封保留传统顶层 payload 镜像",
+      "紧凑成功信封移除镜像但保留进程控制字段",
+      "失败信封在合约表面暴露稳定的 code/message/details/next",
+      "紧凑失败信封保留 code/message/details 和安全的 next actions",
+      "必需的控制平面错误代码是公共合约代码",
+      "clean --all --json 不提示即拒绝并返回结构化 next actions"
+    ],
+    "key_assertions": [
+      "成功信封 schemaVersion=1, ok=true, command, status=ok",
+      "payload 嵌套在 data 字段下",
+      "next 默认 []",
+      "传统字段 (summary, projects) 在顶层保留",
+      "紧凑格式使用 cmd 替代 command，省略 label/reason",
+      "失败信封有 code, message, details, next",
+      "26 个 REQUIRED_CONTROL_PLANE_ERROR_CODES 均在 ERROR_CODES 中",
+      "clean --all 返回 confirmation_required，没有交互提示"
+    ]
+  }
+}

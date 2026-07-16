@@ -1,0 +1,78 @@
+{
+  "task_id": "T002",
+  "id": "T002",
+  "title": "Create intent-routing reference",
+  "agent": "executor",
+  "depends_on": [
+    "T001"
+  ],
+  "parallel_safe": true,
+  "objective": "Create the trigger, non-trigger, and subflow selection reference used by the root skill.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/references/intent-routing.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/alignment.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/quickstart.md"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    ".env",
+    "credential files",
+    "other reference files"
+  ],
+  "context_navigation": {
+    "natural_intent_requirements": "spec.md#Functional-Requirements",
+    "semantic_terms": "alignment.md#Semantic-Term-Decisions",
+    "active_profile": "plan.md#Scenario-Profile-Inputs",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/references/intent-routing.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not route ordinary code edits, docs-only work, general explanations, or production deployment unless local lifecycle operation is requested."
+  ],
+  "does_not_remove": [
+    "MP-003",
+    "MP-014",
+    "CA-AS-009"
+  ],
+  "capability_operations": [
+    "implements trigger and subflow selection",
+    "does not own command execution"
+  ],
+  "consumer_surfaces": [
+    "skill routing reference loaded by SKILL.md"
+  ],
+  "required_evidence": [
+    "trigger coverage",
+    "non-trigger coverage",
+    "real_entrypoint_evidence"
+  ],
+  "acceptance_criteria": [
+    "Includes should-trigger local lifecycle categories in English and Chinese.",
+    "Includes should-not-trigger near misses.",
+    "Requires local project/service context before Launchdeck routing.",
+    "Routes onboarding, operation, observation, recovery, and clean to the correct reference files."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\references\\intent-routing.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\references\\intent-routing.md -Pattern 'should-trigger|should not|启动|端口|local project|reference'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/references/intent-routing.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

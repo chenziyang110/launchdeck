@@ -1,0 +1,26 @@
+{
+  "id": "E-T-011",
+  "source_path": "test/control-plane-ownership.test.js",
+  "summary": "所有权验证测试 — PID 匹配、进程证据、端口观察冲突",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-011",
+    "source_path": "test/control-plane-ownership.test.js",
+    "summary": "所有权验证测试 — PID 匹配、进程证据、端口观察冲突",
+    "test_groups": [
+      "匹配的监听器 PID 但只有存活证据不是验证拥有",
+      "匹配的监听器 PID 但进程证据不可用不是验证拥有",
+      "匹配的监听器 PID 加上可信进程证据验证所有权",
+      "未知声明的所有权在端口观察冲突中保持未知"
+    ],
+    "key_assertions": [
+      "仅 liveness 证据返回 confidence=UNKNOWN, 不是 VERIFIED_OWNED",
+      "listener pid 匹配但 trusted_process_evidence_unavailable_or_incomplete",
+      "加上 LAUNCHDECK_RUN_ID env 标记 => VERIFIED_OWNED",
+      "未知声明的所有权在 buildPortObservation 中返回 ownerType=unknown, conflicts 包含 warning"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "integration": "codex",
+  "version": "0.5.22.dev0",
+  "scripts": {
+    "update-context": ".specify/integrations/codex/scripts/update-context.ps1"
+  },
+  "workflow_profiles": [
+    "classic"
+  ],
+  "team": {
+    "surface": "sp-teams",
+    "runtime_config": ".specify/teams/runtime.json"
+  }
+}

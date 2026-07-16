@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T001",
+  "agent_type": "reviewer",
+  "agent_id": "019f3b72-4bf9-7e01-a8db-e831881c551f",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/.specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson"
+  ],
+  "validation_output": {
+    "authoritative_inputs_checked": true,
+    "current_ready_batch_confirmed": "T001 only",
+    "decision": "cleared",
+    "reviews_ndjson_line_count": 1,
+    "acceptance_criteria_met": true
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "Reopen planning/spec only if a downstream task requires a deferred surface or cannot preserve the locked v1 boundary without scope expansion."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-001", "MP-002", "MP-003", "MP-013", "MP-015", "MP-016"],
+      "evidence": "T001 review entry records v1 CLI-first/local/single-project/explicit-config boundary and forbidden deferred surfaces."
+    },
+    {
+      "ids": ["CA-017", "CA-022"],
+      "evidence": "T001 review entry records claim-level honesty and deferred-scope guardrail for later implementation/release evidence."
+    }
+  ],
+  "result_summary": "T001 embedded pre-implement review cleared; F1 can start."
+}

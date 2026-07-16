@@ -1,0 +1,870 @@
+{
+  "schemaVersion": 1,
+  "ledgerId": "launchdeck-global-cli-control-plane-implementation-review-ledger",
+  "feature": {
+    "name": "Launchdeck Global CLI Control Plane",
+    "featureDir": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane",
+    "createdAt": "2026-07-08T00:00:00Z"
+  },
+  "baseline": {
+    "taskId": "T001",
+    "status": "recorded",
+    "purpose": "Record implementation guardrails and embedded review baseline before code implementation starts.",
+    "activeProfile": "Standard Delivery",
+    "seniorConsequenceGate": {
+      "required": true,
+      "reason": "The feature controls lifecycle operations, process termination, shared user-scoped state, locks, ports, logs, events, and cross-platform compatibility.",
+      "minimumObligations": [
+        "Record affected lifecycle/state objects before implementing behavior changes.",
+        "Preserve CA-CP obligations during task dispatch, validation, and review acceptance.",
+        "Stop and reopen the owning upstream workflow if safety invariants cannot be preserved."
+      ]
+    },
+    "authoritativeInputs": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ]
+  },
+  "implementationGuardrails": {
+    "productSurface": {
+      "firstCompleteSurface": "CLI-only",
+      "forbiddenAdditions": [
+        "always-running daemon",
+        "OS service",
+        "GUI",
+        "TUI",
+        "MCP server",
+        "editor integration",
+        "local web dashboard"
+      ],
+      "futureClientsRule": "Future GUI, TUI, MCP, editor, web, or daemon clients must reuse the same state, events, logs, ownership model, and safety semantics rather than introduce a second source of truth."
+    },
+    "stateModel": {
+      "scope": "single OS user on one local machine",
+      "globalTruth": "versioned user-scoped control-plane store under LAUNCHDECK_HOME",
+      "compatibilitySources": [
+        "LAUNCHDECK_HOME/projects.json",
+        "<project>/.launchdeck/runtime/state.json",
+        "<project>/.launchdeck/logs/"
+      ],
+      "mutationRules": [
+        "Registry, project, and task mutations require the correct lock.",
+        "State files are versioned.",
+        "Unsupported newer state versions allow safe degraded reads where possible but block dangerous mutations.",
+        "Mutations append events with transaction context."
+      ]
+    },
+    "ownershipAndProcessSafety": {
+      "noExternalKill": true,
+      "portOrPidAloneIsNeverAuthority": true,
+      "ownedOnlyOperations": [
+        "stop",
+        "restart",
+        "force-stop"
+      ],
+      "requiredOwnershipConfidenceForTermination": "verified-owned",
+      "blockedOwnershipStates": [
+        "probable-owned",
+        "stale-owned",
+        "external",
+        "unknown"
+      ],
+      "forceRule": "Force may strengthen termination method only for verified Launchdeck-owned process trees; it must not grant ownership.",
+      "externalAndUnknownRule": "External and unknown processes are inspect-only by default and must not be killed by Launchdeck."
+    },
+    "cleanAndResetBoundary": {
+      "safeCleanOnly": true,
+      "cleanMayRemoveOnly": [
+        "declared generated data",
+        "Launchdeck-owned generated data",
+        "stale hygiene data",
+        "retention-expired hygiene data"
+      ],
+      "cleanMustNever": [
+        "stop services",
+        "remove registry entries",
+        "kill processes",
+        "delete project roots",
+        "delete unknown files",
+        "delete paths outside the project root",
+        "perform reset behavior"
+      ],
+      "destructiveReset": "deferred and separate from clean"
+    },
+    "jsonAndAutomationContract": {
+      "stableJsonContract": true,
+      "requiredEnvelopeFields": [
+        "ok",
+        "schemaVersion",
+        "command",
+        "data",
+        "next"
+      ],
+      "refusalAndErrorSemantics": "Refusals and errors set ok false, preserve command and schemaVersion, include a stable domain-oriented code, include an actionable message, and include safe next actions for blocked lifecycle states.",
+      "successPayloadRule": "New structured success payloads live in data; details is not interchangeable with data for the required success envelope.",
+      "jsonLinesContract": "Watch, follow, and event streams use JSON Lines and consumers must tolerate unknown fields and malformed event lines gracefully.",
+      "nonInteractiveRule": "Non-interactive commands must never hang on prompts."
+    },
+    "crossPlatformSafety": {
+      "requiredReleaseClaimEvidence": [
+        "Windows lifecycle smoke",
+        "macOS lifecycle smoke",
+        "Linux lifecycle smoke"
+      ],
+      "failClosedOwnershipProof": "Cross-platform process observation is best-effort; partial or unavailable evidence must reduce ownership confidence and block dangerous stop/restart/force-stop mutations."
+    }
+  },
+  "consequenceObligations": {
+    "mustRemainVisible": [
+      {
+        "id": "CA-CP-017",
+        "claim": "Cross-platform process observation is best-effort but fail-closed.",
+        "affectedObjects": [
+          "OwnershipProof",
+          "ManagedRun",
+          "PortObservation",
+          "stop",
+          "restart",
+          "force-stop",
+          "inspect",
+          "reconcile",
+          "src/adapters/process.js"
+        ],
+        "ownerWorkflow": "sp-implement",
+        "latestResolvePhase": "before accepting lifecycle ownership or release-smoke tasks",
+        "status": "active",
+        "validationEvidenceRequired": [
+          "Windows ownership/lifecycle smoke or focused equivalent before cross-platform-ready claim",
+          "POSIX ownership/lifecycle smoke or focused equivalent before cross-platform-ready claim",
+          "Tests or smoke evidence showing unknown or partial process evidence blocks stop/restart/force-stop"
+        ],
+        "stopAndReopenCondition": "If any implementation path requires stop/restart/force-stop to proceed from PID, port, stale, unknown, external, or partial platform evidence instead of verified Launchdeck ownership, stop and reopen the plan or clarify safety contract."
+      }
+    ],
+    "carriedFromPlan": [
+      "CA-CP-001",
+      "CA-CP-002",
+      "CA-CP-003",
+      "CA-CP-004",
+      "CA-CP-005",
+      "CA-CP-006",
+      "CA-CP-007",
+      "CA-CP-008",
+      "CA-CP-009",
+      "CA-CP-010",
+      "CA-CP-011",
+      "CA-CP-012",
+      "CA-CP-013",
+      "CA-CP-014",
+      "CA-CP-015",
+      "CA-CP-016",
+      "CA-CP-017",
+      "CA-CP-018",
+      "CA-CP-019",
+      "CA-CP-020"
+    ]
+  },
+  "embeddedReviewBaseline": {
+    "reviewFocus": [
+      "Every lifecycle mutation has a lock, event, state write, failure state, and test.",
+      "Every stop path proves Launchdeck ownership before terminating a process tree.",
+      "JSON output remains parseable and includes next actions for blocked states.",
+      "Windows managed-process tests use fixture scripts and apply the documented transient EPERM rerun policy.",
+      "Task results preserve must-preserve and CA obligations rather than silently weakening product scope."
+    ],
+    "reviewWindowPolicy": {
+      "maxCompletedTasksBeforeReview": 5,
+      "maxUnreviewedChangedPaths": 8,
+      "maxUnreviewedValidationFailures": 0,
+      "immediateReviewTriggers": [
+        "validation failure",
+        "stale worker handoff",
+        "worker concern",
+        "open gap",
+        "missing real-entrypoint evidence when required",
+        "changed safety invariant",
+        "changed lifecycle state semantics",
+        "changed JSON contract surface"
+      ]
+    },
+    "acceptedReviewDecisions": [
+      "cleared",
+      "repair-and-continue",
+      "repair-and-rerun-current-window",
+      "blocked-reopen-tasks",
+      "blocked-reopen-plan",
+      "blocked-reopen-clarify",
+      "blocked-deep-research",
+      "debug-required"
+    ],
+    "safeRepairBoundary": {
+      "mayRepair": [
+        "tasks.md",
+        "task-index.json",
+        "task-packets/*.json",
+        "handoff-to-implement.json",
+        "implement-tracker.md",
+        "selected execution-review fields in workflow-state.md",
+        "implementation-review/*"
+      ],
+      "mustNotRewrite": [
+        "upstream truth artifacts",
+        "active_profile",
+        "required_sections",
+        "activated_gates",
+        "task_shaping_rules",
+        "required_evidence",
+        "transition_policy",
+        "final_handoff_decision",
+        "authoritative_files",
+        "allowed_artifact_writes",
+        "forbidden_actions",
+        "Analyze Gate truth",
+        "Reopen Contract truth",
+        "source discussion or must-preserve disposition fields"
+      ]
+    },
+    "stopAndReopenConditions": [
+      {
+        "condition": "Daemon, service, GUI, TUI, MCP, editor, web dashboard, whole-machine registry, or multi-user registry becomes required base scope.",
+        "route": "blocked-reopen-plan"
+      },
+      {
+        "condition": "External kill, kill by port, kill by PID, or force bypassing ownership becomes required.",
+        "route": "blocked-reopen-clarify"
+      },
+      {
+        "condition": "Clean expands into destructive reset or deletion of unknown/project-root/outside-root paths.",
+        "route": "blocked-reopen-plan"
+      },
+      {
+        "condition": "Stable JSON envelope, error code, next action, state version, or JSON Lines compatibility is weakened.",
+        "route": "blocked-reopen-plan"
+      },
+      {
+        "condition": "CA-CP-017 cannot be preserved as cross-platform fail-closed ownership proof.",
+        "route": "blocked-reopen-plan"
+      },
+      {
+        "condition": "A worker result lacks required validation evidence for an affected MP or CA obligation.",
+        "route": "repair-and-rerun-current-window"
+      }
+    ]
+  },
+  "firstJoinValidation": {
+    "taskId": "T001",
+    "joinPoint": "JP0",
+    "batchId": "B0",
+    "preExistingReviewRecord": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/reviews.ndjson",
+    "validationChecks": [
+      {
+        "command": "Test-Path .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+        "expected": true
+      },
+      {
+        "command": "Get-Content -Raw .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json | ConvertFrom-Json",
+        "expected": "parses"
+      }
+    ],
+    "acceptanceCriteria": [
+      "Ledger exists at the required path.",
+      "Ledger parses as JSON.",
+      "Ledger records Standard Delivery profile and Senior Consequence Gate.",
+      "Ledger records CLI-only, daemonless, user-scoped state, no external kill, owned-only stop/restart/force-stop, safe clean only, and stable JSON contract.",
+      "Ledger records review focus, review window policy, stop-and-reopen conditions, and T001 first join validation.",
+      "CA-CP-017 remains visible as cross-platform fail-closed ownership proof."
+    ],
+    "status": "ready-for-leader-validation"
+  },
+  "joinValidations": {
+    "T017": {
+      "taskId": "T017",
+      "story": "US1",
+      "joinPoint": "US1-primary-scenario",
+      "status": "accepted-focused-validation",
+      "purpose": "Join US1 evidence for register, start once, duplicate-start prevention, and global observation through existing CLI entrypoint tests without adding new behavior.",
+      "validatedAt": "2026-07-08",
+      "commandsRun": [
+        {
+          "command": "node --test test/global-runtime.test.js test/managed-cli.test.js",
+          "result": "pass",
+          "summary": "36 tests passed, 0 failed; duration 66350.9988ms."
+        },
+        {
+          "command": "npm run check",
+          "result": "pass",
+          "summary": "Node syntax checks passed for src/errors.js, src/cli.js, src/config.js, src/adapters/process.js, src/global-runtime.js, src/runtime.js, src/control-plane/state.js, src/control-plane/locks.js, src/control-plane/events.js, and listed test files."
+        }
+      ],
+      "acceptedEvidence": [
+        {
+          "signal": "Isolated user-scoped registry state",
+          "evidence": "test/global-runtime.test.js includes 'project add and projects list use an idempotent isolated global registry'; helper environments set LAUNCHDECK_HOME to an isolated temp home."
+        },
+        {
+          "signal": "Project add and stable registry identity",
+          "evidence": "Focused test output passed 'project add and projects list use an idempotent isolated global registry' and 'project add keeps aliases unique and idempotent for the same project root'."
+        },
+        {
+          "signal": "Start once and global run index",
+          "evidence": "Focused test output passed 'start project:task writes a global run index record with lifecycle identity' and managed CLI start envelope tests."
+        },
+        {
+          "signal": "Duplicate start idempotency/refusal",
+          "evidence": "Focused test output passed 'start project:task returns the existing run without spawning a second process' and 'start --json treats a second owned start as idempotent without spawning another process'."
+        },
+        {
+          "signal": "Global status view with stable next actions",
+          "evidence": "Focused test output passed 'status --all exposes safe next actions for active owned runs', 'status --all uses stable project id next actions after alias repair', and 'status --all summarizes registered projects, processes, ports, and conflicts'."
+        },
+        {
+          "signal": "Global process and port views",
+          "evidence": "Focused test output passed 'ps --all aggregates managed processes from registered projects', 'ports reports declared ports and current Launchdeck-managed state', and 'ports prefer the newest active run record for a declared project task'."
+        },
+        {
+          "signal": "Real entrypoint coverage",
+          "evidence": "Required validation ran existing Node test files that invoke the CLI entrypoint paths used by the managed lifecycle and global runtime tests; no production or test code changes were made for this join task."
+        }
+      ],
+      "scopeLimitations": [
+        "This join validates US1 only: project add, start once, duplicate-start prevention, status --all, ps --all, ports, and safe next actions.",
+        "No new behavior was implemented.",
+        "No production or test code was modified.",
+        "Later inspect, events, reconcile, restart, stop, clean, and release cross-platform smoke commands are outside this T017 US1 join scope.",
+        "Evidence is from this Windows/PowerShell workspace with isolated test homes; it is not a macOS/Linux release claim."
+      ],
+      "carriedObligations": {
+        "mp": [
+          "MP-001",
+          "MP-006",
+          "MP-009",
+          "MP-012"
+        ],
+        "ca": [
+          "CA-CP-001",
+          "CA-CP-004",
+          "CA-CP-005",
+          "CA-CP-011",
+          "CA-CP-019"
+        ],
+        "notes": [
+          "MP-001 remains carried because the evidence validates a coherent CLI control-plane loop rather than a loose command bundle.",
+          "MP-006 remains carried by duplicate-start idempotency/refusal evidence.",
+          "MP-009 remains carried as an obligation, but unified inspect evidence is intentionally deferred because inspect/events/reconcile are not in this US1 join scope.",
+          "MP-012 remains carried by focused JSON-envelope and next-action assertions in existing CLI tests.",
+          "CA obligations remain active for downstream lifecycle ownership, JSON compatibility, safe refusal, and review acceptance."
+        ]
+      },
+      "residualRisks": [
+        "US1 evidence does not prove unified inspect, events, reconcile, restart/stop ownership, safe clean, or retention behavior.",
+        "This validation does not satisfy cross-platform-ready release evidence; macOS and Linux lifecycle smoke remain required before any cross-platform claim.",
+        "The ledger records accepted evidence from existing tests; any future changes to test names or CLI contracts should refresh this join record."
+      ]
+    },
+    "T021": {
+      "taskId": "T021",
+      "story": "US2",
+      "joinPoint": "US2-external-conflict-and-inspect",
+      "status": "accepted-focused-validation",
+      "purpose": "Join US2 evidence for external occupied-port start refusal, unified inspect, inspect-port compatibility, and fail-closed inspect-only ownership behavior without adding new product behavior.",
+      "validatedAt": "2026-07-09",
+      "commandsRun": [
+        {
+          "command": "node --test test/inspect-cli.test.js test/global-runtime.test.js",
+          "result": "pass",
+          "summary": "30 tests passed, 0 failed; duration_ms 33167.4634."
+        },
+        {
+          "command": "npm run check",
+          "result": "pass",
+          "summary": "Repository syntax check completed successfully through the configured node --check chain for src and test entry files."
+        }
+      ],
+      "acceptedEvidence": [
+        {
+          "signal": "External occupied port start refusal",
+          "evidence": "Focused validation passed 'start refuses an externally occupied declared port without stopping the external listener' in test/inspect-cli.test.js and 'start refuses an externally occupied declared port instead of creating a duplicate service' in test/global-runtime.test.js."
+        },
+        {
+          "signal": "Unified inspect real entrypoint",
+          "evidence": "Focused validation passed launchdeck CLI entrypoint coverage for 'inspect port:<port> explains external conflict as inspect-only with safe and blocked actions', 'inspect pid:<pid> reports an external listener as inspect-only', 'inspect task:<alias:task> reports a Launchdeck-owned managed run with evidence and actions', and 'inspect pid:<pid> reports a Launchdeck-owned managed run when pid matches run evidence'."
+        },
+        {
+          "signal": "inspect-port compatibility",
+          "evidence": "Focused validation passed 'inspect-port remains compatible for an externally occupied declared port' and global-runtime 'inspect-port reports an occupied external port without claiming ownership' / 'inspect-port reports ownership conflict when declared active run pid differs from listener'."
+        },
+        {
+          "signal": "Listener and declared-owner evidence",
+          "evidence": "Validated inspect and inspect-port JSON envelopes include listener, port, project/task declaration, conflict, ownership, safeActions, and blockedActions evidence for occupied declared ports."
+        },
+        {
+          "signal": "Fail-closed ownership and no external kill",
+          "evidence": "Validated external and unknown listener paths remain inspect-only: blocked actions include stop, restart, force-stop, and kill, while safe actions include inspect commands and manual external-service remediation rather than Launchdeck stop/kill."
+        },
+        {
+          "signal": "Stable JSON envelope and next actions",
+          "evidence": "Validated real CLI JSON output preserves command-specific envelopes for inspect and inspect-port, with safe next actions and blocked action explanations for conflict states."
+        },
+        {
+          "signal": "Real entrypoint coverage",
+          "evidence": "Required validation ran Node test files that execute the launchdeck CLI command dispatch for start, inspect-port, and inspect through fixture helpers, plus the global-runtime command path; no product or test code was modified for this join task."
+        }
+      ],
+      "scopeLimitations": [
+        "This join validates US2 external occupied-port conflict, inspect-port compatibility, and unified inspect behavior only.",
+        "No new behavior was implemented.",
+        "No production code, test code, package files, README, task list, tracker, or reviews.ndjson were modified.",
+        "Evidence is from this Windows/PowerShell workspace with isolated test homes; it is not a macOS/Linux release claim.",
+        "Windows-local validation depends on best-effort local port/process observation and preserves fail-closed ownership semantics rather than claiming whole-machine or multi-user authority."
+      ],
+      "carriedObligations": {
+        "mp": [
+          "MP-007",
+          "MP-008",
+          "MP-009"
+        ],
+        "ca": [
+          "CA-CP-005",
+          "CA-CP-011",
+          "CA-CP-017",
+          "CA-CP-018"
+        ],
+        "notes": [
+          "MP-007 remains carried by focused evidence that external occupied ports block Launchdeck start without killing or stopping the external listener.",
+          "MP-008 remains carried by focused inspect-port compatibility evidence for external and ownership-conflict port observations.",
+          "MP-009 remains carried by real-entrypoint unified inspect evidence for port, pid, task, and owned-pid targets.",
+          "CA-CP-005 and CA-CP-011 remain active for safe refusal and stable JSON/next-action compatibility.",
+          "CA-CP-017 remains active because ownership proof is best-effort and fail-closed on partial, unknown, or external process evidence.",
+          "CA-CP-018 remains active because external and unknown processes remain inspect-only and must not be killed by Launchdeck."
+        ]
+      },
+      "residualRisks": [
+        "This validation does not satisfy cross-platform-ready release evidence; macOS and Linux lifecycle smoke remain required before any cross-platform claim.",
+        "This join does not validate later stop, restart, force-stop, clean, events, reconcile, retention, or documentation tasks.",
+        "The ledger records accepted evidence from current test names and CLI contracts; future changes to inspect output or test naming should refresh this join record."
+      ]
+    },
+    "T025": {
+      "taskId": "T025",
+      "story": "US3",
+      "joinPoint": "US3-owned-restart-and-stop",
+      "status": "accepted-focused-validation",
+      "purpose": "Join US3 evidence for verified-owned stop, restart stop-wait-start semantics, ownership refusal states, force-stop ownership gating, failure evidence, and local managed CLI compatibility without adding product behavior.",
+      "validatedAt": "2026-07-09",
+      "commandsRun": [
+        {
+          "command": "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+          "result": "pass",
+          "summary": "21 tests passed, 0 failed; duration_ms 26388.5905."
+        },
+        {
+          "command": "npm run check",
+          "result": "pass",
+          "summary": "Repository syntax check completed successfully through the configured node --check chain for source and listed test entry files."
+        }
+      ],
+      "acceptedEvidence": [
+        {
+          "signal": "Verified-owned stop real entrypoint",
+          "evidence": "Focused validation passed 'stop --json stops a verified-owned run and records stopped evidence', 'stop <task> --json stops one managed task with a process payload', and 'stop --json stops all running managed tasks with per-task results' through the CLI JSON path."
+        },
+        {
+          "signal": "Restart stop-wait-start transaction",
+          "evidence": "Focused validation passed 'restart --json stops, waits for port release, and starts a new run in one transaction', and T024 review accepted that restart JSON exposes stoppedRun, startedRun, and transactionId."
+        },
+        {
+          "signal": "External, unknown, and probable ownership refusal",
+          "evidence": "Focused validation passed 'stop --json refuses probable-owned runs without stopping the fixture process', 'stop --json refuses unknown ownership without stopping the fixture process', 'stop --json refuses matching pid and listener without trusted spawn proof', and 'stop --json refuses an external process without stopping the external listener'."
+        },
+        {
+          "signal": "Force-stop does not bypass ownership",
+          "evidence": "Focused validation passed 'force-stop --json preserves the verified ownership gate', and T024 review accepted that force-stop is routed through the action layer while preserving the verified ownership gate."
+        },
+        {
+          "signal": "stop_failed evidence and events",
+          "evidence": "Focused validation passed 'stop --json preserves stop_failed evidence when termination does not complete', and T023 review accepted that stopped and stop_failed state/event evidence is persisted through runtime evidence."
+        },
+        {
+          "signal": "port_release_timeout refusal",
+          "evidence": "Focused validation passed 'restart --json records port_release_timeout when the stopped task leaves its port occupied', and T024 review accepted direct port_release_timeout mapping with next actions."
+        },
+        {
+          "signal": "Local managed CLI compatibility",
+          "evidence": "Focused validation passed managed CLI coverage for dev/start lifecycle envelopes, run identity/readiness fields, environment run markers, duplicate owned-start idempotency, partial restart failure, stale ps refresh, corrupt runtime-state reporting, logs payload names, and foreground task_not_managed refusal."
+        },
+        {
+          "signal": "Real entrypoint coverage",
+          "evidence": "Required validation ran existing Node test files that exercise the launchdeck CLI dispatch and JSON output paths for stop, force-stop, restart, dev, start, ps, logs, and lifecycle refusal states; no product or test code was modified for this join task."
+        }
+      ],
+      "sourceReviewEvidence": [
+        {
+          "taskId": "T022",
+          "evidence": "Accepted expected-RED lifecycle ownership tests covered verified-owned stop, probable-owned, unknown, external, force-stop gate, restart transaction, port_release_timeout, and stop_failed persistence/events."
+        },
+        {
+          "taskId": "T023",
+          "evidence": "Accepted action-layer implementation evidence showed ownership-gated stop refuses probable-owned, unknown, external, and matching PID/listener without trusted spawn proof; verified stop uses trusted spawn/current verified evidence; stop/restart acquire locks; stopped and stop_failed state/event evidence persists."
+        },
+        {
+          "taskId": "T024",
+          "evidence": "Accepted CLI/output wiring evidence showed stop, force-stop, and restart route through action-layer commands; force-stop does not bypass ownership; restart exposes stoppedRun, startedRun, and transactionId; port_release_timeout and next actions are preserved."
+        }
+      ],
+      "scopeLimitations": [
+        "This join validates US3 owned stop, force-stop ownership gate, and restart behavior only.",
+        "No new behavior was implemented.",
+        "No production code, test code, package files, README, tasks.md, implement-tracker.md, reviews.ndjson, or prior task review files were modified.",
+        "Evidence is from this Windows/PowerShell workspace with isolated test homes; it is not a macOS/Linux release claim.",
+        "Windows-local validation depends on best-effort local process and port observation and preserves fail-closed ownership semantics rather than claiming whole-machine, multi-user, or cross-platform-ready authority."
+      ],
+      "carriedObligations": {
+        "mp": [
+          "MP-007",
+          "MP-011"
+        ],
+        "ca": [
+          "CA-CP-006",
+          "CA-CP-007",
+          "CA-CP-008",
+          "CA-CP-017"
+        ],
+        "notes": [
+          "MP-007 remains carried by focused evidence that stop and restart require verified Launchdeck ownership and do not treat port or PID evidence alone as authority.",
+          "MP-011 remains carried by focused evidence that force-stop preserves the verified ownership gate and does not bypass ownership safety.",
+          "CA-CP-006 remains carried by stopped and stop_failed state/event validation.",
+          "CA-CP-007 remains carried by force-stop verified-ownership-gate validation.",
+          "CA-CP-008 remains carried by restart stop-wait-start transaction validation with transaction identity.",
+          "CA-CP-017 remains active because this Windows-local evidence preserves fail-closed ownership proof but does not satisfy macOS/Linux lifecycle smoke requirements."
+        ]
+      },
+      "residualRisks": [
+        "This validation does not satisfy cross-platform-ready release evidence; macOS and Linux lifecycle smoke remain required before any cross-platform claim.",
+        "This join does not validate later clean, reconcile, logs/events streaming, retention, documentation, official demo, or release smoke tasks.",
+        "The ledger records accepted evidence from current test names and CLI contracts; future changes to lifecycle output, ownership confidence, or test naming should refresh this join record."
+      ]
+    },
+    "T029": {
+      "taskId": "T029",
+      "story": "US4",
+      "joinPoint": "US4-recovery-observability-and-safe-clean",
+      "status": "accepted-focused-validation",
+      "purpose": "Join US4 evidence for stale-state visibility, no-kill reconcile, structured events history, logs --follow JSONL streaming, streamed log redaction, and safe-clean diagnostic retention without adding product behavior.",
+      "validatedAt": "2026-07-09",
+      "commandsRun": [
+        {
+          "command": "node --test test/recovery-observability.test.js",
+          "result": "pass",
+          "summary": "7 tests passed, 0 failed."
+        },
+        {
+          "command": "npm run check",
+          "result": "pass",
+          "summary": "Repository syntax check completed successfully through the configured node --check chain for source and listed test entry files."
+        }
+      ],
+      "acceptedEvidence": [
+        {
+          "signal": "Stale state is inspectable and status-visible",
+          "evidence": "Focused validation passed 'status --all marks a disappeared owned run as stale with reconcile next action'; the real CLI status --all path preserved the run record as stale and exposed reconcile plus inspect run next actions."
+        },
+        {
+          "signal": "Reconcile repairs stale state without killing external or new listeners",
+          "evidence": "Focused validation passed 'reconcile --json marks stale runs without killing a new external listener on the same port'; launchdeck reconcile returned staleRuns, updatedRuns, and events while the replacement external listener stayed connectable and its pid remained running."
+        },
+        {
+          "signal": "events --json reads machine-readable structured history",
+          "evidence": "Focused validation passed 'events --json reads bounded structured event history for a target'; the real CLI events target path returned command=events and schemaVersion=1 event records in the expected structured order."
+        },
+        {
+          "signal": "logs --follow --json emits JSON Lines",
+          "evidence": "Focused validation passed 'logs --follow --json emits visible JSON Lines for appended managed log output'; the foreground CLI follow process emitted schemaVersion=1 log.line JSON objects with projectId, task, runId, timestamp, and line."
+        },
+        {
+          "signal": "Secret-looking log output is redacted before streaming",
+          "evidence": "Focused validation passed 'logs --follow --json redacts secret-looking managed output before streaming'; streamed API_TOKEN output omitted the original secret value and emitted API_TOKEN=[REDACTED]."
+        },
+        {
+          "signal": "clean --safe preserves running/latest failure/failure-linked evidence while removing declared safe cache",
+          "evidence": "Focused validation passed 'clean --safe preserves running logs latest failed logs and failure-linked events'; clean --safe removed the declared cache target while preserving the active run log, latest failed log, and stop.failed event evidence."
+        },
+        {
+          "signal": "Real entrypoint coverage",
+          "evidence": "Required validation ran the existing recovery-observability Node test file, which exercises launchdeck CLI dispatch for status --all, reconcile, events, logs --follow --json, and clean --safe through fixture-managed projects and isolated LAUNCHDECK_HOME state; no production or test code was modified for this join task."
+        }
+      ],
+      "sourceReviewEvidence": [
+        {
+          "taskId": "T027",
+          "evidence": "Accepted stale/reconcile implementation evidence showed status --all exposes stale runs with inspect/reconcile next actions, reconcile marks missing Launchdeck-owned processes stale, appends run.stale events, and does not call process.kill, stopProcess, or kill-by-port/PID paths."
+        },
+        {
+          "taskId": "T028",
+          "evidence": "Accepted observability and hygiene evidence showed launchdeck events reads bounded structured event history, logs --follow --json emits visible foreground JSON Lines, streamed log lines are redacted before output, safe clean preserves active/latest-failure/failure-linked evidence, and T027 no-kill reconcile semantics remained green."
+        }
+      ],
+      "scopeLimitations": [
+        "This join validates US4 stale recovery, events history, logs follow JSONL, streamed redaction, and safe-clean diagnostic retention only.",
+        "No new behavior was implemented.",
+        "No production code, test code, package files, README, tasks.md, implement-tracker.md, reviews.ndjson, or prior task review files were modified.",
+        "Evidence is from this Windows/PowerShell workspace with isolated test homes; it is not a macOS/Linux release claim.",
+        "Windows-local validation depends on best-effort local process and port observation and preserves fail-closed/no-external-kill semantics rather than claiming whole-machine, multi-user, or cross-platform-ready authority.",
+        "Long-term retention pruning defaults and final release smoke remain outside this T029 join scope."
+      ],
+      "carriedObligations": {
+        "mp": [
+          "MP-012",
+          "MP-015"
+        ],
+        "ca": [
+          "CA-CP-009",
+          "CA-CP-010",
+          "CA-CP-016",
+          "CA-CP-019"
+        ],
+        "notes": [
+          "MP-012 remains carried by focused evidence that events --json returns structured history and logs --follow --json emits JSON Lines while ordinary --json commands remain single JSON envelopes.",
+          "MP-015 remains carried by focused evidence that secret-looking streamed log output is redacted before stdout JSONL emission.",
+          "CA-CP-009 remains carried by stale status visibility and explicit reconcile repair evidence that keeps readiness/liveness state inspectable.",
+          "CA-CP-010 remains carried by append-only structured event history and recovery event evidence.",
+          "CA-CP-016 remains carried by redaction before persistence/output for events and streamed log lines.",
+          "CA-CP-019 remains carried by stable JSON envelopes for status/reconcile/events/clean and JSON Lines for follow streams."
+        ]
+      },
+      "residualRisks": [
+        "This validation does not satisfy cross-platform-ready release evidence; macOS and Linux lifecycle smoke remain required before any cross-platform claim.",
+        "This join does not validate official demo, documentation, final release smoke, or long-term retention pruning defaults.",
+        "The ledger records accepted evidence from current test names and CLI contracts; future changes to recovery, observability, clean retention, JSON envelope, or JSONL stream contracts should refresh this join record."
+      ]
+    },
+    "T032": {
+      "taskId": "T032",
+      "story": "US5",
+      "joinPoint": "US5-safe-clean-validation",
+      "status": "accepted-focused-validation",
+      "purpose": "Join US5 evidence for safe clean path containment, protected target refusal, service non-interference, running/latest failure evidence retention, and clean/reset separation without adding product behavior.",
+      "validatedAt": "2026-07-09",
+      "commandsRun": [
+        {
+          "command": "node --test test/clean-control-plane.test.js test/runtime-state.test.js",
+          "result": "pass",
+          "summary": "12 tests passed, 0 failed, 0 skipped; duration_ms 2678.802."
+        },
+        {
+          "command": "npm run check",
+          "result": "pass",
+          "summary": "Repository syntax check completed successfully through the configured node --check chain for source and listed test entry files."
+        }
+      ],
+      "acceptedEvidence": [
+        {
+          "signal": "clean --safe refuses path escapes and external paths",
+          "evidence": "Focused validation passed 'clean --safe refuses path escapes without deleting approved targets'; the real CLI clean path refused an outside-root target while preserving the approved safe target."
+        },
+        {
+          "signal": "clean --safe refuses symlink/junction escapes",
+          "evidence": "Focused validation passed 'clean --safe refuses symlink escapes without deleting approved targets' when the Windows host allowed link creation; the test is explicitly skipped only if the host cannot create the required symlink/junction."
+        },
+        {
+          "signal": "clean --safe refuses project-root targets",
+          "evidence": "Focused validation passed 'clean --safe refuses project-root targets without deleting approved targets'; clean did not delete a registered project root."
+        },
+        {
+          "signal": "clean --safe refuses unknown or empty targets",
+          "evidence": "Focused validation passed 'clean --safe refuses unknown empty targets without deleting approved targets'; the accepted T030 review records that this refusal currently occurs at config-load validation before clean planning."
+        },
+        {
+          "signal": "clean --safe preserves running evidence and does not stop services",
+          "evidence": "Focused validation passed 'clean --safe preserves running evidence inside clean targets' and T031 review accepted that clean safety stayed green with no service stop, registry removal, project-root deletion, external deletion, or reset behavior."
+        },
+        {
+          "signal": "clean --safe preserves latest failure evidence",
+          "evidence": "Focused validation passed 'clean --safe preserves latest failure evidence inside clean targets'; T031 consumer evidence preserved active and latest failure-linked logs/events through clean."
+        },
+        {
+          "signal": "reset remains separate and deferred",
+          "evidence": "Focused validation passed 'reset remains absent and does not perform clean or destructive reset behavior'; the spec and plan keep destructive reset out of base scope and separate from clean."
+        },
+        {
+          "signal": "Runtime evidence remains compatible with clean safety",
+          "evidence": "Focused validation included test/runtime-state.test.js coverage for runtime state shape, corrupt-state preservation, stale refresh without record deletion, log readability after exit, and idempotent stale stop preservation."
+        },
+        {
+          "signal": "Real entrypoint coverage",
+          "evidence": "Required validation ran existing Node test files that exercise launchdeck CLI clean/reset dispatch and runtime-state behavior through isolated temp projects and LAUNCHDECK_HOME state; no production or test code was modified for this join task."
+        }
+      ],
+      "sourceReviewEvidence": [
+        {
+          "taskId": "T030",
+          "evidence": "Accepted clean-control-plane tests cover path escape refusal, symlink/junction escape refusal, project-root refusal, empty target refusal, running evidence preservation, latest failure evidence preservation, and reset absence through real CLI entrypoints."
+        },
+        {
+          "taskId": "T031",
+          "evidence": "Accepted clean integration evidence showed clean safety remained green; direct start ownership evidence was added; trusted global run metadata was aligned; Windows owned stop restored non-forced SIGTERM semantics; lifecycle/runtime 14/14 and clean/recovery 14/14 passed after leader repair."
+        }
+      ],
+      "scopeLimitations": [
+        "This join validates US5 safe clean behavior only: containment, symlink/junction escape refusal, project-root and unknown/empty target refusal, running/latest failure evidence retention, service non-interference, and clean/reset separation.",
+        "No new behavior was implemented.",
+        "No production code, test code, package files, README, tasks.md, implement-tracker.md, reviews.ndjson, or prior task review files were modified.",
+        "Evidence is from this Windows/PowerShell workspace with isolated test homes; it is not a macOS/Linux release claim.",
+        "Symlink/junction coverage is skipped only when the host cannot create the required link type.",
+        "Release/cross-platform smoke remains later work before any cross-platform-ready claim."
+      ],
+      "carriedObligations": {
+        "mp": [
+          "MP-010",
+          "MP-015"
+        ],
+        "ca": [
+          "CA-CP-015",
+          "CA-CP-016"
+        ],
+        "fr": [
+          "FR-040",
+          "FR-041",
+          "FR-042",
+          "FR-043",
+          "FR-055"
+        ],
+        "notes": [
+          "MP-010 remains carried by focused evidence that clean is hygiene and destructive reset remains separate/deferred.",
+          "MP-015 remains carried by focused fail-closed evidence for path escape and symlink/junction escape refusal.",
+          "CA-CP-015 remains carried by focused evidence that clean cannot delete outside-root, project-root, unknown, or empty unsafe targets.",
+          "CA-CP-016 remains carried by focused evidence that clean preserves active/latest failure-linked evidence and does not remove events required to explain recent status.",
+          "FR-040 through FR-043 remain covered by safe-clean hygiene, no service stop or protected deletion, evidence retention, and reset separation.",
+          "FR-055 remains covered for clean path containment and symlink/junction escape fail-closed behavior."
+        ]
+      },
+      "residualRisks": [
+        "This validation does not satisfy cross-platform-ready release evidence; macOS and Linux lifecycle smoke remain required before any cross-platform claim.",
+        "This join does not validate official demo, documentation, final release smoke, or long-term retention pruning defaults.",
+        "Symlink/junction escape coverage depends on host permissions to create the link type; when unavailable, the test suite records the skip instead of weakening the invariant.",
+        "The ledger records accepted evidence from current test names and CLI contracts; future changes to clean output, path adapter behavior, reset implementation, or test naming should refresh this join record."
+      ]
+    }
+  },
+  "releaseSmoke": {
+    "taskId": "T037",
+    "status": "accepted-windows-local",
+    "validatedAt": "2026-07-09",
+    "purpose": "Record quickstart release-smoke evidence for the complete CLI product loop with isolated LAUNCHDECK_HOME.",
+    "leaderRepairs": [
+      {
+        "path": "scripts/smoke-lifecycle.js",
+        "summary": "Added --quickstart as the full release-smoke alias required by the quickstart and T037 task packet."
+      },
+      {
+        "path": ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+        "summary": "Updated duplicate-start wording from legacy refusal semantics to current existing-run, spawned=false semantics."
+      }
+    ],
+    "commandsRun": [
+      {
+        "command": "npm run check",
+        "result": "pass",
+        "summary": "Configured syntax check completed successfully for current source, control-plane modules, smoke script, demo scripts, helpers, and tests."
+      },
+      {
+        "command": "npm test",
+        "result": "pass",
+        "summary": "Broad Node test suite passed 136/136."
+      },
+      {
+        "command": "node scripts/smoke-lifecycle.js --quickstart --json",
+        "result": "pass",
+        "summary": "Full release smoke passed on win32 with 18 recorded CLI steps and temporary workspace cleanup."
+      },
+      {
+        "command": "leader residual scan",
+        "result": "pass",
+        "summary": "No listener remained on port 8888 and no matching demo smoke process remained after the smoke."
+      }
+    ],
+    "smokeEvidence": {
+      "mode": "full",
+      "platform": {
+        "processPlatform": "win32",
+        "scope": "current Windows host only"
+      },
+      "steps": [
+        "project add registers copied official demo",
+        "projects lists registered demo",
+        "start creates Launchdeck-owned demo run",
+        "duplicate start returns existing demo run without spawning another process",
+        "status reports isolated control plane state",
+        "ps reports managed demo process",
+        "ports reports declared demo port",
+        "conflicts reports demo port conflicts",
+        "inspect task explains managed demo state",
+        "inspect port explains demo port ownership evidence",
+        "logs read demo task output",
+        "events read demo lifecycle events",
+        "restart replaces the owned demo run",
+        "stop terminates only Launchdeck-owned demo run",
+        "reconcile repairs only isolated demo state",
+        "clean removes configured safe demo artifact only",
+        "project remove deletes only isolated registry entry",
+        "cleanup: stop isolated demo target"
+      ],
+      "cleanup": {
+        "tempWorkspaceRemoved": true,
+        "cleanupStopExitCode": 1,
+        "cleanupStopExitInterpretation": "The final cleanup stop was attempted after the smoke had already stopped the run and removed the isolated registry entry; the nonzero cleanup stop did not leave a residual process."
+      }
+    },
+    "acceptedEvidence": [
+      {
+        "signal": "Complete CLI product loop",
+        "evidence": "Full smoke exercised project add/list, managed start, duplicate existing-run behavior, global status/ps/ports/conflicts, inspect task/port, logs/events, restart, stop, reconcile, safe clean, and project remove through real CLI entrypoints."
+      },
+      {
+        "signal": "Isolated state",
+        "evidence": "Smoke script used a temporary copied demo project and isolated LAUNCHDECK_HOME, then removed the temporary workspace."
+      },
+      {
+        "signal": "Owned-only cleanup",
+        "evidence": "Smoke cleanup attempted only Launchdeck-owned demo:dev through the Launchdeck CLI and did not kill by port or arbitrary PID."
+      },
+      {
+        "signal": "Release verification commands",
+        "evidence": "`npm run check`, `npm test`, and `node scripts/smoke-lifecycle.js --quickstart --json` all passed on the current Windows host."
+      }
+    ],
+    "scopeLimitations": [
+      "This is release-smoke evidence for the current Windows host only.",
+      "This evidence does not satisfy the cross-platform-ready release gate by itself.",
+      "macOS and Linux smoke evidence remain required before any Windows/macOS/Linux cross-platform-ready claim.",
+      "The final cleanup stop's nonzero result is accepted only because the smoke had already stopped and removed the isolated target and the residual scan found no demo process or port 8888 listener."
+    ],
+    "carriedObligations": {
+      "mp": [
+        "MP-016",
+        "MP-017"
+      ],
+      "ca": [
+        "CA-CP-020"
+      ],
+      "fr": [
+        "FR-053",
+        "FR-056"
+      ],
+      "notes": [
+        "MP-016 remains carried by full official demo smoke evidence.",
+        "MP-017 remains active: cross-platform-ready still requires Windows, macOS, and Linux smoke evidence.",
+        "CA-CP-020 is satisfied for runnable demo and docs on the current Windows host, with cross-platform limitations recorded.",
+        "FR-053 and FR-056 have Windows-local evidence only; release wording must not imply macOS/Linux readiness until those rows are filled."
+      ]
+    },
+    "residualRisks": [
+      "macOS and Linux evidence are not yet recorded.",
+      "The quickstart release smoke is script-mediated rather than manually following every prose command, but the script uses the same real CLI entrypoints and isolated state."
+    ]
+  }
+}

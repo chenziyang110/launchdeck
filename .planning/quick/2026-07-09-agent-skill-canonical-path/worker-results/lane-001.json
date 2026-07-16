@@ -1,0 +1,45 @@
+{
+  "status": "complete",
+  "reported_status": "canonical Launchdeck agent skill source is now .agents/skills/launchdeck-agent; host-specific directories are documented and scripted as generated or synced targets only",
+  "changed_files": [
+    ".agents/README.md",
+    ".agents/scripts/sync-skills.ps1",
+    ".agents/scripts/validate-skills.ps1",
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/STATUS.md",
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/worker-results/lane-001.json",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/**"
+  ],
+  "validation_results": [
+    {
+      "name": "required skill files",
+      "command": "PowerShell Test-Path and non-empty check for SKILL.md plus seven references",
+      "result": "passed; checked 8 required files under .agents/skills/launchdeck-agent"
+    },
+    {
+      "name": "canonical skill validator",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .agents/scripts/validate-skills.ps1",
+      "result": "passed; Launchdeck agent skill validation passed and checked 8 required files"
+    },
+    {
+      "name": "sync helper dry run",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .agents/scripts/sync-skills.ps1",
+      "result": "passed; check mode reported source, target, and 8 files without writing a host copy"
+    },
+    {
+      "name": "former-path sweep",
+      "command": "rg sweep for the former host-specific Launchdeck skill source path across .agents, quick artifacts, and feature artifacts",
+      "result": "passed; no matches"
+    },
+    {
+      "name": "unsafe process guidance scan",
+      "command": "rg safety scan for raw process-kill command names under .agents/skills/launchdeck-agent",
+      "result": "passed; no matches"
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    "If a host adapter needs the skill under a host directory, run .agents/scripts/sync-skills.ps1 in explicit copy mode from the repository root.",
+    "Do not treat generated host copies as canonical source; edit .agents/skills/launchdeck-agent and resync."
+  ]
+}

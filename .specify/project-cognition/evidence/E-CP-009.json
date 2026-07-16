@@ -1,0 +1,32 @@
+{
+  "id": "E-CP-009",
+  "source_path": "src/control-plane/ownership.js",
+  "summary": "所有权证据链模型：通过PID匹配、cwd/command/env marker/startTime交叉验证、listener端口证据推断出verified-owned/probable-owned/stale-owned/external/unknown五种置信度",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-009",
+    "source_path": "src/control-plane/ownership.js",
+    "summary": "所有权证据链模型：通过PID匹配、cwd/command/env marker/startTime交叉验证、listener端口证据推断出verified-owned/probable-owned/stale-owned/external/unknown五种置信度",
+    "symbols": [
+      "proveRunOwnership",
+      "buildPortObservation",
+      "legacyOwnershipFromProof",
+      "inspectOnlyActionsForOwnership",
+      "OWNERSHIP_CONFIDENCE"
+    ],
+    "exports": [
+      "proveRunOwnership",
+      "buildPortObservation",
+      "legacyOwnershipFromProof",
+      "inspectOnlyActionsForOwnership",
+      "OWNERSHIP_CONFIDENCE"
+    ],
+    "dependencies": [
+      "path",
+      "adapters/process.js (getLiveness, getProcessEvidence, normalizePid)"
+    ]
+  }
+}

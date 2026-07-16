@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "task_id": "T012",
+  "title": "Add registry alias, repair, and active-remove refusal tests in test/global-runtime.test.js",
+  "phase": "Phase 3",
+  "story": "US1",
+  "priority": "P1",
+  "agent": "test-engineer",
+  "depends_on": [
+    "T011: foundational join"
+  ],
+  "parallel_safe": true,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Project commands",
+      "ref": "contracts/cli-contract.md#project-commands"
+    },
+    {
+      "need": "Current global tests",
+      "ref": "test/global-runtime.test.js"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "test/global-runtime.test.js"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "test/global-runtime.test.js (modify)"
+  ],
+  "anti_goals": [
+    "Do not implement registry behavior in this test task."
+  ],
+  "does_not_remove": [
+    "Existing project add/list/remove/scan coverage"
+  ],
+  "capability_operations": [
+    "validates project add, project scan, project remove, project repair, projects"
+  ],
+  "consumer_surfaces": [],
+  "required_evidence": [],
+  "acceptance_criteria": [
+    "Tests cover unique aliases, idempotent add, repair path/config/alias, bounded scan, and project remove refusal while active owned runs exist."
+  ],
+  "verify_commands": [
+    "node --test test/global-runtime.test.js"
+  ],
+  "guardrails": [],
+  "mp": [
+    "MP-004"
+  ],
+  "ca": [
+    "CA-CP-001",
+    "CA-CP-002",
+    "CA-CP-003"
+  ],
+  "fr": [
+    "FR-001",
+    "FR-002",
+    "FR-003",
+    "FR-005",
+    "FR-006",
+    "FR-007",
+    "FR-008"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "test/global-runtime.test.js"
+    ],
+    "validation_output": {
+      "node --test test/global-runtime.test.js": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

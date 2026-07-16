@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "changed_files": [
+    "src/cli.js",
+    "src/output.js",
+    "src/errors.js",
+    ".specify/teams/state/results/executor-t024.json"
+  ],
+  "validation_output": {
+    "node --check src/cli.js": "PASS (exit 0)",
+    "node --check src/output.js": "PASS (exit 0)",
+    "node --check src/errors.js": "PASS (exit 0)",
+    "node --test test/lifecycle-ownership.test.js test/cli-control-plane-contract.test.js": "PASS: tests 16, pass 16, fail 0, cancelled 0, skipped 0, todo 0, duration_ms 24928.2216",
+    "node --test test/managed-cli.test.js": "PASS: tests 12, pass 12, fail 0, cancelled 0, skipped 0, todo 0, duration_ms 20619.4702",
+    "npm run check": "PASS (exit 0): node --check src/errors.js && node --check src/cli.js && node --check src/config.js && node --check src/adapters/process.js && node --check src/global-runtime.js && node --check src/runtime.js && node --check src/control-plane/state.js && node --check src/control-plane/locks.js && node --check src/control-plane/events.js && node --check test/config.test.js && node --check test/cli.test.js && node --check test/global-runtime.test.js && node --check test/control-plane-state.test.js && node --check test/control-plane-locks.test.js && node --check test/control-plane-events.test.js && node --check test/cli-control-plane-contract.test.js"
+  },
+  "concerns": [
+    "src/control-plane/actions.js currently calls an undefined withTaskLock symbol. That file is outside T024 write scope, so src/cli.js first routes global lifecycle commands to stopManagedRun/restartManagedRun and falls back only for that exact ReferenceError to preserve the CLI contract."
+  ],
+  "recovery_hints": [
+    "Future cleanup should fix the undefined withTaskLock wiring inside src/control-plane/actions.js and then remove the narrow CLI fallback.",
+    "If lifecycle tests fail on Windows with fixture cleanup EPERM, rerun the focused suite once before classifying it as a product regression."
+  ],
+  "residuals": []
+}

@@ -1,0 +1,941 @@
+{
+  "packet_id": "lane-tests",
+  "family_id": "tests",
+  "assigned_paths": [
+    "test/agent-installer.test.js",
+    "test/clean-control-plane.test.js",
+    "test/clean-safety.test.js",
+    "test/cli-contract.test.js",
+    "test/cli-control-plane-contract.test.js",
+    "test/cli.test.js",
+    "test/config-contract.test.js",
+    "test/config.test.js",
+    "test/control-plane-events.test.js",
+    "test/control-plane-locks.test.js",
+    "test/control-plane-ownership.test.js",
+    "test/control-plane-state.test.js",
+    "test/global-runtime.test.js",
+    "test/helpers/cli-fixture.js",
+    "test/helpers/control-plane-fixture.js",
+    "test/inspect-cli.test.js",
+    "test/lifecycle-ownership.test.js",
+    "test/managed-cli.test.js",
+    "test/recovery-observability.test.js",
+    "test/runtime-state.test.js"
+  ],
+  "paths_read": [
+    "test/agent-installer.test.js",
+    "test/clean-control-plane.test.js",
+    "test/clean-safety.test.js",
+    "test/cli-contract.test.js",
+    "test/cli-control-plane-contract.test.js",
+    "test/cli.test.js",
+    "test/config-contract.test.js",
+    "test/config.test.js",
+    "test/control-plane-events.test.js",
+    "test/control-plane-locks.test.js",
+    "test/control-plane-ownership.test.js",
+    "test/control-plane-state.test.js",
+    "test/global-runtime.test.js",
+    "test/helpers/cli-fixture.js",
+    "test/helpers/control-plane-fixture.js",
+    "test/inspect-cli.test.js",
+    "test/lifecycle-ownership.test.js",
+    "test/managed-cli.test.js",
+    "test/recovery-observability.test.js",
+    "test/runtime-state.test.js"
+  ],
+  "ledger": {
+    "todo": [],
+    "doing": [],
+    "done": [
+      "test/agent-installer.test.js",
+      "test/clean-control-plane.test.js",
+      "test/clean-safety.test.js",
+      "test/cli-contract.test.js",
+      "test/cli-control-plane-contract.test.js",
+      "test/cli.test.js",
+      "test/config-contract.test.js",
+      "test/config.test.js",
+      "test/control-plane-events.test.js",
+      "test/control-plane-locks.test.js",
+      "test/control-plane-ownership.test.js",
+      "test/control-plane-state.test.js",
+      "test/global-runtime.test.js",
+      "test/helpers/cli-fixture.js",
+      "test/helpers/control-plane-fixture.js",
+      "test/inspect-cli.test.js",
+      "test/lifecycle-ownership.test.js",
+      "test/managed-cli.test.js",
+      "test/recovery-observability.test.js",
+      "test/runtime-state.test.js"
+    ],
+    "blocked": [],
+    "overflow": []
+  },
+  "coverage": [
+    {
+      "path": "test/agent-installer.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-001"
+      ]
+    },
+    {
+      "path": "test/clean-control-plane.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-002"
+      ]
+    },
+    {
+      "path": "test/clean-safety.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-003"
+      ]
+    },
+    {
+      "path": "test/cli-contract.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-004"
+      ]
+    },
+    {
+      "path": "test/cli-control-plane-contract.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-005"
+      ]
+    },
+    {
+      "path": "test/cli.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-006"
+      ]
+    },
+    {
+      "path": "test/config-contract.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-007"
+      ]
+    },
+    {
+      "path": "test/config.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-008"
+      ]
+    },
+    {
+      "path": "test/control-plane-events.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-009"
+      ]
+    },
+    {
+      "path": "test/control-plane-locks.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-010"
+      ]
+    },
+    {
+      "path": "test/control-plane-ownership.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-011"
+      ]
+    },
+    {
+      "path": "test/control-plane-state.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-012"
+      ]
+    },
+    {
+      "path": "test/global-runtime.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-013"
+      ]
+    },
+    {
+      "path": "test/helpers/cli-fixture.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-014"
+      ]
+    },
+    {
+      "path": "test/helpers/control-plane-fixture.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-015"
+      ]
+    },
+    {
+      "path": "test/inspect-cli.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-016"
+      ]
+    },
+    {
+      "path": "test/lifecycle-ownership.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-017"
+      ]
+    },
+    {
+      "path": "test/managed-cli.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-018"
+      ]
+    },
+    {
+      "path": "test/recovery-observability.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-019"
+      ]
+    },
+    {
+      "path": "test/runtime-state.test.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-T-020"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-T-001",
+      "source_path": "test/agent-installer.test.js",
+      "summary": "Agent 安装器 CLI 测试 — 验证 agent paths、doctor、install 命令的合约行为",
+      "test_groups": [
+        "agent paths — 报告规范源和支持的适配器目标",
+        "agent doctor — 验证规范源和适配器矩阵",
+        "agent install dry-run — 计划复制但不变异目标",
+        "agent install compact — 不使用详细复制路径的摘要操作",
+        "agent install — 复制到显式目标且幂等",
+        "agent install — 拒绝有分歧的目标，除非强制",
+        "agent install — 拒绝非目录的技能目标，即使强制也不行"
+      ],
+      "key_assertions": [
+        "paths 返回 ok=true，包含 canonical source 和 4 个适配器目标 (codex, claude-code, github-copilot, visual-studio)",
+        "doctor 返回 status=ok，包含 canonical_source_exists 和 adapter_matrix_ready 检查",
+        "dry-run 设置 dryRun=true，不实际写入文件",
+        "compact 模式省略 actions 数组仅显示 counts",
+        "install 幂等：首次 status=installed，再次 status=already_installed",
+        "目标有分歧时拒绝并报 agent_target_conflict，--force 可覆盖",
+        "非目录目标返回 agent_target_conflict 错误"
+      ]
+    },
+    {
+      "id": "E-T-002",
+      "source_path": "test/clean-control-plane.test.js",
+      "summary": "Clean 命令控制平面安全测试 — 路径逃逸、符号链接、运行时证据保留",
+      "test_groups": [
+        "clean --safe 拒绝路径逃逸而不删除已批准目标",
+        "clean --safe 拒绝符号链接逃逸而不删除已批准目标",
+        "clean --safe 拒绝项目根目标而不删除已批准目标",
+        "clean --safe 拒绝未知空目标而不删除已批准目标",
+        "clean --safe 保留运行中的证据(cache/…/logs)",
+        "clean --safe 保留最新的失败证据",
+        "reset 命令不存在且不执行清理行为"
+      ],
+      "key_assertions": [
+        "路径 '..' 返回 clean_target_outside_project 且 dist 不被删除",
+        "符号链接到外部目录返回 clean_target_outside_project",
+        "目标 '.' 返回 clean_target_root",
+        "空/空白目标返回 clean_target_empty",
+        "运行中的进程日志不受 clean --safe 影响 (partially_removed)",
+        "最新的 failure log (dev.failed.log) 被保留",
+        "reset 命令返回 unknown_command 或 command_usage_error"
+      ]
+    },
+    {
+      "id": "E-T-003",
+      "source_path": "test/clean-safety.test.js",
+      "summary": "Clean 命令安全模式测试 — dry-run、safe、all、目标验证",
+      "test_groups": [
+        "clean --json 返回 dry-run 计划而不删除",
+        "clean --safe --json 移除安全目标，跳过缺失目标，不删除风险目标",
+        "clean --all --json 需要确认且不删除风险目标",
+        "clean --all --yes --json 移除所有目标",
+        "clean --safe --json 拒绝项目根",
+        "clean --safe --json 拒绝外部根目标",
+        "clean --safe --json 拒绝绝对路径"
+      ],
+      "key_assertions": [
+        "默认 clean 返回 dryRun=true, mode=dry-run, removed=[]",
+        "--safe 删除 dist，保留 node_modules，跳过 missing-cache (skipped_missing)",
+        "--all 返回 confirmation_required 错误，不删除任何目标",
+        "--all --yes 成功删除所有目标",
+        "目标 '.' 返回 clean_target_root",
+        "目标 '..' 返回 clean_target_outside_project",
+        "绝对路径返回 clean_target_ambiguous"
+      ]
+    },
+    {
+      "id": "E-T-004",
+      "source_path": "test/cli-contract.test.js",
+      "summary": "CLI 合约测试 — 所有命令的 JSON 信封和错误代码合约",
+      "test_groups": [
+        "init --json 创建 v1 配置并返回成功信封",
+        "init --json 拒绝已有/祖先配置返回 config_exists",
+        "doctor --json 报告只读检查和摘要",
+        "doctor --json 缺少配置时分类为 config_not_found",
+        "tasks --json 列出前台和托管任务而不运行",
+        "run --json 前台任务发射成功信封",
+        "run --json --compact 更小的信封",
+        "run --json 前台任务写入 stdout 时发射单个 JSON",
+        "run --json 未知任务返回 task_not_found",
+        "logs --json --compact 保持默认 dev 任务",
+        "lifecycle 别名通过 run 合约执行匹配的前台任务",
+        "JSON 失败信封使用稳定的公共错误代码"
+      ],
+      "key_assertions": [
+        "init 返回 created=true, path=.launchdeck.yml",
+        "已存在的 config 返回 status=1, error.code=config_exists",
+        "doctor 返回 checks 数组和 summary {ok, warn, error}",
+        "tasks 返回项目名和任务列表 [{name, type}]",
+        "run build 前台任务成功执行，code=0，build-output.txt 被创建",
+        "compact 模式省略 data/projectRoot/configPath",
+        "task_not_found 包含 error.details.task",
+        "CONTRACT_ERROR_CODES 包含 42 个已知错误代码",
+        "生命周期别名 build 映射到 run, alias=build"
+      ]
+    },
+    {
+      "id": "E-T-005",
+      "source_path": "test/cli-control-plane-contract.test.js",
+      "summary": "CLI 控制平面合约测试 — 成功/失败信封结构和 next actions",
+      "test_groups": [
+        "成功信封包含 schemaVersion 1",
+        "成功信封在 data 下嵌套结构化 payload",
+        "成功信封默认包含空的 next 列表",
+        "成功信封保留传统顶层 payload 镜像",
+        "紧凑成功信封移除镜像但保留进程控制字段",
+        "失败信封在合约表面暴露稳定的 code/message/details/next",
+        "紧凑失败信封保留 code/message/details 和安全的 next actions",
+        "必需的控制平面错误代码是公共合约代码",
+        "clean --all --json 不提示即拒绝并返回结构化 next actions"
+      ],
+      "key_assertions": [
+        "成功信封 schemaVersion=1, ok=true, command, status=ok",
+        "payload 嵌套在 data 字段下",
+        "next 默认 []",
+        "传统字段 (summary, projects) 在顶层保留",
+        "紧凑格式使用 cmd 替代 command，省略 label/reason",
+        "失败信封有 code, message, details, next",
+        "26 个 REQUIRED_CONTROL_PLANE_ERROR_CODES 均在 ERROR_CODES 中",
+        "clean --all 返回 confirmation_required，没有交互提示"
+      ]
+    },
+    {
+      "id": "E-T-006",
+      "source_path": "test/cli.test.js",
+      "summary": "CLI 端到端测试 — 完整生命周期流程和结构化错误",
+      "test_groups": [
+        "端到端本地生命周期流程",
+        "常见 CLI 失败返回结构化 JSON 错误"
+      ],
+      "key_assertions": [
+        "doctor -> build -> test -> dev -> ps -> logs -> stop -> clean 完整流程",
+        "dev 启动返回 process.status=running，重复调用幂等 (spawned=false)",
+        "ps 返回 1 个进程，status=running",
+        "logs 返回日志内容，匹配 content",
+        "stop 返回 process.status=stopped",
+        "clean --safe 删除 cache 保留 danger",
+        "clean --all --yes 删除 danger",
+        "缺少 config 返回 config_not_found",
+        "init 成功，再次 init 返回 config_exists",
+        "缺少 task 返回 task_not_found"
+      ]
+    },
+    {
+      "id": "E-T-007",
+      "source_path": "test/config-contract.test.js",
+      "summary": "配置合约测试 — 版本验证、字段验证、clean targets 解析",
+      "test_groups": [
+        "拒绝不支持的配置版本",
+        "拒绝缺少必需 version 字段的配置",
+        "从发现的配置派生确定性的 projectRoot 和 configPath",
+        "拒绝逃逸项目根的 task cwd 路径",
+        "拒绝逃逸项目根的 task log 路径",
+        "longRunning=false 派生 command 类型",
+        "longRunning=true 派生 managed 类型",
+        "任务风险默认 medium",
+        "规范化 clean target 列表",
+        "保留 clean target 用于运行时的拒绝计划"
+      ],
+      "key_assertions": [
+        "version: 2 抛出 unsupported_config_version",
+        "缺少 version 抛出 config_invalid",
+        "从子目录加载找到祖先 .launchdeck.yml",
+        "cwd: '../outside' 抛出 project_root_escape",
+        "log: '../outside/dev.log' 抛出 project_root_escape",
+        "longRunning=false 派生出 type=command",
+        "longRunning=true 派生出 type=managed",
+        "风险默认 medium",
+        "clean.safe 和 clean.risky 被规范化为 {kind, rawPath} 格式",
+        "目标 '.' 在 resolveCleanTargets 中被拒绝为 clean_target_root",
+        "目标 '..' 拒绝为 clean_target_outside_project"
+      ]
+    },
+    {
+      "id": "E-T-008",
+      "source_path": "test/config.test.js",
+      "summary": "配置解析单元测试 — normalizeConfig、loadConfig、resolveCleanTargets",
+      "test_groups": [
+        "规范化字符串和对象的任务定义",
+        "从子目录向上搜索加载配置",
+        "拒绝项目根外的 clean targets",
+        "拒绝清理项目根本身"
+      ],
+      "key_assertions": [
+        "字符串任务 'npm run build' 被规范化为 {command: 'npm run build'}",
+        "端口 '5173' 字符串被转换为数字 5173",
+        "从子目录 packages/app/ 加载到 .launchdeck.yml 的项目根",
+        "../outside 的 clean target 抛出 /inside the project root/",
+        "'.' 的 clean target 抛出 /refuses to clean the project root/"
+      ]
+    },
+    {
+      "id": "E-T-009",
+      "source_path": "test/control-plane-events.test.js",
+      "summary": "事件系统测试 — appendEvent、readEvents、secret redaction、corrupt JSONL",
+      "test_groups": [
+        "appendEvent 写入带有生成的身份和生命周期字段的 JSON Lines 事件",
+        "appendEvent 在追加的记录中保留调用者 transactionId",
+        "appendEvent 在持久化前修正秘密外观的 env 和 config 字段",
+        "readEvents 在 JSONL 文件包含损坏行时返回有效事件和解析诊断",
+        "appendEvent 保留 next actions"
+      ],
+      "key_assertions": [
+        "事件包含 eventId (evt_ 前缀), transactionId (tx_ 前缀), 有效 ISO 时间戳",
+        "两次调用相同 transactionId 生成两条相同 transactionId 的记录",
+        "API_TOKEN, databasePassword, clientSecret 被替换为 [REDACTED]",
+        "NORMAL_SETTING 保持可见",
+        "损坏 JSONL 行 (line 2) 返回 warnings，有效行仍被解析",
+        "next actions 数组被完整保留"
+      ]
+    },
+    {
+      "id": "E-T-010",
+      "source_path": "test/control-plane-locks.test.js",
+      "summary": "锁系统测试 — acquireLock、竞争、过期、takeover、withLock 清理",
+      "test_groups": [
+        "acquireLock 使用所有者元数据创建排他锁文件",
+        "acquireLock 在有界等待后拒绝竞争的锁",
+        "acquireLock 当所有者进程仍存活时拒绝接管过期锁",
+        "acquireLock 当所有者不存在时安全接管过期锁",
+        "withLock 在临界区完成后移除锁文件",
+        "withLock 在临界区抛出时移除锁文件"
+      ],
+      "key_assertions": [
+        "锁文件包含 version, lockName, ownerPid, ownerCommand, ownerCwd, transactionId, createdAt, expiresAt",
+        "竞争锁返回 lock_busy 或 task_lock_busy，包含所有者信息",
+        "过期锁但进程存活：返回 lock_busy, staleCandidate=true, takeoverAllowed=false",
+        "过期锁且进程不存在：返回新锁，覆盖所有者",
+        "withLock 成功时 lockPath 不存在",
+        "withLock 抛出异常时 lockPath 不存在"
+      ]
+    },
+    {
+      "id": "E-T-011",
+      "source_path": "test/control-plane-ownership.test.js",
+      "summary": "所有权验证测试 — PID 匹配、进程证据、端口观察冲突",
+      "test_groups": [
+        "匹配的监听器 PID 但只有存活证据不是验证拥有",
+        "匹配的监听器 PID 但进程证据不可用不是验证拥有",
+        "匹配的监听器 PID 加上可信进程证据验证所有权",
+        "未知声明的所有权在端口观察冲突中保持未知"
+      ],
+      "key_assertions": [
+        "仅 liveness 证据返回 confidence=UNKNOWN, 不是 VERIFIED_OWNED",
+        "listener pid 匹配但 trusted_process_evidence_unavailable_or_incomplete",
+        "加上 LAUNCHDECK_RUN_ID env 标记 => VERIFIED_OWNED",
+        "未知声明的所有权在 buildPortObservation 中返回 ownerType=unknown, conflicts 包含 warning"
+      ]
+    },
+    {
+      "id": "E-T-012",
+      "source_path": "test/control-plane-state.test.js",
+      "summary": "控制平面状态测试 — project add、legacy 迁移、identity 稳定、repair",
+      "test_groups": [
+        "project add 创建 v2 registry/projects.json",
+        "projects 读取遗留 projects.json 并在变异时迁移",
+        "project add 在别名修复时保持 projectId 稳定并拒绝别名冲突",
+        "project add 拒绝不支持的新注册表版本",
+        "project repair 更新路径、配置和别名而不改变身份"
+      ],
+      "key_assertions": [
+        "project add 写入 registry/projects.json (version 2)",
+        "旧版 projects.json (version 1) 被读取，变异时迁移到 version 2",
+        "project repair 保持同一个 projectId，允许更新 alias/projectRoot/configPath",
+        "别名冲突返回 alias_conflict 错误",
+        "不支持的版本 (version 999) 返回 state_version_unsupported，包含修复指导"
+      ]
+    },
+    {
+      "id": "E-T-013",
+      "source_path": "test/global-runtime.test.js",
+      "summary": "全局运行时集成测试 — 项目注册表、ps、ports、start/stop、inspect、scan",
+      "test_groups": [
+        "project add 和 projects list 使用幂等隔离的全局注册表",
+        "project add 保持别名唯一且相同项目根幂等",
+        "project repair 更新路径、配置和别名而不改变身份",
+        "ps --all 聚合来自注册项目的托管进程",
+        "ports 报告声明的端口和 Launchdeck 托管状态",
+        "ports 优先选择最近的活动运行记录",
+        "inspect-port 报告已占用的外部端口而不声明所有权",
+        "inspect-port 报告声明活动运行 PID 与监听器不同时的所有权冲突",
+        "start 拒绝外部占用的声明端口",
+        "start project:task 写入带有生命周期身份的全局运行索引记录",
+        "start project:task 将全局运行标记注入托管任务环境",
+        "start project:task 返回现有运行而不衍生第二个进程",
+        "start project:task 分别报告 HTTP 就绪和进程存活",
+        "start project:task 退回到进程存活就绪当无端口声明时",
+        "status --all 暴露活动拥有运行的安全 next actions",
+        "status --all 在别名修复后使用稳定的项目 ID 的 next actions",
+        "status --all 汇总注册项目、进程、端口和冲突",
+        "start project:task 在全局运行索引不可写时失败",
+        "conflicts 报告外部占用的声明端口而不停止任何东西",
+        "project remove 仅删除注册表条目",
+        "project remove 拒绝取消注册具有活动拥有运行的项目",
+        "project scan 发现配置同时跳过重的生成目录",
+        "logs project:task 读取注册项目任务日志",
+        "logs --follow 明确失败而不启动无界监视器"
+      ],
+      "key_assertions": [
+        "project add 幂等：相同的 projectId, idempotent",
+        "重复 project add 相同 projectRoot + 不同 alias 返回 alias_conflict",
+        "project repair 保持 projectId, 更新 alias/projectRoot/configPath",
+        "ps --all 返回 (project:task) 对，owner 为 launchdeck",
+        "ports 报告声明的端口和进程状态",
+        "inspect-port 外部端口返回 ownerType=external, conflicts=[]",
+        "inspect-port PID 不匹配返回 ownerType=conflict",
+        "start 被外部占用的端口拒绝返回 port_conflict",
+        "start 写入 runId (run_ 前缀), transactionId (tx_ 前缀)",
+        "LAUNCHDECK_HOME, LAUNCHDECK_TASK, LAUNCHDECK_RUN_ID, LAUNCHDECK_PROJECT_ID 被注入",
+        "readiness 可以是 http (status=ready, url=...) 或 process-alive",
+        "status --all 包含 summary {projects, processes, ports, conflicts}",
+        "不可写 run index 返回 exit code 1",
+        "conflicts 报告 external_port_occupied",
+        "project remove 仅删除注册，保留 config 文件",
+        "有活动运行时拒绝 project remove",
+        "project scan 尊重 maxDepth=5, maxDirs=2000, maxProjects=100",
+        "logs --follow 返回 unsupported_option"
+      ]
+    },
+    {
+      "id": "E-T-014",
+      "source_path": "test/helpers/cli-fixture.js",
+      "summary": "CLI 测试辅助工具 — createCliFixture、runCli、writeConfig、清理",
+      "test_groups": [
+        "createCliFixture — 创建临时项目和 API 对象",
+        "createTempProject / removeTempProject — 安全创建和删除",
+        "writeConfig / writeFile — 配置和文件写入",
+        "runCli / runCliJson — 使用 JSON 支持运行 CLI",
+        "安全删除 — assertSafeTempProject 验证安全边界"
+      ],
+      "key_assertions": [
+        "createCliFixture 返回 {projectRoot, path, writeConfig, runCli, runCliJson, cleanup}",
+        "writeFile 拒绝绝对路径和逃逸项目根的相对路径",
+        "runCliJson 自动添加 --json 参数",
+        "removeTempProject 验证路径在临时目录内且有正确前缀",
+        "删除重试 (removeWithRetry) 处理 EBUSY/ENOTEMPTY/EPERM",
+        "repoRoot 解析到项目根目录",
+        "cliPath 指向 src/cli.js"
+      ]
+    },
+    {
+      "id": "E-T-015",
+      "source_path": "test/helpers/control-plane-fixture.js",
+      "summary": "控制平面测试辅助工具 — createLaunchdeckHome、createControlPlaneFixture、HTTP 服务器脚本",
+      "test_groups": [
+        "createLaunchdeckHome — 设置 LAUNCHDECK_HOME 临时目录",
+        "createControlPlaneFixture — 组合 Home + 项目 fixture",
+        "createManagedProjectFixture — 预配置的托管项目 fixture",
+        "managedProjectConfig — 托管项目配置生成器",
+        "fixtureServerScriptContent — HTTP 测试服务器脚本",
+        "writeFixtureServerScript — 服务器脚本写入"
+      ],
+      "key_assertions": [
+        "createControlPlaneFixture 返回 {homeDir, env, projectRoot, path, writeConfig, runCli, runCliJson, cleanup}",
+        "cleanup 执行 'stop --json' 然后清理 home 和项目",
+        "fixtureServerScriptContent 生成 HTTP 服务器，支持 /health 端点",
+        "managedProjectConfig 使用长运行、端口和风险设置创建配置",
+        "默认管理端口 4173，默认任务 dev"
+      ]
+    },
+    {
+      "id": "E-T-016",
+      "source_path": "test/inspect-cli.test.js",
+      "summary": "Inspect CLI 测试 — 端口/PID/任务的检查和诊断分类",
+      "test_groups": [
+        "start 拒绝外部占用的声明端口而不停止外部监听器",
+        "inspect-port 对外部占用的声明端口保持兼容",
+        "inspect port: 解释外部冲突为只检查",
+        "inspect pid: 报告外部监听器为只检查",
+        "inspect task: 报告 Launchdeck 拥有的托管运行",
+        "inspect pid: 当 pid 匹配运行证据时报告 Launchdeck 拥有的托管运行"
+      ],
+      "key_assertions": [
+        "inspect-port 返回 ownerType=external, conflicts=[external_port_occupied]",
+        "inspect port: 有 safeActions (不含 stop/kill/restart) 和 blockedActions",
+        "inspect pid: 外部 pid 返回 safeActions 不含 stop/kill",
+        "inspect task: 有项目、任务和运行证据，safeActions 包含 logs 和 stop, blockedActions=[]",
+        "所有 inspect 结果包含 sections: safeActions, blockedActions, target, ownership"
+      ]
+    },
+    {
+      "id": "E-T-017",
+      "source_path": "test/lifecycle-ownership.test.js",
+      "summary": "生命周期所有权测试 — stop 验证、probable/unknown 所有权、force-stop、restart、stop_failed",
+      "test_groups": [
+        "stop --json 停止已验证拥有的运行并记录停止证据",
+        "stop --json 拒绝可能拥有的运行而不停止进程",
+        "stop --json 拒绝未知所有权而不停止进程",
+        "stop --json 拒绝匹配的 PID 和监听器但没有可信衍生证据",
+        "stop --json 拒绝外部进程而不停止外部监听器",
+        "force-stop --json 保留已验证所有权门禁",
+        "restart --json 在单个事务中停止、等待端口释放并启动新运行",
+        "restart --json 当停止任务保持其端口占用时记录 port_release_timeout",
+        "stop --json 当终止未完成时保留 stop_failed 证据"
+      ],
+      "key_assertions": [
+        "已验证拥有 run 停止成功，run index 状态变 stopped，端口释放",
+        "probable-owned 返回 ownership_not_verified，端口仍连接",
+        "unknown 返回 unknown_process_owner",
+        "没有可信衍生证据但 pid 匹配返回 unknown_process_owner",
+        "外部进程返回 external_process",
+        "force-stop 仍验证所有权 (external_process)",
+        "restart 返回 stoppedRun + startedRun + 共享 transactionId",
+        "重启计数增加 (ready-start-count.txt)",
+        "port_release_timeout 返回 status=stop_failed, 记录 restart.failed 事件",
+        "stop_failed 保留 run index 状态 stop_failed, 记录 stop.failed 事件"
+      ]
+    },
+    {
+      "id": "E-T-018",
+      "source_path": "test/managed-cli.test.js",
+      "summary": "托管 CLI 测试 — dev/start/stop/ps/logs/restart 命令合约",
+      "test_groups": [
+        "dev --json 以生命周期信封启动默认托管任务",
+        "start --json 以生命周期信封启动命名托管任务",
+        "start --json 返回托管运行的 run identity 和 readiness 字段",
+        "start --json 将 launchdeck 运行标记注入托管任务环境",
+        "start --json 将第二次拥有的 start 视为幂等而不衍生其他进程",
+        "restart --json 当停止成功但启动失败时报告 partial_failure",
+        "ps --json 刷新托管记录而不删除陈旧证据",
+        "ps --json 在状态 JSON 损坏时报告 runtime_state_invalid",
+        "logs --json 使用合约 payload 名称返回托管日志内容",
+        "stop --json 停止一个托管任务并带有进程 payload",
+        "stop --json 停止所有运行的托管任务并带有每个任务的结果",
+        "start --json 以前台任务返回 task_not_managed"
+      ],
+      "key_assertions": [
+        "dev 和 start 都返回 ok=true, process={task, command, cwd, status=running, logPath}",
+        "runId 匹配 /^run_/, transactionId 匹配 /^tx_/",
+        "readiness.status=running, 有 readiness 字段",
+        "环境变量 LAUNCHDECK_HOME, LAUNCHDECK_TASK, LAUNCHDECK_RUN_ID, LAUNCHDECK_PROJECT_ID 被注入",
+        "重复 start 返回相同 runId/pid, spawned=false",
+        "restart partial_failure 返回 status=partial, error.code=partial_failure, results=[...]",
+        "ps 返回 process count 和 lastRefresh",
+        "损坏的 state.json 返回 runtime_state_invalid",
+        "stop 返回 process.task, .status=stopped, .stoppedAt",
+        "停止全部返回 results [{task, ok, status}]",
+        "前台任务 start 返回 task_not_managed"
+      ]
+    },
+    {
+      "id": "E-T-019",
+      "source_path": "test/recovery-observability.test.js",
+      "summary": "恢复和可观测性测试 — logs、stale status、reconcile、events、--follow、secret redaction",
+      "test_groups": [
+        "logs project:task 继续读取现有托管日志内容",
+        "status --all 标记消失的拥有运行为 stale 并附带 reconcile next 操作",
+        "reconcile --json 将陈旧运行标记而不杀死同一端口上的新外部监听器",
+        "events --json 读取目标的有界结构化事件历史",
+        "logs --follow --json 为追加的托管日志输出发射可见的 JSON Lines",
+        "clean --safe 保留运行日志、最新失败日志和失败链接事件",
+        "logs --follow --json 在流式传输前修正秘密外观的托管输出"
+      ],
+      "key_assertions": [
+        "logs 返回 project.name, task, logPath, content",
+        "status stale 返回 status=stale, 有 reconcile 和 inspect 的 next actions",
+        "reconcile 标记 stale runs, 不杀死 external listener",
+        "events 返回按 eventId 过滤的事件列表, schemaVersion=1",
+        "--follow 发射 JSON Lines {schemaVersion, runId, task, projectId, timestamp}",
+        "clean --safe 保留运行中和失败的日志",
+        "秘密值 (ld_secret_value_must_not_stream) 在 --follow 输出中被替换为 [REDACTED]"
+      ]
+    },
+    {
+      "id": "E-T-020",
+      "source_path": "test/runtime-state.test.js",
+      "summary": "运行时状态单元测试 — startManagedTask 状态形状、损坏状态、陈旧进程、日志、幂等 stop",
+      "test_groups": [
+        "startManagedTask 为托管任务写入 v1 运行时状态形状",
+        "ps 报告 runtime_state_invalid 并保留损坏状态证据",
+        "ps 将退出的托管进程刷新为 stale 而不删除其记录",
+        "logs 在托管进程退出后返回日志内容",
+        "stop 对陈旧托管进程是幂等的并保留记录"
+      ],
+      "key_assertions": [
+        "startManagedTask 写入 state.json 包含 version=1, projectRoot, updatedAt, 进程信息",
+        "损坏 state.json 返回 error.code=runtime_state_invalid，文件被保留",
+        "pid=0 的进程被刷新为 status=stale, lastRefresh 被更新",
+        "logs 在状态为 stale 时仍返回日志内容 (match /request complete/)",
+        "停止陈旧进程：status=stopped, stoppedAt 设置"
+      ]
+    }
+  ],
+  "functional_areas": [
+    {
+      "area": "Agent 安装子系统",
+      "test_files": [
+        "test/agent-installer.test.js"
+      ],
+      "description": "管理 launchdeck-agent 技能文件的安装、路径发现、doctor 检查、目标适配器映射"
+    },
+    {
+      "area": "Clean 命令子系统",
+      "test_files": [
+        "test/clean-control-plane.test.js",
+        "test/clean-safety.test.js"
+      ],
+      "description": "安全地清理项目生成物，支持 dry-run/safe/all 模式，运行时证据保留，路径逃逸保护"
+    },
+    {
+      "area": "CLI 合约层",
+      "test_files": [
+        "test/cli-contract.test.js",
+        "test/cli-control-plane-contract.test.js"
+      ],
+      "description": "定义所有 CLI 命令的 JSON 信封格式、错误代码合约、紧凑输出格式"
+    },
+    {
+      "area": "端到端 CLI 流程",
+      "test_files": [
+        "test/cli.test.js"
+      ],
+      "description": "验证完整 CLI 生命周期：init, doctor, run, dev, ps, logs, stop, clean"
+    },
+    {
+      "area": "配置管理",
+      "test_files": [
+        "test/config.test.js",
+        "test/config-contract.test.js"
+      ],
+      "description": "YAML 配置加载、验证、任务类型派生、clean target 解析和规范化"
+    },
+    {
+      "area": "控制平面事件系统",
+      "test_files": [
+        "test/control-plane-events.test.js"
+      ],
+      "description": "JSON Lines 事件追加/读取、transaction 追踪、敏感信息修正、损坏行恢复"
+    },
+    {
+      "area": "分布式锁系统",
+      "test_files": [
+        "test/control-plane-locks.test.js"
+      ],
+      "description": "基于文件的排他锁、竞争处理、过期锁接管、临界区保护"
+    },
+    {
+      "area": "进程所有权验证",
+      "test_files": [
+        "test/control-plane-ownership.test.js"
+      ],
+      "description": "多证据所有权证明 (PID、进程环境、监听器)、端口冲突检测"
+    },
+    {
+      "area": "控制平面状态管理",
+      "test_files": [
+        "test/control-plane-state.test.js"
+      ],
+      "description": "项目注册表管理、版本迁移、身份修复、别名唯一性"
+    },
+    {
+      "area": "全局运行时引擎",
+      "test_files": [
+        "test/global-runtime.test.js"
+      ],
+      "description": "跨项目进程管理、端口分配/冲突检测、就绪检查、环境标记注入、项目扫描"
+    },
+    {
+      "area": "Inspect 诊断子系统",
+      "test_files": [
+        "test/inspect-cli.test.js"
+      ],
+      "description": "端口/PID/任务的统一检查、诊断分类、安全操作/阻塞操作分类"
+    },
+    {
+      "area": "生命周期所有权管理",
+      "test_files": [
+        "test/lifecycle-ownership.test.js"
+      ],
+      "description": "基于所有权的 stop 安全门禁、force-stop、restart 事务、stop 失败恢复"
+    },
+    {
+      "area": "托管进程生命周期",
+      "test_files": [
+        "test/managed-cli.test.js"
+      ],
+      "description": "托管任务 start/stop/ps/logs/restart、幂等性、部分失败、前台任务拒绝"
+    },
+    {
+      "area": "恢复和可观测性",
+      "test_files": [
+        "test/recovery-observability.test.js"
+      ],
+      "description": "stale 运行检测、reconcile、事件查询、日志跟随、秘密修正、清理保留"
+    },
+    {
+      "area": "运行时状态引擎",
+      "test_files": [
+        "test/runtime-state.test.js"
+      ],
+      "description": "运行时状态 JSON 管理、进程列表/刷新、日志追溯、陈旧进程处理"
+    }
+  ],
+  "fixture_patterns": [
+    {
+      "name": "createCliFixture",
+      "source": "test/helpers/cli-fixture.js",
+      "usage": "创建隔离的临时项目目录，提供 writeConfig/runCli/runCliJson/path/cleanup API",
+      "used_by": [
+        "test/agent-installer.test.js",
+        "test/clean-safety.test.js",
+        "test/cli-contract.test.js",
+        "test/config-contract.test.js",
+        "test/config.test.js",
+        "test/global-runtime.test.js",
+        "test/managed-cli.test.js",
+        "test/runtime-state.test.js"
+      ]
+    },
+    {
+      "name": "createControlPlaneFixture",
+      "source": "test/helpers/control-plane-fixture.js",
+      "usage": "设置 LAUNCHDECK_HOME + 项目 fixture 的组合，提供全局 CLI 运行能力",
+      "used_by": [
+        "test/clean-control-plane.test.js",
+        "test/cli-control-plane-contract.test.js",
+        "test/control-plane-state.test.js",
+        "test/lifecycle-ownership.test.js"
+      ]
+    },
+    {
+      "name": "createLaunchdeckHome",
+      "source": "test/helpers/control-plane-fixture.js",
+      "usage": "仅设置 LAUNCHDECK_HOME 临时目录（不带项目），用于事件和锁测试",
+      "used_by": [
+        "test/control-plane-events.test.js",
+        "test/control-plane-locks.test.js",
+        "test/control-plane-state.test.js"
+      ]
+    },
+    {
+      "name": "createManagedProjectFixture",
+      "source": "test/helpers/control-plane-fixture.js",
+      "usage": "预创建托管项目和 HTTP 测试服务器的 fixture，用于集成测试",
+      "used_by": [
+        "test/inspect-cli.test.js",
+        "test/recovery-observability.test.js"
+      ]
+    },
+    {
+      "name": "withFixture / withRuntimeLock",
+      "source": "各测试文件中的本地模式",
+      "usage": "管理临时资源和运行时锁的模式，使用 createCliFixture + try/finally cleanup",
+      "used_by": [
+        "test/managed-cli.test.js",
+        "test/global-runtime.test.js"
+      ]
+    }
+  ],
+  "error_contracts": {
+    "cli_contract_error_codes": [
+      "config_not_found",
+      "config_exists",
+      "config_invalid",
+      "unsupported_config_version",
+      "project_root_escape",
+      "scan_root_not_found",
+      "scan_root_invalid",
+      "task_not_found",
+      "task_not_managed",
+      "task_already_running",
+      "task_command_failed",
+      "command_usage_error",
+      "port_conflict",
+      "project_not_found",
+      "global_registry_invalid",
+      "runtime_state_invalid",
+      "process_not_found",
+      "process_not_running",
+      "stop_failed",
+      "log_not_found",
+      "partial_failure",
+      "confirmation_required",
+      "clean_target_empty",
+      "clean_target_root",
+      "clean_target_outside_project",
+      "clean_target_ambiguous",
+      "clean_failed",
+      "unsupported_option",
+      "platform_unsupported",
+      "adapter_failed",
+      "agent_adapter_unsupported",
+      "agent_source_invalid",
+      "agent_target_conflict",
+      "internal_error"
+    ],
+    "control_plane_error_codes": [
+      "alias_conflict",
+      "config_invalid",
+      "config_not_found",
+      "duplicate_run",
+      "external_process",
+      "lock_busy",
+      "ownership_not_verified",
+      "port_conflict",
+      "port_release_timeout",
+      "project_has_active_runs",
+      "project_not_found",
+      "registry_lock_busy",
+      "run_not_found",
+      "start_in_progress",
+      "state_version_unsupported",
+      "task_lock_busy",
+      "unknown_process_owner"
+    ],
+    "envelope_structure": {
+      "success": "{ok: true, schemaVersion: 1, command: string, status: 'ok', projectRoot?, configPath?, data?, next: []}",
+      "failure": "{ok: false, schemaVersion: 1, command: string, status: 'error', code: string, message: string, details?, next?, error: {code, message}}",
+      "compact": "{ok, schemaVersion, command, status, code?, message?, details?, data?, next?: [{cmd, risk}]}"
+    }
+  },
+  "confidence": "high",
+  "acceptance": "pass",
+  "return_event": {
+    "packet_id": "lane-tests",
+    "status": "accepted",
+    "acceptance": "pass",
+    "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-tests.json"
+  }
+}

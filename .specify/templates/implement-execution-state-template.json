@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "status": "gathering",
+  "source_contract": "task-index.json",
+  "source_revision": null,
+  "current_batch": null,
+  "current_task": null,
+  "next_action": null,
+  "completed_task_ids": [],
+  "failed_task_ids": [],
+  "retry_count": 0,
+  "policy_refs": ["plan-contract.json#/complete_first_scope_preservation"],
+  "user_confirmed_deferral_refs": [],
+  "active_packet_refs": [],
+  "required_obligation_refs": [],
+  "blockers": [],
+  "recovery": null,
+  "open_gaps": [],
+  "validation": [],
+  "review_window_policy": {
+    "max_completed_tasks_before_review": 5,
+    "max_unreviewed_changed_paths": 8,
+    "max_unreviewed_validation_failures": 0
+  },
+  "last_review_event": null
+}

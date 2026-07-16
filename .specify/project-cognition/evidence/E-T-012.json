@@ -1,0 +1,28 @@
+{
+  "id": "E-T-012",
+  "source_path": "test/control-plane-state.test.js",
+  "summary": "控制平面状态测试 — project add、legacy 迁移、identity 稳定、repair",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-012",
+    "source_path": "test/control-plane-state.test.js",
+    "summary": "控制平面状态测试 — project add、legacy 迁移、identity 稳定、repair",
+    "test_groups": [
+      "project add 创建 v2 registry/projects.json",
+      "projects 读取遗留 projects.json 并在变异时迁移",
+      "project add 在别名修复时保持 projectId 稳定并拒绝别名冲突",
+      "project add 拒绝不支持的新注册表版本",
+      "project repair 更新路径、配置和别名而不改变身份"
+    ],
+    "key_assertions": [
+      "project add 写入 registry/projects.json (version 2)",
+      "旧版 projects.json (version 1) 被读取，变异时迁移到 version 2",
+      "project repair 保持同一个 projectId，允许更新 alias/projectRoot/configPath",
+      "别名冲突返回 alias_conflict 错误",
+      "不支持的版本 (version 999) 返回 state_version_unsupported，包含修复指导"
+    ]
+  }
+}

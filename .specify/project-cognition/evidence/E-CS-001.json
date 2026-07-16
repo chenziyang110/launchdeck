@@ -1,0 +1,81 @@
+{
+  "id": "E-CS-001",
+  "source_path": "src/agent-installer.js",
+  "summary": "Agent skill installer — copies the 'launchdeck-agent' skill into AI coding agent CLI toolchains (Codex CLI, Claude Code, GitHub Copilot, Visual Studio) at project or user scope.",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-001",
+    "source_path": "src/agent-installer.js",
+    "summary": "Agent skill installer — copies the 'launchdeck-agent' skill into AI coding agent CLI toolchains (Codex CLI, Claude Code, GitHub Copilot, Visual Studio) at project or user scope.",
+    "symbols": [
+      "ADAPTERS (const)",
+      "AGENT_SKILL_NAME (const)",
+      "moduleDir (const)",
+      "defaultPackageRoot (const)"
+    ],
+    "exports": [
+      {
+        "name": "AGENT_SKILL_NAME",
+        "kind": "const",
+        "value": "'launchdeck-agent'"
+      },
+      {
+        "name": "listAgentTargets",
+        "kind": "function",
+        "signature": "(options = {}) => { source, targets }",
+        "description": "Returns all 8 target descriptors (4 adapters x 2 scopes) plus validated canonical source"
+      },
+      {
+        "name": "doctorAgentInstaller",
+        "kind": "function",
+        "signature": "(options = {}) => { ok, status, summary, source, targets, checks }",
+        "description": "Health check: validates source existence, manifest validity, and adapter matrix completeness"
+      },
+      {
+        "name": "installAgentSkill",
+        "kind": "function",
+        "signature": "(options = {}) => { agent, scope, dryRun, force, source, target, result }",
+        "description": "Main install function. Validates source manifest, resolves target, compares directories, plans actions, applies if not dryRun."
+      },
+      {
+        "name": "supportedAgents",
+        "kind": "function",
+        "signature": "() => string[]",
+        "description": "Returns ['codex', 'claude-code', 'github-copilot', 'visual-studio']"
+      }
+    ],
+    "internal_functions": [
+      "requireAgent(agentId) — validates agent ID against ADAPTERS",
+      "normalizeScope(scope) — validates 'project' or 'user'",
+      "validateCanonicalSource(options) — checks source dir + SKILL.md manifest declares name: launchdeck-agent",
+      "targetDescriptor(adapter, scope, projectRoot, homeDir) — builds target path descriptor",
+      "explicitTargetDescriptor(adapter, scope, target, projectRoot) — builds custom target path",
+      "compareSkillDirectories(sourceDir, targetDir) — binary-content diff between source and target dirs",
+      "listFiles(root) / collectFiles(root, relativeDir, files) — recursive file listing, rejects symlinks",
+      "sameFileContent(left, right) — Buffer.equals comparison",
+      "planInstallActions(sourceDir, target, comparison, force) — mkdir, copy_file, update_file",
+      "applyInstallActions(actions) — executes planned filesystem actions",
+      "installStatus(comparison, actions, dryRun) — 'already_installed' | 'planned' | 'installed'"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:os",
+      "node:path",
+      "node:url",
+      "src/errors.js"
+    ],
+    "lines": 405,
+    "key_design_points": [
+      "Adapter matrix: 4 agents x 2 scopes = 8 install targets",
+      "Source is always .agents/skills/launchdeck-agent/ in the package root",
+      "Binary content comparison using Buffer.equals (not mtime/size)",
+      "Refuses to install if source SKILL.md is missing or invalid",
+      "Refuses to install if target diverges from source without --force",
+      "Dry-run mode returns planned actions without applying them",
+      "Symbolic links in agent skill packages are rejected with error"
+    ]
+  }
+}

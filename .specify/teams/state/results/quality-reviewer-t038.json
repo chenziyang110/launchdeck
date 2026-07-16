@@ -1,0 +1,45 @@
+{
+  "status": "success",
+  "task_id": "T038",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/branch-review.md",
+    ".specify/teams/state/results/quality-reviewer-t038.json"
+  ],
+  "validation_output": {
+    "npm run check": "exit 0; the configured node --check chain passed for current src files, control-plane modules, smoke script, demo scripts, helper fixtures, and listed test files.",
+    "npm test": "exit 0; node --test passed 136 tests, failed 0, skipped 0, duration_ms 59540.3284.",
+    "smoke evidence reused": "T038 did not rerun release smoke because its verify_commands are npm run check and npm test. Accepted T037 evidence remains: node scripts/smoke-lifecycle.js --quickstart --json exited 0 on win32 with 18 recorded steps and a clean residual scan."
+  },
+  "concerns": [
+    "Cross-platform-ready release status is not yet earned. Current smoke evidence is Windows-local only; macOS and Linux smoke remain required.",
+    "Non-blocking cleanup debt remains in src/global-runtime.js for dead pre-delegation private observation helpers."
+  ],
+  "recovery_hints": [
+    "Run node scripts/smoke-lifecycle.js --quickstart --json on macOS and Linux and record the results before making any cross-platform-ready claim.",
+    "If parent-root git status is noisy because F:/github is the git root, continue using explicit Launchdeck feature artifacts and local validation evidence for closeout rather than sibling-directory status."
+  ],
+  "consumer_evidence": [
+    "implementation-review/branch-review.md now records completed tasks, grouped changed files, fresh validation outputs, unresolved concerns, cross-platform evidence status, and appended repair history.",
+    "T039 is explicitly preserved in the closeout as the accepted JP3 repair for the registry/CLI bridge drift.",
+    "No new blocking correctness, security, or contract regressions were found during the final embedded review closeout."
+  ],
+  "must_preserve_evidence": [
+    "CLI-only, daemonless, user-scoped control-plane scope remains unchanged.",
+    "Stop, restart, and force-stop stay ownership-gated and must not degrade into kill-by-port or kill-by-PID behavior.",
+    "Clean remains safe hygiene and must not absorb destructive reset semantics.",
+    "Stable JSON envelope and JSONL stream contracts remain release surfaces.",
+    "Cross-platform-ready claims require Windows, macOS, and Linux lifecycle smoke evidence."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-001",
+      "status": "preserved",
+      "evidence": "No T038 changes altered registry/state behavior; closeout relies on accepted prior validations and records the accepted T039 bridge repair."
+    },
+    {
+      "id": "CA-CP-020",
+      "status": "windows_local_only",
+      "evidence": "Accepted T037 quickstart smoke passed on the current Windows host, and T038 preserved the limitation that macOS/Linux smoke are still required before any cross-platform-ready claim."
+    }
+  ]
+}

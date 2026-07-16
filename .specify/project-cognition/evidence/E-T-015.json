@@ -1,0 +1,29 @@
+{
+  "id": "E-T-015",
+  "source_path": "test/helpers/control-plane-fixture.js",
+  "summary": "控制平面测试辅助工具 — createLaunchdeckHome、createControlPlaneFixture、HTTP 服务器脚本",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-015",
+    "source_path": "test/helpers/control-plane-fixture.js",
+    "summary": "控制平面测试辅助工具 — createLaunchdeckHome、createControlPlaneFixture、HTTP 服务器脚本",
+    "test_groups": [
+      "createLaunchdeckHome — 设置 LAUNCHDECK_HOME 临时目录",
+      "createControlPlaneFixture — 组合 Home + 项目 fixture",
+      "createManagedProjectFixture — 预配置的托管项目 fixture",
+      "managedProjectConfig — 托管项目配置生成器",
+      "fixtureServerScriptContent — HTTP 测试服务器脚本",
+      "writeFixtureServerScript — 服务器脚本写入"
+    ],
+    "key_assertions": [
+      "createControlPlaneFixture 返回 {homeDir, env, projectRoot, path, writeConfig, runCli, runCliJson, cleanup}",
+      "cleanup 执行 'stop --json' 然后清理 home 和项目",
+      "fixtureServerScriptContent 生成 HTTP 服务器，支持 /health 端点",
+      "managedProjectConfig 使用长运行、端口和风险设置创建配置",
+      "默认管理端口 4173，默认任务 dev"
+    ]
+  }
+}

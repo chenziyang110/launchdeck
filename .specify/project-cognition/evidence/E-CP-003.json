@@ -1,0 +1,21 @@
+{
+  "id": "E-CP-003",
+  "source_path": "src/control-plane/actions.js",
+  "summary": "扫描功能（scanProjectsIntoRegistry）：递归目录搜索，支持maxDepth=5、maxDirs=2000、maxProjects=100的限制，跳过symlink和黑名单目录",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-003",
+    "source_path": "src/control-plane/actions.js",
+    "summary": "扫描功能（scanProjectsIntoRegistry）：递归目录搜索，支持maxDepth=5、maxDirs=2000、maxProjects=100的限制，跳过symlink和黑名单目录",
+    "symbols": [
+      "scanProjectsIntoRegistry",
+      "firstConfigInDir",
+      "SCAN_IGNORED_DIRS"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "taskId": "T034",
+  "reviewId": "T034-review-final",
+  "type": "task_review",
+  "status": "accepted_after_leader_repair",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "README.md",
+    ".specify/teams/state/results/writer-t034.json"
+  ],
+  "validation": [
+    {
+      "command": "rg -n \"inspect|force-stop|reconcile|events|schemaVersion|no external|clean\" README.md",
+      "result": "pass",
+      "summary": "Required README command/safety terms are present."
+    },
+    {
+      "command": "leader README smoke",
+      "result": "pass",
+      "summary": "Isolated documented stale flow passed add/start/_demo/exit/reconcile/stop/clean."
+    }
+  ],
+  "controllerChecks": [
+    "README covers positioning, official demo, concepts, command reference, config, JSON/errors, observability streams, safety, and release claim requirements.",
+    "README no longer says logs --follow is unsupported.",
+    "README documents inspect, force-stop, reconcile, events, schemaVersion, next actions, no external kill, clean/reset separation, and safe clean evidence retention.",
+    "Leader repair clarified that logs --follow is foreground/interruptible and that clean --safe should run from the demo directory.",
+    "README mentions daemonless/reset only as boundary language, not shipped daemon or destructive reset behavior.",
+    "Leader smoke confirmed the documented stale recovery flow and left no port 8888 listener, demo process, or demo scratch output."
+  ],
+  "acceptedResidualRisks": [
+    "README smoke was Windows-local and does not satisfy macOS/Linux cross-platform release evidence.",
+    "T035 must add explicit cross-platform smoke script and evidence template."
+  ],
+  "followUpWork": [
+    "T035 add cross-platform lifecycle smoke script and evidence template."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_after_leader_repair"
+}

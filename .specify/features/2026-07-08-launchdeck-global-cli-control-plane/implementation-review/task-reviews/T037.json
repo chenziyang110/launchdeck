@@ -1,0 +1,53 @@
+{
+  "taskId": "T037",
+  "reviewId": "T037-review-final",
+  "type": "task_review",
+  "status": "accepted_after_leader_repair",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "scripts/smoke-lifecycle.js",
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/quality-reviewer-t037.json"
+  ],
+  "validation": [
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Configured syntax check passed."
+    },
+    {
+      "command": "npm test",
+      "result": "pass",
+      "summary": "Broad Node test suite passed 136/136."
+    },
+    {
+      "command": "node scripts/smoke-lifecycle.js --quickstart --json",
+      "result": "pass",
+      "summary": "Full release smoke passed on win32 with 18 recorded real CLI steps and temporary workspace cleanup."
+    },
+    {
+      "command": "leader residual scan",
+      "result": "pass",
+      "summary": "No port 8888 listener and no matching demo smoke process remained."
+    }
+  ],
+  "controllerChecks": [
+    "Release smoke evidence is recorded in implementation-review/ledger.json.",
+    "The smoke exercised the real CLI path through isolated LAUNCHDECK_HOME and a temporary copy of the official demo.",
+    "Leader repair added the T037-required --quickstart command without adding daemon, service, GUI, TUI, MCP, privileged hook, process scanner, kill-by-port, or arbitrary PID behavior.",
+    "Leader repair aligned quickstart duplicate-start wording with current existing-run semantics.",
+    "The accepted smoke is Windows-local only and does not claim macOS/Linux readiness.",
+    "Cleanup stop exit 1 was accepted because the full smoke had already stopped and removed the isolated target and the residual scan was clean."
+  ],
+  "acceptedResidualRisks": [
+    "macOS and Linux smoke evidence remain required before any cross-platform-ready claim.",
+    "Final branch review and closeout remain T038."
+  ],
+  "followUpWork": [
+    "T038 perform final embedded review and branch closeout."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_after_leader_repair"
+}

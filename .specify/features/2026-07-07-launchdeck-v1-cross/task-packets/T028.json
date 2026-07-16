@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T028",
+  "story": "US3",
+  "repair_for": [
+    "T018"
+  ],
+  "description": "Move clean target safety decisions from config normalization to runtime planner input preservation.",
+  "agent": "executor",
+  "depends_on": [
+    "T027"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "implementation-review/reviews.ndjson#T017-2026-07-07T17:33:17.7890595+08:00",
+    "contracts/launchdeck-config-v1.md",
+    "data-model.md#cleantarget",
+    "src/config.js",
+    "src/runtime.js",
+    "test/config-contract.test.js",
+    "test/clean-safety.test.js"
+  ],
+  "write_scope": [
+    "src/config.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    "src/",
+    "test/",
+    "package.json"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "src/config.js (modified)"
+  ],
+  "anti_goals": [
+    "Do not edit tests.",
+    "Do not relax task cwd/log containment.",
+    "Do not delete clean targets during config load.",
+    "Do not add reset behavior."
+  ],
+  "does_not_remove": [
+    "config validation",
+    "clean raw entry normalization",
+    "runtime planner safety"
+  ],
+  "capability_operations": [
+    "repairs config/runtime clean boundary"
+  ],
+  "acceptance_criteria": [
+    "loadConfig preserves clean.safe/clean.risky entries as raw metadata for runtime planning.",
+    "root/out-of-root/absolute clean targets no longer abort config loading.",
+    "task cwd/log escape validation remains enforced.",
+    "clean-safety tests pass after T018 CLI behavior and T028 config repair."
+  ],
+  "verify_commands": [
+    "node --check src/config.js",
+    "node --test test/config-contract.test.js test/clean-safety.test.js",
+    "npm test"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-001",
+    "CA-015",
+    "CA-016"
+  ],
+  "mp_ids": [
+    "MP-004",
+    "MP-011",
+    "MP-012"
+  ],
+  "consumer_surfaces": [
+    ".launchdeck.yml clean entries",
+    "launchdeck clean"
+  ],
+  "required_evidence": [
+    "config_boundary_repair_evidence",
+    "clean_safety_contract_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

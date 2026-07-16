@@ -1,0 +1,31 @@
+{
+  "id": "E-CP-004",
+  "source_path": "src/control-plane/events.js",
+  "summary": "事件日志系统：JSONL格式追加写入，支持200条默认限制(最大1000)，支持newest-first排序",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-004",
+    "source_path": "src/control-plane/events.js",
+    "summary": "事件日志系统：JSONL格式追加写入，支持200条默认限制(最大1000)，支持newest-first排序",
+    "symbols": [
+      "appendEvent",
+      "readEvents",
+      "eventsPath",
+      "redactLogLine"
+    ],
+    "exports": [
+      "appendEvent",
+      "readEvents",
+      "eventsPath",
+      "redactLogLine"
+    ],
+    "dependencies": [
+      "crypto",
+      "fs",
+      "path"
+    ]
+  }
+}

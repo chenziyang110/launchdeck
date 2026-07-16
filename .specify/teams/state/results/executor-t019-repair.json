@@ -1,0 +1,37 @@
+{
+  "status": "passed_with_expected_red",
+  "task_id": "T019-repair",
+  "changed_files": [
+    "src/control-plane/ownership.js",
+    "src/control-plane/inspect.js",
+    "test/control-plane-ownership.test.js",
+    ".specify/teams/state/results/executor-t019-repair.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/ownership.js": "passed",
+    "node --check src/control-plane/inspect.js": "passed",
+    "node --check test/control-plane-ownership.test.js": "passed",
+    "node --test test/control-plane-ownership.test.js": "passed: 3 tests, 0 failures",
+    "node --test test/inspect-cli.test.js test/global-runtime.test.js": "expected red: 30 tests, 26 passed, 4 failed. The 4 failures are inspect unified-command tests returning unknown_command for command 'inspect'; inspect-port and global-runtime coverage passed."
+  },
+  "expected_red": [
+    {
+      "command": "node --test test/inspect-cli.test.js test/global-runtime.test.js",
+      "reason": "T018 unified inspect command remains unknown_command until T020 wires src/cli.js.",
+      "failing_tests": [
+        "inspect port:<port> explains external conflict as inspect-only with safe and blocked actions",
+        "inspect pid:<pid> reports an external listener as inspect-only",
+        "inspect task:<alias:task> reports a Launchdeck-owned managed run with evidence and actions",
+        "inspect pid:<pid> reports a Launchdeck-owned managed run when pid matches run evidence"
+      ]
+    }
+  ],
+  "concerns": [
+    "No src/cli.js changes were made per scope, so unified inspect CLI tests still fail until T020.",
+    "Runtime verification relies on the existing adapter process evidence; PID-only matches now fail closed to unknown when trusted evidence is unavailable."
+  ],
+  "recovery_hints": [
+    "T020 should wire the inspect command in src/cli.js and then rerun node --test test/inspect-cli.test.js test/global-runtime.test.js.",
+    "If a real Launchdeck-owned run reports unknown after this change, inspect the OS adapter evidence for cwd, command, env marker, or start time availability rather than weakening PID-only ownership."
+  ]
+}

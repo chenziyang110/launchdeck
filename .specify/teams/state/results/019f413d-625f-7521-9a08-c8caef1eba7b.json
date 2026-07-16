@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "reported_status": "DONE",
+  "task_id": "T005",
+  "changed_files": [
+    "test/control-plane-events.test.js"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test/control-plane-events.test.js",
+      "status": "passed",
+      "evidence": "Syntax validation completed with exit code 0."
+    },
+    {
+      "command": "node --test test/control-plane-events.test.js",
+      "status": "red",
+      "evidence": "Focused RED run executed 5 tests: 0 passed, 5 failed. Each failure is Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'F:\\github\\launchdeck\\src\\control-plane\\events.js' imported from F:\\github\\launchdeck\\test\\control-plane-events.test.js."
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    "Implement the intended future owner module at src/control-plane/events.js.",
+    "Export appendEvent({ homeDir, ...event }) to append one redacted JSON object per line to LAUNCHDECK_HOME/events/events.jsonl.",
+    "Export readEvents({ homeDir }) to return valid events plus warnings/errors for malformed JSONL lines without throwing.",
+    "Generate eventId, transactionId, and timestamp when omitted, preserve supplied transactionId and next actions, and redact secret-looking env/config fields before persistence."
+  ],
+  "concerns": [
+    "The RED signal stops at the missing intended module, so behavioral assertions have not yet run against an implementation.",
+    "The tests intentionally define a candidate event API shape: appendEvent and readEvents from src/control-plane/events.js."
+  ],
+  "consumer_evidence": {
+    "authoritative_refs": [
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md#EventRecord",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md#NextAction",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md#JSONL Event Contract",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md#CA-CP-010",
+      ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md#CA-CP-016"
+    ],
+    "covered_behaviors": [
+      "append-only JSON Lines event writes under LAUNCHDECK_HOME/events/events.jsonl",
+      "generated eventId, transactionId, and timestamp",
+      "level, type, projectId, alias, task, runId, status, code, message, data, and next persistence",
+      "caller transactionId preservation across records",
+      "secret-looking env/config redaction before persistence",
+      "corrupt-line tolerant reads with valid events and parse diagnostics",
+      "next action preservation in event records"
+    ],
+    "write_scope_compliance": [
+      "Only test/control-plane-events.test.js and this runtime result handoff file were written.",
+      "No production source, existing tests, tasks.md, daemon/service/GUI/TUI/MCP scope, or secret expected events were added."
+    ]
+  }
+}

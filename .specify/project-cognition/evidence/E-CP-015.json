@@ -1,0 +1,60 @@
+{
+  "id": "E-CP-015",
+  "source_path": "src/global-runtime.js",
+  "summary": "全局运行时Facade层：将所有control-plane子模块/actions/inspect/state导出重新导出为global-runtime API，同时保留独立的legacy端口冲突检测逻辑",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-015",
+    "source_path": "src/global-runtime.js",
+    "summary": "全局运行时Facade层：将所有control-plane子模块/actions/inspect/state导出重新导出为global-runtime API，同时保留独立的legacy端口冲突检测逻辑",
+    "symbols": [
+      "globalRuntimePaths",
+      "readProjectRegistry",
+      "writeProjectRegistry",
+      "addProjectToRegistry",
+      "removeProjectFromRegistry",
+      "listRegisteredProjects",
+      "repairProjectRegistration",
+      "resolveRegisteredProject",
+      "loadRegisteredConfig",
+      "buildGlobalStatus",
+      "listGlobalRuns",
+      "listGlobalProcesses",
+      "listGlobalPorts",
+      "listGlobalConflicts",
+      "scanProjectsIntoRegistry",
+      "inspectPort",
+      "inspectTarget",
+      "assertTaskPortsAvailable"
+    ],
+    "exports": [
+      "globalRuntimePaths",
+      "readProjectRegistry",
+      "writeProjectRegistry",
+      "addProjectToRegistry",
+      "removeProjectFromRegistry",
+      "listRegisteredProjects",
+      "repairProjectRegistration",
+      "resolveRegisteredProject",
+      "loadRegisteredConfig",
+      "buildGlobalStatus",
+      "listGlobalRuns",
+      "listGlobalProcesses",
+      "listGlobalPorts",
+      "listGlobalConflicts",
+      "scanProjectsIntoRegistry",
+      "inspectPort",
+      "inspectTarget",
+      "assertTaskPortsAvailable"
+    ],
+    "dependencies": [
+      "config.js (loadConfig, CONFIG_FILES)",
+      "control-plane/inspect.js (所有inspect视图)",
+      "control-plane/state.js (paths, registry读写)",
+      "control-plane/actions.js (所有action委托)"
+    ]
+  }
+}

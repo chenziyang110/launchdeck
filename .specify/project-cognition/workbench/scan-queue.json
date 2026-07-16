@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "queue": [
+    {
+      "packet_id": "lane-cli-entrypoints",
+      "status": "completed",
+      "assigned_paths": [
+        "src/cli.js",
+        "package.json",
+        ".launchdeck.yml",
+        "schema/launchdeck.schema.json",
+        "src/errors.js",
+        "src/output.js",
+        "src/config.js"
+      ],
+      "value_tier": "P0",
+      "criticality": "critical",
+      "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-cli-entrypoints.json"
+    },
+    {
+      "packet_id": "lane-control-plane",
+      "status": "completed",
+      "assigned_paths": [
+        "src/control-plane/actions.js",
+        "src/control-plane/events.js",
+        "src/control-plane/inspect.js",
+        "src/control-plane/locks.js",
+        "src/control-plane/ownership.js",
+        "src/control-plane/runs.js",
+        "src/control-plane/state.js",
+        "src/global-runtime.js",
+        "src/runtime.js"
+      ],
+      "value_tier": "P0",
+      "criticality": "critical",
+      "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-control-plane.json"
+    },
+    {
+      "packet_id": "lane-core-services",
+      "status": "completed",
+      "assigned_paths": [
+        "src/agent-installer.js",
+        "src/adapters/path.js",
+        "src/adapters/process.js",
+        "scripts/smoke-lifecycle.js",
+        ".github/workflows/ci.yml"
+      ],
+      "value_tier": "P1",
+      "criticality": "important",
+      "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-core-services.json"
+    },
+    {
+      "packet_id": "lane-tests",
+      "status": "completed",
+      "assigned_paths": [
+        "test/agent-installer.test.js",
+        "test/clean-control-plane.test.js",
+        "test/clean-safety.test.js",
+        "test/cli-contract.test.js",
+        "test/cli-control-plane-contract.test.js",
+        "test/cli.test.js",
+        "test/config-contract.test.js",
+        "test/config.test.js",
+        "test/control-plane-events.test.js",
+        "test/control-plane-locks.test.js",
+        "test/control-plane-ownership.test.js",
+        "test/control-plane-state.test.js",
+        "test/global-runtime.test.js",
+        "test/helpers/cli-fixture.js",
+        "test/helpers/control-plane-fixture.js",
+        "test/inspect-cli.test.js",
+        "test/lifecycle-ownership.test.js",
+        "test/managed-cli.test.js",
+        "test/recovery-observability.test.js",
+        "test/runtime-state.test.js"
+      ],
+      "value_tier": "P1",
+      "criticality": "important",
+      "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-tests.json"
+    }
+  ]
+}

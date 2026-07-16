@@ -1,0 +1,20 @@
+{
+  "id": "E-CS-ADAPTERS",
+  "source_path": "src/adapters/",
+  "path_kind": "source",
+  "summary": "Cross-platform adapters for path safety and process lifecycle",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "path.js": {
+      "exports": ["canonicalPath", "resolveProjectPath", "pathContains", "assertContainedPath", "isSamePath", "assertProjectRelativePath", "resolveCleanTarget", "planCleanTarget", "assertSafeCleanTarget", "toProjectRelativePath", "pathForPlatform"],
+      "key_features": ["Case-insensitive path comparison on win32", "Symlink resolution for containment", "refusalCode system for clean targets", "Dual isAbsolute check (win32 + posix)"]
+    },
+    "process.js": {
+      "exports": ["spawnForeground", "spawnManaged", "spawnShellCommand", "waitForExit", "isPidRunning", "getLiveness", "getProcessEvidence", "listPortListeners", "stopProcessTree", "stopProcessTreeSync", "normalizePid", "normalizePort", "classifyAdapterError"],
+      "key_features": ["Shell optimization - bypasses shell for known node executables", "3-tier port listener fallback on POSIX (lsof -> ss -> netstat)", "Process tree termination: taskkill /T on Windows, kill(-pid) on POSIX", "Process evidence via CIM/WMI on Windows, ps+procfs on POSIX", "sleepSync via Atomics.wait (no setTimeout)"]
+    }
+  }
+}

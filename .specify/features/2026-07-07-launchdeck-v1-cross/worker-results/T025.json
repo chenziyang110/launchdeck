@@ -1,0 +1,33 @@
+{
+  "status": "success",
+  "task_id": "T025",
+  "agent": "test-engineer",
+  "completed_at": "2026-07-07T17:04:31.0926478+08:00",
+  "changed_files": [
+    "test/cli.test.js",
+    "test/managed-cli.test.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check test/cli.test.js; node --check test/managed-cli.test.js",
+      "exit_code": 0
+    },
+    "repair_tests": {
+      "command": "node --test test/cli.test.js test/managed-cli.test.js",
+      "exit_code": 1,
+      "tests": 12,
+      "passed": 11,
+      "failed": 1,
+      "expected_failure": "ps --json reports runtime_state_invalid with config context when state JSON is corrupt",
+      "failure_detail": "payload.configPath was undefined for config-resolved runtime_state_invalid."
+    }
+  },
+  "concerns": [
+    "New regression confirms the current implementation omits configPath for config-resolved runtime_state_invalid responses."
+  ],
+  "recovery_hints": [
+    "T026 should wrap ps --json runtime_state_invalid failure responses with config context so payload.configPath equals <projectRoot>/.launchdeck.yml."
+  ],
+  "expected_red_before_repair": "The corrupt .launchdeck/runtime/state.json regression fails before T026 because payload.configPath is undefined while projectRoot, command=ps, status=error, ok=false, and error.code=runtime_state_invalid are present.",
+  "real_entrypoint_evidence": "Ran real CLI smoke and managed lifecycle tests through node --test test/cli.test.js test/managed-cli.test.js. Legacy lifecycle smoke now passes with task_already_running, logs task/logPath/content, and stop process.status=stopped. Combined suite is red only on the new configPath regression."
+}

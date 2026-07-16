@@ -1,0 +1,426 @@
+{
+  "packet_id": "lane-cli-entrypoints",
+  "family_id": "cli",
+  "assigned_paths": [
+    "src/cli.js",
+    "package.json",
+    ".launchdeck.yml",
+    "schema/launchdeck.schema.json",
+    "src/errors.js",
+    "src/output.js",
+    "src/config.js"
+  ],
+  "paths_read": [
+    "src/cli.js",
+    "package.json",
+    ".launchdeck.yml",
+    "schema/launchdeck.schema.json",
+    "src/errors.js",
+    "src/output.js",
+    "src/config.js"
+  ],
+  "ledger": {
+    "todo": [],
+    "doing": [],
+    "done": [
+      "src/cli.js",
+      "package.json",
+      ".launchdeck.yml",
+      "schema/launchdeck.schema.json",
+      "src/errors.js",
+      "src/output.js",
+      "src/config.js"
+    ],
+    "blocked": [],
+    "overflow": []
+  },
+  "coverage": [
+    {
+      "path": "src/cli.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CLI-001"
+      ]
+    },
+    {
+      "path": "package.json",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-PKG-001"
+      ]
+    },
+    {
+      "path": ".launchdeck.yml",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-YML-001"
+      ]
+    },
+    {
+      "path": "schema/launchdeck.schema.json",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-SCH-001"
+      ]
+    },
+    {
+      "path": "src/errors.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-ERR-001"
+      ]
+    },
+    {
+      "path": "src/output.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-OUT-001"
+      ]
+    },
+    {
+      "path": "src/config.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CFG-001"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-CLI-001",
+      "source_path": "src/cli.js",
+      "summary": "CLI entrypoint - main command processing (2088 lines, the largest file in the project)",
+      "symbols": [
+        "main(argv, io)",
+        "initCommand(options, io)",
+        "doctorCommand(options, io)",
+        "tasksCommand(options, io)",
+        "projectCommand(positionals, options, io)",
+        "agentCommand(positionals, options, io)",
+        "projectsCommand(options, io)",
+        "statusCommand(options, io)",
+        "conflictsCommand(options, io)",
+        "runCommand(taskName, options, io)",
+        "runConfiguredTask(taskName, options, io, metadata)",
+        "startCommand(taskName, options, io, commandName)",
+        "restartCommand(taskName, options, io)",
+        "reconcileCommand(target, options, io)",
+        "psCommand(options, io)",
+        "globalPsCommand(options, io)",
+        "portsCommand(options, io)",
+        "inspectPortCommand(rawPort, options, io)",
+        "inspectCommand(rawTarget, options, io)",
+        "logsCommand(taskName, options, io)",
+        "globalLogsCommand(target, options, io)",
+        "eventsCommand(target, options, io)",
+        "followLog(logResult, context, options, io)",
+        "followEvents(target, options, io, homeDir)",
+        "followTextFile(filePath, onLine, options)",
+        "filterEventsForTarget(events, target)",
+        "limitEventHistory(events, lines)",
+        "eventMatchesTarget(event, target)",
+        "eventMatchesProjectTarget(event, projectTarget)",
+        "parseJsonLine(line)",
+        "runForLog(projectRoot, taskName, logPath)",
+        "localRunForLog(projectRoot, taskName, logPath)",
+        "globalRunForLog(projectRoot, taskName, logPath)",
+        "newestRun(runs)",
+        "startGlobalTaskCommand(target, options, io, commandName)",
+        "restartGlobalTaskCommand(target, options, io)",
+        "stopGlobalTaskCommand(target, options, io)",
+        "forceStopCommand(taskName, options, io)",
+        "stopGlobalLifecycleCommand(target, options, io, commandName, actionOptions)",
+        "stopCommand(taskName, options, io)",
+        "cleanCommand(options, io)",
+        "applySafeCleanRetention(config, targets)",
+        "collectProtectedEvidencePaths(config)",
+        "activeLogEvidencePaths(config)",
+        "failureLogEvidencePaths(config)",
+        "readEventsSync(homeDir, limit)",
+        "buildDoctorReport(config)",
+        "formatDoctorReport(report)",
+        "toTaskInventoryItem(task)",
+        "writeTasksReport(config, tasks, io)",
+        "writeAgentPathsReport(result, io)",
+        "writeAgentDoctorReport(report, io)",
+        "writeAgentInstallReport(result, io)",
+        "requireTask(config, taskName)",
+        "requireManagedTask(config, taskName, task)",
+        "isGlobalTaskTarget(value)",
+        "parseGlobalTaskTarget(value)",
+        "assertGlobalStopOwnership(config, taskName)",
+        "stopManagedTasksWithContext(projectRoot, taskName, config, options)",
+        "assertProjectStillRegistered(project)",
+        "samePath(left, right)",
+        "startManagedRunWithContext(taskName, task, config, options)",
+        "tailLogWithContext(projectRoot, taskName, lines, config)",
+        "partialStopResultsFromError(error)",
+        "withErrorContext(error, config)",
+        "lifecycleResultContext(result)",
+        "writeTaskStart(processInfo, options, io, envelope)",
+        "writeCleanTargets(io, targets)",
+        "cleanRefusalMessage(target)",
+        "extractExecutable(command)",
+        "commandExists(command)",
+        "parseArgs(argv)",
+        "isInside(projectRoot, targetPath)",
+        "uniquePaths(paths)",
+        "timestampMs(value)",
+        "stableProjectId(projectRoot)",
+        "omitUndefined(record)",
+        "pad(value, length)",
+        "write(io, value)",
+        "writeError(io, value)",
+        "writeJson(io, value)",
+        "withJsonOptions(io, options)",
+        "failureEnvelope(command, error, context)",
+        "contextFromError(error)",
+        "defaultIo()",
+        "helpText()",
+        "LIFECYCLE_ALIASES"
+      ],
+      "exports": [
+        "main"
+      ],
+      "dependencies": [
+        "node:fs",
+        "node:path",
+        "node:crypto",
+        "node:child_process (spawnSync)",
+        "node:url (pathToFileURL)",
+        "./config.js (createSampleConfig, findConfig, loadConfig)",
+        "./agent-installer.js (doctorAgentInstaller, installAgentSkill, listAgentTargets, supportedAgents)",
+        "./errors.js (LaunchdeckError, toErrorPayload)",
+        "./output.js (createFailureEnvelope, createPartialEnvelope, createSuccessEnvelope, writeJson as writeJsonEnvelope)",
+        "./global-runtime.js (addProjectToRegistry, assertTaskPortsAvailable, buildGlobalStatus, globalRuntimePaths, inspectPort, inspectTarget, listGlobalConflicts, listGlobalPorts, listGlobalProcesses, listRegisteredProjects, loadRegisteredConfig, repairProjectRegistration, removeProjectFromRegistry, scanProjectsIntoRegistry, resolveRegisteredProject)",
+        "./runtime.js (cleanTargets, listProcesses, readState, resolveCleanTargets, runtimePaths, runTask, stopManagedTasks, tailLog)",
+        "./control-plane/actions.js (reconcileManagedRuns, stopManagedRun, restartManagedRun)",
+        "./control-plane/runs.js (readRunIndex, startManagedRun)",
+        "./control-plane/events.js (eventsPath, readEvents, redactLogLine)"
+      ],
+      "notes": [
+        "CLI entrypoint with 30+ commands: init, doctor, tasks, project (add/remove/repair/scan/list), agent (paths/doctor/install), projects, status, conflicts, ps, ports, inspect-port, inspect, logs, events, stop, force-stop, restart, reconcile, clean, run, start, dev, plus lifecycle aliases (setup/build/package/test/lint/typecheck)",
+        "Output modes: human-readable (default) and JSON (--json), with compact JSON variant (--compact)",
+        "Custom argument parsing via parseArgs() - supports --all, --force, --force-owned, --follow/-f, --json, --compact, --agent, --scope, --target, --dry-run, --name, --alias, --path, --config, --safe, --yes/-y, --lines/-n",
+        "Error handling: all commands wrapped in try-catch in main(), errors converted to envelopes via toErrorPayload()",
+        "Global task targeting uses <project>:<task> syntax",
+        "Self-invocation check via import.meta.url === pathToFileURL(process.argv[1]).href"
+      ]
+    },
+    {
+      "id": "E-PKG-001",
+      "source_path": "package.json",
+      "summary": "Package manifest for launchdeck v0.1.0",
+      "symbols": [
+        "launchdeck (bin)",
+        "check script",
+        "test script"
+      ],
+      "exports": [],
+      "dependencies": [
+        "yaml ^2.5.1"
+      ],
+      "notes": [
+        "Name: launchdeck, version 0.1.0, ES module (\"type\": \"module\")",
+        "Binary: launchdeck -> ./src/cli.js",
+        "Engine requirement: Node >=20",
+        "check script runs syntax check on all source and test files",
+        "test script uses Node built-in --test runner"
+      ]
+    },
+    {
+      "id": "E-YML-001",
+      "source_path": ".launchdeck.yml",
+      "summary": "Default project configuration for launchdeck itself",
+      "symbols": [
+        "version",
+        "project.name",
+        "tasks.setup",
+        "tasks.test",
+        "tasks.lint",
+        "clean.safe",
+        "clean.risky"
+      ],
+      "exports": [],
+      "dependencies": [],
+      "notes": [
+        "Config version 1",
+        "3 tasks defined: setup (npm install, medium risk), test (npm test), lint (npm run check)",
+        "Safe clean targets: .launchdeck/logs, .launchdeck/runtime",
+        "Risky clean target: node_modules"
+      ]
+    },
+    {
+      "id": "E-SCH-001",
+      "source_path": "schema/launchdeck.schema.json",
+      "summary": "JSON Schema for .launchdeck.yml configuration files (Draft 2020-12)",
+      "symbols": [
+        "$defs/task",
+        "$defs/cleanList"
+      ],
+      "exports": [],
+      "dependencies": [],
+      "notes": [
+        "Top-level required fields: version (const 1), tasks (min 1)",
+        "Optional fields: project (with name), clean (with safe/risky arrays)",
+        "Task definition supports: command (required), description, cwd, env, longRunning, ports (1-65535), risk (low/medium/high/destructive), log",
+        "cleanList items can be strings or objects with path + optional description",
+        "additionalProperties: false at all levels for strict validation"
+      ]
+    },
+    {
+      "id": "E-ERR-001",
+      "source_path": "src/errors.js",
+      "summary": "Error handling module with 50 known error codes and LaunchdeckError class",
+      "symbols": [
+        "ERROR_CODES (Set)",
+        "ERROR_CODE_ALIASES (Map)",
+        "LaunchdeckError (class)",
+        "isKnownErrorCode(code)",
+        "toContractErrorCode(code)",
+        "toErrorPayload(error, options)",
+        "toContractErrorPayload(error)"
+      ],
+      "exports": [
+        "ERROR_CODES",
+        "ERROR_CODE_ALIASES",
+        "LaunchdeckError",
+        "isKnownErrorCode",
+        "toContractErrorCode",
+        "toErrorPayload",
+        "toContractErrorPayload"
+      ],
+      "dependencies": [],
+      "notes": [
+        "50 unique error codes covering config, registry, runtime, task execution, port conflicts, locks, clean operations, agents, and internal errors",
+        "13 error code aliases mapping legacy/internal codes to contract codes",
+        "LaunchdeckError extends Error with code and optional details properties",
+        "toContractErrorCode resolves aliases, falls back to 'internal_error' for unknown codes",
+        "toContractErrorPayload is a thin wrapper around toErrorPayload with contractCode: true"
+      ]
+    },
+    {
+      "id": "E-OUT-001",
+      "source_path": "src/output.js",
+      "summary": "Output formatting module - JSON response envelopes with compact mode support",
+      "symbols": [
+        "createSuccessEnvelope(command, payload, context)",
+        "createFailureEnvelope(command, error, context, payload)",
+        "createPartialEnvelope(command, results, context, payload)",
+        "stringifyJson(value)",
+        "toCompactJson(value)",
+        "writeJson(io, value)",
+        "compactEnvelope(value)",
+        "compactProcess(processInfo)",
+        "compactPort(entry)",
+        "compactProject(project)",
+        "compactTask(task)",
+        "compactTarget(target)",
+        "compactSource(source)",
+        "compactResult(result)",
+        "compactOwnership(ownership)",
+        "compactNextActions(next)",
+        "normalizeNextActions(next, code, command)",
+        "normalizeResultErrors(results)",
+        "contextFields(context)",
+        "contractErrorFields(errorPayload, payload)",
+        "defaultNextActions(code, command)",
+        "compactText(value, maxLength)",
+        "compactValue(value, key)",
+        "pickCompact(record, keys)",
+        "compactSectionEntry(key, entry)",
+        "copyScalars(out, payload)",
+        "copyPrimaryObjects(out, payload)",
+        "copySections(out, payload, command)",
+        "shouldSkipSection(key, payload, command)",
+        "payloadFields(value)",
+        "nonEmptyArray(value)",
+        "isPlainObject(value)",
+        "isSimpleValue(value)",
+        "isMeaningful(value)",
+        "arraysEquivalent(left, right)",
+        "shouldDropNestedKey(key)",
+        "SCALAR_KEYS",
+        "SECTION_KEYS",
+        "ENVELOPE_KEYS",
+        "PARTIAL_FAILURE"
+      ],
+      "exports": [
+        "createSuccessEnvelope",
+        "createFailureEnvelope",
+        "createPartialEnvelope",
+        "stringifyJson",
+        "toCompactJson",
+        "writeJson"
+      ],
+      "dependencies": [
+        "./errors.js (LaunchdeckError, toContractErrorPayload)"
+      ],
+      "notes": [
+        "Three envelope types: success (ok:true), failure (ok:false, status:'error'), partial (ok:false, status:'partial')",
+        "Standard envelope fields: ok, schemaVersion:1, command, status, projectRoot, configPath, data, next, error, code, message, details",
+        "Compact mode (--compact flag) strips undefined fields, abbreviates primary objects (project->alias/name, process->key fields), truncates text >1200 chars, and drops sensitive paths (command, cwd, env, log, path fields)",
+        "Section keys define array fields that get compacted differently based on their type (processes, ports, projects, tasks, checks, events, conflicts, listeners, results, targets, removed)",
+        "Default next actions for confirmation_required errors guide users to --safe or --help"
+      ]
+    },
+    {
+      "id": "E-CFG-001",
+      "source_path": "src/config.js",
+      "summary": "Configuration loader and normalizer for .launchdeck.yml files",
+      "symbols": [
+        "CONFIG_FILES",
+        "RISK_LEVELS",
+        "LaunchdeckConfigError (class, extends LaunchdeckError)",
+        "findConfig(startDir)",
+        "loadConfig(startDir)",
+        "normalizeConfig(input, context)",
+        "normalizeTask(name, value, projectRoot)",
+        "normalizeProject(project, projectRoot)",
+        "normalizeClean(clean)",
+        "normalizeCleanList(value, fieldName, kind)",
+        "normalizeEnv(env)",
+        "normalizePorts(ports, taskName)",
+        "normalizeString(value, message, code)",
+        "optionalString(value)",
+        "assertContainedPath(projectRoot, targetPath, message, code)",
+        "isInsidePath(rootPath, targetPath)",
+        "createSampleConfig(projectName)"
+      ],
+      "exports": [
+        "CONFIG_FILES",
+        "RISK_LEVELS",
+        "LaunchdeckConfigError",
+        "findConfig",
+        "loadConfig",
+        "normalizeConfig",
+        "normalizeTask",
+        "createSampleConfig"
+      ],
+      "dependencies": [
+        "node:fs",
+        "node:path",
+        "yaml",
+        "./errors.js (LaunchdeckError)"
+      ],
+      "notes": [
+        "Searches up the directory tree for config files (.launchdeck.yml/.yaml, launchdeck.yml/.yaml)",
+        "Config version must be 1, tasks object is required with at least one task",
+        "Task normalization: strings become shorthand {command}, objects support full spec (description, cwd, env, longRunning, ports, risk, log)",
+        "Path safety: cwd and log paths must stay inside project root (assertContainedPath)",
+        "Port normalization: deduplicated, validated 1-65535",
+        "Risk levels: low, medium (default), high, destructive",
+        "Environment variables cannot be null, coerced to strings",
+        "createSampleConfig generates a starter template with setup/build/test/dev tasks"
+      ]
+    }
+  ],
+  "confidence": "high",
+  "acceptance": "pass",
+  "return_event": {
+    "packet_id": "lane-cli-entrypoints",
+    "status": "accepted",
+    "acceptance": "pass",
+    "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-cli-entrypoints.json"
+  }
+}

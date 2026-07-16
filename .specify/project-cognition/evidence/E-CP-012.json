@@ -1,0 +1,25 @@
+{
+  "id": "E-CP-012",
+  "source_path": "src/control-plane/runs.js",
+  "summary": "Readiness探活机制：对global run进行HTTP health check（5秒超时），或回退到process-alive检测；支持原子写入run index",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-012",
+    "source_path": "src/control-plane/runs.js",
+    "summary": "Readiness探活机制：对global run进行HTTP health check（5秒超时），或回退到process-alive检测；支持原子写入run index",
+    "symbols": [
+      "resolveReadiness",
+      "readinessForExistingProcess",
+      "waitForHttpReady",
+      "isHttpReady",
+      "atomicWriteJson"
+    ],
+    "exports": [],
+    "dependencies": [
+      "fetch"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "status": "success",
+  "reported_status": "DONE",
+  "task_id": "T003",
+  "changed_files": [
+    "test/control-plane-state.test.js"
+  ],
+  "validation_evidence": {
+    "syntax_check": {
+      "command": "node --check test/control-plane-state.test.js",
+      "status": 0,
+      "evidence": "Completed with exit code 0; test file is syntactically valid."
+    },
+    "red_test": {
+      "command": "node --test test/control-plane-state.test.js",
+      "status": 1,
+      "summary": "5 tests failed, 0 passed. Failures are assertion failures against missing v2 control-plane registry behavior, not syntax errors.",
+      "failures": [
+        {
+          "test": "project add creates a v2 registry/projects.json under LAUNCHDECK_HOME",
+          "evidence": "Expected created=true and v2 registry payload; current CLI returned success without the new created/project alias fields."
+        },
+        {
+          "test": "projects reads legacy LAUNCHDECK_HOME/projects.json when v2 registry is absent and migrates on mutation",
+          "evidence": "Expected migrated ProjectRegistration alias/projectId fields; current legacy registry read returns old shape without alias."
+        },
+        {
+          "test": "project add keeps projectId stable across alias repair and rejects alias collisions",
+          "evidence": "Expected project repair to succeed; current CLI exits 1 because repair/alias behavior is not implemented."
+        },
+        {
+          "test": "project add refuses to mutate an unsupported newer registry version with repair guidance",
+          "evidence": "Expected state_version_unsupported refusal; current CLI exits 0 and ignores the unsupported v2 registry path."
+        },
+        {
+          "test": "project repair updates project path config and alias metadata without changing identity",
+          "evidence": "Expected repair success with before/after/changes; current CLI exits 1 because project repair is not implemented."
+        }
+      ]
+    }
+  },
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    "Implement the v2 control-plane registry writer at LAUNCHDECK_HOME/registry/projects.json with ProjectRegistration.projectId, alias, status, timestamps, and created/updated result flags.",
+    "Keep read compatibility for legacy LAUNCHDECK_HOME/projects.json when the v2 registry is absent, then write only the v2 shape on mutation with migratedFrom metadata.",
+    "Add alias parsing and uniqueness checks under registry mutation, returning alias_conflict with existingProjectId details.",
+    "Fail closed with state_version_unsupported for newer registry versions and preserve the incompatible state file unchanged.",
+    "Add project repair to update alias/projectRoot/configPath metadata without changing projectId."
+  ],
+  "concerns": [
+    "The focused tests intentionally fail until production state-store and CLI registry behavior are implemented by later lanes."
+  ],
+  "consumer_evidence": {
+    "write_scope_respected": true,
+    "production_source_edited": false,
+    "tasks_md_edited": false,
+    "legacy_compatibility_weakened": false,
+    "state_version_fail_closed_weakened": false,
+    "handoff_path": "F:/github/launchdeck/.specify/teams/state/results/019f413c-a475-7ce0-8ac3-08ece26bd501.json"
+  }
+}

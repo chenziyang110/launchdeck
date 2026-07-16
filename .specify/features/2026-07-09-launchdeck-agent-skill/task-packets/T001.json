@@ -1,0 +1,91 @@
+{
+  "task_id": "T001",
+  "id": "T001",
+  "title": "Create root launchdeck-agent SKILL.md",
+  "agent": "executor",
+  "depends_on": [],
+  "parallel_safe": false,
+  "objective": "Create the root skill entry point with frontmatter, bilingual trigger description, concise router body, reference route table, and global safety rules.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/SKILL.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/research.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/quickstart.md",
+    ".codex/skills/skill-creator/SKILL.md",
+    "README.md",
+    "src/cli.js"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    "package.json",
+    ".env",
+    "credential files",
+    ".launchdeck/**",
+    "dependency manifests"
+  ],
+  "context_navigation": {
+    "target_path": "plan.md#Implementation-Target-Boundary",
+    "root_skill_shape": "plan.md#Implementation-Constitution",
+    "trigger_requirements": "spec.md#Requirements",
+    "data_model_contracts_status": "plan.md#Project-Structure",
+    "reference_implementation": ".codex/skills/skill-creator/SKILL.md"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/SKILL.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not make a long monolithic skill.",
+    "Do not add scripts or dependencies.",
+    "Do not implement lifecycle behavior outside Launchdeck."
+  ],
+  "does_not_remove": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-014",
+    "CA-AS-001",
+    "CA-AS-006",
+    "CA-AS-009"
+  ],
+  "capability_operations": [
+    "implements route local lifecycle intent",
+    "preserves lifecycle operations through references"
+  ],
+  "consumer_surfaces": [
+    "local skill metadata",
+    "root skill body"
+  ],
+  "required_evidence": [
+    "frontmatter evidence",
+    "progressive-disclosure evidence",
+    "real_entrypoint_evidence"
+  ],
+  "acceptance_criteria": [
+    "Frontmatter includes name launchdeck-agent.",
+    "Description includes English and Chinese local lifecycle triggers and near-miss exclusions.",
+    "Body is a short router, not a monolithic guide.",
+    "Body states Launchdeck is execution authority and raw PID/port killing is not allowed.",
+    "Body routes to every required reference file."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\SKILL.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\SKILL.md -Pattern 'launchdeck-agent|启动|端口|start|restart|stop|clean'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/SKILL.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

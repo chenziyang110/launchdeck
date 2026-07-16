@@ -1,0 +1,82 @@
+{
+  "status": "BLOCKED",
+  "task_id": "T007",
+  "changed_files": [
+    "src/control-plane/state.js",
+    ".specify/teams/state/results/019f4152-7974-78b0-a289-484e81929844.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check src/control-plane/state.js",
+      "status": "passed",
+      "evidence": "exit code 0"
+    },
+    {
+      "command": "node --input-type=module -e <direct state read/write smoke>",
+      "status": "passed",
+      "evidence": "{\"version\":2,\"projects\":1,\"alias\":\"demo\",\"registryPath\":true}"
+    },
+    {
+      "command": "node --test test/control-plane-state.test.js",
+      "status": "failed",
+      "evidence": "5 tests failed; CLI still uses legacy src/global-runtime.js registry implementation and cannot reach src/control-plane/state.js within this task's write scope."
+    }
+  ],
+  "red_state_evidence": {
+    "command": "node --test test/control-plane-state.test.js",
+    "status": "failed_before_change",
+    "evidence": "5/5 tests failed before implementation: missing created flag/v2 payload shape, legacy alias/projectId normalization, alias repair/collision handling, unsupported newer version refusal, and project repair identity behavior."
+  },
+  "green_state_evidence": {
+    "command": "node --test test/control-plane-state.test.js",
+    "status": "not_green",
+    "evidence": "5/5 tests still fail after adding src/control-plane/state.js because no allowed file imports or delegates to the new state module."
+  },
+  "blockers": [
+    {
+      "code": "write_scope_dependency",
+      "message": "Focused tests exercise CLI/global-runtime behavior, but T007 write scope allows only src/control-plane/state.js. Existing src/global-runtime.js still reads/writes LAUNCHDECK_HOME/projects.json with REGISTRY_VERSION=1 and does not import src/control-plane/state.js.",
+      "required_missing_dependency": "A separate task must wire src/global-runtime.js/CLI project add/list/repair paths and public error envelopes to src/control-plane/state.js."
+    },
+    {
+      "code": "cli_repair_routing_missing",
+      "message": "test/control-plane-state.test.js calls `launchdeck project repair`, but src/cli.js has no project repair subcommand in the current workspace. This cannot be implemented inside src/control-plane/state.js."
+    },
+    {
+      "code": "public_error_surface_missing",
+      "message": "alias_conflict and state_version_unsupported are required focused-test codes, but public error-code/output routing is outside the T007 write scope."
+    }
+  ],
+  "concerns": [
+    "Implemented state.js is currently a standalone module until the registry facade delegates to it.",
+    "Atomic persistence uses temp-file write plus rename in the target registry directory; lock integration is intentionally left for the lock/action tasks."
+  ],
+  "changed_paths": [
+    "src/control-plane/state.js",
+    ".specify/teams/state/results/019f4152-7974-78b0-a289-484e81929844.json"
+  ],
+  "behavior_surfaces": [
+    "versioned control-plane path helpers",
+    "v2 registry read/write helpers",
+    "legacy v1 registry normalization",
+    "alias uniqueness helper",
+    "unsupported newer registry version error helper"
+  ],
+  "state_contracts": [
+    "Reads v2 registry from LAUNCHDECK_HOME/registry/projects.json when present.",
+    "Reads legacy LAUNCHDECK_HOME/projects.json only when v2 registry is absent.",
+    "Writes only v2 registry layout with version, createdAt, updatedAt, projects, and optional migratedFrom.",
+    "Normalizes legacy id/key projects into projectId/alias ProjectRegistration shape.",
+    "Rejects newer registry versions with state_version_unsupported carrying statePath, foundVersion, supportedVersion, and repair next action.",
+    "Exposes registry, runtime/runs, indexes, locks, events, logs, project lock/log, and task lock path helpers."
+  ],
+  "verification": {
+    "syntax": "node --check src/control-plane/state.js -> passed",
+    "focused_tests": "node --test test/control-plane-state.test.js -> failed 5/5 due out-of-scope CLI/global-runtime integration",
+    "direct_smoke": "direct state read/write smoke -> passed"
+  },
+  "confidence_notes": [
+    "Confidence is high that the new state module satisfies the standalone T007 storage contract.",
+    "Confidence is high that the focused test suite cannot pass within the stated write scope because none of the exercised CLI code imports this module."
+  ]
+}

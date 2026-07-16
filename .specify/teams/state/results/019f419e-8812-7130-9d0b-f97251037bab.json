@@ -1,0 +1,71 @@
+{
+  "status": "DONE_WITH_EXPECTED_RED",
+  "task_id": "T013",
+  "changed_files": [
+    "test/managed-cli.test.js",
+    "test/global-runtime.test.js"
+  ],
+  "validation_evidence": {
+    "node --check test/managed-cli.test.js": "passed with exit code 0",
+    "node --check test/global-runtime.test.js": "passed with exit code 0",
+    "node --test test/managed-cli.test.js test/global-runtime.test.js": "RED with exit code 1: 33 tests, 23 passed, 10 failed"
+  },
+  "red_state_evidence": [
+    "test/global-runtime.test.js:207 fails because start project:task does not return process.runId.",
+    "test/global-runtime.test.js:235 fails because managed global task env does not include LAUNCHDECK_TASK.",
+    "test/global-runtime.test.js:257 fails because duplicate global start exits 1 instead of returning the existing owned run.",
+    "test/global-runtime.test.js:280 and test/global-runtime.test.js:303 fail because start payloads do not include readiness state.",
+    "test/global-runtime.test.js:324 fails because status --all does not expose global runs with next actions.",
+    "test/global-runtime.test.js:439 existing T012 coverage remains RED because project remove still succeeds with an active owned run.",
+    "test/managed-cli.test.js:28 fails because local start does not return process.runId.",
+    "test/managed-cli.test.js:43 fails because local managed task env does not include LAUNCHDECK_TASK.",
+    "test/managed-cli.test.js:72 fails because duplicate local start still exits 1 instead of idempotently returning the existing run."
+  ],
+  "expected_red_evidence": {
+    "classification": "expected production gap",
+    "missing_behaviors": [
+      "global run index and lifecycle run identity",
+      "transactionId propagation",
+      "non-secret Launchdeck environment markers",
+      "idempotent duplicate start without second spawn",
+      "readiness distinct from process liveness via HTTP and process-alive",
+      "status-safe next actions over active runs",
+      "active-run project removal refusal from the run index"
+    ],
+    "compatibility_preserved": "Existing task_already_running duplicate-start coverage still passes in test/managed-cli.test.js."
+  },
+  "blockers": [],
+  "concerns": [
+    "The added tests are intentionally RED until T015/T016/T017 implement run index, readiness, idempotent start, and status/run views.",
+    "Git status reports the two test files as untracked from the current parent git root view, so diff provenance is limited by repository state."
+  ],
+  "changed_paths": [
+    "test/managed-cli.test.js",
+    "test/global-runtime.test.js",
+    ".specify/teams/state/results/019f419e-8812-7130-9d0b-f97251037bab.json"
+  ],
+  "behavior_surfaces": [
+    "launchdeck start/dev --json local managed lifecycle payload",
+    "launchdeck start project:task --json global managed lifecycle payload",
+    "launchdeck status --all --json active run next actions",
+    "LAUNCHDECK_HOME/runtime/runs.json global run index contract",
+    "managed task Launchdeck environment markers",
+    "readiness state for HTTP, declared port, and process-alive paths"
+  ],
+  "verification": {
+    "commands_run": [
+      "node --check test/managed-cli.test.js",
+      "node --check test/global-runtime.test.js",
+      "node --test --test-name-pattern \"start project:task injects global run markers\" test/global-runtime.test.js",
+      "node --test --test-name-pattern \"start project:task reports HTTP readiness\" test/global-runtime.test.js",
+      "node --test --test-name-pattern \"status --all exposes safe next actions\" test/global-runtime.test.js",
+      "node --test test/managed-cli.test.js test/global-runtime.test.js"
+    ],
+    "final_focused_suite": "node --test test/managed-cli.test.js test/global-runtime.test.js -> 23 passed, 10 failed, expected RED"
+  },
+  "confidence_notes": [
+    "Write scope was limited to the two requested test files plus this runtime-managed result file.",
+    "No production code, package metadata, docs, or feature workflow artifacts were edited.",
+    "Failures are contract assertions for missing production behavior, not syntax, cleanup, or harness failures."
+  ]
+}

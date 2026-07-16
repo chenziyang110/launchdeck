@@ -1,0 +1,169 @@
+{
+  "workflow": "sp-quick",
+  "reason": "workflow-finalize",
+  "changed_paths": [
+    "src/agent-installer.js",
+    "src/cli.js",
+    "src/errors.js",
+    "src/output.js",
+    "test/agent-installer.test.js",
+    "test/cli-contract.test.js",
+    "README.md",
+    ".agents/README.md",
+    "package.json",
+    ".planning/quick/2026-07-09-agent-installer-cli/STATUS.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json",
+    ".specify/project-cognition/updates/sp-quick-closeout.json"
+  ],
+  "scope_paths": [
+    "src/agent-installer.js",
+    "src/cli.js",
+    "src/errors.js",
+    "src/output.js",
+    "test/agent-installer.test.js",
+    "test/cli-contract.test.js",
+    "README.md",
+    ".agents/README.md",
+    "package.json",
+    ".agents/skills/launchdeck-agent",
+    ".planning/quick/2026-07-09-agent-installer-cli"
+  ],
+  "behavior_surfaces": [
+    "CLI command surface now includes launchdeck agent paths, doctor, and install.",
+    "Agent installer resolves .agents/skills/launchdeck-agent as the canonical source package.",
+    "Installer supports codex, claude-code, github-copilot, and visual-studio project/user target directories.",
+    "Installer defaults to project scope, requires explicit --agent for install, supports --dry-run, --force, and --target, and refuses divergent targets without --force.",
+    "Compact JSON output preserves installer intent and result summaries without verbose per-file absolute copy paths.",
+    "Installer refuses non-directory target paths even when --force is supplied.",
+    "README documents the installer matrix and no-delete/no-remote scope.",
+    ".agents/README.md directs users to the cross-platform CLI and keeps PowerShell sync as a repo-local helper."
+  ],
+  "generated_surfaces": [
+    ".planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json",
+    ".specify/project-cognition/updates/sp-quick-closeout.json"
+  ],
+  "state_contracts": [
+    "No Launchdeck lifecycle start, stop, restart, reconcile, clean, runtime state, run index, registry, log, or event behavior changed.",
+    "Project-owned agent skills remain canonical under .agents/skills/<skill-name>.",
+    "Host-specific directories are generated or synced targets, not source of truth.",
+    "Install copies source-managed files and never deletes target files.",
+    "Divergent target files are refused unless --force is explicit.",
+    "Non-directory target paths are refused regardless of --force."
+  ],
+  "verification": [
+    {
+      "command": "node --test test/agent-installer.test.js",
+      "result": "passed: 7 tests"
+    },
+    {
+      "command": "npm run check",
+      "result": "passed"
+    },
+    {
+      "command": "node src/cli.js agent paths --json --compact",
+      "result": "passed: returned canonical source and 8 scoped targets"
+    },
+    {
+      "command": "node src/cli.js agent doctor --json --compact",
+      "result": "passed: 3 checks, 0 errors"
+    },
+    {
+      "command": "node src/cli.js agent install --agent claude-code --target <temp> --dry-run --json --compact",
+      "result": "passed: compact action counts plus relative files only"
+    },
+    {
+      "command": "npm test",
+      "result": "passed: 148 tests"
+    }
+  ],
+  "confidence_notes": [
+    "Closeout uses explicit workflow-owned paths because git rev-parse reports F:/github as the top-level and the parent tree contains many unrelated sibling paths.",
+    "The implementation avoided real user/home agent directories by testing install with explicit temp --target directories.",
+    "Project cognition closeout-plan returned parent-tree unknown paths; they were excluded from this workflow-owned update rather than adopted."
+  ],
+  "user_decisions": [
+    "User confirmed the sp-quick checkpoint.",
+    "User required .agents/skills/launchdeck-agent to remain the canonical source.",
+    "User required no lifecycle runtime behavior changes, no MCP, no marketplace, no remote publish/search/update, and no target deletion."
+  ],
+  "unknown_path_dispositions": [
+    {
+      "path": "launchdeck/src/agent-installer.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/src/cli.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/src/errors.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/src/output.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/test/agent-installer.test.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/test/cli-contract.test.js",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/README.md",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/.agents/README.md",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/package.json",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/.planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/.planning/quick/2026-07-09-agent-installer-cli/STATUS.md",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/.planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json",
+      "agent_disposition": "adoptable"
+    },
+    {
+      "path": "launchdeck/.specify/project-cognition/updates/sp-quick-closeout.json",
+      "agent_disposition": "adoptable"
+    }
+  ],
+  "boundary": {
+    "initial_dirty_paths": [
+      "outside-scope: parent git root F:/github contains unrelated sibling and untracked paths"
+    ],
+    "workflow_owned_paths": [
+      "launchdeck/src/agent-installer.js",
+      "launchdeck/src/cli.js",
+      "launchdeck/src/errors.js",
+      "launchdeck/src/output.js",
+      "launchdeck/test/agent-installer.test.js",
+      "launchdeck/test/cli-contract.test.js",
+      "launchdeck/README.md",
+      "launchdeck/.agents/README.md",
+      "launchdeck/package.json",
+      "launchdeck/.planning/quick/2026-07-09-agent-installer-cli/**",
+      "launchdeck/.specify/project-cognition/updates/sp-quick-closeout.json"
+    ],
+    "excluded_paths": [
+      "F:/github sibling directories outside launchdeck",
+      "launchdeck/.launchdeck/**",
+      "real user home agent directories"
+    ]
+  },
+  "known_unknowns": []
+}

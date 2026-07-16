@@ -1,0 +1,43 @@
+{
+  "status": "success",
+  "task_id": "T037",
+  "changed_files": [
+    "scripts/smoke-lifecycle.js",
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/quality-reviewer-t037.json"
+  ],
+  "validation_output": {
+    "npm run check": "exit 0; configured syntax check passed for current source, control-plane modules, smoke script, demo scripts, helpers, and tests.",
+    "npm test": "exit 0; 136 tests passed, 0 failed.",
+    "node scripts/smoke-lifecycle.js --quickstart --json": "exit 0; full release smoke passed on win32 with 18 recorded steps and temporary workspace cleanup.",
+    "leader residual scan": "exit 0; no listener on port 8888 and no matching demo smoke process remained."
+  },
+  "leader_repairs": [
+    "Added --quickstart to scripts/smoke-lifecycle.js as an alias for the full release-smoke path required by T037.",
+    "Updated quickstart duplicate-start wording to match current existing-run/spawned=false semantics."
+  ],
+  "concerns": [
+    "This is Windows-local release smoke evidence only. It is not a cross-platform-ready claim."
+  ],
+  "recovery_hints": [
+    "Collect macOS and Linux smoke evidence with `node scripts/smoke-lifecycle.js --quickstart --json` before making any cross-platform-ready release claim.",
+    "If cleanup stop exits nonzero after a successful full smoke, confirm the target was already stopped/removed and run the residual port/process scan before accepting the run."
+  ],
+  "consumer_evidence": [
+    "implementation-review/ledger.json now records releaseSmoke evidence for npm run check, npm test, full quickstart smoke, cleanup, and residual process checks.",
+    "scripts/smoke-lifecycle.js supports the quickstart verification command without adding daemon, hook, GUI, MCP, kill-by-port, or arbitrary PID behavior.",
+    "quickstart.md now matches the accepted duplicate-start product behavior."
+  ],
+  "must_preserve_evidence": [
+    "MP-016: official demo proves duplicate start, port ownership, inspect, restart/stop, stale recovery, logs/events, and clean.",
+    "MP-017: cross-platform-ready requires lifecycle smoke on Windows, macOS, and Linux."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-020",
+      "status": "windows-local-evidence-recorded",
+      "evidence": "Full quickstart release smoke passed on the current Windows host and limitations are recorded in the ledger."
+    }
+  ]
+}

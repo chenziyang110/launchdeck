@@ -1,0 +1,299 @@
+{
+  "id": "exp-87ab4ee06e498059ec54f32b",
+  "active_generation_id": "GEN-greenfield-20260706T073915.616696000Z",
+  "candidate_universe_version": 1,
+  "query_fingerprint": "87ab4ee06e498059ec54f32b",
+  "sections": {
+    "coverage_gaps": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "graph_neighbors": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "raw_candidates": {
+      "state": "available",
+      "estimated_items": 13
+    },
+    "related_paths": {
+      "state": "available",
+      "estimated_items": 3
+    }
+  },
+  "section_payloads": {
+    "coverage_gaps": [],
+    "graph_neighbors": [],
+    "raw_candidates": [
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-runtime-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-runtime-js",
+        "matched_terms": [
+          "runtime",
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/runtime.js"
+        ],
+        "score": 43,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "runtime.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-cli-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-cli-js",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/cli.js"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-cli-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-cli-test-js",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/cli.test.js"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-config-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-config-js",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/config.js"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-config-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-config-test-js",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/config.test.js"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-errors-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-errors-js",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/errors.js"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "errors.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-package-json"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-package-json",
+        "matched_terms": [
+          "ps",
+          "stop",
+          "and",
+          "port"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "package.json"
+        ],
+        "score": 33,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "package.json"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo--launchdeck-yml"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo--launchdeck-yml",
+        "matched_terms": [
+          "quick",
+          "launchdeck",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/.launchdeck.yml"
+        ],
+        "score": 16,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": ".launchdeck.yml"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-README-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-README-md",
+        "matched_terms": [
+          "quick",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "README.md"
+        ],
+        "score": 6,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "README.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo-README-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo-README-md",
+        "matched_terms": [
+          "quick",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/README.md"
+        ],
+        "score": 6,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "README.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo-scripts-build-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo-scripts-build-js",
+        "matched_terms": [
+          "quick",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/scripts/build.js"
+        ],
+        "score": 6,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "build.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo-scripts-dev-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo-scripts-dev-js",
+        "matched_terms": [
+          "quick",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/scripts/dev.js"
+        ],
+        "score": 6,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "dev.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo-scripts-fail-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo-scripts-fail-js",
+        "matched_terms": [
+          "quick",
+          "and"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/scripts/fail.js"
+        ],
+        "score": 6,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "fail.js"
+      }
+    ],
+    "related_paths": [
+      "src/runtime.js",
+      "src/cli.js",
+      "test/cli.test.js"
+    ]
+  },
+  "created_at": "2042-02-16T08:10:08Z"
+}

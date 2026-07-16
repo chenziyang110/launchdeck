@@ -1,0 +1,47 @@
+{
+  "taskId": "T031",
+  "reviewId": "T031-review-final",
+  "type": "task_review",
+  "status": "accepted_after_leader_repair",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "src/runtime.js",
+    "src/control-plane/runs.js",
+    ".specify/teams/state/results/executor-t031.json"
+  ],
+  "validation": [
+    {
+      "command": "node --check src/runtime.js; node --check src/control-plane/runs.js",
+      "result": "pass",
+      "summary": "Runtime and trusted-spawn run metadata files parse successfully."
+    },
+    {
+      "command": "node --test test/lifecycle-ownership.test.js test/runtime-state.test.js",
+      "result": "pass",
+      "summary": "14 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/clean-control-plane.test.js test/recovery-observability.test.js",
+      "result": "pass",
+      "summary": "14 tests passed, 0 failed."
+    }
+  ],
+  "controllerChecks": [
+    "Clean safety tests remained green and no clean path gained service stop, registry removal, project-root deletion, external deletion, or reset behavior.",
+    "Direct startManagedTask now records Launchdeck-spawn ownership evidence so locally spawned managed tasks can be cleaned up without hand-authored PID-only proof.",
+    "Leader repair aligned trusted global start runId/transactionId with runContext before writing global run records.",
+    "Leader repair restored Windows owned stop to non-forced SIGTERM semantics, preserving stop_failed evidence for processes that refuse termination.",
+    "Lifecycle ownership tests stayed green after repair, including verified stop/restart, ownership refusals, port_release_timeout, and stop_failed preservation.",
+    "Leader process scan found no clean/runtime/lifecycle/recovery fixture processes left after validation."
+  ],
+  "acceptedResidualRisks": [
+    "T031 needed a bounded leader repair in src/control-plane/runs.js to preserve trusted-spawn metadata consistency after runtime.js gained local run ids.",
+    "Windows-local validation is not a macOS/Linux release claim."
+  ],
+  "followUpWork": [
+    "T032 record US5 safe clean join validation in the ledger."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted_after_leader_repair"
+}

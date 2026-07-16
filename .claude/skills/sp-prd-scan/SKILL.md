@@ -1,0 +1,295 @@
+---
+name: "sp-prd-scan"
+description: "Use when an existing repository needs reconstruction-grade scan outputs before a PRD suite can be compiled."
+argument-hint: "Describe the existing project or reverse-PRD scan target to reconstruct into a scan package"
+compatibility: "Requires spec-kit project structure with .specify/ directory"
+metadata:
+  author: "github-spec-kit"
+  source: "templates/commands/prd-scan.md"
+user-invocable: true
+---
+## Invocation Syntax
+
+- In this integration, invoke workflow skills with `/sp-plan`-style syntax.
+- References such as `/sp.plan`, `/sp.tasks`, or `next_command: /sp.plan` are canonical workflow-state identifiers and handoff values.
+- Preserve those canonical state tokens exactly in artifacts and workflow state; do not rewrite them to this integration's invocation syntax.
+
+
+
+## Blocked Exit Contract
+
+If blocked after safe recovery, read and follow
+`.specify/templates/workflow-blocker-template.md` and its JSON schema. Never
+return only an error or “ask a human”; preserve state and keep agent-capable
+repair agent-owned. Set `human_action_required: true` only for authority,
+credentials, protected systems, human decisions/reviews, or physical access.
+Tailor steps, expected results, failure paths, evidence, and resume action to
+CI, visual review, or product decisions. Never claim completion.
+
+# `/sp.prd-scan` Reconstruction Scan
+
+## Workflow Contract Summary
+
+This summary is routing metadata only. The full workflow contract is the frontmatter plus the sections below.
+
+- Use `sp-prd-scan` for read-only reconstruction investigation.
+- Primary truth source: current repository reality plus the `project-cognition query` bundle and compatibility/export evidence when explicitly needed.
+- Primary terminal state: completed scan package under `.specify/prd-runs/<run-id>/`.
+- Stable freshness state: `.specify/prd/status.json`.
+- Default handoff: `/sp-prd-build`.
+
+## Project Learning
+
+The CLI is the only agent-facing Learning read surface:
+
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+`start`, `list`, and `show` are read-only. Current repository evidence,
+`.specify/memory/constitution.md`, and explicit user direction override stale or
+candidate Learning.
+
+At closeout, corrections, retries, route changes, recovery, false leads, hidden
+dependencies, validation/tooling/state/cognition gaps, constraints, and near
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+from owning state; manual capture includes summary, problem, action, triggers,
+success criteria, avoid items, exceptions, and evidence.
+
+- `fast`: skip unless the task escalates.
+- `accept`, `analyze`, `ask`, `auto`, `constitution`, `explain`,
+  `implement-teams`, `taskstoissues`, and `team`: consume-only; do not violate
+  their write boundaries to capture.
+- Other non-trivial workflows: consume before deeper work; capture reusable
+  signals at closeout or record a no-learning decision.
+
+The `policy` returned by the CLI is authoritative when prompt wording drifts.
+
+[AGENT] For project-cognition-backed semantic intake, routing, audit, resume, or final-claim gates, read `references/semantic-work-contract.md`.
+
+## Detailed References
+
+Read [Reference index](references/INDEX.md) before applying shared semantic contracts.
+
+- [semantic work contract](references/semantic-work-contract.md)
+
+## Objective
+
+[AGENT] Produce a reconstruction-grade scan package that lets `sp-prd-build` compile a PRD suite without rereading the repository.
+
+The scan phase is a read-only reconstruction investigation. It must harvest enough grounded detail about each `capability`, `artifact`, and `boundary` to prove whether the package is reconstruction-ready or should be marked `blocked-by-gap`.
+Every consequential claim must preserve `Evidence`, `Inference`, and `Unknown` labeling semantics instead of collapsing them into one unmarked narrative.
+
+## Context
+
+Required context inputs:
+
+- **Project cognition gate:** query the active project's runtime before broad
+  repository reads.
+
+  Run or emulate:
+
+  ```text
+  C:\Users\11034\.specify\bin\project-cognition.exe compass --intent research --query=\"$ARGUMENTS\" --format json
+  ```
+
+  After the default compass packet, run the advanced `lexicon -> semantic_intake -> query` path only when `compass_state`, coverage diagnostics, localization, or live evidence requires explicit concept decisions. In that escalation, use `project-cognition lexicon --mode catalog` as the alias catalog, write agent-authored `semantic_intake` and `concept_decisions`, then run `project-cognition query --query-plan "<query_plan_json>"`; include `query_plan`, `semantic_intake`, `concept_decisions`, `covered_facets`, `missing_facets`, `match_sources`, `lexicon_generation_id`, `repository_search_terms`, project-language search terms, and facet coverage; do not search only the raw user words before source search. Agent-owned semantic normalization remains mandatory: `agent_normalization` and raw lexicon ranking are bootstrap signals only; if `agent_normalization` is omitted, treat it as `required=false`; use `write_semantic_intake_from_alias_catalog` when needed. Raw lexicon ranking is only a bootstrap; CJK or mixed CJK/ASCII input still requires agent-owned normalization even when positive raw lexical matches exist. The agent still owns translation. Readiness values are `query_ready`, `review`, `needs_rebuild`, `blocked`, and `unsupported_runtime`.
+
+  Use the returned readiness:
+
+  - `query_ready`: read top-level `minimal_live_reads` first, then use lane-level `first_pass_paths` reasons.
+  - `review`: perform only the returned `minimal_live_reads` before continuing and inspect `coverage_diagnostics`.
+  - `blocked`: report the blocking runtime issue and continue with live evidence only where this workflow allows degraded navigation.
+- `PROJECT-HANDBOOK.md` only when compatibility/export evidence is explicitly relevant.
+- `.specify/prd/status.json` as the stable PRD scan freshness record when present.
+- Current repository evidence from code, docs, tests, routes, UI surfaces, service surfaces, data models, integrations, configuration, and deployment surfaces.
+- Existing `workflow-state.md` under `.specify/prd-runs/<run-id>/` when resuming an interrupted run.
+
+## Mandatory Subagent Execution
+
+All substantive tasks in ordinary `sp-*` workflows default to and must use subagents.
+
+The leader orchestrates: route, split tasks, prepare task contracts, dispatch subagents, wait for structured handoffs, integrate results, verify, and update state.
+
+Before dispatch, every subagent lane needs a task contract with objective, authoritative inputs, allowed read scope, forbidden actions, acceptance checks, verification evidence, and structured handoff format.
+
+Use `execution_model: subagent-mandatory`.
+Use `dispatch_shape: one-subagent | parallel-subagents`.
+Use `execution_surface: native-subagents`.
+Each delegated lane produces a `PrdScanPacket`: a read-only evidence packet with enough cited detail for the build step to synthesize the final archive without rereading the repository.
+
+## Unified Critical Item Families
+
+1. Main Capability Chains
+2. External Entrypoints and Command Surfaces
+3. State Machines and Flow Control
+4. Data and Persistence Contracts
+5. Configuration and Behavior Switches
+6. Protocol and Boundary Contracts
+7. Error Semantics and Recovery Behavior
+8. Verification and Regression Entrypoints
+
+## Evidence Depth Model
+
+- `L1 Exists`: the item is discovered and tied to at least one repository surface.
+- `L2 Surface`: the user-visible, command, API, config, data, or boundary shape is captured.
+- `L3 Behavioral`: normal behavior, edge behavior, state changes, and failure behavior are grounded in evidence.
+- `L4 Reconstruction-Ready`: enough structure, contracts, and verification evidence exist to recreate the behavior without critical unknowns.
+
+## Hard Boundary
+
+- `sp-prd-scan` must not write `master/master-pack.md`.
+- `sp-prd-scan` must not write `exports/**`.
+- `sp-prd-scan` must not claim the PRD suite is complete.
+
+## PRD Run State Protocol
+
+- `workflow-state.md` under `.specify/prd-runs/<run-id>/` is the resumable state surface for `sp-prd-scan` and `sp-prd-build`.
+- [AGENT] Create or resume `workflow-state.md` before substantial scan work.
+- If `workflow-state.md` exists with `active_command: sp-prd-scan` and a non-terminal scan state, resume from it instead of rebuilding intent from chat memory.
+- Track at least:
+  - `active_command: sp-prd-scan`
+  - `status: scanning | synthesizing | blocked | ready-for-build`
+  - `scan_status: pending | scanning | blocked | complete`
+  - `build_status`
+  - `freshness_mode`
+  - `classification`
+  - `selected_capabilities`
+  - `selected_boundaries`
+  - `selected_artifacts`
+  - `current_packet`
+  - `accepted_packet_results`
+  - `rejected_packet_results`
+  - `failed_readiness_checks`
+  - `next_action`
+  - `next_command`
+  - `handoff_reason`
+  - `open_gaps`
+
+## Process
+
+1. Route and initialize the PRD run under `.specify/prd-runs/<run-id>/`.
+2. Load brownfield context and select the smallest relevant repository surfaces.
+3. Check `.specify/prd/status.json` freshness before scoping the scan.
+4. Route `fresh` status to status confirmation only unless the user explicitly requests a new run.
+5. Route `targeted-stale` status to a bounded scan of the changed source, test, and documentation surfaces plus any directly adjacent capability boundaries.
+6. Route `full-stale` status to a full reconstruction scan across command, workflow, integration, configuration, and shared-runtime surfaces.
+7. Triage `capability`, `artifact`, and `boundary` objects before broad synthesis.
+8. Assign each capability a tier: `critical`, `high`, `standard`, or `auxiliary`.
+9. Before broad scan fan-out begins, assess workload shape and the current agent capability snapshot, then apply the shared policy contract: `choose_subagent_dispatch(command_name="prd-scan", snapshot, workload_shape)`.
+10. Persist the decision fields exactly: `execution_model: subagent-mandatory`, `dispatch_shape: one-subagent | parallel-subagents`, `execution_surface: native-subagents`.
+11. Decision order is fixed:
+    - One safe validated scan lane -> `one-subagent` on `native-subagents` when available.
+    - Two or more safe read-only scan lanes -> `parallel-subagents` on `native-subagents` when available.
+    - No safe lane, incomplete packet, or unavailable delegation -> `subagent-blocked` with a recorded reason.
+12. Compile a validated `PrdScanPacket` before dispatch or `subagent-blocked` status.
+13. For `one-subagent`, dispatch one read-only scan lane once a validated `PrdScanPacket` exists. If the packet is incomplete, compile the missing fields before dispatch; if dispatch is unavailable, record `subagent-blocked` with the blocker and stop for escalation or recovery before broad scan work continues.
+14. If collaboration is justified, keep `prd-scan` lanes read-only and limited to reconstruction evidence gathering, tier classification, and packet drafting.
+15. Required join points:
+    - before freezing ledgers and machine-readable contracts
+    - before declaring the package ready for `sp-prd-build`
+16. The leader owns final ledger normalization, contract updates, and packet quality even when subagents help with scan work.
+17. For `critical` and `high` capabilities, capture stronger reconstruction detail: structure, producers, consumers, constraints, compatibility behavior, and failure behavior.
+18. Build `.specify/prd-runs/<run-id>/artifact-contracts.json` and `.specify/prd-runs/<run-id>/reconstruction-checklist.json`.
+19. Generate scan packets and evidence notes that explain structure, producers, consumers, constraints, and failure behavior while preserving `Evidence`, `Inference`, and `Unknown`.
+20. Refuse handoff if any `critical` capability lacks reconstruction-ready support. `high` capabilities must not be waved through with path-only evidence; keep the status explicit as `blocked-by-gap` when evidence is insufficient.
+
+## Output Contract
+
+The scan phase writes only the reconstruction package:
+
+- `.specify/prd-runs/<run-id>/workflow-state.md`
+- `.specify/prd-runs/<run-id>/prd-scan.md`
+- `.specify/prd-runs/<run-id>/coverage-ledger.md`
+- `.specify/prd-runs/<run-id>/coverage-ledger.json`
+- `.specify/prd-runs/<run-id>/capability-ledger.json`
+- `.specify/prd-runs/<run-id>/artifact-contracts.json`
+- `.specify/prd-runs/<run-id>/reconstruction-checklist.json`
+- `.specify/prd-runs/<run-id>/entrypoint-ledger.json`
+- `.specify/prd-runs/<run-id>/config-contracts.json`
+- `.specify/prd-runs/<run-id>/protocol-contracts.json`
+- `.specify/prd-runs/<run-id>/state-machines.json`
+- `.specify/prd-runs/<run-id>/error-semantics.json`
+- `.specify/prd-runs/<run-id>/verification-surfaces.json`
+- `.specify/prd-runs/<run-id>/scan-packets/<lane-id>.md`
+- `.specify/prd-runs/<run-id>/evidence/**`
+- `.specify/prd-runs/<run-id>/worker-results/**`
+- `.specify/prd/status.json` when initializing a successful scan and the stable status file is absent
+
+These artifacts are the authoritative scan bundle for `sp-prd-build`; they are not draft exports.
+
+## Compile And Validate PrdScanPacket Inputs
+
+- [AGENT] Compile a validated `PrdScanPacket` before dispatch or `subagent-blocked` status.
+- A valid `PrdScanPacket` must include:
+  - `lane_id`
+  - `mode: read_only`
+  - `scope`
+  - `capability_ids`
+  - `artifact_ids`
+  - `boundary_ids`
+  - `required_reads`
+  - `excluded_paths`
+  - `required_questions`
+  - `expected_outputs`
+  - `contract_targets`
+  - `forbidden_actions`
+  - `result_handoff_path`
+  - `join_points`
+  - `minimum_verification`
+  - `blocked_conditions`
+- Hard rule: do not dispatch from raw scan prose or broad chat instructions alone.
+
+## PrdScanPacket Dispatch
+
+- If no safe lane exists, the packet is incomplete, or delegation is unavailable, record `subagent-blocked` with the blocker and stop for escalation or recovery before broad scan work continues.
+- Raw inventory notes or raw chat summaries are not sufficient subagent inputs or outputs.
+- Each dispatched lane needs a validated `PrdScanPacket` and must return a structured handoff with inspected paths, key facts, confidence, blockers, and recommended contract updates.
+- Idle subagent output is not an accepted scan result.
+- The leader must wait for every dispatched lane and consume its structured handoff before finalizing ledgers, writing scan packets, or marking the scan complete.
+
+## Worker Result Contract
+
+Every scan-lane result must include:
+
+- `lane_id`
+- `reported_status: done | done_with_concerns | blocked | needs_context`
+- `paths_read`
+- `key_facts`
+- `evidence_refs`
+- `recommended_contract_updates`
+- `confidence`
+- `unknowns`
+- `minimum_verification`
+- `result_handoff_path`
+
+Reject results that omit `paths_read`, collapse evidence into prose-only summary, hide `unknowns`, or leave contract impact undefined where one is expected.
+
+## Quality Gates
+
+- Stable Status Gate: `.specify/prd/status.json` must be consulted or initialized, and the run must record whether freshness is `fresh`, `targeted-stale`, or `full-stale`.
+- Capability Triage Gate: each capability must be assigned `critical`, `high`, `standard`, or `auxiliary` before scan completion can be claimed.
+- Critical Depth Gate: each `critical` capability must be explicitly marked `reconstruction-ready` or `blocked-by-gap`, with structure, producer-consumer, constraint, and failure coverage captured.
+- High Capability Gate: each `high` capability must have more than path-only evidence and must record reconstruction-relevant structure and boundary behavior.
+- Artifact Contract Gate: important structures must land in `artifact-contracts.json`.
+- Checklist Gate: recreation blockers and remaining `Unknown` items must be visible in `reconstruction-checklist.json`.
+- Evidence Label Gate: scan outputs must preserve `Evidence`, `Inference`, and `Unknown` labeling semantics.
+
+## Guardrails
+
+- Do not write final PRD exports in `sp-prd-scan`.
+- Do not treat path discovery as sufficient reconstruction evidence.
+- Do not let `critical` or `high` capabilities pass with shallow evidence only.
+- Do not hide unknowns that block a later build step.
+- When refusal is required, report the smallest safe repair instead of softening the gap into narrative prose.
+
+## Claude Code Subagent Capability Discovery
+
+- Execution model: preserve the workflow's existing `subagent-mandatory`, `subagents-first`, `adaptive`, or `subagent-assisted` policy.
+- Dispatch shape: preserve the workflow's existing dispatch shape; use `subagent-blocked` only after the discovery step below fails or is unsafe.
+- Execution surface: prefer `native-subagents` when the current runtime supports it; use `none` only after recording the unavailable or unsafe surface.
+- Native subagent capability discovery: Before recording `subagent-blocked`, check the active tool surface for the integration-native subagent or task-dispatch entrypoint and record the exact missing surface if unavailable.
+- Do not record `subagent-blocked` until this capability discovery step is complete and the exact unavailable or unsafe surface is recorded.
+- Native subagent dispatch: Dispatch subagents through the integration's native subagent support using the shared prompt contract.
+- Join behavior: Use the integration-native join point, then integrate results back on the leader path.
+- Preserve this workflow's existing packet, handoff, artifact, and result schema; this section only governs capability discovery before dispatch or blocked-state recording.

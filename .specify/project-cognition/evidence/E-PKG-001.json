@@ -1,0 +1,30 @@
+{
+  "id": "E-PKG-001",
+  "source_path": "package.json",
+  "summary": "Package manifest for launchdeck v0.1.0",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-PKG-001",
+    "source_path": "package.json",
+    "summary": "Package manifest for launchdeck v0.1.0",
+    "symbols": [
+      "launchdeck (bin)",
+      "check script",
+      "test script"
+    ],
+    "exports": [],
+    "dependencies": [
+      "yaml ^2.5.1"
+    ],
+    "notes": [
+      "Name: launchdeck, version 0.1.0, ES module (\"type\": \"module\")",
+      "Binary: launchdeck -> ./src/cli.js",
+      "Engine requirement: Node >=20",
+      "check script runs syntax check on all source and test files",
+      "test script uses Node built-in --test runner"
+    ]
+  }
+}

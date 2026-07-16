@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "control_summary": "sp-map-scan generated evidence baseline for project cognition graph reconstruction",
+  "scan_outcome": "success",
+  "total_artifacts": {
+    "evidence_files": 58,
+    "provisional_nodes": 40,
+    "provisional_edges": 25,
+    "provisional_observations": 17,
+    "packets_dispatched": 4,
+    "packets_accepted": 4,
+    "packets_failed": 0
+  },
+  "coverage_by_tier": {
+    "P0": {"total": 16, "deep_read": 16, "coverage_pct": 100},
+    "P1": {"total": 29, "deep_read": 25, "sampled": 4, "coverage_pct": 100},
+    "P2": {"total": 47, "sampled": 29, "inventory_only": 18, "coverage_pct": 100},
+    "P3": {"total": 431, "inventory_only": 427, "excluded": 4, "coverage_pct": 100}
+  },
+  "gaps": [],
+  "handoff_readiness": "evidence_baseline_complete",
+  "recommended_next_command": "sp-map-build"
+}

@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T001",
+  "story": "guardrails",
+  "description": "Record embedded pre-implement review and v1 boundary confirmation.",
+  "agent": "quality-reviewer",
+  "depends_on": [],
+  "parallel_safe": false,
+  "context_navigation": [
+    "plan.md#implementation-constitution",
+    "plan.md#locked-planning-decisions",
+    "tasks.md#task-guardrail-index"
+  ],
+  "write_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson (new/append)"
+  ],
+  "anti_goals": [
+    "Do not edit source or tests.",
+    "Do not reopen accepted v1 scope without blocker evidence."
+  ],
+  "does_not_remove": [
+    "init",
+    "doctor",
+    "tasks",
+    "run",
+    "managed_runtime",
+    "clean",
+    "JSON/errors",
+    "v1 deferred-scope boundaries"
+  ],
+  "capability_operations": [
+    "preserves all in-scope operations",
+    "does not own implementation"
+  ],
+  "acceptance_criteria": [
+    "Review entry names scope, forbidden drift, embedded review policy, and current ready batch."
+  ],
+  "verify_commands": [
+    "Manual review of implementation-review/reviews.ndjson"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-017",
+    "CA-022"
+  ],
+  "mp_ids": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-013",
+    "MP-015",
+    "MP-016"
+  ],
+  "consumer_surfaces": [
+    "implementation workflow guardrail"
+  ],
+  "required_evidence": [
+    "guardrail_review_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

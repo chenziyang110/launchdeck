@@ -1,0 +1,39 @@
+{
+  "id": "E-T-007",
+  "source_path": "test/config-contract.test.js",
+  "summary": "配置合约测试 — 版本验证、字段验证、clean targets 解析",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-007",
+    "source_path": "test/config-contract.test.js",
+    "summary": "配置合约测试 — 版本验证、字段验证、clean targets 解析",
+    "test_groups": [
+      "拒绝不支持的配置版本",
+      "拒绝缺少必需 version 字段的配置",
+      "从发现的配置派生确定性的 projectRoot 和 configPath",
+      "拒绝逃逸项目根的 task cwd 路径",
+      "拒绝逃逸项目根的 task log 路径",
+      "longRunning=false 派生 command 类型",
+      "longRunning=true 派生 managed 类型",
+      "任务风险默认 medium",
+      "规范化 clean target 列表",
+      "保留 clean target 用于运行时的拒绝计划"
+    ],
+    "key_assertions": [
+      "version: 2 抛出 unsupported_config_version",
+      "缺少 version 抛出 config_invalid",
+      "从子目录加载找到祖先 .launchdeck.yml",
+      "cwd: '../outside' 抛出 project_root_escape",
+      "log: '../outside/dev.log' 抛出 project_root_escape",
+      "longRunning=false 派生出 type=command",
+      "longRunning=true 派生出 type=managed",
+      "风险默认 medium",
+      "clean.safe 和 clean.risky 被规范化为 {kind, rawPath} 格式",
+      "目标 '.' 在 resolveCleanTargets 中被拒绝为 clean_target_root",
+      "目标 '..' 拒绝为 clean_target_outside_project"
+    ]
+  }
+}

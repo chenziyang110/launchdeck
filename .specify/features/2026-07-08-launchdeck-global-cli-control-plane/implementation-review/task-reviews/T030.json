@@ -1,0 +1,40 @@
+{
+  "taskId": "T030",
+  "reviewId": "T030-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "test/clean-control-plane.test.js",
+    ".specify/teams/state/results/test-engineer-t030.json"
+  ],
+  "validation": [
+    {
+      "command": "node --check test/clean-control-plane.test.js",
+      "result": "pass",
+      "summary": "Clean control-plane test file parses successfully."
+    },
+    {
+      "command": "node --test test/clean-control-plane.test.js test/recovery-observability.test.js",
+      "result": "pass",
+      "summary": "14 tests passed, 0 failed."
+    }
+  ],
+  "controllerChecks": [
+    "Tests exercise real CLI clean/reset entrypoints through isolated temp projects and LAUNCHDECK_HOME.",
+    "Tests cover path escape refusal, symlink/junction escape refusal, project-root refusal, empty target refusal, running evidence preservation, latest failure evidence preservation, and reset absence.",
+    "No production code was modified by the test task.",
+    "No inline node -e long-running fixture was introduced.",
+    "Leader process scan found no clean/recovery fixture processes left after validation."
+  ],
+  "acceptedResidualRisks": [
+    "Symlink/junction coverage is skipped only if the host cannot create the link type.",
+    "Empty target refusal is currently enforced at config-load validation before clean planning."
+  ],
+  "followUpWork": [
+    "T031 verify or implement any remaining clean control-plane safety integration required by the new tests."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

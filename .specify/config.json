@@ -1,0 +1,18 @@
+{
+  "project_cognition_launcher": {
+    "command": "C:\\Users\\11034\\.specify\\bin\\project-cognition.exe",
+    "argv": [
+      "C:\\Users\\11034\\.specify\\bin\\project-cognition.exe"
+    ]
+  },
+  "notify": "uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@f16f8acacd8c215abcce0c7fc1a02e706e5c8bae specify sp-teams notify-hook",
+  "specify_launcher": {
+    "command": "uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@f16f8acacd8c215abcce0c7fc1a02e706e5c8bae specify",
+    "argv": [
+      "uvx",
+      "--from",
+      "git+https://github.com/chenziyang110/spec-kit-plus.git@f16f8acacd8c215abcce0c7fc1a02e706e5c8bae",
+      "specify"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "status": "success",
+  "reported_status": "success",
+  "task_id": "T002",
+  "changed_files": [
+    ".agents/skills/launchdeck-agent/references/intent-routing.md"
+  ],
+  "validation_evidence": [
+    {
+      "command": "intent routing trigger and non-trigger check",
+      "result": "pass",
+      "status": "passed",
+      "passed": true,
+      "evidence": "intent routing trigger and non-trigger check"
+    }
+  ],
+  "blockers": [],
+  "concerns": [],
+  "validation_output": {
+    "result": "pass",
+    "acceptance_criteria_met": true,
+    "status": "passed",
+    "passed": true
+  },
+  "validation": {
+    "status": "passed",
+    "result": "pass",
+    "passed": true
+  },
+  "validation_results": [
+    {
+      "name": "intent routing trigger and non-trigger check",
+      "status": "passed",
+      "evidence": "intent routing trigger and non-trigger check"
+    }
+  ]
+}

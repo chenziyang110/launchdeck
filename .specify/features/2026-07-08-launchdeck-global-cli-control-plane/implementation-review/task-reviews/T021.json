@@ -1,0 +1,46 @@
+{
+  "taskId": "T021",
+  "reviewId": "T021-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+  ],
+  "validation": [
+    {
+      "command": "node --test test/inspect-cli.test.js test/global-runtime.test.js",
+      "result": "pass",
+      "summary": "30 tests passed, 0 failed; duration_ms 32192.6071 in leader validation."
+    },
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Repository syntax check completed successfully in leader validation."
+    },
+    {
+      "command": "JSON parse checks for ledger.json, executor-t021.json, T021 task review, and reviews.ndjson",
+      "result": "pass",
+      "summary": "All reviewed implementation artifacts parse as JSON/NDJSON."
+    }
+  ],
+  "controllerChecks": [
+    "joinValidations.T021 records US2 external conflict and unified inspect acceptance evidence.",
+    "External occupied ports block start without stopping the external listener.",
+    "Unified inspect covers port, pid, task, and owned-pid targets through real CLI entrypoint tests.",
+    "inspect-port compatibility is preserved.",
+    "External and unknown processes remain inspect-only; stop/restart/force-stop/kill remain blocked for non-verified ownership.",
+    "Windows-local limitation is recorded and no macOS/Linux release claim is made."
+  ],
+  "acceptedResidualRisks": [
+    "T021 is a join validation and implements no new behavior.",
+    "Cross-platform release evidence remains deferred to the later smoke tasks."
+  ],
+  "followUpWork": [
+    "T022 add owned stop, force-stop, and restart failing tests.",
+    "T023 implement owned-only stop and force-stop."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

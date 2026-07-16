@@ -1,0 +1,32 @@
+{
+  "reviewId": "pre-implement-2026-07-08T00:00:00Z",
+  "status": "pass_with_normalization",
+  "featureDir": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane",
+  "readiness": {
+    "prerequisites": "pass",
+    "checklists": "pass",
+    "workflowState": "sp-tasks completed and points to /sp.implement",
+    "projectCognition": "review / usable_with_review",
+    "minimalLiveReads": [
+      "package.json",
+      "src/runtime.js",
+      "src/cli.js"
+    ]
+  },
+  "taskPackage": {
+    "taskCount": 38,
+    "packetCount": 38,
+    "parallelBatchCount": 13,
+    "firstReadyBatch": {
+      "id": "B0",
+      "tasks": [
+        "T001"
+      ],
+      "join": "JP0",
+      "validation": "Test-Path .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+    },
+    "packetNormalization": "Task packets use title, scope_boundaries, verify_commands, acceptance_criteria, anti_goals, boundary_constraints, stop_and_reopen, and handoff_format. The leader must normalize these into WorkerTaskPacket fields before dispatch."
+  },
+  "blocked": false,
+  "nextAction": "Dispatch T001 through one native subagent after compiling a normalized WorkerTaskPacket."
+}

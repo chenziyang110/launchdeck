@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T005",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3b7c-43c9-7401-8e20-f777138e4fcd",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/config-contract.test.js"
+  ],
+  "validation_output": {
+    "red_check": {
+      "command": "node --test test/config-contract.test.js",
+      "exit_status": 1,
+      "classification": "expected_red_missing_config_contract_behavior",
+      "tests": 11,
+      "passed": 1,
+      "failed": 10
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [
+    "One deterministic root/config-path assertion already passes against existing behavior; remaining failures are expected missing v1 normalization behavior."
+  ],
+  "recovery_hints": [
+    "T006 should update src/config.js for required version, unsupported_config_version, task cwd/log containment, task type derivation, default risk medium, and clean target normalization/refusal."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-004"],
+      "evidence": "Tests preserve explicit `.launchdeck.yml` v1 compatibility and version gating."
+    },
+    {
+      "ids": ["CA-004", "CA-008", "CA-019"],
+      "evidence": "Tests exercise config states, unsupported future versions, deterministic root, and config path output."
+    }
+  ],
+  "result_summary": "T005 config contract tests added and verified as expected RED."
+}

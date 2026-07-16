@@ -1,0 +1,29 @@
+{
+  "task_id": "T014-T015-repair",
+  "status": "success",
+  "summary": "Landed the T015 run orchestration boundary by moving managed start identity, duplicate detection, readiness, marker env injection, and run-index writes out of src/cli.js and into src/control-plane/runs.js. Project repair now validates replacement paths/config before registry mutation.",
+  "changed_files": [
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    "src/cli.js",
+    "src/global-runtime.js",
+    ".specify/teams/state/results/executor-t014-t015-repair.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/actions.js": "pass",
+    "node --check src/control-plane/runs.js": "pass",
+    "node --check src/runtime.js": "pass",
+    "node --check src/cli.js": "pass",
+    "node --check src/global-runtime.js": "pass",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js": "pass: 32 tests, 0 failures",
+    "npm run check": "pass"
+  },
+  "review_fixes": [
+    "Created src/control-plane/runs.js as the run index and managed start orchestration owner.",
+    "Coordinated start/remove and duplicate-start/run-index mutation with daemonless project and task locks, released after readiness transition.",
+    "Removed direct run-index writes, run id creation, marker env injection, duplicate-start checks, and readiness polling from src/cli.js.",
+    "Validated project repair --path/--config by loading the target config before registry updates."
+  ],
+  "concerns": [],
+  "recovery_hints": []
+}

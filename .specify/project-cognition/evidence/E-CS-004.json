@@ -1,0 +1,48 @@
+{
+  "id": "E-CS-004",
+  "source_path": "scripts/smoke-lifecycle.js",
+  "summary": "CLI lifecycle smoke test — runs the official demo through the complete Launchdeck CLI lifecycle in an isolated temporary workspace.",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-004",
+    "source_path": "scripts/smoke-lifecycle.js",
+    "summary": "CLI lifecycle smoke test — runs the official demo through the complete Launchdeck CLI lifecycle in an isolated temporary workspace.",
+    "symbols": [
+      "REPO_ROOT, CLI_PATH, OFFICIAL_DEMO_PATH, DEMO_ALIAS, DEMO_TASK, DEMO_TARGET, DEMO_PORT (consts)",
+      "HELP (const docstring)"
+    ],
+    "exports": [],
+    "internal_functions": [
+      "parseArgs(argv) — --mode quick|full, --quickstart, --keep, --json, --help",
+      "createWorkspace() — mkdtemp, cp demo with .launchdeck/scratch filter, create clean-safe artifact",
+      "buildEnv(home) — sets LAUNCHDECK_HOME + NO_COLOR",
+      "runCli(step, args, context, options) — spawns CLI, captures stdout/stderr, pushes result to context.steps",
+      "parseJson(stepResult) — JSON.parse with error wrapper",
+      "assertExit(result, expectedCode) / assertJsonOk(result) / checkedStep(context, step, args)",
+      "assertExistingRun(result) — verifies spawned=false in duplicate start",
+      "stopDemoIfOwned(context) — attempts stop in finally block",
+      "runSmoke(options) — full lifecycle pipeline with mode branching",
+      "printHuman(evidence) / main()"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:os",
+      "node:path",
+      "node:child_process",
+      "node:url"
+    ],
+    "lines": 408,
+    "key_design_points": [
+      "Mode quick: project add, start, duplicate start, status, inspect (task+port), restart, stop, reconcile, clean --safe",
+      "Mode full adds: projects, ps, ports, conflicts, logs, events, project remove",
+      "Temporary workspace + isolated LAUNCHDECK_HOME — never mutates source demo",
+      "Finally block always attempts cleanup stop + rm -rf temp workspace (unless --keep)",
+      "--json mode outputs structured evidence object; --quickstart maps to --mode full",
+      "Safety guarantees documented in evidence output: local evidence only, cross-platform claim=false, no privileged hooks, no arbitrary process kill",
+      "Step results tracked as array of { step, command, cwd, exitCode, signal, stdout, stderr, expectedFailure }"
+    ]
+  }
+}

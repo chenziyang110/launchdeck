@@ -1,0 +1,61 @@
+{
+  "id": "E-CS-006",
+  "source_path": "src/errors.js",
+  "summary": "Shared error system — defines all Launchdeck error codes, aliases, and the LaunchdeckError class with payload serialization.",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-006",
+    "source_path": "src/errors.js",
+    "summary": "Shared error system — defines all Launchdeck error codes, aliases, and the LaunchdeckError class with payload serialization.",
+    "exports": [
+      {
+        "name": "ERROR_CODES",
+        "kind": "const Set",
+        "description": "Canonical set of ~50 known error codes"
+      },
+      {
+        "name": "ERROR_CODE_ALIASES",
+        "kind": "const Map",
+        "description": "Maps legacy/variant codes to canonical codes (e.g. 'invalid_arguments' -> 'command_usage_error')"
+      },
+      {
+        "name": "LaunchdeckError",
+        "kind": "class",
+        "description": "extends Error with .code and .details properties"
+      },
+      {
+        "name": "isKnownErrorCode",
+        "kind": "function",
+        "signature": "(code) => boolean"
+      },
+      {
+        "name": "toContractErrorCode",
+        "kind": "function",
+        "signature": "(code) => string",
+        "description": "Maps any code to canonical via ERROR_CODE_ALIASES, defaulting to 'internal_error'"
+      },
+      {
+        "name": "toErrorPayload",
+        "kind": "function",
+        "signature": "(error, options) => { code, message, details?, next? }"
+      },
+      {
+        "name": "toContractErrorPayload",
+        "kind": "function",
+        "signature": "(error) => { code, message }",
+        "description": "toErrorPayload with contractCode: true"
+      }
+    ],
+    "dependencies": [],
+    "lines": 110,
+    "key_design_points": [
+      "Error codes defined as a Set for O(1) lookup",
+      "Alias map allows graceful migration of error codes",
+      "toContractErrorPayload provides a stable public API surface",
+      "LaunchdeckError stores arbitrary .details object and .next (action suggestions) array"
+    ]
+  }
+}

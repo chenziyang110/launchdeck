@@ -1,0 +1,176 @@
+{
+  "schema_version": 2,
+  "observations": [
+    {
+      "id": "OBS-001",
+      "observation_type": "architecture",
+      "summary": "Launchdeck is a Node.js CLI tool implementing a daemonless, user-scoped global control plane for local project services",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "architecture",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-002",
+      "observation_type": "note",
+      "summary": "The project uses JavaScript ESM running on Node.js >=20 with zero non-standard runtime dependencies beyond 'yaml' for config parsing",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "stack",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-003",
+      "observation_type": "note",
+      "summary": "Launchdeck has 16 source files, 20 test files, comprehensive documentation, and follows Spec Kit Plus workflow conventions",
+      "evidence_ids": ["E-SCAN-001"],
+      "attrs": {
+        "domain": "project-metrics",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-004",
+      "observation_type": "note",
+      "summary": "CLI has approximately 30+ commands organized into lifecycle, process management, registry, observability, clean, and agent domains",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "cli-surface",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-005",
+      "observation_type": "architecture",
+      "summary": "Control plane architecture: actions, events, inspect, locks, ownership, runs, and state modules working together with global-runtime and project-local runtime",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "architecture",
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "OBS-006",
+      "observation_type": "safety",
+      "summary": "Key safety invariants: never kill unowned processes, ownership proof required for stop/restart/force-stop, clean is hygiene-only, project remove refuses active runs",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "safety",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-007",
+      "observation_type": "note",
+      "summary": "Project uses node:test (Node built-in test runner) with no external test framework dependency",
+      "evidence_ids": ["E-PACKAGE-001"],
+      "attrs": {
+        "domain": "testing",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-008",
+      "observation_type": "note",
+      "summary": "JSON output uses stable envelope with schemaVersion, next actions; compact mode available for agent-friendly output",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "output",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-009",
+      "observation_type": "note",
+      "summary": "Cross-platform CI runs on Windows, macOS, Linux with syntax check, tests, and lifecycle smoke verification",
+      "evidence_ids": ["E-CI-001"],
+      "attrs": {
+        "domain": "ci",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-010",
+      "observation_type": "architecture",
+      "summary": "Two-level runtime: global-runtime manages user-level project registry, while project-local runtime manages per-project state and processes",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "architecture",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-011",
+      "observation_type": "note",
+      "summary": "Agent skill installer supports 4 adapters: codex, claude-code, github-copilot, visual-studio with project-scoped and user-scoped installation",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "agent",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-012",
+      "observation_type": "note",
+      "summary": "Design system defined in DESIGN.md with color tokens, spacing scale, typography, component states, and accessibility requirements",
+      "evidence_ids": ["E-DESIGN-001"],
+      "attrs": {
+        "domain": "design",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-013",
+      "observation_type": "note",
+      "summary": "Project uses .agents/ directory for canonical agent skills, not .claude/skills or .codex/skills (those are synced copies)",
+      "evidence_ids": ["E-PROJECT-RULES-001"],
+      "attrs": {
+        "domain": "project-organization",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-014",
+      "observation_type": "note",
+      "summary": "scan-set resolved 523 candidate files, classified as P0:16, P1:29, P2:47, P3:431",
+      "evidence_ids": ["E-SCAN-001"],
+      "attrs": {
+        "domain": "scan-metrics",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-015",
+      "observation_type": "note",
+      "summary": "P3 files (431) are primarily .claude/ and .codex/ skill copies - vendored tooling, not project source",
+      "evidence_ids": ["E-SCAN-001"],
+      "attrs": {
+        "domain": "scan-metrics",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-016",
+      "observation_type": "architecture",
+      "summary": "Config discovery searches upward from current directory for .launchdeck.yml/.yaml or launchdeck.yml/.yaml, the containing directory becomes projectRoot",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "config",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "OBS-017",
+      "observation_type": "risk",
+      "summary": "Process ownership is critical to safety: Launchdeck must prove it owns a process before stop/restart/force-stop; port or PID evidence alone is insufficient",
+      "evidence_ids": ["E-README-001"],
+      "attrs": {
+        "domain": "safety",
+        "confidence": "high",
+        "risk_level": "critical"
+      }
+    }
+  ]
+}

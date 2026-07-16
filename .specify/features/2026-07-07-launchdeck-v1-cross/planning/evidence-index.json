@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "updated_at": "2026-07-07T14:05:00+08:00",
+  "evidence": [
+    {
+      "id": "spec",
+      "path": ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+      "role": "authoritative requirements"
+    },
+    {
+      "id": "alignment",
+      "path": ".specify/features/2026-07-07-launchdeck-v1-cross/alignment.md",
+      "role": "scope and conflict alignment"
+    },
+    {
+      "id": "context",
+      "path": ".specify/features/2026-07-07-launchdeck-v1-cross/context.md",
+      "role": "repository and consequence context"
+    },
+    {
+      "id": "handoff",
+      "path": ".specify/features/2026-07-07-launchdeck-v1-cross/brainstorming/handoff-to-specify.json",
+      "role": "must-preserve and planning gate"
+    },
+    {
+      "id": "cli-source",
+      "path": "src/cli.js",
+      "role": "current command surface evidence"
+    },
+    {
+      "id": "config-source",
+      "path": "src/config.js",
+      "role": "current config protocol evidence"
+    },
+    {
+      "id": "runtime-source",
+      "path": "src/runtime.js",
+      "role": "current runtime behavior evidence"
+    },
+    {
+      "id": "tests",
+      "path": "test/cli.test.js",
+      "role": "current CLI test evidence"
+    }
+  ]
+}

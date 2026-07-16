@@ -1,0 +1,612 @@
+{
+  "packet_id": "lane-control-plane",
+  "family_id": "control-plane",
+  "assigned_paths": [
+    "src/control-plane/actions.js",
+    "src/control-plane/events.js",
+    "src/control-plane/inspect.js",
+    "src/control-plane/locks.js",
+    "src/control-plane/ownership.js",
+    "src/control-plane/runs.js",
+    "src/control-plane/state.js",
+    "src/global-runtime.js",
+    "src/runtime.js"
+  ],
+  "paths_read": [
+    "src/control-plane/actions.js",
+    "src/control-plane/events.js",
+    "src/control-plane/inspect.js",
+    "src/control-plane/locks.js",
+    "src/control-plane/ownership.js",
+    "src/control-plane/runs.js",
+    "src/control-plane/state.js",
+    "src/global-runtime.js",
+    "src/runtime.js"
+  ],
+  "ledger": {
+    "todo": [],
+    "doing": [],
+    "done": [
+      "src/control-plane/actions.js",
+      "src/control-plane/events.js",
+      "src/control-plane/inspect.js",
+      "src/control-plane/locks.js",
+      "src/control-plane/ownership.js",
+      "src/control-plane/runs.js",
+      "src/control-plane/state.js",
+      "src/global-runtime.js",
+      "src/runtime.js"
+    ],
+    "blocked": [],
+    "overflow": []
+  },
+  "coverage": [
+    {
+      "path": "src/control-plane/actions.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-001",
+        "E-CP-002",
+        "E-CP-003"
+      ]
+    },
+    {
+      "path": "src/control-plane/events.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-004",
+        "E-CP-005"
+      ]
+    },
+    {
+      "path": "src/control-plane/inspect.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-006",
+        "E-CP-007"
+      ]
+    },
+    {
+      "path": "src/control-plane/locks.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-008"
+      ]
+    },
+    {
+      "path": "src/control-plane/ownership.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-009",
+        "E-CP-010"
+      ]
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-011",
+        "E-CP-012"
+      ]
+    },
+    {
+      "path": "src/control-plane/state.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-013",
+        "E-CP-014"
+      ]
+    },
+    {
+      "path": "src/global-runtime.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-015"
+      ]
+    },
+    {
+      "path": "src/runtime.js",
+      "outcome": "deep_read",
+      "evidence_ids": [
+        "E-CP-016",
+        "E-CP-017"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-CP-001",
+      "source_path": "src/control-plane/actions.js",
+      "summary": "项目注册表CRUD操作：addProjectToRegistry、removeProjectFromRegistry、listRegisteredProjects、repairProjectRegistration、scanProjectsIntoRegistry、resolveRegisteredProject",
+      "symbols": [
+        "readProjectRegistry",
+        "writeProjectRegistry",
+        "addProjectToRegistry",
+        "removeProjectFromRegistry",
+        "listRegisteredProjects",
+        "stopManagedRun",
+        "restartManagedRun",
+        "repairProjectRegistration",
+        "reconcileManagedRuns",
+        "resolveRegisteredProject",
+        "scanProjectsIntoRegistry",
+        "findActiveOwnedRuns"
+      ],
+      "exports": [
+        "readProjectRegistry",
+        "writeProjectRegistry",
+        "addProjectToRegistry",
+        "removeProjectFromRegistry",
+        "listRegisteredProjects",
+        "stopManagedRun",
+        "restartManagedRun",
+        "repairProjectRegistration",
+        "reconcileManagedRuns",
+        "resolveRegisteredProject",
+        "scanProjectsIntoRegistry",
+        "findActiveOwnedRuns"
+      ],
+      "dependencies": [
+        "config.js (loadConfig, CONFIG_FILES)",
+        "errors.js (LaunchdeckError)",
+        "runtime.js (listProcesses, readState, stopManagedTasks, waitForDeclaredPortsFree, writeState)",
+        "events.js (appendEvent)",
+        "locks.js (withLock)",
+        "runs.js (createRunContext, observedRun, readRunIndex, startManagedRun, updateRunRecord)",
+        "state.js (assertAliasAvailable, controlPlanePaths, normalizeProjectRegistration, readRegistryState, updateRegistryState, writeRegistryState)"
+      ]
+    },
+    {
+      "id": "E-CP-002",
+      "source_path": "src/control-plane/actions.js",
+      "summary": "三层锁机制：registry锁 -> project锁 -> task锁（withRegistryLock、withProjectLock、withTaskLock），支持精确的并发控制",
+      "symbols": [
+        "withRegistryLock",
+        "withProjectLock",
+        "withTaskLock",
+        "reconcileRunsInScope"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-003",
+      "source_path": "src/control-plane/actions.js",
+      "summary": "扫描功能（scanProjectsIntoRegistry）：递归目录搜索，支持maxDepth=5、maxDirs=2000、maxProjects=100的限制，跳过symlink和黑名单目录",
+      "symbols": [
+        "scanProjectsIntoRegistry",
+        "firstConfigInDir",
+        "SCAN_IGNORED_DIRS"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-004",
+      "source_path": "src/control-plane/events.js",
+      "summary": "事件日志系统：JSONL格式追加写入，支持200条默认限制(最大1000)，支持newest-first排序",
+      "symbols": [
+        "appendEvent",
+        "readEvents",
+        "eventsPath",
+        "redactLogLine"
+      ],
+      "exports": [
+        "appendEvent",
+        "readEvents",
+        "eventsPath",
+        "redactLogLine"
+      ],
+      "dependencies": [
+        "crypto",
+        "fs",
+        "path"
+      ]
+    },
+    {
+      "id": "E-CP-005",
+      "source_path": "src/control-plane/events.js",
+      "summary": "敏感数据脱敏：基于正则匹配key/value中的secret/token/password/credential/API key模式，递归处理嵌套对象和数组",
+      "symbols": [
+        "redactValue",
+        "shouldRedactKey",
+        "shouldRedactValue",
+        "redactString",
+        "SECRET_KEY_PATTERN",
+        "CAMEL_SECRET_KEY_PATTERN",
+        "SECRET_VALUE_PATTERN"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-006",
+      "source_path": "src/control-plane/inspect.js",
+      "summary": "全局状态观测(inspectTarget)：支持port/pid/task/project/run/conflict六种target类型，返回ownership证据、listeners、conflicts和suggested actions",
+      "symbols": [
+        "buildGlobalStatus",
+        "listGlobalRuns",
+        "listGlobalProcesses",
+        "listGlobalPorts",
+        "listGlobalConflicts",
+        "inspectPort",
+        "inspectTarget",
+        "assertTaskPortsAvailable"
+      ],
+      "exports": [
+        "buildGlobalStatus",
+        "listGlobalRuns",
+        "listGlobalProcesses",
+        "listGlobalPorts",
+        "listGlobalConflicts",
+        "inspectPort",
+        "inspectTarget",
+        "assertTaskPortsAvailable"
+      ],
+      "dependencies": [
+        "adapters/process.js (listPortListeners, normalizePort)",
+        "config.js (loadConfig)",
+        "errors.js (LaunchdeckError)",
+        "runtime.js (listProcesses)",
+        "actions.js (listRegisteredProjects)",
+        "ownership.js (buildPortObservation, inspectOnlyActionsForOwnership, legacyOwnershipFromProof, proveRunOwnership)",
+        "runs.js (observedRun, readRunIndex)",
+        "state.js (controlPlanePaths)"
+      ]
+    },
+    {
+      "id": "E-CP-007",
+      "source_path": "src/control-plane/inspect.js",
+      "summary": "端口冲突检测算法：基于ownership状态(external/unknown/conflict)分类为blocking或warning级别，附带可操作建议",
+      "symbols": [
+        "conflictsFromPorts",
+        "portConflict",
+        "conflictMessage",
+        "conflictTypeForOwnership"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-008",
+      "source_path": "src/control-plane/locks.js",
+      "summary": "文件级分布式锁：基于mkdir/写文件原子性实现，支持TTL(默认30s)、stale检测、owner存活检查、lock takeover",
+      "symbols": [
+        "acquireLock",
+        "withLock",
+        "controlPlanePaths",
+        "createLockRecord",
+        "writeLockFile",
+        "createLockHandle",
+        "readExistingLock",
+        "isStaleCandidate",
+        "isOwnerAlive",
+        "isSameOwner",
+        "removeLockFile"
+      ],
+      "exports": [
+        "acquireLock",
+        "withLock",
+        "controlPlanePaths"
+      ],
+      "dependencies": [
+        "fs/promises",
+        "os",
+        "path"
+      ]
+    },
+    {
+      "id": "E-CP-009",
+      "source_path": "src/control-plane/ownership.js",
+      "summary": "所有权证据链模型：通过PID匹配、cwd/command/env marker/startTime交叉验证、listener端口证据推断出verified-owned/probable-owned/stale-owned/external/unknown五种置信度",
+      "symbols": [
+        "proveRunOwnership",
+        "buildPortObservation",
+        "legacyOwnershipFromProof",
+        "inspectOnlyActionsForOwnership",
+        "OWNERSHIP_CONFIDENCE"
+      ],
+      "exports": [
+        "proveRunOwnership",
+        "buildPortObservation",
+        "legacyOwnershipFromProof",
+        "inspectOnlyActionsForOwnership",
+        "OWNERSHIP_CONFIDENCE"
+      ],
+      "dependencies": [
+        "path",
+        "adapters/process.js (getLiveness, getProcessEvidence, normalizePid)"
+      ]
+    },
+    {
+      "id": "E-CP-010",
+      "source_path": "src/control-plane/ownership.js",
+      "summary": "五种ownership置信度常量：verified-owned(完美匹配), probable-owned(PID证据不可用但process证据吻合), stale-owned(进程已死但记录存在), external(监听者PID与run PID不同), unknown(证据不足)",
+      "symbols": [
+        "OWNERSHIP_CONFIDENCE"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-011",
+      "source_path": "src/control-plane/runs.js",
+      "summary": "Run生命周期管理：startManagedRun(启动+readiness探活)、createRunContext(创建运行上下文)、readRunIndex/updateRunRecord(持久化)、observedRun(观测健康状态)",
+      "symbols": [
+        "startManagedRun",
+        "createRunContext",
+        "projectIdentityForLocalConfig",
+        "readRunIndex",
+        "updateRunRecord",
+        "observedRun",
+        "isActiveRunStatus"
+      ],
+      "exports": [
+        "startManagedRun",
+        "createRunContext",
+        "projectIdentityForLocalConfig",
+        "readRunIndex",
+        "updateRunRecord",
+        "observedRun",
+        "isActiveRunStatus"
+      ],
+      "dependencies": [
+        "crypto",
+        "fs",
+        "path",
+        "errors.js (LaunchdeckError)",
+        "runtime.js (isPidRunning, listProcesses, readState, startManagedTask, writeState)",
+        "state.js (controlPlanePaths)",
+        "locks.js (withLock)"
+      ]
+    },
+    {
+      "id": "E-CP-012",
+      "source_path": "src/control-plane/runs.js",
+      "summary": "Readiness探活机制：对global run进行HTTP health check（5秒超时），或回退到process-alive检测；支持原子写入run index",
+      "symbols": [
+        "resolveReadiness",
+        "readinessForExistingProcess",
+        "waitForHttpReady",
+        "isHttpReady",
+        "atomicWriteJson"
+      ],
+      "exports": [],
+      "dependencies": [
+        "fetch"
+      ]
+    },
+    {
+      "id": "E-CP-013",
+      "source_path": "src/control-plane/state.js",
+      "summary": "注册表持久化层：支持v2和v1(legacy)格式，atomic write + rename保证写入完整性，版本检查和迁移",
+      "symbols": [
+        "controlPlanePaths",
+        "projectControlPlanePaths",
+        "taskControlPlanePaths",
+        "readRegistryState",
+        "writeRegistryState",
+        "updateRegistryState",
+        "normalizeProjectRegistration",
+        "assertAliasAvailable",
+        "unsupportedStateVersionError"
+      ],
+      "exports": [
+        "controlPlanePaths",
+        "projectControlPlanePaths",
+        "taskControlPlanePaths",
+        "readRegistryState",
+        "writeRegistryState",
+        "updateRegistryState",
+        "normalizeProjectRegistration",
+        "assertAliasAvailable",
+        "unsupportedStateVersionError",
+        "REGISTRY_STATE_VERSION"
+      ],
+      "dependencies": [
+        "crypto",
+        "fs",
+        "os",
+        "path",
+        "errors.js (LaunchdeckError)"
+      ]
+    },
+    {
+      "id": "E-CP-014",
+      "source_path": "src/control-plane/state.js",
+      "summary": "文件系统路径规划(controlPlanePaths)：homeDir -> locks/registry/runtime/events/logs子目录结构，支持LAUNCHDECK_HOME环境变量和XDG/Windows默认路径",
+      "symbols": [
+        "controlPlanePaths",
+        "projectControlPlanePaths",
+        "taskControlPlanePaths"
+      ],
+      "exports": [],
+      "dependencies": []
+    },
+    {
+      "id": "E-CP-015",
+      "source_path": "src/global-runtime.js",
+      "summary": "全局运行时Facade层：将所有control-plane子模块/actions/inspect/state导出重新导出为global-runtime API，同时保留独立的legacy端口冲突检测逻辑",
+      "symbols": [
+        "globalRuntimePaths",
+        "readProjectRegistry",
+        "writeProjectRegistry",
+        "addProjectToRegistry",
+        "removeProjectFromRegistry",
+        "listRegisteredProjects",
+        "repairProjectRegistration",
+        "resolveRegisteredProject",
+        "loadRegisteredConfig",
+        "buildGlobalStatus",
+        "listGlobalRuns",
+        "listGlobalProcesses",
+        "listGlobalPorts",
+        "listGlobalConflicts",
+        "scanProjectsIntoRegistry",
+        "inspectPort",
+        "inspectTarget",
+        "assertTaskPortsAvailable"
+      ],
+      "exports": [
+        "globalRuntimePaths",
+        "readProjectRegistry",
+        "writeProjectRegistry",
+        "addProjectToRegistry",
+        "removeProjectFromRegistry",
+        "listRegisteredProjects",
+        "repairProjectRegistration",
+        "resolveRegisteredProject",
+        "loadRegisteredConfig",
+        "buildGlobalStatus",
+        "listGlobalRuns",
+        "listGlobalProcesses",
+        "listGlobalPorts",
+        "listGlobalConflicts",
+        "scanProjectsIntoRegistry",
+        "inspectPort",
+        "inspectTarget",
+        "assertTaskPortsAvailable"
+      ],
+      "dependencies": [
+        "config.js (loadConfig, CONFIG_FILES)",
+        "control-plane/inspect.js (所有inspect视图)",
+        "control-plane/state.js (paths, registry读写)",
+        "control-plane/actions.js (所有action委托)"
+      ]
+    },
+    {
+      "id": "E-CP-016",
+      "source_path": "src/runtime.js",
+      "summary": "本地运行时层：进程生命周期管理(startManagedTask/stopManagedTasks/runTask)、本地状态持久化(runtimePaths/readState/writeState/refreshState)、清理操作(cleanTargets)、日志查看(tailLog)",
+      "symbols": [
+        "runtimePaths",
+        "ensureRuntimeDirs",
+        "resolveTaskCwd",
+        "readState",
+        "writeState",
+        "refreshState",
+        "listProcesses",
+        "startManagedTask",
+        "runTask",
+        "stopManagedTasks",
+        "waitForDeclaredPortsFree",
+        "tailLog",
+        "resolveCleanTargets",
+        "cleanTargets",
+        "assertInsideProject",
+        "isPidRunning"
+      ],
+      "exports": [
+        "runtimePaths",
+        "ensureRuntimeDirs",
+        "resolveTaskCwd",
+        "readState",
+        "writeState",
+        "refreshState",
+        "listProcesses",
+        "startManagedTask",
+        "runTask",
+        "stopManagedTasks",
+        "waitForDeclaredPortsFree",
+        "tailLog",
+        "resolveCleanTargets",
+        "cleanTargets",
+        "assertInsideProject",
+        "isPidRunning"
+      ],
+      "dependencies": [
+        "config.js (loadConfig)",
+        "errors.js (LaunchdeckError)",
+        "adapters/process.js (getLiveness, isPidRunning, listPortListeners, spawnForeground, spawnManaged, stopProcessTreeSync)",
+        "adapters/path.js (assertContainedPath, isSamePath, planCleanTarget, resolveProjectPath)",
+        "control-plane/events.js (appendEvent)",
+        "control-plane/ownership.js (OWNERSHIP_CONFIDENCE, proveRunOwnership)",
+        "control-plane/state.js (controlPlanePaths)"
+      ]
+    },
+    {
+      "id": "E-CP-017",
+      "source_path": "src/runtime.js",
+      "summary": "同步锁机制(acquireLifecycleLockSync/releaseLifecycleLockSync)：与control-plane/locks.js的异步锁并存，用于stop等需要确切持有锁的操作；避免启动独占端口冲突的严格校验(assertVerifiedStopOwnership)",
+      "symbols": [
+        "withLifecycleLocksSync",
+        "acquireLifecycleLocksSync",
+        "acquireLifecycleLockSync",
+        "releaseLifecycleLockSync",
+        "assertVerifiedStopOwnership",
+        "hasTrustedSpawnOwnershipProof",
+        "isTrustedSpawnOwnershipProof",
+        "stopOwnedProcessTreeSync"
+      ],
+      "exports": [],
+      "dependencies": []
+    }
+  ],
+  "architecture_findings": {
+    "module_responsibilities": {
+      "state.js": "注册表持久化引擎：文件路径规划、v1/v2版本兼容读写、atomic write保证一致性",
+      "actions.js": "业务操作层：注册表CRUD、项目扫描发现、生命周期管理(stopManagedRun/restartManagedRun)、状态协调(reconcileManagedRuns)",
+      "runs.js": "运行(execution)生命周期管理：启动、持久化、观测、readiness探活",
+      "locks.js": "分布式锁基础设施：基于文件系统的异步锁(withLock)、TTL、stale takeover",
+      "ownership.js": "所有权证明引擎：多维度证据链交叉验证、置信度评分",
+      "inspect.js": "全局状态观测层：端口检查、进程列表、冲突检测、run状态摘要",
+      "events.js": "事件日志系统：JSONL格式持久化、脱敏、分页/排序读取",
+      "global-runtime.js": "Facade代理层：将control-plane模块统一暴露为全局运行时API",
+      "runtime.js": "本地运行时层：进程spawn/stop/cleanup、本地状态文件管理、同步锁"
+    },
+    "data_flow": {
+      "state_persistence": "双轨制：全局注册表在LAUNCHDECK_HOME/registry/projects.json，本地运行时状态在每个项目的.launchdeck/runtime/state.json",
+      "event_flow": "运行时事件 -> appendEvent -> events.jsonl (JSONL格式追加写入)",
+      "run_index": "全局运行索引在LAUNCHDECK_HOME/runtime/runs.json，作为所有运行的权威数据源",
+      "lock_flow": "异步(withLock)用于控制平面操作，同步(acquireLifecycleLockSync)用于j停止等临界区操作"
+    },
+    "dependency_graph": {
+      "root": [
+        "global-runtime.js"
+      ],
+      "facade_to_control_plane": [
+        "global-runtime.js -> inspect.js",
+        "global-runtime.js -> actions.js",
+        "global-runtime.js -> state.js"
+      ],
+      "control_plane_internal": [
+        "actions.js -> events.js",
+        "actions.js -> locks.js",
+        "actions.js -> runs.js",
+        "actions.js -> state.js",
+        "inspect.js -> ownership.js",
+        "inspect.js -> runs.js",
+        "inspect.js -> actions.js",
+        "inspect.js -> state.js",
+        "runs.js -> locks.js",
+        "runs.js -> state.js",
+        "runs.js -> runtime.js"
+      ],
+      "cross_layer": [
+        "runtime.js -> events.js",
+        "runtime.js -> ownership.js",
+        "runtime.js -> state.js"
+      ]
+    },
+    "ownership_model": {
+      "verified-owned": "run PID与listener PID匹配 + 至少一项process evidence(cwd/command/env/startTime)吻合",
+      "probable-owned": "无PID级联证据但process evidence吻合",
+      "stale-owned": "进程不再存活但run记录存在(ownershipConfidence保留)",
+      "external": "listener PID与run PID不同",
+      "unknown": "证据不足(无listener PID或无process evidence)"
+    },
+    "lock_strategy": {
+      "async_locks": "control-plane/locks.js — withLock(acquireLock)，文件级排他锁，支持TTL和stale takeover",
+      "sync_locks": "runtime.js — acquireLifecycleLockSync，基于同步fs.open('wx')实现",
+      "lock_hierarchy": "registry > project > task三层层级锁"
+    }
+  },
+  "confidence": "high",
+  "acceptance": "pass",
+  "return_event": {
+    "packet_id": "lane-control-plane",
+    "status": "accepted",
+    "acceptance": "pass",
+    "result_handoff_path": ".specify/project-cognition/workbench/worker-results/lane-control-plane.json"
+  }
+}

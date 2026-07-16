@@ -1,0 +1,24 @@
+{
+  "status": "success",
+  "reported_status": "completed",
+  "agent": "019f4639-2516-7a10-9437-759322cc8780",
+  "changed_files": [
+    ".agents/skills/launchdeck-agent/SKILL.md",
+    ".agents/skills/launchdeck-agent/references/intent-routing.md",
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+    ".agents/skills/launchdeck-agent/references/discovery-rules.md",
+    ".agents/skills/launchdeck-agent/references/command-flows.md",
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+    ".agents/skills/launchdeck-agent/references/clean-safety.md",
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+  ],
+  "validation_output": {
+    "file_check": "passed",
+    "cli_help_check": "passed",
+    "safety_scan": "passed",
+    "routing_check": "passed",
+    "eval_coverage": "10 should-trigger, 7 should-not-trigger"
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

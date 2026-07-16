@@ -1,0 +1,50 @@
+{
+  "status": "success",
+  "task_id": "T028",
+  "changed_files": [
+    "src/cli.js",
+    "src/control-plane/events.js",
+    "src/runtime.js",
+    "src/global-runtime.js",
+    ".specify/teams/state/results/executor-t028.json"
+  ],
+  "validation_output": {
+    "node --check src/cli.js": "passed",
+    "node --check src/control-plane/events.js": "passed",
+    "node --check src/runtime.js": "passed",
+    "node --check src/global-runtime.js": "passed",
+    "node --test test/recovery-observability.test.js": "7 tests passed, 0 failed",
+    "node --test test/recovery-observability.test.js test/global-runtime.test.js": "31 tests passed, 0 failed",
+    "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js": "16 tests passed, 0 failed",
+    "process_scan": "No lingering launchdeck/dev-server/ready-http/process-alive/external-server fixture processes found; only the PowerShell scan command matched."
+  },
+  "concerns": [],
+  "recovery_hints": [],
+  "consumer_evidence": [
+    "events --json reads bounded structured event history for a registered project target.",
+    "logs --follow --json emits visible schemaVersion=1 JSON Lines with type=log.line, projectId, task, runId, timestamp, and line.",
+    "logs --follow --json redacts secret-looking output before streaming.",
+    "clean --safe removes configured safe cache paths while preserving running logs, latest failed logs, and failure-linked event evidence.",
+    "status --all active-run next actions retain stable project-id logs/stop targets while stale reconcile next actions preserve alias behavior."
+  ],
+  "must_preserve_evidence": {
+    "MP-012": "JSON envelopes remain single-object for ordinary --json commands; logs --follow --json and events --follow --json use JSON Lines.",
+    "MP-015": "Secret-looking event data and streamed log lines are redacted before persistence/output.",
+    "running_logs": "Safe clean protects active run log paths discovered from local runtime state and global run index.",
+    "failure_evidence": "Safe clean protects failed/stop_failed/stale run log paths, failure-linked event data.logPath values, and failed log filename fallbacks."
+  },
+  "consequence_obligations": {
+    "CA-CP-010": {
+      "status": "satisfied",
+      "evidence": "events command reads append-only JSONL history; malformed event parsing behavior remains in events store tests."
+    },
+    "CA-CP-016": {
+      "status": "satisfied",
+      "evidence": "redactLogLine covers secret-looking streamed log output; event redaction remains applied before persistence."
+    },
+    "CA-CP-019": {
+      "status": "satisfied",
+      "evidence": "ordinary --json command envelopes continue through createSuccessEnvelope/createFailureEnvelope; stream follow output emits JSON Lines only for follow."
+    }
+  }
+}

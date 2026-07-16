@@ -1,0 +1,40 @@
+{
+  "review_id": "B3-JP3-review-2026-07-08-T039",
+  "type": "join_point_review",
+  "decision": "accepted",
+  "spec_verdict": "pass",
+  "quality_verdict": "pass",
+  "findings": [],
+  "controller_checks": [
+    {
+      "check": "JP3 validation rerun",
+      "status": "pass",
+      "evidence": "node --check state/locks/events/global-runtime/cli/output/errors passed; foundational focused tests passed 36/36; global-runtime compatibility passed 11/11."
+    },
+    {
+      "check": "T039 scope discipline",
+      "status": "pass",
+      "evidence": "Repair stayed within src/control-plane/state.js, src/global-runtime.js, and src/cli.js; src/control-plane/actions.js was not introduced."
+    },
+    {
+      "check": "No premature T014 implementation",
+      "status": "pass",
+      "evidence": "No registry lock orchestration, active-project remove refusal, or broader lifecycle action layer was implemented."
+    },
+    {
+      "check": "Core safety contracts preserved",
+      "status": "pass",
+      "evidence": "CLI-only daemonless user-scoped state, no external kill, v2 registry fail-closed behavior, stable JSON envelope, daemonless locks, and event redaction were preserved."
+    }
+  ],
+  "accepted_residual_risks": [
+    "T039 intentionally leaves registry lock orchestration, active-project remove refusal, and src/control-plane/actions.js for later planned tasks.",
+    "package.json check inclusion is intentionally deferred to T011.",
+    "CLI help text still needs to advertise project repair and current project flags in a later command-surface task."
+  ],
+  "follow_up_work": [
+    "Execute T011 to include new foundational modules in npm run check.",
+    "Execute T014 and later lifecycle tasks for registry locks and active-remove refusal."
+  ],
+  "final_assessment": "accepted"
+}

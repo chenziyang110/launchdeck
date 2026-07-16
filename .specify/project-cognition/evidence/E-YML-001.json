@@ -1,0 +1,31 @@
+{
+  "id": "E-YML-001",
+  "source_path": ".launchdeck.yml",
+  "summary": "Default project configuration for launchdeck itself",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-YML-001",
+    "source_path": ".launchdeck.yml",
+    "summary": "Default project configuration for launchdeck itself",
+    "symbols": [
+      "version",
+      "project.name",
+      "tasks.setup",
+      "tasks.test",
+      "tasks.lint",
+      "clean.safe",
+      "clean.risky"
+    ],
+    "exports": [],
+    "dependencies": [],
+    "notes": [
+      "Config version 1",
+      "3 tasks defined: setup (npm install, medium risk), test (npm test), lint (npm run check)",
+      "Safe clean targets: .launchdeck/logs, .launchdeck/runtime",
+      "Risky clean target: node_modules"
+    ]
+  }
+}

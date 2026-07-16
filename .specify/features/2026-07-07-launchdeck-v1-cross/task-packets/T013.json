@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T013",
+  "story": "US2",
+  "description": "Implement runtime state v1, liveness refresh, logs, stop verification, stale/unknown/stop_failed states.",
+  "agent": "executor",
+  "depends_on": [
+    "T010",
+    "T012"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "contracts/runtime-state-v1.md",
+    "data-model.md#runtimestate",
+    "src/runtime.js"
+  ],
+  "write_scope": [
+    "src/runtime.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "src/runtime.js (modified)"
+  ],
+  "anti_goals": [
+    "Do not delete stale records during inspection.",
+    "Do not swallow invalid runtime state."
+  ],
+  "does_not_remove": [
+    "runtime state/log recovery"
+  ],
+  "capability_operations": [
+    "implements managed runtime"
+  ],
+  "acceptance_criteria": [
+    "Runtime-state tests pass and records include required v1 fields."
+  ],
+  "verify_commands": [
+    "node --test test/runtime-state.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-002",
+    "CA-005",
+    "CA-013",
+    "CA-014"
+  ],
+  "mp_ids": [
+    "MP-009",
+    "MP-010"
+  ],
+  "consumer_surfaces": [
+    ".launchdeck/runtime/state.json",
+    ".launchdeck/logs/"
+  ],
+  "required_evidence": [
+    "runtime_state_contract_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

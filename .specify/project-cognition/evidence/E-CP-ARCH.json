@@ -1,0 +1,44 @@
+{
+  "id": "E-CP-ARCH",
+  "source_path": "src/control-plane/",
+  "path_kind": "source",
+  "summary": "Control plane architecture - 7 submodules with global and local runtime layers",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "modules": {
+      "actions.js": "Registry CRUD, lifecycle operations, project scanning, reconcile",
+      "events.js": "JSONL event log with redaction, pagination, streaming",
+      "inspect.js": "Unified inspection for port/pid/task/project/run/conflict",
+      "locks.js": "File-based distributed async locks with TTL and stale takeover",
+      "ownership.js": "5-level ownership confidence model (verified/probable/stale/external/unknown)",
+      "runs.js": "Run lifecycle: start, persist, observe, readiness probe",
+      "state.js": "Registry persistence: v1/v2 format, atomic write, path planning"
+    },
+    "runtime_layers": {
+      "global-runtime.js": "Facade proxy over control-plane modules for cross-project visibility",
+      "runtime.js": "Project-local runtime: process spawn/stop/cleanup, local state, sync locks"
+    },
+    "data_stores": {
+      "global_registry": "LAUNCHDECK_HOME/registry/projects.json",
+      "run_index": "LAUNCHDECK_HOME/runtime/runs.json",
+      "event_log": "LAUNCHDECK_HOME/events/events.jsonl",
+      "local_state": ".launchdeck/runtime/state.json",
+      "locks": "LAUNCHDECK_HOME/locks/*.lock"
+    },
+    "ownership_model": {
+      "verified-owned": "PID match + process evidence (cwd/command/env/startTime)",
+      "probable-owned": "No PID cascade but process evidence matches",
+      "stale-owned": "Process dead but run record exists",
+      "external": "Listener PID differs from run PID",
+      "unknown": "Insufficient evidence"
+    },
+    "lock_strategy": {
+      "async": "control-plane/locks.js - withLock, file-based exclusive, TTL 30s",
+      "sync": "runtime.js - acquireLifecycleLockSync, fs.open('wx')",
+      "hierarchy": "registry > project > task (3-level)"
+    }
+  }
+}

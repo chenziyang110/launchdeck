@@ -1,0 +1,52 @@
+{
+  "taskId": "T020",
+  "reviewId": "T020-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "src/cli.js",
+    "src/global-runtime.js",
+    "src/control-plane/inspect.js"
+  ],
+  "validation": [
+    {
+      "command": "node --check src/cli.js; node --check src/global-runtime.js; node --check src/control-plane/inspect.js; node --test test/control-plane-ownership.test.js; node --test test/inspect-cli.test.js",
+      "result": "pass",
+      "summary": "Syntax checks passed; ownership tests passed 4/4; inspect CLI tests passed 6/6."
+    },
+    {
+      "command": "node --test test/global-runtime.test.js",
+      "result": "pass",
+      "summary": "24 tests passed, 0 failed; duration_ms 61422.6699."
+    },
+    {
+      "command": "node --test test/inspect-cli.test.js test/global-runtime.test.js",
+      "result": "pass",
+      "summary": "30 tests passed, 0 failed; duration_ms 64583.13."
+    },
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Repository syntax check completed successfully."
+    }
+  ],
+  "controllerChecks": [
+    "launchdeck inspect dispatch is wired through the CLI and global-runtime facade.",
+    "inspect-port compatibility is preserved alongside unified inspect.",
+    "External and unknown listeners remain inspect-only; no external kill or stop action is introduced.",
+    "JSON envelope compatibility and next-action surfaces remain covered by focused tests.",
+    "A stale test runtime lock from a prior timed-out run was removed only after confirming its recorded PID no longer existed; subsequent serial and combined validation passed."
+  ],
+  "acceptedResidualRisks": [
+    "Validation is from this Windows workspace; macOS and Linux smoke evidence remains a later release-gate task.",
+    "The stale-lock cleanup was test-runtime recovery only and does not change product behavior."
+  ],
+  "followUpWork": [
+    "T021 join US2 validation and ledger update.",
+    "T022 begin owned stop, force-stop, and restart tests after US2 join acceptance."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

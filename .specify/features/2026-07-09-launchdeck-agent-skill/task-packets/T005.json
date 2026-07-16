@@ -1,0 +1,84 @@
+{
+  "task_id": "T005",
+  "id": "T005",
+  "title": "Create recovery-playbooks reference",
+  "agent": "executor",
+  "depends_on": [
+    "T001"
+  ],
+  "parallel_safe": true,
+  "objective": "Create recovery guidance for occupied ports, stale state, ownership refusal, duplicate-start risk, and stop failure.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    "README.md",
+    "src/runtime.js",
+    "test/global-runtime.test.js"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    ".env",
+    "credential files",
+    "raw kill commands"
+  ],
+  "context_navigation": {
+    "recovery_requirements": "spec.md#Secondary-Scenario---Port-Conflict-Is-Inspect-Only-Without-Ownership",
+    "ownership_facts": "src/runtime.js and README.md#Safety-model",
+    "stop_conditions": "plan-contract.json#ca_obligations",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not provide direct OS process-kill instructions for unknown or external owners."
+  ],
+  "does_not_remove": [
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "CA-AS-001",
+    "CA-AS-003",
+    "CA-AS-004",
+    "CA-AS-010"
+  ],
+  "capability_operations": [
+    "implements port conflict recovery",
+    "implements stale state recovery",
+    "implements ownership refusal guidance",
+    "implements stop failure recovery"
+  ],
+  "consumer_surfaces": [
+    "recovery reference loaded by SKILL.md"
+  ],
+  "required_evidence": [
+    "ownership-classification evidence",
+    "recovery path evidence"
+  ],
+  "acceptance_criteria": [
+    "Classifies same task, other Launchdeck task, external known process, unknown process, and stale record.",
+    "Routes stale state through launchdeck reconcile.",
+    "Unknown or external occupants produce safe options, not automatic stop or kill.",
+    "Stop failure uses inspect, logs, and events evidence."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\references\\recovery-playbooks.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\references\\recovery-playbooks.md -Pattern 'same task|other Launchdeck|external|unknown|stale|reconcile|inspect|ownership|stop failed'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/references/recovery-playbooks.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

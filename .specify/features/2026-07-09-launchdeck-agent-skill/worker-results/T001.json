@@ -1,0 +1,60 @@
+{
+  "status": "success",
+  "reported_status": "success",
+  "task_id": "T001",
+  "changed_files": [
+    ".agents/skills/launchdeck-agent/SKILL.md"
+  ],
+  "validation_evidence": [
+    {
+      "command": "SKILL frontmatter and bilingual trigger check",
+      "result": "pass",
+      "status": "passed",
+      "passed": true,
+      "evidence": "SKILL frontmatter and bilingual trigger check"
+    },
+    {
+      "command": "reference routing check",
+      "result": "pass",
+      "status": "passed",
+      "passed": true,
+      "evidence": "reference routing check"
+    }
+  ],
+  "blockers": [],
+  "concerns": [],
+  "consumer_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": ".agents/skills/launchdeck-agent/SKILL.md",
+      "producer": "natural local lifecycle prompt",
+      "transformer": "launchdeck-agent router and references",
+      "consumer": "project-local skill loader and coding agent",
+      "validation": "Root frontmatter description and body route natural lifecycle intent into Launchdeck references.",
+      "boundary_or_executor": "Launchdeck CLI remains execution authority"
+    }
+  ],
+  "validation_output": {
+    "result": "pass",
+    "acceptance_criteria_met": true,
+    "status": "passed",
+    "passed": true
+  },
+  "validation": {
+    "status": "passed",
+    "result": "pass",
+    "passed": true
+  },
+  "validation_results": [
+    {
+      "name": "SKILL frontmatter and bilingual trigger check",
+      "status": "passed",
+      "evidence": "SKILL frontmatter and bilingual trigger check"
+    },
+    {
+      "name": "reference routing check",
+      "status": "passed",
+      "evidence": "reference routing check"
+    }
+  ]
+}

@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "rows": [
+    {
+      "path": "src/cli.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CLI-001"
+      ]
+    },
+    {
+      "path": "src/config.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CFG-001"
+      ]
+    },
+    {
+      "path": "src/errors.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-ERR-001"
+      ]
+    },
+    {
+      "path": "src/output.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-OUT-001"
+      ]
+    },
+    {
+      "path": "src/agent-installer.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CS-001"
+      ]
+    },
+    {
+      "path": "src/runtime.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-016"
+      ]
+    },
+    {
+      "path": "src/global-runtime.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-015"
+      ]
+    },
+    {
+      "path": "src/control-plane/actions.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-001"
+      ]
+    },
+    {
+      "path": "src/control-plane/events.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-004"
+      ]
+    },
+    {
+      "path": "src/control-plane/inspect.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-006"
+      ]
+    },
+    {
+      "path": "src/control-plane/locks.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-008"
+      ]
+    },
+    {
+      "path": "src/control-plane/ownership.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-009"
+      ]
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-011"
+      ]
+    },
+    {
+      "path": "src/control-plane/state.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CP-013"
+      ]
+    },
+    {
+      "path": "src/adapters/path.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CS-002"
+      ]
+    },
+    {
+      "path": "src/adapters/process.js",
+      "outcome": "deep_read",
+      "tier": "P0",
+      "criticality": "critical",
+      "evidence_ids": [
+        "E-CS-003"
+      ]
+    },
+    {
+      "path": "package.json",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-PKG-001"
+      ]
+    },
+    {
+      "path": ".launchdeck.yml",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-YML-001"
+      ]
+    },
+    {
+      "path": "schema/launchdeck.schema.json",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-SCH-001"
+      ]
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-CS-005"
+      ]
+    },
+    {
+      "path": "scripts/smoke-lifecycle.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-CS-004"
+      ]
+    },
+    {
+      "path": "test/agent-installer.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-001"
+      ]
+    },
+    {
+      "path": "test/clean-control-plane.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-002"
+      ]
+    },
+    {
+      "path": "test/clean-safety.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-003"
+      ]
+    },
+    {
+      "path": "test/cli-contract.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-004"
+      ]
+    },
+    {
+      "path": "test/cli-control-plane-contract.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-005"
+      ]
+    },
+    {
+      "path": "test/cli.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-006"
+      ]
+    },
+    {
+      "path": "test/config-contract.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-007"
+      ]
+    },
+    {
+      "path": "test/config.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-008"
+      ]
+    },
+    {
+      "path": "test/control-plane-events.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-009"
+      ]
+    },
+    {
+      "path": "test/control-plane-locks.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-010"
+      ]
+    },
+    {
+      "path": "test/control-plane-ownership.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-011"
+      ]
+    },
+    {
+      "path": "test/control-plane-state.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-012"
+      ]
+    },
+    {
+      "path": "test/global-runtime.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-013"
+      ]
+    },
+    {
+      "path": "test/helpers/cli-fixture.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-014"
+      ]
+    },
+    {
+      "path": "test/helpers/control-plane-fixture.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-015"
+      ]
+    },
+    {
+      "path": "test/inspect-cli.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-016"
+      ]
+    },
+    {
+      "path": "test/lifecycle-ownership.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-017"
+      ]
+    },
+    {
+      "path": "test/managed-cli.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-018"
+      ]
+    },
+    {
+      "path": "test/recovery-observability.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-019"
+      ]
+    },
+    {
+      "path": "test/runtime-state.test.js",
+      "outcome": "deep_read",
+      "tier": "P1",
+      "criticality": "important",
+      "evidence_ids": [
+        "E-T-020"
+      ]
+    }
+  ]
+}

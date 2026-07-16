@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "feature_dir": ".specify/features/2026-07-09-launchdeck-agent-skill",
+  "status": "ready-for-implement",
+  "execution_model": "adaptive",
+  "execution_mode": "light",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": false,
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Create root launchdeck-agent SKILL.md",
+      "story": "setup",
+      "agent": "executor",
+      "depends_on": [],
+      "parallel_safe": false,
+      "packet": "task-packets/T001.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/SKILL.md"
+      ]
+    },
+    {
+      "id": "T002",
+      "title": "Create intent-routing reference",
+      "story": "US1",
+      "agent": "executor",
+      "depends_on": [
+        "T001"
+      ],
+      "parallel_safe": true,
+      "packet": "task-packets/T002.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/intent-routing.md"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "Create adoption and discovery references",
+      "story": "US1",
+      "agent": "executor",
+      "depends_on": [
+        "T001"
+      ],
+      "parallel_safe": true,
+      "packet": "task-packets/T003.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+        ".agents/skills/launchdeck-agent/references/discovery-rules.md"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Create command-flows reference",
+      "story": "US2",
+      "agent": "executor",
+      "depends_on": [
+        "T001"
+      ],
+      "parallel_safe": true,
+      "packet": "task-packets/T004.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/command-flows.md"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Create recovery-playbooks reference",
+      "story": "US3",
+      "agent": "executor",
+      "depends_on": [
+        "T001"
+      ],
+      "parallel_safe": true,
+      "packet": "task-packets/T005.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/recovery-playbooks.md"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Create clean-safety reference",
+      "story": "US4",
+      "agent": "executor",
+      "depends_on": [
+        "T001"
+      ],
+      "parallel_safe": true,
+      "packet": "task-packets/T006.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/clean-safety.md"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "Create eval-prompts reference",
+      "story": "US5",
+      "agent": "test-engineer",
+      "depends_on": [
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "parallel_safe": false,
+      "packet": "task-packets/T007.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Integrate and validate skill package",
+      "story": "integration",
+      "agent": "quality-reviewer",
+      "depends_on": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007"
+      ],
+      "parallel_safe": false,
+      "packet": "task-packets/T008.json",
+      "write_scope": [
+        ".agents/skills/launchdeck-agent/SKILL.md",
+        ".agents/skills/launchdeck-agent/references/*.md"
+      ]
+    }
+  ],
+  "parallel_batches": [
+    {
+      "id": "PB-2.1",
+      "tasks": [
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "join_point": "JP-2.1",
+      "write_set_conflicts": false
+    }
+  ],
+  "guardrails": [
+    "G-BOUNDARY",
+    "G-NO-RUNTIME",
+    "G-LAUNCHDECK-AUTHORITY",
+    "G-OBSERVE-FIRST",
+    "G-OWNERSHIP",
+    "G-UNKNOWN-INSPECT",
+    "G-CLEAN-SPLIT",
+    "G-COMPACT",
+    "G-PROGRESSIVE",
+    "G-NO-SCANNER"
+  ],
+  "next_command": "/sp.implement"
+}

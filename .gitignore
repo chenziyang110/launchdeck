@@ -1,0 +1,13 @@
+node_modules/
+.tmp/
+**/.launchdeck/logs/
+**/.launchdeck/runtime/
+npm-debug.log*
+*.tgz
+coverage/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

@@ -1,0 +1,29 @@
+{
+  "id": "E-T-009",
+  "source_path": "test/control-plane-events.test.js",
+  "summary": "事件系统测试 — appendEvent、readEvents、secret redaction、corrupt JSONL",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-009",
+    "source_path": "test/control-plane-events.test.js",
+    "summary": "事件系统测试 — appendEvent、readEvents、secret redaction、corrupt JSONL",
+    "test_groups": [
+      "appendEvent 写入带有生成的身份和生命周期字段的 JSON Lines 事件",
+      "appendEvent 在追加的记录中保留调用者 transactionId",
+      "appendEvent 在持久化前修正秘密外观的 env 和 config 字段",
+      "readEvents 在 JSONL 文件包含损坏行时返回有效事件和解析诊断",
+      "appendEvent 保留 next actions"
+    ],
+    "key_assertions": [
+      "事件包含 eventId (evt_ 前缀), transactionId (tx_ 前缀), 有效 ISO 时间戳",
+      "两次调用相同 transactionId 生成两条相同 transactionId 的记录",
+      "API_TOKEN, databasePassword, clientSecret 被替换为 [REDACTED]",
+      "NORMAL_SETTING 保持可见",
+      "损坏 JSONL 行 (line 2) 返回 warnings，有效行仍被解析",
+      "next actions 数组被完整保留"
+    ]
+  }
+}

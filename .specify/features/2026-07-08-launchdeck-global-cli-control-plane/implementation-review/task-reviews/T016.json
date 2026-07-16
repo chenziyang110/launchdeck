@@ -1,0 +1,28 @@
+{
+  "task_ids": [
+    "T016"
+  ],
+  "verdict": "accepted",
+  "review_id": "T016-review-final",
+  "review_agent": "019f422f-7993-7840-bc77-55881e3a8805",
+  "accepted_at": "2026-07-08",
+  "changed_files": [
+    "src/control-plane/inspect.js",
+    "src/global-runtime.js",
+    "src/cli.js",
+    "test/global-runtime.test.js"
+  ],
+  "validation": [
+    "node --check src/control-plane/inspect.js passed",
+    "node --check src/global-runtime.js passed",
+    "node --check src/cli.js passed",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js passed 36/36"
+  ],
+  "findings": [],
+  "accepted_residual_risks": [
+    "src/global-runtime.js still contains dead pre-delegation private helpers. Current public exports delegate to src/control-plane/inspect.js before reaching them, but future cleanup should remove the stale helper block to prevent accidental reuse."
+  ],
+  "follow_up_work": [
+    "Consider removing the old private observation helpers from src/global-runtime.js during a cleanup task after US1 join validation."
+  ]
+}

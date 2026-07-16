@@ -1,0 +1,75 @@
+{
+  "status": "success_with_expected_residuals",
+  "task_id": "T027",
+  "changed_files": [
+    "src/control-plane/runs.js",
+    "src/control-plane/actions.js",
+    "src/control-plane/inspect.js",
+    "src/cli.js",
+    ".specify/teams/state/results/executor-t027.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/runs.js": "passed",
+    "node --check src/control-plane/actions.js": "passed",
+    "node --check src/control-plane/inspect.js": "passed",
+    "node --check src/cli.js": "passed",
+    "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js": "exit 1; 16 tests run, 12 passed, 4 failed. All lifecycle ownership tests passed. T027 stale/reconcile tests passed: status --all marks disappeared owned run as stale; reconcile marks stale runs without killing a new external listener. Remaining failures are events command unknown_command, logs --follow JSONL unsupported/exits, clean --safe retention removing protected log evidence."
+  },
+  "concerns": [
+    {
+      "classification": "expected_residual",
+      "owner": "T028",
+      "summary": "events --json remains unimplemented and fails with unknown_command."
+    },
+    {
+      "classification": "expected_residual",
+      "owner": "T028",
+      "summary": "logs --follow --json remains unimplemented and exits before emitting JSON Lines, including the redaction follow case."
+    },
+    {
+      "classification": "expected_residual",
+      "owner": "T031",
+      "summary": "clean --safe retention still removes or fails to preserve recovery evidence; clean retention is outside T027."
+    },
+    {
+      "classification": "environment_note",
+      "owner": "executor",
+      "summary": "git status reports the scoped source files as untracked under the broader parent git root, so git diff did not show tracked hunks."
+    }
+  ],
+  "recovery_hints": [
+    "T028 should add the events command and logs --follow JSONL streaming/redaction behavior without changing T027 reconcile semantics.",
+    "T031 should implement safe-clean retention for running logs, latest failed logs, and failure-linked events.",
+    "Do not use reconcile as a process kill path; stale repair should remain state/event-only."
+  ],
+  "consumer_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck status --all --json",
+      "producer": "src/control-plane/runs.js observedRun",
+      "transformer": "src/control-plane/inspect.js listGlobalRuns",
+      "consumer": "src/cli.js statusCommand",
+      "boundary_or_executor": "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js",
+      "validation": "status --all marks a disappeared owned run as stale with reconcile and inspect next actions"
+    },
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck reconcile <project:task> --json",
+      "producer": "src/control-plane/actions.js reconcileManagedRuns",
+      "transformer": "src/control-plane/runs.js updateRunRecord",
+      "consumer": "src/cli.js reconcileCommand",
+      "boundary_or_executor": "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js",
+      "validation": "reconcile marks stale runs and leaves a new external listener on the same port running"
+    }
+  ],
+  "must_preserve_evidence": {
+    "MP-007": "Reconcile remains daemonless and CLI-only; no process service or external kill path was added.",
+    "MP-009": "Stop/restart ownership gates are unchanged and lifecycle ownership tests pass.",
+    "MP-012": "Stale run evidence remains inspectable; stale records are updated in state and events rather than silently deleted."
+  },
+  "consequence_obligations": {
+    "CA-CP-009": "Readiness remains distinct from liveness; status derives stale from dead owned PID while reconcile explicitly persists stale repair.",
+    "CA-CP-011": "Inspect/status continue to aggregate registry, run index, local state, and OS liveness evidence with safe next actions.",
+    "CA-CP-017": "Reconcile does not kill external or unknown listeners and preserves recovery evidence through run state and run.stale events."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "E-T-017",
+  "source_path": "test/lifecycle-ownership.test.js",
+  "summary": "生命周期所有权测试 — stop 验证、probable/unknown 所有权、force-stop、restart、stop_failed",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-017",
+    "source_path": "test/lifecycle-ownership.test.js",
+    "summary": "生命周期所有权测试 — stop 验证、probable/unknown 所有权、force-stop、restart、stop_failed",
+    "test_groups": [
+      "stop --json 停止已验证拥有的运行并记录停止证据",
+      "stop --json 拒绝可能拥有的运行而不停止进程",
+      "stop --json 拒绝未知所有权而不停止进程",
+      "stop --json 拒绝匹配的 PID 和监听器但没有可信衍生证据",
+      "stop --json 拒绝外部进程而不停止外部监听器",
+      "force-stop --json 保留已验证所有权门禁",
+      "restart --json 在单个事务中停止、等待端口释放并启动新运行",
+      "restart --json 当停止任务保持其端口占用时记录 port_release_timeout",
+      "stop --json 当终止未完成时保留 stop_failed 证据"
+    ],
+    "key_assertions": [
+      "已验证拥有 run 停止成功，run index 状态变 stopped，端口释放",
+      "probable-owned 返回 ownership_not_verified，端口仍连接",
+      "unknown 返回 unknown_process_owner",
+      "没有可信衍生证据但 pid 匹配返回 unknown_process_owner",
+      "外部进程返回 external_process",
+      "force-stop 仍验证所有权 (external_process)",
+      "restart 返回 stoppedRun + startedRun + 共享 transactionId",
+      "重启计数增加 (ready-start-count.txt)",
+      "port_release_timeout 返回 status=stop_failed, 记录 restart.failed 事件",
+      "stop_failed 保留 run index 状态 stop_failed, 记录 stop.failed 事件"
+    ]
+  }
+}

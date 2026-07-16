@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "changed_files": [
+    "src/control-plane/actions.js",
+    "src/cli.js",
+    ".specify/teams/state/results/executor-t024-repair.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/actions.js": "passed",
+    "node --check src/cli.js": "passed",
+    "node --check src/output.js": "passed",
+    "node --check src/errors.js": "passed",
+    "node --test test/lifecycle-ownership.test.js test/cli-control-plane-contract.test.js": "passed: 16 tests, 16 passed",
+    "node --test test/managed-cli.test.js": "passed: 12 tests, 12 passed",
+    "npm run check": "passed"
+  },
+  "fallback_removed": true,
+  "direct_action_layer_routing": true,
+  "notes": [
+    "Defined withTaskLock in src/control-plane/actions.js using the task-${projectId}-${taskName} lock naming used by the existing run lifecycle lock path.",
+    "Global stop, force-stop, and restart in src/cli.js now call stopManagedRun or restartManagedRun directly and allow action-layer errors to surface through normal CLI error handling.",
+    "Removed the CLI ReferenceError fallback path and fallback-only helpers from src/cli.js.",
+    "Preserved restart timeout state/event behavior inside restartManagedRun so future clients share the same action-layer control-plane behavior."
+  ],
+  "concerns": [],
+  "recovery_hints": [
+    "If restart timeout behavior regresses, inspect stopOwnedRunForRestart and markRestartPortReleaseTimeout in src/control-plane/actions.js rather than adding CLI fallbacks.",
+    "If lock contention appears, compare lock files under the control-plane locks directory for project-${projectId} and task-${projectId}-${taskName} names."
+  ]
+}

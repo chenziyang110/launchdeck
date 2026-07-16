@@ -1,0 +1,35 @@
+{
+  "status": "done_with_expected_red",
+  "task_id": "T019",
+  "changed_files": [
+    "src/control-plane/ownership.js",
+    "src/adapters/process.js",
+    "src/control-plane/inspect.js",
+    ".specify/teams/state/results/executor-t019.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/ownership.js": "exit 0",
+    "node --check src/adapters/process.js": "exit 0",
+    "node --check src/control-plane/inspect.js": "exit 0",
+    "node --test test/inspect-cli.test.js test/global-runtime.test.js": "exit 1; 30 tests, 26 pass, 4 fail. Passing coverage includes inspect-port compatibility and all 24 global-runtime tests. The 4 failures are unified launchdeck inspect tests returning unknown_command because src/cli.js dispatch is intentionally not wired in T019."
+  },
+  "expected_red": [
+    {
+      "file": "test/inspect-cli.test.js",
+      "tests": [
+        "inspect port:<port> explains external conflict as inspect-only with safe and blocked actions",
+        "inspect pid:<pid> reports an external listener as inspect-only",
+        "inspect task:<alias:task> reports a Launchdeck-owned managed run with evidence and actions",
+        "inspect pid:<pid> reports a Launchdeck-owned managed run when pid matches run evidence"
+      ],
+      "reason": "T020 owns wiring the unified launchdeck inspect command in src/cli.js; T019 write scope explicitly forbids modifying src/cli.js."
+    }
+  ],
+  "concerns": [
+    "A timed-out intermediate test run left a stale temp runtime lock and one fixture node process; both were cleaned up before final verification."
+  ],
+  "recovery_hints": [
+    "T020 should import and dispatch inspectTarget from src/control-plane/inspect.js for launchdeck inspect <target>.",
+    "Keep stop/restart safety gated on verified-owned ownership proof; unknown and external proof states must remain inspect-only."
+  ]
+}

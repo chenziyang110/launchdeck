@@ -1,0 +1,54 @@
+{
+  "status": "DONE",
+  "task_id": "T008",
+  "changed_files": [
+    "src/control-plane/locks.js"
+  ],
+  "validation_evidence": [
+    "node --check src/control-plane/locks.js -> exit 0",
+    "node --test test/control-plane-locks.test.js -> exit 0; 6 pass, 0 fail"
+  ],
+  "red_state_evidence": [
+    "node --test test/control-plane-locks.test.js -> exit 1 before implementation; ERR_MODULE_NOT_FOUND for src/control-plane/locks.js"
+  ],
+  "green_state_evidence": [
+    "control-plane locks test passed: metadata, bounded busy refusal, live-owner expired refusal, stale-owner takeover, release cleanup on success, release cleanup on throw"
+  ],
+  "blockers": [],
+  "concerns": [],
+  "changed_paths": [
+    "F:/github/launchdeck/src/control-plane/locks.js"
+  ],
+  "behavior_surfaces": [
+    "daemonless control-plane lock acquisition and release API",
+    "LAUNCHDECK_HOME/locks/<lockName>.lock file-backed coordination",
+    "structured lock_busy errors with owner metadata and next actions"
+  ],
+  "state_contracts": [
+    "LockRecord version 1 metadata: lockName, ownerPid, ownerCommand, ownerCwd, transactionId, createdAt, expiresAt",
+    "exclusive lock files are created with atomic wx semantics",
+    "stale takeover requires expired lock metadata and absent owner process",
+    "locks are released after critical sections and are not held for managed child process lifetime"
+  ],
+  "verification": {
+    "syntax": {
+      "command": "node --check src/control-plane/locks.js",
+      "result": "passed"
+    },
+    "focused_tests": {
+      "command": "node --test test/control-plane-locks.test.js",
+      "result": "passed",
+      "tests": 6,
+      "failed": 0
+    },
+    "leftover_scan": {
+      "command": "rg \"console\\.log|debugger|TODO|FIXME\" src/control-plane/locks.js",
+      "result": "no matches"
+    }
+  },
+  "confidence_notes": [
+    "Implementation stayed within source write scope plus required result file.",
+    "No daemon, service, package, test, CLI, state, events, output/errors, docs, or feature workflow artifacts were edited.",
+    "Cross-platform semantics rely on Node standard fs exclusive creation and process.kill(pid, 0) liveness probing with EPERM treated as alive."
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "status": "success",
+  "task_id": "T033",
+  "changed_files": [
+    "examples/demo-api/.launchdeck.yml",
+    "examples/demo-api/package.json",
+    "examples/demo-api/scripts/server.js",
+    "examples/demo-api/README.md",
+    ".specify/teams/state/results/executor-t033.json"
+  ],
+  "validation_output": {
+    "node --check examples/demo-api/scripts/server.js": {
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "node src/cli.js project add examples/demo-api --alias demo --json": {
+      "status": 0,
+      "stdout": "{\n  \"ok\": true,\n  \"schemaVersion\": 1,\n  \"command\": \"project\",\n  \"status\": \"ok\",\n  \"data\": {\n    \"created\": true,\n    \"project\": {\n      \"projectId\": \"54c3a1b99bf4\",\n      \"id\": \"54c3a1b99bf4\",\n      \"alias\": \"demo\",\n      \"name\": \"launchdeck-demo-api\",\n      \"key\": \"f:\\\\github\\\\launchdeck\\\\examples\\\\demo-api\",\n      \"projectRoot\": \"F:\\\\github\\\\launchdeck\\\\examples\\\\demo-api\",\n      \"configPath\": \"F:\\\\github\\\\launchdeck\\\\examples\\\\demo-api\\\\.launchdeck.yml\",\n      \"status\": \"active\"\n    }\n  },\n  \"next\": [],\n  \"created\": true\n}",
+      "stderr": "",
+      "environment": "Ran with isolated LAUNCHDECK_HOME under the OS temp directory; the temp registry was removed after the command."
+    },
+    "debug_leftover_scan": {
+      "command": "rg -n \"node -e|TODO|FIXME|console\\.debug|debugger\" examples\\demo-api",
+      "status": 1,
+      "interpretation": "No matches in demo files."
+    },
+    "leader_demo_smoke": {
+      "status": 0,
+      "environment": "Isolated LAUNCHDECK_HOME under OS temp directory; port 8888 was free; generated examples/demo-api/scratch was removed after smoke.",
+      "summary": {
+        "project_add": true,
+        "start": true,
+        "duplicate_start_spawned": false,
+        "inspect": true,
+        "logs": true,
+        "events": true,
+        "stop": true,
+        "clean_safe": true
+      }
+    },
+    "leader_residual_scan": {
+      "status": 0,
+      "summary": "No listener remained on port 8888, no demo server process remained, and examples/demo-api/scratch was absent after cleanup."
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "If port 8888 is occupied during manual smoke, run the server directly with `PORT=8890 node scripts/server.js` or adjust the demo config port consistently before retrying.",
+    "Use an isolated LAUNCHDECK_HOME for release smoke to avoid changing a developer's normal global registry."
+  ],
+  "consumer_evidence": {
+    "real_entrypoint_evidence": [
+      "The required real CLI entrypoint `node src/cli.js project add examples/demo-api --alias demo --json` loaded the demo config and registered alias `demo` successfully.",
+      "The demo config uses `node scripts/server.js --port 8888` as the managed task command; no inline long-running `node -e` command is used."
+    ],
+    "demo_evidence": [
+      "README documents project add, start, existing-run duplicate behavior, status/ps/ports/conflicts, inspect, logs/events, restart, stop, stale recovery, and safe clean.",
+      "The checked-in server exposes `/health`, `/events`, and `/_demo/exit` for readiness, observability, and stale recovery demonstrations.",
+      "The server writes run evidence separately from `scratch/clean-safe`, allowing `clean --safe` to remove a generated clean target without deleting run evidence or logs."
+    ]
+  },
+  "must_preserve_evidence": [
+    {
+      "id": "MP-016",
+      "status": "preserved",
+      "evidence": "Official demo project exists under examples/demo-api and README covers duplicate start/existing-run behavior, port ownership inspection, unified inspect, restart/stop, stale recovery, logs/events, and safe clean."
+    }
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-020",
+      "claim": "Release claims require runnable demo and docs.",
+      "status": "satisfied_for_t033",
+      "evidence": "Demo files are checked in, use normal CLI commands, use fixture script server.js, and passed syntax plus project registration verification.",
+      "stop_and_reopen_condition": "Reopen if release smoke cannot run the examples/demo-api project through the documented CLI path."
+    }
+  ],
+  "notes": [
+    "No production code, tests, root package files, tasks.md, tracker, reviews, or ledger files were edited.",
+    "Worker verification did not start the server. Leader verification later ran a full isolated add/start/duplicate/inspect/logs/events/stop/clean smoke and cleaned generated state afterward."
+  ]
+}

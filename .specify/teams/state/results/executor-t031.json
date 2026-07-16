@@ -1,0 +1,71 @@
+{
+  "status": "success",
+  "task_id": "T031",
+  "summary": "Clean control-plane safety behavior was already implemented and validated. The worker added local Launchdeck-spawn ownership evidence for direct runtime starts; leader repair then aligned global trusted-spawn run IDs and restored Windows stop to non-forced SIGTERM semantics so lifecycle ownership and stop_failed evidence remain intact.",
+  "changed_files": [
+    "src/runtime.js",
+    "src/control-plane/runs.js",
+    ".specify/teams/state/results/executor-t031.json"
+  ],
+  "validation_output": {
+    "node --check src/runtime.js": "exit 0",
+    "node --check src/cli.js": "exit 0",
+    "node --check src/control-plane/actions.js": "exit 0",
+    "node --check src/control-plane/runs.js": "exit 0",
+    "node --check src/control-plane/inspect.js": "exit 0",
+    "node --test test/clean-control-plane.test.js test/runtime-state.test.js": "exit 0; tests 12; pass 12; fail 0; duration_ms 2634.4536",
+    "node --test test/clean-control-plane.test.js": "exit 0; tests 7; pass 7; fail 0; duration_ms 2753.1981",
+    "leader_validation": "node --test test/lifecycle-ownership.test.js test/runtime-state.test.js passed 14/14; node --test test/clean-control-plane.test.js test/recovery-observability.test.js passed 14/14 after leader repair.",
+    "residual_fixture_process_scan": "Get-CimInstance Win32_Process filtered for clean/runtime/lifecycle/recovery fixture commands returned no processes after passing verification; only the scan command matched."
+  },
+  "concerns": [
+    "Initial required combined verification reproduced the documented Windows EPERM temp cleanup pitfall because the runtime-state fixture left a local managed process alive.",
+    "Leader validation found that the worker's first runtime change caused global runId/proof mismatch and forced Windows stop semantics. This was repaired by aligning trusted global run metadata in src/control-plane/runs.js and using non-forced SIGTERM semantics for Windows owned stop in src/runtime.js."
+  ],
+  "recovery_hints": [
+    "If Windows EPERM cleanup recurs, scan for node.exe processes whose CommandLine matches scripts/dev.js or launchdeck-cli-* and terminate only those fixture processes before rerunning the focused test.",
+    "If a stop refusal appears for a process started by startManagedTask, inspect the local runtime state for runId, transactionId, projectId, launchdeckHome, ownershipConfidence, and ownershipProof fields."
+  ],
+  "consumer_evidence": [
+    "Real entrypoint evidence: node --test test/clean-control-plane.test.js test/runtime-state.test.js passed 12/12.",
+    "Path safety evidence: clean-control-plane tests passed path escape, symlink/junction escape, project-root target, empty target, active evidence retention, latest failure evidence retention, and reset absence cases.",
+    "Runtime cleanup evidence: runtime-state startManagedTask test passed after local Launchdeck-spawn ownership proof and non-forced Windows stop signaling.",
+    "Lifecycle safety evidence: lifecycle ownership tests passed 9/9, including verified stop/restart, ownership refusals, port_release_timeout, and stop_failed preservation."
+  ],
+  "must_preserve_evidence": [
+    "MP-010: clean remains hygiene with stable JSON/error behavior and actionable refusal codes.",
+    "MP-011: stop/force semantics remain gated by ownership proof; the runtime change adds proof only for processes Launchdeck just spawned.",
+    "MP-015: no secret-bearing command/env values were added to clean output or persisted clean events.",
+    "CA-CP-015: clean path containment remains delegated to src/adapters/path.js and refuses unsafe targets.",
+    "CA-CP-016: clean retention preserves active and latest failure-linked evidence without deleting events."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-015",
+      "claim": "Clean never deletes outside the project root and unsafe targets are blocked with actionable refusal reasons.",
+      "affected_objects": [
+        "launchdeck clean --safe",
+        "src/adapters/path.js clean target planner",
+        "src/runtime.js cleanTargets"
+      ],
+      "owner_workflow": "sp-implement T031",
+      "latest_resolve_phase": "verification",
+      "status": "satisfied",
+      "stop_and_reopen_condition": "Any clean target can escape containment, delete a project root, delete an unknown external path, or convert clean into reset semantics."
+    },
+    {
+      "id": "CA-CP-016",
+      "claim": "Secret-sensitive operational evidence is retained safely and clean does not remove active or latest failure-linked logs/events.",
+      "affected_objects": [
+        "local runtime state",
+        "global run index",
+        "events/events.jsonl",
+        ".launchdeck/logs"
+      ],
+      "owner_workflow": "sp-implement T031",
+      "latest_resolve_phase": "verification",
+      "status": "satisfied",
+      "stop_and_reopen_condition": "Clean removes active run logs, latest failure evidence, failure-linked events, or emits unredacted secret-bearing metadata."
+    }
+  ]
+}

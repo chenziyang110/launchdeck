@@ -1,0 +1,35 @@
+{
+  "task_id": "T004",
+  "review_id": "T004-review-2",
+  "type": "task_review",
+  "verdict": "accepted",
+  "spec_verdict": "pass",
+  "quality_verdict": "pass",
+  "findings": [],
+  "validation_evidence": [
+    {
+      "source": "test/control-plane-locks.test.js",
+      "evidence": "withLockFixture() now calls createLaunchdeckHome() with no custom prefix override."
+    },
+    {
+      "command": "node --check test/control-plane-locks.test.js",
+      "result": "pass"
+    },
+    {
+      "command": "node --test test/control-plane-locks.test.js",
+      "result": "expected_red",
+      "evidence": "Fails only with ERR_MODULE_NOT_FOUND for src/control-plane/locks.js."
+    }
+  ],
+  "controller_checks": [
+    "previous prefix failure repaired",
+    "write scope respected",
+    "RED owner is intended missing src/control-plane/locks.js",
+    "acceptance coverage includes exclusive lock creation, metadata, bounded timeout, stale lock refusal/takeover, and release cleanup",
+    "CA-CP-012 daemonless file-backed coordination is preserved"
+  ],
+  "accepted_residual_risks": [
+    "Behavioral assertions execute after src/control-plane/locks.js exists in T008."
+  ],
+  "final_assessment": "accepted"
+}

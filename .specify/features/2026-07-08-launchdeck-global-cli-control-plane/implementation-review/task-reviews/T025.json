@@ -1,0 +1,47 @@
+{
+  "taskId": "T025",
+  "reviewId": "T025-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+  ],
+  "validation": [
+    {
+      "command": "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+      "result": "pass",
+      "summary": "21 tests passed, 0 failed; duration_ms 27024.0226 in leader validation."
+    },
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Repository syntax check completed successfully in leader validation."
+    },
+    {
+      "command": "JSON parse checks for ledger.json, executor-t025.json, T025 task review, and reviews.ndjson",
+      "result": "pass",
+      "summary": "All reviewed implementation artifacts parse as JSON/NDJSON."
+    }
+  ],
+  "controllerChecks": [
+    "joinValidations.T025 records US3 owned stop/restart acceptance evidence.",
+    "Verified-owned stop and restart real CLI entrypoints are covered.",
+    "Probable-owned, unknown, matching PID/listener without trusted proof, and external process targets are refused without killing external listeners.",
+    "force-stop is routed and does not bypass the verified ownership gate.",
+    "stop_failed and port_release_timeout evidence paths are covered.",
+    "Local managed CLI compatibility remains covered.",
+    "Windows-local limitation is recorded and no macOS/Linux release claim is made.",
+    "Leader process scan found no lifecycle fixture processes left after validation."
+  ],
+  "acceptedResidualRisks": [
+    "US3 join is Windows-local focused evidence and not a cross-platform release claim.",
+    "Later US4/US5/final smoke tasks still need to validate recovery, observability, clean, demo, docs, and release evidence."
+  ],
+  "followUpWork": [
+    "T026 add reconcile, stale state, events, and logs-follow failing tests."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T024",
+  "agent_type": "executor",
+  "agent_id": "019f3b9c-f99c-7ba2-ad30-a552d181439e",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/src/cli.js",
+    "F:/github/launchdeck/src/runtime.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check src/cli.js; node --check src/runtime.js",
+      "status": "passed"
+    },
+    "cli_contract_tests": {
+      "command": "node --test test/cli-contract.test.js",
+      "status": "passed",
+      "tests": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [],
+  "recovery_hints": [],
+  "real_entrypoint_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck run noisy --json",
+      "producer": "src/cli.js runCommand",
+      "transformer": "src/runtime.js runTask captureOutput + createSuccessEnvelope",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "CLI contract tests passed; stdout parsed as exactly one JSON object"
+    },
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck run missing --json",
+      "producer": "src/cli.js requireTask",
+      "transformer": "createFailureEnvelope with config context",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "CLI contract tests passed with projectRoot and configPath present"
+    },
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck build --json",
+      "producer": "src/cli.js lifecycle alias routing",
+      "transformer": "runConfiguredTask + createSuccessEnvelope",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "CLI contract tests passed"
+    }
+  ],
+  "child_exit_evidence": {
+    "json": "run fail --json exits 7 with code 7 and task_command_failed envelope",
+    "human": "run fail exits 7 in non-JSON mode"
+  },
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-009", "CA-013"],
+      "evidence": "Foreground tasks remain foreground; non-JSON mode keeps inherited stdio and child exit code behavior."
+    },
+    {
+      "ids": ["MP-014", "CA-003", "CA-020"],
+      "evidence": "JSON mode stdout is reserved for the Launchdeck envelope and config-resolved failures include context."
+    }
+  ],
+  "result_summary": "T024 repair implementation completed and verified."
+}

@@ -1,0 +1,32 @@
+{
+  "id": "E-T-003",
+  "source_path": "test/clean-safety.test.js",
+  "summary": "Clean 命令安全模式测试 — dry-run、safe、all、目标验证",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-003",
+    "source_path": "test/clean-safety.test.js",
+    "summary": "Clean 命令安全模式测试 — dry-run、safe、all、目标验证",
+    "test_groups": [
+      "clean --json 返回 dry-run 计划而不删除",
+      "clean --safe --json 移除安全目标，跳过缺失目标，不删除风险目标",
+      "clean --all --json 需要确认且不删除风险目标",
+      "clean --all --yes --json 移除所有目标",
+      "clean --safe --json 拒绝项目根",
+      "clean --safe --json 拒绝外部根目标",
+      "clean --safe --json 拒绝绝对路径"
+    ],
+    "key_assertions": [
+      "默认 clean 返回 dryRun=true, mode=dry-run, removed=[]",
+      "--safe 删除 dist，保留 node_modules，跳过 missing-cache (skipped_missing)",
+      "--all 返回 confirmation_required 错误，不删除任何目标",
+      "--all --yes 成功删除所有目标",
+      "目标 '.' 返回 clean_target_root",
+      "目标 '..' 返回 clean_target_outside_project",
+      "绝对路径返回 clean_target_ambiguous"
+    ]
+  }
+}

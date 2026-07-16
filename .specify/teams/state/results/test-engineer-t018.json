@@ -1,0 +1,63 @@
+{
+  "status": "done_with_expected_red",
+  "task_id": "T018",
+  "changed_files": [
+    "test/inspect-cli.test.js",
+    ".specify/teams/state/results/test-engineer-t018.json"
+  ],
+  "validation_output": {
+    "node --check test/inspect-cli.test.js": {
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "node --test test/inspect-cli.test.js": {
+      "status": 1,
+      "summary": "tests 6, pass 2, fail 4, cancelled 0, skipped 0, todo 0",
+      "passing_tests": [
+        "start refuses an externally occupied declared port without stopping the external listener",
+        "inspect-port remains compatible for an externally occupied declared port"
+      ],
+      "failing_tests": [
+        {
+          "name": "inspect port:<port> explains external conflict as inspect-only with safe and blocked actions",
+          "reason": "Expected RED: launchdeck inspect is not wired yet; CLI returns status 1 with code unknown_command."
+        },
+        {
+          "name": "inspect pid:<pid> reports an external listener as inspect-only",
+          "reason": "Expected RED: launchdeck inspect is not wired yet; CLI returns status 1 with code unknown_command."
+        },
+        {
+          "name": "inspect task:<alias:task> reports a Launchdeck-owned managed run with evidence and actions",
+          "reason": "Expected RED: launchdeck inspect is not wired yet; CLI returns status 1 with code unknown_command."
+        },
+        {
+          "name": "inspect pid:<pid> reports a Launchdeck-owned managed run when pid matches run evidence",
+          "reason": "Expected RED: launchdeck inspect is not wired yet; CLI returns status 1 with code unknown_command."
+        }
+      ],
+      "representative_failure_stdout": {
+        "ok": false,
+        "schemaVersion": 1,
+        "command": "inspect",
+        "code": "unknown_command",
+        "message": "Unknown command 'inspect'. Run 'launchdeck help' for usage.",
+        "details": {
+          "command": "inspect"
+        },
+        "next": []
+      }
+    }
+  },
+  "expected_red": true,
+  "concerns": [
+    "Unified inspect assertions intentionally define the future T020 contract and currently fail at command dispatch before payload-shape assertions run.",
+    "The current inspect-port compatibility surface still uses legacy inspect-port next actions; the new unified inspect tests require launchdeck inspect port:<port> safe actions once implemented."
+  ],
+  "recovery_hints": [
+    "Wire the inspect command in src/cli.js and delegate target parsing for port:<port>, pid:<pid>, and task:<alias:task>.",
+    "Return the contract fields under data while preserving envelope mirrors: target, classification, project, task, run, ports, listeners, ownership, conflicts, safeActions, and blockedActions.",
+    "Keep external listeners inspect-only: safeActions must not include stop, force-stop, kill, or restart for external/unknown ownership; blockedActions should explain those refused actions.",
+    "Preserve inspect-port compatibility; the green compatibility test should continue to pass while inspect-port can delegate to inspect port:<port>."
+  ]
+}

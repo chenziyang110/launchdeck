@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T023",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3b98-8b6d-7ec2-8494-89d24f07e43d",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/cli-contract.test.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check test/cli-contract.test.js",
+      "status": "passed"
+    },
+    "red_check": {
+      "command": "node --test test/cli-contract.test.js",
+      "exit_status": 1,
+      "tests": 13,
+      "passed": 11,
+      "failed": 2,
+      "classification": "expected_red_for_T009_repair_findings"
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "JSON-mode foreground runs need child stdout isolated from CLI stdout.",
+    "Config-resolved task_not_found should carry both projectRoot and configPath into the failure envelope context."
+  ],
+  "real_entrypoint_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck run noisy --json",
+      "producer": "src/cli.js runCommand",
+      "transformer": "test/cli-contract.test.js parses stdout as a single JSON object",
+      "consumer": "test/cli-contract.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "expected RED before T024"
+    }
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-014"],
+      "evidence": "Regression asserts JSON-mode stdout must remain exactly one parseable JSON object."
+    },
+    {
+      "ids": ["CA-003", "CA-020"],
+      "evidence": "Regression asserts stable task_not_found code plus projectRoot/configPath on config-resolved failure."
+    }
+  ],
+  "result_summary": "T023 repair regression tests added and verified as expected RED."
+}

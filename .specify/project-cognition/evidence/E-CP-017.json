@@ -1,0 +1,26 @@
+{
+  "id": "E-CP-017",
+  "source_path": "src/runtime.js",
+  "summary": "同步锁机制(acquireLifecycleLockSync/releaseLifecycleLockSync)：与control-plane/locks.js的异步锁并存，用于stop等需要确切持有锁的操作；避免启动独占端口冲突的严格校验(assertVerifiedStopOwnership)",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-017",
+    "source_path": "src/runtime.js",
+    "summary": "同步锁机制(acquireLifecycleLockSync/releaseLifecycleLockSync)：与control-plane/locks.js的异步锁并存，用于stop等需要确切持有锁的操作；避免启动独占端口冲突的严格校验(assertVerifiedStopOwnership)",
+    "symbols": [
+      "withLifecycleLocksSync",
+      "acquireLifecycleLocksSync",
+      "acquireLifecycleLockSync",
+      "releaseLifecycleLockSync",
+      "assertVerifiedStopOwnership",
+      "hasTrustedSpawnOwnershipProof",
+      "isTrustedSpawnOwnershipProof",
+      "stopOwnedProcessTreeSync"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

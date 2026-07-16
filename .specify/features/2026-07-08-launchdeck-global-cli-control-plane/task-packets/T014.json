@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "task_id": "T014",
+  "title": "Implement registry identity actions in src/control-plane/actions.js and src/global-runtime.js",
+  "phase": "Phase 3",
+  "story": "US1",
+  "priority": "P1",
+  "agent": "executor",
+  "depends_on": [
+    "T012: registry tests",
+    "T007: state store",
+    "T008: locks"
+  ],
+  "parallel_safe": false,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Capability plan",
+      "ref": "plan.md#capability-preservation-plan"
+    },
+    {
+      "need": "Current registry implementation",
+      "ref": "src/global-runtime.js"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "src/control-plane/actions.js",
+      "src/global-runtime.js",
+      "src/cli.js"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "src/control-plane/actions.js (new)",
+    "src/global-runtime.js (modify)",
+    "src/cli.js (modify)"
+  ],
+  "anti_goals": [
+    "Do not delete project files during project remove.",
+    "Do not let project remove bypass active run checks."
+  ],
+  "does_not_remove": [
+    "project add",
+    "project scan",
+    "project remove",
+    "projects"
+  ],
+  "capability_operations": [
+    "implements project add, project scan, project remove, project repair, projects"
+  ],
+  "consumer_surfaces": [
+    "launchdeck project add",
+    "launchdeck project scan",
+    "launchdeck project remove",
+    "launchdeck project repair",
+    "launchdeck projects"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "registry_state_evidence"
+  ],
+  "acceptance_criteria": [
+    "Registry commands use projectId and alias, lock registry mutations, preserve idempotency, implement repair, and refuse active owned project removal with next actions."
+  ],
+  "verify_commands": [
+    "node --check src/control-plane/actions.js",
+    "node --check src/global-runtime.js",
+    "node --check src/cli.js",
+    "node --test test/global-runtime.test.js"
+  ],
+  "guardrails": [
+    "G-BOUNDARY"
+  ],
+  "mp": [
+    "MP-004",
+    "MP-006"
+  ],
+  "ca": [
+    "CA-CP-001",
+    "CA-CP-002",
+    "CA-CP-003"
+  ],
+  "fr": [
+    "FR-001",
+    "FR-002",
+    "FR-003",
+    "FR-004",
+    "FR-005",
+    "FR-006",
+    "FR-007",
+    "FR-008"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "src/control-plane/actions.js",
+      "src/global-runtime.js",
+      "src/cli.js"
+    ],
+    "validation_output": {
+      "node --check src/control-plane/actions.js": "<paste relevant output>",
+      "node --check src/global-runtime.js": "<paste relevant output>",
+      "node --check src/cli.js": "<paste relevant output>",
+      "node --test test/global-runtime.test.js": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

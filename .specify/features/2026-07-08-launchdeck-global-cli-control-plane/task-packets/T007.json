@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "task_id": "T007",
+  "title": "Implement versioned control-plane state store in src/control-plane/state.js",
+  "phase": "Phase 2",
+  "story": null,
+  "priority": null,
+  "agent": "executor",
+  "depends_on": [
+    "T003: state tests"
+  ],
+  "parallel_safe": true,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "State layout",
+      "ref": "plan.md#state-layout"
+    },
+    {
+      "need": "Existing paths",
+      "ref": "src/global-runtime.js"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "src/control-plane/state.js"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "src/control-plane/state.js (new)"
+  ],
+  "anti_goals": [
+    "Do not change CLI routing in this task.",
+    "Do not delete legacy projects.json."
+  ],
+  "does_not_remove": [
+    "Legacy registry read compatibility",
+    "current project-local runtime compatibility"
+  ],
+  "capability_operations": [
+    "implements registry storage migration and state version checks"
+  ],
+  "consumer_surfaces": [],
+  "required_evidence": [],
+  "acceptance_criteria": [
+    "State store reads legacy and v2 registry, writes v2 layout atomically, validates versions, exposes project/runs/events path helpers, and returns structured version errors."
+  ],
+  "verify_commands": [
+    "node --check src/control-plane/state.js",
+    "node --test test/control-plane-state.test.js"
+  ],
+  "guardrails": [
+    "G-BOUNDARY",
+    "G-STATE-VERSION"
+  ],
+  "mp": [
+    "MP-002",
+    "MP-004",
+    "MP-014"
+  ],
+  "ca": [
+    "CA-CP-001",
+    "CA-CP-002",
+    "CA-CP-013"
+  ],
+  "fr": [
+    "FR-001",
+    "FR-004",
+    "FR-051",
+    "FR-052"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "src/control-plane/state.js"
+    ],
+    "validation_output": {
+      "node --check src/control-plane/state.js": "<paste relevant output>",
+      "node --test test/control-plane-state.test.js": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

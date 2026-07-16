@@ -1,0 +1,30 @@
+{
+  "id": "E-T-014",
+  "source_path": "test/helpers/cli-fixture.js",
+  "summary": "CLI 测试辅助工具 — createCliFixture、runCli、writeConfig、清理",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-014",
+    "source_path": "test/helpers/cli-fixture.js",
+    "summary": "CLI 测试辅助工具 — createCliFixture、runCli、writeConfig、清理",
+    "test_groups": [
+      "createCliFixture — 创建临时项目和 API 对象",
+      "createTempProject / removeTempProject — 安全创建和删除",
+      "writeConfig / writeFile — 配置和文件写入",
+      "runCli / runCliJson — 使用 JSON 支持运行 CLI",
+      "安全删除 — assertSafeTempProject 验证安全边界"
+    ],
+    "key_assertions": [
+      "createCliFixture 返回 {projectRoot, path, writeConfig, runCli, runCliJson, cleanup}",
+      "writeFile 拒绝绝对路径和逃逸项目根的相对路径",
+      "runCliJson 自动添加 --json 参数",
+      "removeTempProject 验证路径在临时目录内且有正确前缀",
+      "删除重试 (removeWithRetry) 处理 EBUSY/ENOTEMPTY/EPERM",
+      "repoRoot 解析到项目根目录",
+      "cliPath 指向 src/cli.js"
+    ]
+  }
+}

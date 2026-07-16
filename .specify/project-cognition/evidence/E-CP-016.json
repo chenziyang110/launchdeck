@@ -1,0 +1,59 @@
+{
+  "id": "E-CP-016",
+  "source_path": "src/runtime.js",
+  "summary": "本地运行时层：进程生命周期管理(startManagedTask/stopManagedTasks/runTask)、本地状态持久化(runtimePaths/readState/writeState/refreshState)、清理操作(cleanTargets)、日志查看(tailLog)",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-016",
+    "source_path": "src/runtime.js",
+    "summary": "本地运行时层：进程生命周期管理(startManagedTask/stopManagedTasks/runTask)、本地状态持久化(runtimePaths/readState/writeState/refreshState)、清理操作(cleanTargets)、日志查看(tailLog)",
+    "symbols": [
+      "runtimePaths",
+      "ensureRuntimeDirs",
+      "resolveTaskCwd",
+      "readState",
+      "writeState",
+      "refreshState",
+      "listProcesses",
+      "startManagedTask",
+      "runTask",
+      "stopManagedTasks",
+      "waitForDeclaredPortsFree",
+      "tailLog",
+      "resolveCleanTargets",
+      "cleanTargets",
+      "assertInsideProject",
+      "isPidRunning"
+    ],
+    "exports": [
+      "runtimePaths",
+      "ensureRuntimeDirs",
+      "resolveTaskCwd",
+      "readState",
+      "writeState",
+      "refreshState",
+      "listProcesses",
+      "startManagedTask",
+      "runTask",
+      "stopManagedTasks",
+      "waitForDeclaredPortsFree",
+      "tailLog",
+      "resolveCleanTargets",
+      "cleanTargets",
+      "assertInsideProject",
+      "isPidRunning"
+    ],
+    "dependencies": [
+      "config.js (loadConfig)",
+      "errors.js (LaunchdeckError)",
+      "adapters/process.js (getLiveness, isPidRunning, listPortListeners, spawnForeground, spawnManaged, stopProcessTreeSync)",
+      "adapters/path.js (assertContainedPath, isSamePath, planCleanTarget, resolveProjectPath)",
+      "control-plane/events.js (appendEvent)",
+      "control-plane/ownership.js (OWNERSHIP_CONFIDENCE, proveRunOwnership)",
+      "control-plane/state.js (controlPlanePaths)"
+    ]
+  }
+}

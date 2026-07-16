@@ -1,0 +1,47 @@
+{
+  "status": "success",
+  "changed_files": [
+    "test/lifecycle-ownership.test.js",
+    ".specify/teams/state/results/test-engineer-t022.json"
+  ],
+  "validation_output": {
+    "node --check test/lifecycle-ownership.test.js": {
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "node --test test/lifecycle-ownership.test.js": {
+      "status": 1,
+      "red_expected": true,
+      "summary": {
+        "tests": 8,
+        "pass": 0,
+        "fail": 8,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "failure_codes_or_causes": [
+        "verified-owned stop currently returns legacy process payload instead of contract stopped[]/failed[] evidence",
+        "probable-owned stop currently exits 0 instead of refusing with ownership_not_verified",
+        "unknown ownership stop currently exits 0 instead of refusing with unknown_process_owner",
+        "external process stop currently exits 0 instead of refusing with external_process",
+        "force-stop currently returns unknown_command instead of preserving the ownership gate",
+        "restart currently returns legacy start payload instead of stoppedRun/startedRun/transactionId",
+        "port release timeout currently returns partial_failure instead of port_release_timeout",
+        "stop_failed evidence path currently exits 0 instead of preserving stop_failed run/event evidence"
+      ],
+      "relevant_output": "Syntax passed. Focused test run RED: 8 tests, 0 passed, 8 failed. Failures map to missing lifecycle ownership behavior/contract output: legacy stop/restart payload shape, missing unsafe owner refusals, missing force-stop command, missing port_release_timeout, and missing stop_failed evidence."
+    }
+  },
+  "concerns": [
+    "RED is expected for T022 because T023/T024 have not implemented the ownership-gated lifecycle actions and CLI routing yet.",
+    "The stop_failed fixture relies on future non-forceful stop behavior; current Windows taskkill force behavior makes that test RED by returning success."
+  ],
+  "recovery_hints": [
+    "Implement stop/force-stop/restart through src/control-plane/actions.js with verified-owned proof before termination.",
+    "Wire force-stop in src/cli.js and return stable JSON failure codes with next actions for unsafe ownership.",
+    "Persist stopped, stop_failed, restart.failed, and port_release_timeout evidence in runtime/runs.json and events/events.jsonl.",
+    "Restart should use one transactionId across stoppedRun and startedRun and wait for declared ports to become free before starting."
+  ]
+}

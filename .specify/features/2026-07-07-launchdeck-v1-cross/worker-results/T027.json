@@ -1,0 +1,35 @@
+{
+  "status": "success",
+  "task_id": "T027",
+  "agent": "test-engineer",
+  "completed_at": "2026-07-07T17:48:16.2767602+08:00",
+  "changed_files": [
+    "test/config-contract.test.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check test/config-contract.test.js",
+      "exit_code": 0
+    },
+    "config_clean_boundary_tests": {
+      "command": "node --test test/config-contract.test.js test/clean-safety.test.js",
+      "exit_code": 1,
+      "tests": 18,
+      "passed": 13,
+      "failed": 5,
+      "expected_failures": [
+        "config still emits resolvedPath/canonicalPath/exists/status metadata for clean targets",
+        "loadConfig still throws clean_target_root for `.`",
+        "loadConfig still throws clean_target_outside_project for `..`",
+        "clean-safety root/out-of-root CLI refused-plan tests still cannot receive target arrays before T028"
+      ]
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "T028 should update src/config.js clean normalization to preserve raw {kind, rawPath, description} entries without resolvedPath/canonicalPath/exists/status/refusalCode.",
+    "T028 should allow loadConfig to preserve '.', '..', and absolute clean entries so resolveCleanTargets can emit refused target records."
+  ],
+  "expected_red_before_repair": "The required test run fails on config clean normalization: config still emits resolvedPath/canonicalPath/exists/status metadata, and loadConfig still throws clean_target_root / clean_target_outside_project for '.' and '..'.",
+  "contract_boundary_evidence": "Task cwd/log escape rejection tests remain unchanged. Clean contract tests now expect loadConfig to preserve raw clean entries and expect runtime resolveCleanTargets to produce clean_target_root and clean_target_outside_project refused plan records."
+}

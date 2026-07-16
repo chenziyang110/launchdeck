@@ -1,0 +1,36 @@
+{
+  "task_ids": [
+    "T014",
+    "T015"
+  ],
+  "verdict": "accepted",
+  "review_id": "T014-T015-review-final",
+  "review_agent": "019f4217-5d99-7923-b6c1-3486f1f5ea91",
+  "accepted_at": "2026-07-08",
+  "changed_files": [
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    "src/global-runtime.js",
+    "src/cli.js",
+    "test/global-runtime.test.js"
+  ],
+  "validation": [
+    "node --check src/control-plane/actions.js passed",
+    "node --check src/control-plane/runs.js passed",
+    "node --check src/runtime.js passed",
+    "node --check src/global-runtime.js passed",
+    "node --check src/cli.js passed",
+    "node --test --test-name-pattern \"stable project id next actions|not writable\" test/global-runtime.test.js passed 2/2",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js passed 34/34",
+    "npm run check passed"
+  ],
+  "findings": [],
+  "accepted_residual_risks": [
+    "activeProjectRemoveActions still emits alias-based stop guidance from current registry state; consider normalizing to projectId:task later.",
+    "run.projectAlias remains historical metadata until run record refresh/removal; functional next actions use projectId."
+  ],
+  "follow_up_work": [
+    "Consider normalizing all generated global task actions to projectId:task.",
+    "Decide whether active run presentation should join current registry alias or preserve historical projectAlias."
+  ]
+}

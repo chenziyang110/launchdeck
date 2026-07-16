@@ -1,0 +1,40 @@
+{
+  "id": "E-ERR-001",
+  "source_path": "src/errors.js",
+  "summary": "Error handling module with 50 known error codes and LaunchdeckError class",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-ERR-001",
+    "source_path": "src/errors.js",
+    "summary": "Error handling module with 50 known error codes and LaunchdeckError class",
+    "symbols": [
+      "ERROR_CODES (Set)",
+      "ERROR_CODE_ALIASES (Map)",
+      "LaunchdeckError (class)",
+      "isKnownErrorCode(code)",
+      "toContractErrorCode(code)",
+      "toErrorPayload(error, options)",
+      "toContractErrorPayload(error)"
+    ],
+    "exports": [
+      "ERROR_CODES",
+      "ERROR_CODE_ALIASES",
+      "LaunchdeckError",
+      "isKnownErrorCode",
+      "toContractErrorCode",
+      "toErrorPayload",
+      "toContractErrorPayload"
+    ],
+    "dependencies": [],
+    "notes": [
+      "50 unique error codes covering config, registry, runtime, task execution, port conflicts, locks, clean operations, agents, and internal errors",
+      "13 error code aliases mapping legacy/internal codes to contract codes",
+      "LaunchdeckError extends Error with code and optional details properties",
+      "toContractErrorCode resolves aliases, falls back to 'internal_error' for unknown codes",
+      "toContractErrorPayload is a thin wrapper around toErrorPayload with contractCode: true"
+    ]
+  }
+}

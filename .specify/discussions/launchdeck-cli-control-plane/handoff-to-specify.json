@@ -1,0 +1,868 @@
+{
+  "version": 1,
+  "status": "handoff-ready",
+  "entry_source": "sp-discussion",
+  "discussion_slug": "launchdeck-cli-control-plane",
+  "handoff_kind": "discussion_requirement_contract",
+  "handoff_goal": "Specify Launchdeck Global CLI Control Plane as a user-scoped, CLI-first control plane for registering multiple local projects, preventing duplicate service starts, inspecting port/process ownership, safely stopping/restarting only Launchdeck-owned tasks, and preserving global status/log/event/recovery semantics.",
+  "source_handoff": ".specify/discussions/launchdeck-cli-control-plane/handoff-to-specify.md",
+  "source_handoff_json": ".specify/discussions/launchdeck-cli-control-plane/handoff-to-specify.json",
+  "source_files_read": [
+    ".specify/memory/project-rules.md",
+    ".specify/memory/learnings/INDEX.md",
+    ".specify/discussions/launchdeck-cli-control-plane/discussion-state.md",
+    ".specify/discussions/launchdeck-cli-control-plane/discussion-log.md",
+    ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+    ".specify/discussions/launchdeck-cli-control-plane/technical-options.md",
+    ".specify/discussions/launchdeck-cli-control-plane/open-questions.md",
+    ".specify/discussions/launchdeck-cli-control-plane/handoff-assessment.md",
+    ".specify/discussions/launchdeck-tool/discussion-state.md",
+    ".specify/discussions/launchdeck-tool/requirements.md",
+    ".specify/discussions/launchdeck-tool/technical-options.md"
+  ],
+  "handoff_status": "handoff-ready",
+  "planning_gate_status": "ready",
+  "coverage_status": "sufficient-for-specify",
+  "hard_unknown_count": 0,
+  "open_conflict_count": 0,
+  "recommended_consumer": "sp-specify",
+  "consumer_eligibility": {
+    "sp-specify": {
+      "status": "ready",
+      "reason": "The direction is coherent, target boundary is locked, hard blockers are absent, scope needs formal specification, and the user confirmed the draft handoff."
+    },
+    "sp-quick": {
+      "status": "not-recommended",
+      "reason": "The feature spans global registry, runtime state, ownership safety, locks, events, JSON, security, docs, demo, and cross-platform validation."
+    }
+  },
+  "quick_task_candidate": {
+    "status": "requires-spec-first",
+    "bounded_quick_task": null,
+    "excluded_scope": [
+      "implementation without formal specification",
+      "daemon",
+      "GUI/TUI/MCP",
+      "external kill",
+      "reset"
+    ],
+    "expected_changed_surfaces": [
+      "CLI commands",
+      "global registry",
+      "runtime state",
+      "locks",
+      "events",
+      "logs",
+      "docs",
+      "examples",
+      "tests"
+    ],
+    "validation_route": "formal specification followed by planning and implementation",
+    "consequence_model": "high lifecycle and safety impact",
+    "requires_spec_first": true,
+    "quick_checkpoint_seed": "Do not use sp-quick for this feature unless a later spec extracts a bounded subtask."
+  },
+  "context_boundary": {
+    "current_project_root": "F:/github/launchdeck",
+    "current_project_roles": [
+      {
+        "role": "implementation target",
+        "scope": "Launchdeck CLI product, lifecycle protocol, global registry, runtime state, locks, logs, events, safety model, documentation, demo, and tests.",
+        "evidence_source": "active workspace plus consumed prior launchdeck-tool discussion package",
+        "notes": "Current repository is the product implementation target."
+      }
+    ],
+    "target_project_root": "F:/github/launchdeck",
+    "target_project_roles": [
+      {
+        "role": "implementation target",
+        "scope": "Same as current project.",
+        "evidence_source": "user-confirmed current workspace",
+        "notes": "No external target project is in scope."
+      }
+    ],
+    "reference_projects": [],
+    "external_systems": [
+      "local operating system process table",
+      "local port inspection surfaces",
+      "local filesystem"
+    ],
+    "path_status": "target-read-confirmed",
+    "boundary_confidence": "high",
+    "boundary_unknowns": []
+  },
+  "implementation_target": {
+    "actual_project": "Launchdeck",
+    "target_root": "F:/github/launchdeck",
+    "target_paths_or_modules": [],
+    "target_paths_still_to_verify": [
+      "current CLI command surface",
+      "current global runtime implementation",
+      "current tests and documentation",
+      "current example/demo surfaces"
+    ],
+    "target_project_cognition_status": "available as advisory, not authoritative",
+    "current_project_cognition_limit": "Project cognition may navigate the current project, but downstream source claims must be proven from live repository reads."
+  },
+  "agent_requirement_contract": {
+    "target_need": "Launchdeck needs a user-scoped global CLI control plane so a developer can register multiple local projects, see which project services are running, know which ports are occupied and by whom, avoid duplicate starts, and safely restart or stop only services that Launchdeck owns.",
+    "constraints": [
+      "CLI remains the first complete product surface.",
+      "Default control-plane scope is one OS user on one machine.",
+      "Single instance means one authoritative state/control namespace, not necessarily an always-running daemon.",
+      "Launchdeck must not kill external processes by default.",
+      "Port and PID are evidence only; neither grants ownership.",
+      "--yes and --force must not bypass ownership, path, version, or external-process safety.",
+      "clean is hygiene; destructive reset is separate and deferred.",
+      "Persistent state incompatibility must fail closed for dangerous mutations.",
+      "Cross-platform-ready claims require lifecycle smoke evidence on Windows, macOS, and Linux."
+    ],
+    "success_criteria": [
+      "User can register multiple projects and list them globally.",
+      "Starting an already running project:task does not create a second instance.",
+      "status --all, ps --all, ports, and conflicts explain global running state and blocked tasks.",
+      "inspect explains project/task/run/port/PID/path targets with evidence, ownership confidence, safe actions, and blocked actions.",
+      "Owned port conflicts offer owner task actions; external port conflicts offer inspect/manual actions only.",
+      "Stale state can be detected and repaired through reconcile.",
+      "Logs and events link to project/task/run/transaction identity.",
+      "Clean only removes safe/generated/stale/retention-expired managed data.",
+      "JSON and JSON Lines output are stable enough for automation and future clients."
+    ],
+    "design_direction": "Treat Launchdeck as a local project-service control plane, not a task runner, process killer, or agent-only plugin.",
+    "optimal_solution_approach": "Use a daemonless, user-scoped control-plane namespace first: registry, runtime run index, locks, events, logs, and live OS inspection. Keep daemon/service as a deferred implementation option.",
+    "scope": {
+      "in": [
+        "project registry and identity",
+        "project add/scan/remove/repair/projects",
+        "global runtime run index",
+        "locks and transaction-like lifecycle mutations",
+        "status/ps/ports/conflicts/inspect",
+        "ownership proof and no-external-kill safety",
+        "duplicate-start prevention",
+        "safe owned lifecycle operations",
+        "ready vs running state",
+        "logs/events linkage",
+        "clean/reset boundary",
+        "confirmation, force, non-interactive, timeout, JSON, and next actions",
+        "official demo and documentation requirements",
+        "compatibility, security, and cross-platform validation"
+      ],
+      "out": [
+        "daemon/service implementation",
+        "GUI/TUI/MCP/editor implementation",
+        "external process kill",
+        "destructive reset implementation",
+        "auto-restart policy",
+        "plugin marketplace",
+        "workspace orchestration",
+        "whole-machine or multi-user shared registry",
+        "Docker volume/container ownership"
+      ],
+      "deferred": [
+        "exact lock timeout defaults",
+        "exact log/event retention days or run counts",
+        "exact JSON schema versioning mechanism",
+        "final field names for inspect --json",
+        "daemon/service transport if future clients need it"
+      ]
+    }
+  },
+  "source_evidence": [
+    {
+      "source_type": "discussion_state",
+      "evidence_status": "current",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/discussion-state.md",
+      "claim": "Current direction is a CLI-only, user-scoped global control plane with single authoritative state namespace and safety-first ownership semantics."
+    },
+    {
+      "source_type": "requirements",
+      "evidence_status": "current",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "claim": "Requirements define control-plane objects, registry, locks, ownership proof, inspect/status layering, clean/reset boundary, automation, security, documentation, demo, and cross-platform readiness."
+    },
+    {
+      "source_type": "technical_options",
+      "evidence_status": "current",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/technical-options.md",
+      "claim": "Recommended option is a state-and-lock based single-instance control plane, with daemon/service mode deferred."
+    },
+    {
+      "source_type": "open_questions",
+      "evidence_status": "current",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/open-questions.md",
+      "claim": "No hard blockers remain; soft unknowns are carried forward for downstream specification."
+    },
+    {
+      "source_type": "prior_discussion",
+      "evidence_status": "contextual",
+      "source": ".specify/discussions/launchdeck-tool/",
+      "claim": "Prior v1 handoff established Launchdeck as CLI-first local lifecycle control and was consumed by .specify/features/2026-07-07-launchdeck-v1-cross."
+    }
+  ],
+  "blocking_unknowns": {
+    "hard": [],
+    "soft": [
+      {
+        "id": "SU-001",
+        "claim": "Registry storage path defaults remain to specify.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "before global registry implementation",
+        "stop_and_reopen_condition": "The storage location changes default user-scoped boundary or safety assumptions."
+      },
+      {
+        "id": "SU-002",
+        "claim": "Event/log retention defaults remain to specify.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "before log/event cleanup implementation",
+        "stop_and_reopen_condition": "Retention either grows without bound or deletes important diagnosis."
+      },
+      {
+        "id": "SU-003",
+        "claim": "Lock timeout and stale-lock recovery details remain to specify.",
+        "owner": "downstream specification and implementation",
+        "latest_resolve_phase": "before lock implementation",
+        "stop_and_reopen_condition": "Concurrent agent usage frequently sees false busy or false stale locks."
+      },
+      {
+        "id": "SU-004",
+        "claim": "Final inspect JSON schema details remain to specify.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "before inspect --json implementation",
+        "stop_and_reopen_condition": "Automation cannot parse evidence, safe actions, or blocked actions."
+      },
+      {
+        "id": "SU-005",
+        "claim": "Cross-platform process-tree proof strategy remains to plan.",
+        "owner": "downstream planning and implementation",
+        "latest_resolve_phase": "before cross-platform-ready release claim",
+        "stop_and_reopen_condition": "One OS cannot reliably stop owned process trees without unsafe fallback."
+      }
+    ]
+  },
+  "downstream_instructions": {
+    "settled_decisions": [
+      "Specify this as Launchdeck Global CLI Control Plane.",
+      "Preserve daemonless user-scoped control plane as the recommended default.",
+      "Preserve no-external-kill and no-port/PID-only-ownership rules.",
+      "Preserve clean/reset separation.",
+      "Preserve JSON and next actions as compatibility surfaces."
+    ],
+    "assumptions_to_preserve": [
+      "Current repository F:/github/launchdeck is the implementation target.",
+      "CLI is the first complete product client.",
+      "Future clients reuse the same control-plane truth."
+    ],
+    "conflicts_requiring_return_to_sp_discussion": [
+      "Making external kill in scope.",
+      "Making daemon/service mandatory for this feature.",
+      "Making GUI/TUI/MCP implementation mandatory for this feature.",
+      "Collapsing clean and reset.",
+      "Changing default scope from user-scoped to multi-user whole-machine."
+    ],
+    "capability_map": [
+      "project registry",
+      "runtime index",
+      "locks",
+      "events",
+      "logs",
+      "status/ports/conflicts/inspect",
+      "owned lifecycle operations",
+      "reconcile",
+      "clean",
+      "JSON/non-interactive",
+      "docs/demo/security/cross-platform validation"
+    ],
+    "dependencies": [
+      "persistent state versioning",
+      "OS process and port inspection",
+      "path safety",
+      "stable output conventions"
+    ],
+    "planning_constraints": [
+      "No implementation sequence is prescribed by this handoff.",
+      "Downstream planning must preserve safety and compatibility invariants.",
+      "Verification must include end-to-end demo stories and platform smoke expectations."
+    ],
+    "deferred_scope": [
+      "daemon",
+      "GUI/TUI/MCP/editor",
+      "external kill",
+      "reset",
+      "plugin marketplace",
+      "workspace orchestration",
+      "multi-user registry"
+    ],
+    "reopen_conditions": [
+      "Scope cannot be specified without making a deferred item mandatory.",
+      "Safety invariants conflict with existing implementation constraints.",
+      "Cross-platform constraints invalidate the recommended state+lock approach."
+    ]
+  },
+  "discussion_decision_digest": {
+    "locked_direction": "Launchdeck is a CLI control plane for local project services.",
+    "rejected_alternatives": [
+      "task-runner-only framing",
+      "process-killer framing",
+      "agent-plugin-first framing",
+      "daemon-first framing",
+      "per-project-only state as product center",
+      "external kill as default capability"
+    ],
+    "accepted_tradeoffs": [
+      "default user-scoped state over whole-machine state",
+      "state+lock coordination before daemon",
+      "fail closed when ownership or path safety is uncertain",
+      "explicit config remains authority while discovery only proposes",
+      "exact retention and timeout defaults can be downstream soft unknowns"
+    ],
+    "experience_commitments": [
+      "user can ask Launchdeck before killing a port or starting another service",
+      "errors include reason and safe next action",
+      "inspect explains evidence and blocked actions",
+      "official demo proves the core loop"
+    ],
+    "review_criteria_carried_forward": [
+      "no duplicate same-task starts",
+      "no external-process kills by default",
+      "global status shows registered project services",
+      "port ownership is explained before action",
+      "clean cannot delete unknown or unsafe targets",
+      "cross-platform claims require evidence"
+    ],
+    "must_not_dilute": [
+      "ownership proof",
+      "clean/reset separation",
+      "single control-plane truth",
+      "JSON/next-action compatibility",
+      "future clients reusing the same state model"
+    ]
+  },
+  "must_preserve_ledger": [
+    {
+      "id": "MP-001",
+      "type": "goal",
+      "claim": "Launchdeck Global CLI Control Plane is the feature, not a loose set of CLI patches.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Spec title, goals, scenarios, and acceptance criteria must preserve this framing.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "The feature is flattened into unrelated command additions.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-002",
+      "type": "scope",
+      "claim": "Default scope is user-scoped local machine control plane.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/discussion-state.md",
+      "downstream_requirement": "Whole-machine/multi-user registry remains deferred unless explicitly reopened.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": "future discussion",
+      "stop_and_reopen_condition": "The spec needs multi-user whole-machine sharing.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-003",
+      "type": "decision",
+      "claim": "Single instance means one authoritative state/control namespace, not necessarily a daemon.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/technical-options.md",
+      "downstream_requirement": "Daemon/service mode must be deferred while state remains daemon-compatible.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "A daemon becomes mandatory for the base feature.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-004",
+      "type": "decision",
+      "claim": "Project identity uses stable projectId, unique alias, and repairable path.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Registry spec must not use display name or path as sole identity.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Project references become ambiguous under duplicate names or moved paths.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-005",
+      "type": "decision",
+      "claim": "Registry, runtime index, locks, events, and OS inspection are distinct authority layers.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Persistent state design must keep these responsibilities separate.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "One state file becomes an ambiguous source of truth for all behavior.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-006",
+      "type": "scenario",
+      "claim": "Duplicate start of the same project:task must not create a second instance.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Acceptance tests must cover repeated start/dev.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "The spec permits duplicate starts by default.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-007",
+      "type": "decision",
+      "claim": "Stop/restart requires Launchdeck ownership proof; port or PID alone is insufficient.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Lifecycle operations must block unknown/external ownership.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Stop/restart can act on external or unknown processes.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-008",
+      "type": "non_goal",
+      "claim": "Launchdeck is not a system process killer and must not kill external processes by default.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "External kill remains out of scope.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "External kill enters base scope.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-009",
+      "type": "decision",
+      "claim": "inspect is the unified evidence and safe-action explanation command.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/technical-options.md",
+      "downstream_requirement": "Spec must include target types, evidence, ownership confidence, safe actions, and blocked actions.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Users cannot explain why an action is allowed or blocked.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-010",
+      "type": "decision",
+      "claim": "clean is hygiene and reset is separate/destructive/deferred.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Clean commands must not absorb reset semantics.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Clean begins stopping services or deleting destructive state.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-011",
+      "type": "decision",
+      "claim": "Confirmation and force flags cannot bypass ownership, path, version, or external-process safety.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Permission model must encode this invariant.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "--yes or --force bypasses a hard safety boundary.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-012",
+      "type": "decision",
+      "claim": "JSON, error codes, next actions, and JSON Lines are compatibility surfaces.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Spec must define stable automation behavior.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Automation must parse human text to understand safety or state.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-013",
+      "type": "tradeoff",
+      "claim": "Future GUI/TUI/MCP/editor clients are deferred but must reuse the same control-plane truth.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Do not create a second state model for future integrations.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": "future clients",
+      "stop_and_reopen_condition": "A future client requires a different source of truth.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-014",
+      "type": "decision",
+      "claim": "Persistent state compatibility must fail closed for dangerous mutations.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Migration/version rules must block unsafe operations on unsupported state.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Unsupported state versions can still mutate processes or cleanup.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-015",
+      "type": "decision",
+      "claim": "Security must fail closed for path escape, symlink/junction escape, PID reuse, env leakage, corrupt state, and unsafe names.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Security requirements and tests must preserve threat-model coverage.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "A security edge case defaults to mutation instead of refusal.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-016",
+      "type": "scenario",
+      "claim": "Official demo must prove duplicate start, port ownership, inspect, restart/stop, stale recovery, logs/events, and clean.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Demo and docs must be part of acceptance.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "implementation",
+      "status": "pending",
+      "deferred_to": "implementation",
+      "stop_and_reopen_condition": "Demo cannot prove the core product loop.",
+      "superseded_by": null,
+      "mapped_to": ""
+    },
+    {
+      "id": "MP-017",
+      "type": "decision",
+      "claim": "Cross-platform-ready requires lifecycle smoke on Windows, macOS, and Linux.",
+      "source": ".specify/discussions/launchdeck-cli-control-plane/requirements.md",
+      "downstream_requirement": "Release claims must not exceed validation evidence.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "release claim",
+      "status": "pending",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Cross-platform support is claimed without all three OS families passing lifecycle smoke.",
+      "superseded_by": null,
+      "mapped_to": ""
+    }
+  ],
+  "consequence_analysis": {
+    "triggered": true,
+    "affected_object_map": [
+      "project registry",
+      "project alias and identity",
+      "runtime run index",
+      "locks",
+      "events",
+      "logs",
+      "process tree ownership",
+      "port observations",
+      "clean targets",
+      "persistent state versions",
+      "JSON output",
+      "future clients"
+    ],
+    "state_behavior_matrix": [
+      {
+        "state": "registered",
+        "behavior": "Project appears in global registry and can be inspected without running tasks."
+      },
+      {
+        "state": "starting",
+        "behavior": "A run record exists before spawn completes to prevent duplicate starts."
+      },
+      {
+        "state": "ready",
+        "behavior": "Running and readiness evidence are both available."
+      },
+      {
+        "state": "external",
+        "behavior": "Observed process or port is inspect-only by default."
+      },
+      {
+        "state": "stale",
+        "behavior": "Dangerous lifecycle actions are blocked until reconcile or evidence recovery."
+      },
+      {
+        "state": "unsupported_version",
+        "behavior": "Read-only degraded inspection may continue; dangerous mutations are blocked."
+      }
+    ],
+    "dependency_impact_table": [
+      {
+        "dependency": "OS process and port inspection",
+        "impact": "Ownership, conflicts, and stop/restart safety depend on platform evidence."
+      },
+      {
+        "dependency": "filesystem path safety",
+        "impact": "Clean, logs, registry paths, and state files must avoid path escape."
+      },
+      {
+        "dependency": "JSON compatibility",
+        "impact": "Future automation and clients depend on stable output."
+      }
+    ],
+    "recovery_and_validation_contract": [
+      "reconcile fixes Launchdeck state and does not kill processes",
+      "failed mutations leave state and events",
+      "clean defaults to preview/confirmation and avoids running evidence",
+      "cross-platform claims require smoke evidence"
+    ],
+    "coverage_gaps": [
+      {
+        "id": "CG-001",
+        "claim": "Exact lock and retention defaults remain unspecified.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "sp-specify",
+        "stop_and_reopen_condition": "Defaults affect product safety or usability."
+      },
+      {
+        "id": "CG-002",
+        "claim": "Current implementation surfaces must be live-read before affected-file or implementation-path claims.",
+        "owner": "downstream specification/planning",
+        "latest_resolve_phase": "before planning implementation tasks",
+        "stop_and_reopen_condition": "Implementation claims rely only on discussion memory."
+      }
+    ],
+    "obligations": [
+      {
+        "id": "CA-CP-001",
+        "claim": "Global state must be single-authoritative per default user scope.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Multiple state truths are introduced."
+      },
+      {
+        "id": "CA-CP-002",
+        "claim": "Mutating lifecycle operations must be globally serialized.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Duplicate starts or split-brain state are possible by design."
+      },
+      {
+        "id": "CA-CP-003",
+        "claim": "Stop/restart authority must require Launchdeck ownership proof.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Port or PID alone authorizes stop/restart."
+      },
+      {
+        "id": "CA-CP-004",
+        "claim": "External processes are inspect-only by default.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "External kill enters scope."
+      },
+      {
+        "id": "CA-CP-005",
+        "claim": "Stale and uncertain state must route to reconcile/inspect before dangerous lifecycle actions.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Unknown ownership still allows mutation."
+      },
+      {
+        "id": "CA-CP-006",
+        "claim": "Output must expose reason and safe next actions.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Users or automation cannot know the safe next step."
+      },
+      {
+        "id": "CA-CP-007",
+        "claim": "Ready, running, failed, stale, external, and conflict states must stay distinct.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Different safety states collapse into one status."
+      },
+      {
+        "id": "CA-CP-008",
+        "claim": "Project identity must use stable IDs and unique aliases; paths are repairable locations.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Path or name alone identifies projects."
+      },
+      {
+        "id": "CA-CP-009",
+        "claim": "Registry, runtime, locks, events, live inspection, and caches must remain distinct authority layers.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "A cache or stale run record becomes authoritative."
+      },
+      {
+        "id": "CA-CP-010",
+        "claim": "Lifecycle mutations must leave state and event evidence on both success and failure.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Failed starts/stops disappear without diagnosis."
+      },
+      {
+        "id": "CA-CP-011",
+        "claim": "Lock stale recovery must avoid PID-reuse mistakes.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "PID reuse can clear an active lock or block recovery."
+      },
+      {
+        "id": "CA-CP-012",
+        "claim": "Inspect must expose evidence, ownership confidence, safe actions, and blocked actions.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Inspect cannot explain why actions are allowed or blocked."
+      },
+      {
+        "id": "CA-CP-013",
+        "claim": "Logs and events must preserve enough diagnosis while avoiding secret exposure and unbounded growth.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Retention deletes key evidence or grows without bounds."
+      },
+      {
+        "id": "CA-CP-014",
+        "claim": "Clean must remain hygiene and reset must remain separate.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Clean gains destructive reset semantics."
+      },
+      {
+        "id": "CA-CP-015",
+        "claim": "Confirmation/force flags must not bypass ownership, path, or version safety.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "A confirmation flag overrides a hard safety boundary."
+      },
+      {
+        "id": "CA-CP-016",
+        "claim": "Automation must have stable JSON, non-interactive behavior, timeouts, idempotency, and next actions.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Automation must parse human text or hangs on prompts."
+      },
+      {
+        "id": "CA-CP-017",
+        "claim": "Future GUI/TUI/MCP/editor clients must reuse the same control-plane truth.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "A future client requires a second running-state model."
+      },
+      {
+        "id": "CA-CP-018",
+        "claim": "Persistent state compatibility must fail closed for dangerous mutations.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Unsupported state can still mutate processes or cleanup."
+      },
+      {
+        "id": "CA-CP-019",
+        "claim": "Security threat-model requirements must be preserved across spec, implementation, tests, and docs.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Path, PID, env, corrupt-state, or unsafe-name risks are omitted."
+      },
+      {
+        "id": "CA-CP-020",
+        "claim": "Cross-platform readiness requires lifecycle smoke evidence on Windows, macOS, and Linux.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "specification",
+        "status": "pending",
+        "stop_and_reopen_condition": "Cross-platform-ready is claimed without all three OS families."
+      }
+    ]
+  },
+  "ui_discussion": {
+    "ui_discussion_status": "deferred",
+    "confirmed_ui_decisions": [],
+    "deferred_ui_decisions": [
+      "Future GUI/TUI/MCP/editor clients are out of scope for this feature but must reuse the same control-plane state and safety model."
+    ],
+    "interaction_expectations": [
+      "CLI human output explains conclusion, evidence, and safe next actions.",
+      "Future presentation clients can render structured actions safely."
+    ],
+    "state_requirements": [
+      "state",
+      "ownership",
+      "readiness",
+      "evidence",
+      "safeActions",
+      "blockedActions"
+    ],
+    "accessibility_expectations": [],
+    "ui_sketches_present": false,
+    "ui_sketch_summary": "No UI sketches. CLI output and future client semantics are specified textually.",
+    "ui_sketch_reference": null
+  },
+  "quality_gate": {
+    "status": "user_confirmed",
+    "self_reviewed_at": "2026-07-08T15:17:52.6503678+08:00",
+    "user_review_required": false,
+    "user_confirmed_at": "2026-07-08T15:29:26.6223662+08:00",
+    "blocked_reasons": []
+  }
+}

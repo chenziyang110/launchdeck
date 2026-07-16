@@ -1,0 +1,25 @@
+{
+  "id": "E-CS-005",
+  "source_path": ".github/workflows/ci.yml",
+  "summary": "CI workflow — 3 OS matrix (windows-latest, macos-latest, ubuntu-latest) running check, test, and inline lifecycle smoke.",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-005",
+    "source_path": ".github/workflows/ci.yml",
+    "summary": "CI workflow — 3 OS matrix (windows-latest, macos-latest, ubuntu-latest) running check, test, and inline lifecycle smoke.",
+    "exports": [],
+    "dependencies": [],
+    "lines": 41,
+    "key_design_points": [
+      "Matrix: windows-latest, macos-latest, ubuntu-latest with fail-fast: false",
+      "Node.js 20 with npm cache via setup-node@v4",
+      "Steps: Checkout -> Setup Node -> npm ci -> npm run check -> npm test -> lifecycle smoke",
+      "Lifecycle smoke is a large inline Node script (not a script reference), creating a CI smoke project from scratch",
+      "Inline smoke covers: doctor, tasks (build/dev/fail), run build, run fail (expects exit 7), start dev, duplicate start (expects conflict), ps, logs, stop, second stop, clean dry-run, clean --safe, clean --all (expects confirmation needed)",
+      "No artifact uploads — smoke test is purely exit-code-gated"
+    ]
+  }
+}

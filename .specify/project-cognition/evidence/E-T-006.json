@@ -1,0 +1,30 @@
+{
+  "id": "E-T-006",
+  "source_path": "test/cli.test.js",
+  "summary": "CLI 端到端测试 — 完整生命周期流程和结构化错误",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-006",
+    "source_path": "test/cli.test.js",
+    "summary": "CLI 端到端测试 — 完整生命周期流程和结构化错误",
+    "test_groups": [
+      "端到端本地生命周期流程",
+      "常见 CLI 失败返回结构化 JSON 错误"
+    ],
+    "key_assertions": [
+      "doctor -> build -> test -> dev -> ps -> logs -> stop -> clean 完整流程",
+      "dev 启动返回 process.status=running，重复调用幂等 (spawned=false)",
+      "ps 返回 1 个进程，status=running",
+      "logs 返回日志内容，匹配 content",
+      "stop 返回 process.status=stopped",
+      "clean --safe 删除 cache 保留 danger",
+      "clean --all --yes 删除 danger",
+      "缺少 config 返回 config_not_found",
+      "init 成功，再次 init 返回 config_exists",
+      "缺少 task 返回 task_not_found"
+    ]
+  }
+}

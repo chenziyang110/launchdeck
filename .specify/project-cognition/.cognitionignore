@@ -1,0 +1,18 @@
+# Project Cognition ignore rules
+#
+# gitignore-compatible patterns for project cognition only.
+# These rules affect sp-map-scan, sp-map-build, and sp-map-update.
+# Uncomment suggestions only after confirming they are not useful project evidence.
+#
+# Built-in defaults are already ignored before this file is loaded: .git/,
+# .specify/, node_modules/, common virtualenv/cache directories, Python bytecode,
+# logs, and OS metadata.
+
+# --- From .gitignore (uncomment to exclude from project cognition) ---
+# .launchdeck/logs/
+# .launchdeck/runtime/
+# npm-debug.log*
+
+# --- Common low-signal directories found (review before uncommenting) ---
+# docs/
+# examples/

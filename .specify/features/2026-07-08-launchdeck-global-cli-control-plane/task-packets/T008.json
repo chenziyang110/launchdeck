@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "task_id": "T008",
+  "title": "Implement daemonless lock manager in src/control-plane/locks.js",
+  "phase": "Phase 2",
+  "story": null,
+  "priority": null,
+  "agent": "executor",
+  "depends_on": [
+    "T004: lock tests"
+  ],
+  "parallel_safe": true,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Lock record",
+      "ref": "data-model.md#entity-lockrecord"
+    },
+    {
+      "need": "Research decision",
+      "ref": "research.md#r4-use-conservative-lock-files-with-owner-metadata"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "src/control-plane/locks.js"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "src/control-plane/locks.js (new)"
+  ],
+  "anti_goals": [
+    "Do not hold locks for the entire managed child process lifetime.",
+    "Do not add a daemon or service."
+  ],
+  "does_not_remove": [
+    "File-backed daemonless coordination"
+  ],
+  "capability_operations": [
+    "implements registry/project/task lock acquisition"
+  ],
+  "consumer_surfaces": [],
+  "required_evidence": [],
+  "acceptance_criteria": [
+    "Lock manager supports exclusive lock files, metadata, bounded waits, safe stale detection, release cleanup, and structured lock_busy errors."
+  ],
+  "verify_commands": [
+    "node --check src/control-plane/locks.js",
+    "node --test test/control-plane-locks.test.js"
+  ],
+  "guardrails": [
+    "G-BOUNDARY",
+    "G-NO-DAEMON"
+  ],
+  "mp": [
+    "MP-003",
+    "MP-005"
+  ],
+  "ca": [
+    "CA-CP-010",
+    "CA-CP-012"
+  ],
+  "fr": [
+    "FR-010",
+    "FR-011",
+    "FR-012",
+    "FR-015",
+    "FR-050"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "src/control-plane/locks.js"
+    ],
+    "validation_output": {
+      "node --check src/control-plane/locks.js": "<paste relevant output>",
+      "node --test test/control-plane-locks.test.js": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

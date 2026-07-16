@@ -1,0 +1,17 @@
+version: 1
+project:
+  name: launchdeck
+tasks:
+  setup:
+    command: npm install
+    risk: medium
+  test:
+    command: npm test
+  lint:
+    command: npm run check
+clean:
+  safe:
+    - .launchdeck/logs
+    - .launchdeck/runtime
+  risky:
+    - node_modules

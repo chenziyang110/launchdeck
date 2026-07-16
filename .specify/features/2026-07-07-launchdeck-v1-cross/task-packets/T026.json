@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T026",
+  "story": "US2",
+  "repair_for": [
+    "T015"
+  ],
+  "description": "Fix managed CLI failure context and stop partial envelope handling.",
+  "agent": "executor",
+  "depends_on": [
+    "T025"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "implementation-review/reviews.ndjson#T015-2026-07-07T16:54:43.4923339+08:00",
+    "contracts/cli-json-contract.md",
+    "contracts/runtime-state-v1.md",
+    "src/cli.js",
+    "src/runtime.js",
+    "test/cli.test.js",
+    "test/managed-cli.test.js"
+  ],
+  "write_scope": [
+    "src/cli.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    "src/",
+    "test/",
+    "package.json"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "src/cli.js (modified)"
+  ],
+  "anti_goals": [
+    "Do not edit tests.",
+    "Do not change runtime state storage shape.",
+    "Do not add dependencies.",
+    "Do not report stop partial failures as plain status=error."
+  ],
+  "does_not_remove": [
+    "dev",
+    "start",
+    "restart",
+    "ps",
+    "logs",
+    "stop"
+  ],
+  "capability_operations": [
+    "repairs JSON failure context",
+    "repairs stop partial JSON contract"
+  ],
+  "acceptance_criteria": [
+    "ps --json with corrupt runtime state includes command, status, projectRoot, configPath, and runtime_state_invalid.",
+    "stop partial_failure paths emit createPartialEnvelope with command/status/projectRoot/configPath and per-task results.",
+    "npm run check and npm test pass after T025/T026 repairs."
+  ],
+  "verify_commands": [
+    "node --check src/cli.js",
+    "npm test"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-003",
+    "CA-014",
+    "CA-020"
+  ],
+  "mp_ids": [
+    "MP-009",
+    "MP-010",
+    "MP-014"
+  ],
+  "consumer_surfaces": [
+    "launchdeck ps --json",
+    "launchdeck stop --json",
+    "npm test"
+  ],
+  "required_evidence": [
+    "json_contract_evidence",
+    "review_blocker_repair_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

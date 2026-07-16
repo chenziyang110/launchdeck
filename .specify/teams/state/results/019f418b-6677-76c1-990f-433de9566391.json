@@ -1,0 +1,66 @@
+{
+  "status": "DONE_WITH_EXPECTED_RED",
+  "task_id": "T012",
+  "changed_files": [
+    "test/global-runtime.test.js",
+    ".specify/teams/state/results/019f418b-6677-76c1-990f-433de9566391.json"
+  ],
+  "validation_evidence": {
+    "node --check test/global-runtime.test.js": {
+      "status": 0,
+      "summary": "syntax check passed"
+    },
+    "node --test test/global-runtime.test.js": {
+      "status": 1,
+      "summary": "14 tests run, 13 passed, 1 failed"
+    }
+  },
+  "red_state_evidence": {
+    "intended_red": true,
+    "failing_test": "project remove refuses to unregister a project with active owned runs",
+    "failure_location": "test/global-runtime.test.js:307",
+    "assertion": "expected project remove to return status 1 while an owned dev run is active",
+    "actual": "project remove returned status 0",
+    "mapped_obligation": "CA-CP-003 active remove refusal"
+  },
+  "green_state_evidence": null,
+  "expected_red_evidence": {
+    "accepted_existing_green": [
+      "project add keeps aliases unique and idempotent for the same project root",
+      "project repair updates path config and alias without changing project identity",
+      "project scan explicitly discovers configs while skipping heavy generated dirs"
+    ],
+    "remaining_red": "Production has not yet refused project removal when active owned runs exist."
+  },
+  "blockers": [],
+  "concerns": [
+    "test/global-runtime.test.js is untracked in the current git worktree, so git diff does not show a tracked patch for the modified test file."
+  ],
+  "changed_paths": [
+    "test/global-runtime.test.js",
+    ".specify/teams/state/results/019f418b-6677-76c1-990f-433de9566391.json"
+  ],
+  "behavior_surfaces": [
+    "launchdeck project add --alias",
+    "launchdeck project repair --path --config --alias",
+    "launchdeck project remove <target>",
+    "launchdeck project scan <dir>",
+    "launchdeck projects"
+  ],
+  "verification": [
+    {
+      "command": "node --check test/global-runtime.test.js",
+      "status": "passed"
+    },
+    {
+      "command": "node --test test/global-runtime.test.js",
+      "status": "expected_red",
+      "output_summary": "13 passed, 1 failed; only failure is active owned project remove refusal expecting status 1 but receiving 0."
+    }
+  ],
+  "confidence_notes": [
+    "Changes were limited to the requested test file plus this runtime-managed result file.",
+    "No production behavior was implemented.",
+    "The RED failure is aligned with the T012 anti-goal and CA-CP-003; syntax, fixture cleanup, alias, repair, and scan assertions pass."
+  ]
+}

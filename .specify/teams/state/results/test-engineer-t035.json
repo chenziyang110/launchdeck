@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "task_id": "T035",
+  "changed_files": [
+    "scripts/smoke-lifecycle.js",
+    "docs/cross-platform-smoke.md"
+  ],
+  "validation_output": {
+    "node --check scripts/smoke-lifecycle.js": "exit 0; no output",
+    "node scripts/smoke-lifecycle.js --help": "exit 0; printed usage for --mode quick|full, --keep, --json, --help, plus safety notes for isolated LAUNCHDECK_HOME, demo-owned cleanup, no privileged hooks, and no arbitrary PID/port kill",
+    "leader quick smoke": "exit 0; node scripts/smoke-lifecycle.js --mode quick --json passed on win32 with 11 recorded steps: add, start, duplicate existing-run, status, task inspect, port inspect, restart, stop, reconcile, clean, cleanup stop.",
+    "leader residual scan": "exit 0; no listener on port 8888 and no matching demo smoke process remained."
+  },
+  "leader_repairs": [
+    "Changed duplicate start expectation from a refused command to a successful existing-run response with process.spawned=false, matching current Launchdeck duplicate-start semantics.",
+    "Excluded scratch directories while copying the official demo into the temporary smoke workspace so previous generated demo artifacts cannot contaminate smoke evidence."
+  ],
+  "concerns": [
+    "The accepted smoke evidence is Windows-local only. It does not satisfy the Windows/macOS/Linux cross-platform-ready release gate."
+  ],
+  "recovery_hints": [
+    "If the full smoke is later run and fails because port 8888 is externally occupied, record the run as blocked or failed and free the port manually; do not add kill-by-port behavior.",
+    "If Windows temp cleanup reports transient EPERM after a managed process test, rerun once after confirming no demo process remains."
+  ],
+  "consumer_evidence": [
+    "scripts/smoke-lifecycle.js provides a CLI-only local lifecycle smoke using a temporary official demo copy and isolated LAUNCHDECK_HOME.",
+    "docs/cross-platform-smoke.md records the evidence template and explicitly keeps cross-platform-ready gated on Windows, macOS, and Linux evidence.",
+    "Leader quick smoke proved the real CLI entrypoint path exercises the required demo lifecycle on the current Windows host."
+  ],
+  "must_preserve_evidence": [
+    "MP-017: cross-platform lifecycle smoke claims require both Windows/POSIX coverage and release readiness requires Windows, macOS, and Linux evidence.",
+    "FR-056: cross-platform-ready claims must require lifecycle smoke evidence on Windows, macOS, and Linux.",
+    "CA-CP-017: cross-platform process observation is best-effort and fail-closed; unknown evidence blocks destructive action.",
+    "CA-CP-020: release claims require runnable demo and docs."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-017",
+      "status": "preserved",
+      "evidence": "Smoke script stops only Launchdeck-owned demo target through CLI and does not kill external processes by PID or port."
+    },
+    {
+      "id": "CA-CP-020",
+      "status": "preserved",
+      "evidence": "Smoke script uses examples/demo-api and docs/cross-platform-smoke.md defines required evidence records."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "status": "ready_for_implementation",
+  "source_workflow": "sp-tasks",
+  "next_command": "/sp.implement",
+  "tasks_md": ".specify/features/2026-07-07-launchdeck-v1-cross/tasks.md",
+  "task_index": ".specify/features/2026-07-07-launchdeck-v1-cross/task-index.json",
+  "task_packets_dir": ".specify/features/2026-07-07-launchdeck-v1-cross/task-packets",
+  "delegated_task_generation_lanes": "none",
+  "execution_model": "adaptive",
+  "execution_mode": "standard",
+  "workflow_status": "ready",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": true,
+  "blocked_reason": "Native subagent tools are available, but spawning is not authorized unless the user explicitly asks for subagents.",
+  "current_ready_batch": ["T001"],
+  "feature_delivery_shape": "serial foundation with intra-story parallel test batches, followed by pipeline-heavy implementation and explicit join points",
+  "guardrails": ["G-SCOPE", "G-CONFIG", "G-RUNTIME", "G-CLEAN", "G-COMPAT", "G-PLATFORM", "G-TESTS"],
+  "must_preserve": ["MP-001", "MP-002", "MP-003", "MP-004", "MP-005", "MP-006", "MP-007", "MP-008", "MP-009", "MP-010", "MP-011", "MP-012", "MP-013", "MP-014", "MP-015", "MP-016"],
+  "consequence_obligations": ["CA-001", "CA-002", "CA-003", "CA-004", "CA-005", "CA-006", "CA-007", "CA-008", "CA-009", "CA-010", "CA-011", "CA-012", "CA-013", "CA-014", "CA-015", "CA-016", "CA-017", "CA-018", "CA-019", "CA-020", "CA-021", "CA-022"],
+  "implementation_readiness_self_audit": {
+    "buildable_fr_coverage": "passed",
+    "locked_decision_preservation": "passed",
+    "guardrail_mapping": "passed",
+    "user_observable_path_coverage": "passed",
+    "dp1_packet_readiness": "passed",
+    "dp2_packet_readiness": "passed",
+    "dp3_packet_readiness": "passed_with_join_reviews",
+    "reference_fidelity_mapping": "not_applicable",
+    "unmapped_task_status": "passed",
+    "write_set_conflict_status": "passed"
+  },
+  "embedded_review": {
+    "embedded_review_gate": "required",
+    "auto_repair_tasks": true,
+    "review_window_policy": {
+      "max_completed_tasks_before_review": 5,
+      "max_unreviewed_changed_paths": 8,
+      "max_unreviewed_validation_failures": 0
+    },
+    "visible_review_command": "none"
+  }
+}

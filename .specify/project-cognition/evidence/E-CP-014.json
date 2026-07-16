@@ -1,0 +1,21 @@
+{
+  "id": "E-CP-014",
+  "source_path": "src/control-plane/state.js",
+  "summary": "文件系统路径规划(controlPlanePaths)：homeDir -> locks/registry/runtime/events/logs子目录结构，支持LAUNCHDECK_HOME环境变量和XDG/Windows默认路径",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-014",
+    "source_path": "src/control-plane/state.js",
+    "summary": "文件系统路径规划(controlPlanePaths)：homeDir -> locks/registry/runtime/events/logs子目录结构，支持LAUNCHDECK_HOME环境变量和XDG/Windows默认路径",
+    "symbols": [
+      "controlPlanePaths",
+      "projectControlPlanePaths",
+      "taskControlPlanePaths"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

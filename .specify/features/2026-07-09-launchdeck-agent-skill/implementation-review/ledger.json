@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "ledgerId": "launchdeck-agent-skill-implementation-review-ledger",
+  "feature": {
+    "name": "Launchdeck Agent Skill",
+    "featureDir": "F:/github/launchdeck/.specify/features/2026-07-09-launchdeck-agent-skill",
+    "createdAt": "2026-07-09"
+  },
+  "baseline": {
+    "status": "recorded",
+    "activeProfile": "Standard Delivery with Lifecycle Safety Constraints",
+    "guardrails": [
+      "write only .agents/skills/launchdeck-agent/** for product artifacts",
+      "do not edit src, test, package.json, dependencies, runtime state, or demo services",
+      "Launchdeck remains lifecycle execution authority",
+      "unknown and external process owners remain inspect-only",
+      "safe clean, risky clean, and reset remain separate"
+    ]
+  },
+  "tasks": [
+    {
+      "task_id": "T001",
+      "taskId": "T001",
+      "status": "accepted",
+      "worker_result": "worker-results/T001.json",
+      "result_path": "worker-results/T001.json",
+      "task_brief": "implementation-review/task-briefs/T001.md",
+      "review_package": "implementation-review/review-packages/T001.md",
+      "task_review": "implementation-review/task-reviews/T001.json",
+      "review": "implementation-review/task-reviews/T001.json"
+    },
+    {
+      "task_id": "T002",
+      "taskId": "T002",
+      "status": "accepted",
+      "worker_result": "worker-results/T002.json",
+      "result_path": "worker-results/T002.json",
+      "task_brief": "implementation-review/task-briefs/T002.md",
+      "review_package": "implementation-review/review-packages/T002.md",
+      "task_review": "implementation-review/task-reviews/T002.json",
+      "review": "implementation-review/task-reviews/T002.json"
+    },
+    {
+      "task_id": "T003",
+      "taskId": "T003",
+      "status": "accepted",
+      "worker_result": "worker-results/T003.json",
+      "result_path": "worker-results/T003.json",
+      "task_brief": "implementation-review/task-briefs/T003.md",
+      "review_package": "implementation-review/review-packages/T003.md",
+      "task_review": "implementation-review/task-reviews/T003.json",
+      "review": "implementation-review/task-reviews/T003.json"
+    },
+    {
+      "task_id": "T004",
+      "taskId": "T004",
+      "status": "accepted",
+      "worker_result": "worker-results/T004.json",
+      "result_path": "worker-results/T004.json",
+      "task_brief": "implementation-review/task-briefs/T004.md",
+      "review_package": "implementation-review/review-packages/T004.md",
+      "task_review": "implementation-review/task-reviews/T004.json",
+      "review": "implementation-review/task-reviews/T004.json"
+    },
+    {
+      "task_id": "T005",
+      "taskId": "T005",
+      "status": "accepted",
+      "worker_result": "worker-results/T005.json",
+      "result_path": "worker-results/T005.json",
+      "task_brief": "implementation-review/task-briefs/T005.md",
+      "review_package": "implementation-review/review-packages/T005.md",
+      "task_review": "implementation-review/task-reviews/T005.json",
+      "review": "implementation-review/task-reviews/T005.json"
+    },
+    {
+      "task_id": "T006",
+      "taskId": "T006",
+      "status": "accepted",
+      "worker_result": "worker-results/T006.json",
+      "result_path": "worker-results/T006.json",
+      "task_brief": "implementation-review/task-briefs/T006.md",
+      "review_package": "implementation-review/review-packages/T006.md",
+      "task_review": "implementation-review/task-reviews/T006.json",
+      "review": "implementation-review/task-reviews/T006.json"
+    },
+    {
+      "task_id": "T007",
+      "taskId": "T007",
+      "status": "accepted",
+      "worker_result": "worker-results/T007.json",
+      "result_path": "worker-results/T007.json",
+      "task_brief": "implementation-review/task-briefs/T007.md",
+      "review_package": "implementation-review/review-packages/T007.md",
+      "task_review": "implementation-review/task-reviews/T007.json",
+      "review": "implementation-review/task-reviews/T007.json"
+    },
+    {
+      "task_id": "T008",
+      "taskId": "T008",
+      "status": "accepted",
+      "worker_result": "worker-results/T008.json",
+      "result_path": "worker-results/T008.json",
+      "task_brief": "implementation-review/task-briefs/T008.md",
+      "review_package": "implementation-review/review-packages/T008.md",
+      "task_review": "implementation-review/task-reviews/T008.json",
+      "review": "implementation-review/task-reviews/T008.json"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "pre-implement-review-001",
+      "decision": "cleared"
+    },
+    {
+      "id": "join-point-review-001",
+      "decision": "cleared"
+    },
+    {
+      "id": "final-review-001",
+      "decision": "cleared"
+    }
+  ],
+  "validation": [
+    {
+      "command": "required file and routing checks",
+      "result": "pass",
+      "summary": "All eight skill files exist, are non-empty, and SKILL.md routes every reference."
+    },
+    {
+      "command": "node src\\cli.js --help command-name check",
+      "result": "pass",
+      "summary": "Required Launchdeck command names are present in live CLI help."
+    },
+    {
+      "command": "rg forbidden raw process command names",
+      "result": "pass",
+      "summary": "No task-banned raw process command names found under .agents/skills/launchdeck-agent."
+    },
+    {
+      "command": "eval prompt coverage check",
+      "result": "pass",
+      "summary": "Eval prompts include 10 should-trigger and 7 should-not-trigger cases plus required behavior/safety coverage."
+    }
+  ]
+}

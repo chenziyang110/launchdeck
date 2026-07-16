@@ -1,0 +1,55 @@
+{
+  "status": "DONE",
+  "task_id": "T009",
+  "changed_files": [
+    "src/control-plane/events.js"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check src\\control-plane\\events.js",
+      "result": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "node --test test\\control-plane-events.test.js",
+      "result": "passed: 5 tests, 0 failures",
+      "exit_code": 0
+    }
+  ],
+  "red_state_evidence": {
+    "command": "node --test test\\control-plane-events.test.js",
+    "result": "failed before implementation: 5 tests failed with ERR_MODULE_NOT_FOUND for src/control-plane/events.js"
+  },
+  "green_state_evidence": {
+    "command": "node --test test\\control-plane-events.test.js",
+    "result": "passed after implementation: appendEvent identity/lifecycle, transactionId preservation, secret redaction, corrupt-line read tolerance, and next action preservation all passed"
+  },
+  "blockers": [],
+  "concerns": [],
+  "changed_paths": [
+    "src/control-plane/events.js",
+    ".specify/teams/state/results/019f4152-aa38-7810-b0ef-5cf2b37c9eb0.json"
+  ],
+  "behavior_surfaces": [
+    "control-plane append-only event store",
+    "LAUNCHDECK_HOME/events/events.jsonl JSONL persistence",
+    "event redaction for secret-like env/config fields and token-like values",
+    "bounded event history reads with malformed-line warnings",
+    "next action payload persistence"
+  ],
+  "state_contracts": [
+    "CA-CP-010: events are append-only JSON Lines and corrupt lines are skipped with warnings",
+    "CA-CP-016: secret-bearing data is redacted before event persistence",
+    "EventRecord schemaVersion 1 fields from data-model.md",
+    "NextAction arrays are preserved on persisted records"
+  ],
+  "verification": {
+    "syntax": "node --check src\\control-plane\\events.js -> passed",
+    "focused_tests": "node --test test\\control-plane-events.test.js -> passed: 5 tests, 0 failures"
+  },
+  "confidence_notes": [
+    "Implementation stayed within the requested write scope: src/control-plane/events.js plus this runtime-managed result file.",
+    "No hidden background service, runtime state mutation, CLI changes, package changes, or test edits were introduced.",
+    "readEvents defaults to a bounded 200-event history with a 1000-event maximum when an explicit limit is supplied."
+  ]
+}

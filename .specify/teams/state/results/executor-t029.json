@@ -1,0 +1,47 @@
+{
+  "status": "success",
+  "task_id": "T029",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/executor-t029.json"
+  ],
+  "validation_output": {
+    "ledger_json_parse": "Get-Content -Raw .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json | ConvertFrom-Json passed.",
+    "node --test test/recovery-observability.test.js": "exit 0; 7 tests, 7 passed, 0 failed; duration_ms 11567.7719. Passed: logs project:task continues to read existing managed log content; status --all marks a disappeared owned run as stale with reconcile next action; reconcile --json marks stale runs without killing a new external listener on the same port; events --json reads bounded structured event history for a target; logs --follow --json emits visible JSON Lines for appended managed log output; clean --safe preserves running logs latest failed logs and failure-linked events; logs --follow --json redacts secret-looking managed output before streaming.",
+    "npm run check": "exit 0; configured node --check chain passed for src/errors.js, src/cli.js, src/config.js, src/adapters/process.js, src/global-runtime.js, src/runtime.js, src/control-plane/state.js, src/control-plane/locks.js, src/control-plane/events.js, and listed test files."
+  },
+  "concerns": [],
+  "recovery_hints": [],
+  "consumer_evidence": [
+    "status --all keeps disappeared Launchdeck-owned run state visible as stale and exposes reconcile plus inspect run next actions.",
+    "reconcile <project:task> --json returns staleRuns, updatedRuns, and events while leaving a new external listener on the same port running.",
+    "events <project:task> --json reads schemaVersion=1 machine-readable structured event history for the target.",
+    "logs <project:task> --follow --json emits visible JSON Lines from the foreground CLI process with schemaVersion, type=log.line, projectId, task, runId, timestamp, and line.",
+    "logs <project:task> --follow --json redacts secret-looking API_TOKEN output before stdout streaming.",
+    "clean --safe removes declared safe cache data while preserving active run logs, latest failed logs, and failure-linked event records."
+  ],
+  "must_preserve_evidence": {
+    "MP-012": "Logs/events observability remains available through structured events --json and logs --follow --json JSON Lines.",
+    "MP-015": "Secret-looking log output is redacted before streaming, preserving secret-safe observability.",
+    "safe_clean_boundary": "clean --safe remains hygiene-only and preserves running/latest-failure/failure-linked evidence while removing declared safe cache targets.",
+    "no_external_kill": "reconcile repairs stale Launchdeck state without killing external or new listeners."
+  },
+  "consequence_obligations": {
+    "CA-CP-009": {
+      "status": "satisfied_for_join",
+      "evidence": "Stale run visibility and reconcile repair were validated through status --all and reconcile CLI entrypoints."
+    },
+    "CA-CP-010": {
+      "status": "satisfied_for_join",
+      "evidence": "events --json reads structured schemaVersion=1 history and reconcile returns event evidence."
+    },
+    "CA-CP-016": {
+      "status": "satisfied_for_join",
+      "evidence": "logs --follow --json redaction test confirms secret-looking streamed output is replaced before emission."
+    },
+    "CA-CP-019": {
+      "status": "satisfied_for_join",
+      "evidence": "status, reconcile, events, and clean preserve stable JSON envelopes while logs --follow --json emits JSON Lines for the streaming case."
+    }
+  }
+}

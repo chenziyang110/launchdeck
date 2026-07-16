@@ -1,0 +1,347 @@
+{
+  "version": 1,
+  "status": "ready_for_plan",
+  "entry_source": "sp-discussion",
+  "source_handoff": ".specify/discussions/launchdeck-tool/handoff-to-specify.md",
+  "source_handoff_json": ".specify/discussions/launchdeck-tool/handoff-to-specify.json",
+  "source_files_read": [
+    ".specify/discussions/launchdeck-tool/handoff-to-specify.md",
+    ".specify/discussions/launchdeck-tool/handoff-to-specify.json",
+    ".specify/discussions/launchdeck-tool/discussion-log.md",
+    ".specify/discussions/launchdeck-tool/requirements.md",
+    ".specify/discussions/launchdeck-tool/technical-options.md",
+    ".specify/discussions/launchdeck-tool/project-context.md",
+    ".specify/discussions/launchdeck-tool/open-questions.md",
+    ".specify/memory/constitution.md",
+    ".specify/memory/project-rules.md",
+    ".specify/memory/learnings/INDEX.md",
+    "package.json",
+    "README.md",
+    ".launchdeck.yml",
+    "src/cli.js",
+    "src/config.js",
+    "src/runtime.js",
+    "test/cli.test.js"
+  ],
+  "source_signal_disposition": [
+    {
+      "signal": "universal lifecycle control tool",
+      "source": "handoff goal and requirements.md",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#overview",
+      "user_confirmed": true,
+      "reopen_trigger": "Product reframed as skill-only or task-runner-only."
+    },
+    {
+      "signal": "local single-project v1",
+      "source": "handoff scope",
+      "disposition": "preserved",
+      "artifact_location": "spec.md#confirmed-scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Need workspace graph orchestration in v1."
+    },
+    {
+      "signal": "cross-platform Windows/macOS/Linux",
+      "source": "user discussion and handoff",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#non-functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "A supported OS is demoted from first-class support."
+    },
+    {
+      "signal": ".launchdeck.yml v1 explicit protocol",
+      "source": "requirements.md",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Auto-discovery replaces explicit config."
+    },
+    {
+      "signal": "init creates config",
+      "source": "requirements.md#init-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Onboarding must be scan/template-first."
+    },
+    {
+      "signal": "doctor read-only readiness",
+      "source": "requirements.md#doctor-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Doctor mutates project state."
+    },
+    {
+      "signal": "tasks read-only inventory",
+      "source": "requirements.md#tasks-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Tasks executes or hides risk/type metadata."
+    },
+    {
+      "signal": "run task universal executor",
+      "source": "requirements.md#execution-command-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Execution semantics no longer follow metadata."
+    },
+    {
+      "signal": "longRunning managed execution",
+      "source": "requirements.md",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Managed state is inferred opaquely."
+    },
+    {
+      "signal": "ps logs stop recovery",
+      "source": "requirements.md#managed-runtime-recovery-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Inspection commands delete state or logs."
+    },
+    {
+      "signal": "clean safe/risky dry-run",
+      "source": "requirements.md#clean-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Clean becomes reset-like or out-of-root."
+    },
+    {
+      "signal": "JSON envelope and stable errors",
+      "source": "requirements.md and technical-options.md",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#functional-requirements",
+      "user_confirmed": true,
+      "reopen_trigger": "Human text becomes the only parseable surface."
+    },
+    {
+      "signal": "runtime adapter boundary",
+      "source": "technical-options.md",
+      "disposition": "preserved",
+      "artifact_location": "context.md#integration-boundaries",
+      "user_confirmed": true,
+      "reopen_trigger": "Platform checks spread and change semantics."
+    },
+    {
+      "signal": "release claim levels",
+      "source": "requirements.md#verification-matrix-contract",
+      "disposition": "in_scope",
+      "artifact_location": "spec.md#acceptance-proof",
+      "user_confirmed": true,
+      "reopen_trigger": "Cross-platform-ready is claimed without all-OS smoke."
+    },
+    {
+      "signal": "init scan and templates",
+      "source": "handoff deferred scope",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#deferred-or-future-scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Zero-config onboarding is required for v1 adoption."
+    },
+    {
+      "signal": "MCP and agent skill",
+      "source": "handoff out-of-scope/deferred",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#out-of-scope",
+      "user_confirmed": true,
+      "reopen_trigger": "CLI/protocol is stable and integration is requested."
+    },
+    {
+      "signal": "GUI/TUI",
+      "source": "handoff out-of-scope",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#out-of-scope",
+      "user_confirmed": true,
+      "reopen_trigger": "User asks for visual control surface."
+    },
+    {
+      "signal": "destructive reset",
+      "source": "clean discussion",
+      "disposition": "deferred",
+      "artifact_location": "spec.md#out-of-scope",
+      "user_confirmed": true,
+      "reopen_trigger": "Reset behavior is explicitly requested as separate contract."
+    }
+  ],
+  "discussion_decision_digest": {
+    "locked_direction": [
+      {
+        "decision": "CLI-first lifecycle control",
+        "source": "handoff and technical-options.md",
+        "rationale": "The product promise is lifecycle control and the repo already has CLI/config/runtime surfaces.",
+        "artifact_mapping": "spec.md#decision-capture"
+      }
+    ],
+    "rejected_alternatives": [
+      {
+        "option": "Skill-only product",
+        "rejection_reason": "Tool is the core; skill is a later integration layer.",
+        "source": "discussion-log.md",
+        "reopen_condition": "User changes product back to agent-only."
+      },
+      {
+        "option": "Agent/MCP-first",
+        "rejection_reason": "Would couple core lifecycle behavior to a consumer layer.",
+        "source": "technical-options.md",
+        "reopen_condition": "CLI/protocol stable and integration requested."
+      },
+      {
+        "option": "Auto-discovery-first",
+        "rejection_reason": "Discovery mistakes are dangerous when commands start processes or clean files.",
+        "source": "technical-options.md",
+        "reopen_condition": "Explicit config blocks adoption."
+      }
+    ],
+    "accepted_tradeoffs": [
+      {
+        "tradeoff": "Hand-written config first",
+        "risk": "Less automatic onboarding.",
+        "source": "handoff",
+        "latest_allowed_resolve_phase": "v1 implementation planning",
+        "reopen_condition": "Users will not adopt without scan-generated config."
+      },
+      {
+        "tradeoff": "Shell string commands in v1",
+        "risk": "Requires careful platform handling.",
+        "source": "technical-options.md",
+        "latest_allowed_resolve_phase": "runtime architecture lock",
+        "reopen_condition": "Common projects cannot express commands safely."
+      }
+    ],
+    "experience_commitments": [
+      {
+        "commitment": "First-run CLI path prioritizes init, doctor, tasks, run, managed dev/start, ps, logs, stop, clean preview, and clean safe.",
+        "ui_discussion": "not_applicable",
+        "artifact_mapping": "spec.md#scenarios-and-usage-paths"
+      }
+    ],
+    "review_criteria_carried_forward": [
+      "Preserve v1 scope.",
+      "Preserve cross-platform requirement.",
+      "Preserve .launchdeck.yml explicit protocol.",
+      "Preserve safe cleanup and managed runtime recovery.",
+      "Preserve JSON/error compatibility."
+    ],
+    "must_not_dilute": [
+      "Do not reduce Launchdeck to a thin alias runner.",
+      "Do not turn cleanup into reset.",
+      "Do not claim cross-platform readiness from single-OS evidence.",
+      "Do not make agent integration the core product."
+    ]
+  },
+  "must_preserve": [
+    {
+      "id": "MP-001",
+      "claim": "Launchdeck is a universal lifecycle control tool for local software projects.",
+      "status": "mapped",
+      "artifact_location": "spec.md#overview"
+    },
+    {
+      "id": "MP-002",
+      "claim": "v1 is CLI-first, local, single-project, explicit-config lifecycle control.",
+      "status": "mapped",
+      "artifact_location": "spec.md#confirmed-scope"
+    },
+    {
+      "id": "MP-003",
+      "claim": "Deferred integrations and orchestration are out of v1.",
+      "status": "mapped",
+      "artifact_location": "spec.md#out-of-scope"
+    },
+    {
+      "id": "MP-004",
+      "claim": ".launchdeck.yml v1 remains small, explicit, readable, and stable.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-005",
+      "claim": "Windows, macOS, and Linux are first-class lifecycle platforms.",
+      "status": "mapped",
+      "artifact_location": "spec.md#non-functional-requirements"
+    },
+    {
+      "id": "MP-006",
+      "claim": "First-run flow prioritizes inspection and recoverability before mutation.",
+      "status": "mapped",
+      "artifact_location": "spec.md#scenarios-and-usage-paths"
+    },
+    {
+      "id": "MP-007",
+      "claim": "doctor is read-only with stable severity and codes.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-008",
+      "claim": "tasks is read-only inventory.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-009",
+      "claim": "longRunning controls foreground vs managed execution.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-010",
+      "claim": "Runtime state/logs are inspectable recovery surfaces.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-011",
+      "claim": "Clean is dry-run by default, safe/risky split, project-local, and separate from reset.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-012",
+      "claim": "OS-specific behavior belongs behind runtime adapters.",
+      "status": "mapped",
+      "artifact_location": "context.md#integration-boundaries"
+    },
+    {
+      "id": "MP-013",
+      "claim": "Release claims name verification level; cross-platform-ready requires all-OS smoke.",
+      "status": "mapped",
+      "artifact_location": "spec.md#acceptance-proof"
+    },
+    {
+      "id": "MP-014",
+      "claim": "JSON/errors/exit behavior are compatibility surfaces.",
+      "status": "mapped",
+      "artifact_location": "spec.md#functional-requirements"
+    },
+    {
+      "id": "MP-015",
+      "claim": "Target implementation project is F:/github/launchdeck.",
+      "status": "mapped",
+      "artifact_location": "context.md#relevant-repository-context"
+    },
+    {
+      "id": "MP-016",
+      "claim": "Remaining unknowns are soft downstream details.",
+      "status": "mapped",
+      "artifact_location": "alignment.md#outstanding-soft-unknowns"
+    }
+  ],
+  "coverage_status": "complete",
+  "planning_gate_status": "ready",
+  "hard_unknown_count": 0,
+  "open_conflict_count": 0,
+  "quality_gate": {
+    "status": "user_confirmed",
+    "user_review_required": false,
+    "user_review_requested": true,
+    "user_confirmed_at": "2026-07-07T13:46:06.8370190+08:00",
+    "blocked_reasons": []
+  }
+}

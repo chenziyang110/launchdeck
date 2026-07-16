@@ -1,0 +1,118 @@
+{
+  "task_id": "T008",
+  "id": "T008",
+  "title": "Integrate and validate skill package",
+  "agent": "quality-reviewer",
+  "depends_on": [
+    "T001",
+    "T002",
+    "T003",
+    "T004",
+    "T005",
+    "T006",
+    "T007"
+  ],
+  "parallel_safe": false,
+  "objective": "Perform final cross-file integration, command-surface verification, safety scan, and quickstart completion-gate review.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/SKILL.md",
+    ".agents/skills/launchdeck-agent/references/*.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/research.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/quickstart.md",
+    "README.md",
+    "src/cli.js"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    "package.json",
+    ".env",
+    "credential files",
+    ".launchdeck/**",
+    "generated dependency directories"
+  ],
+  "context_navigation": {
+    "completion_gate": "quickstart.md#10-Completion-Gate",
+    "command_names": "README.md#Command-reference and src/cli.js help",
+    "safety_model": "README.md#Safety-model",
+    "validation_strategy": "plan-contract.json#validation_strategy",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/** （修改如需修正一致性）"
+  ],
+  "anti_goals": [
+    "Do not expand scope into CLI or runtime changes.",
+    "Do not add metadata unless evidence requires it.",
+    "Do not add scanners, public subskills, MCP, GUI, or executable eval fixtures."
+  ],
+  "does_not_remove": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010",
+    "MP-011",
+    "MP-012",
+    "MP-013",
+    "MP-014",
+    "CA-AS-001",
+    "CA-AS-002",
+    "CA-AS-003",
+    "CA-AS-004",
+    "CA-AS-005",
+    "CA-AS-006",
+    "CA-AS-007",
+    "CA-AS-008",
+    "CA-AS-009",
+    "CA-AS-010"
+  ],
+  "capability_operations": [
+    "validates all implemented skill-package capabilities"
+  ],
+  "consumer_surfaces": [
+    "skill package as consumed by agents and reviewers"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "command_surface_evidence",
+    "safety_scan_evidence",
+    "eval_prompt_evidence"
+  ],
+  "acceptance_criteria": [
+    "All required files exist and are non-empty.",
+    "SKILL.md references every required reference file.",
+    "Launchdeck command names used by references exist in current CLI help or README.",
+    "No guidance bypasses Launchdeck for lifecycle mutation.",
+    "No guidance authorizes unknown or external process kills.",
+    "No guidance makes clean equivalent to reset.",
+    "Eval prompts satisfy SC-001 through SC-005."
+  ],
+  "verify_commands": [
+    "$files = @('.agents/skills/launchdeck-agent/SKILL.md','.agents/skills/launchdeck-agent/references/intent-routing.md','.agents/skills/launchdeck-agent/references/adoption-flow.md','.agents/skills/launchdeck-agent/references/discovery-rules.md','.agents/skills/launchdeck-agent/references/command-flows.md','.agents/skills/launchdeck-agent/references/recovery-playbooks.md','.agents/skills/launchdeck-agent/references/clean-safety.md','.agents/skills/launchdeck-agent/references/eval-prompts.md'); foreach ($file in $files) { if (!(Test-Path $file)) { throw \"Missing $file\" }; if ((Get-Item $file).Length -eq 0) { throw \"Empty $file\" } }",
+    "$help = node src\\cli.js --help; @('doctor','project add','status --all','conflicts','run <task>','start','restart','ps','ports','inspect','logs','events','reconcile','stop','force-stop','clean') | ForEach-Object { if ($help -notmatch [regex]::Escape($_)) { throw \"Missing CLI help command: $_\" } }",
+    "if (rg -n \"(taskkill|kill -9|pkill|Stop-Process|fuser)\" .codex\\skills\\launchdeck-agent) { throw \"Unsafe raw process command guidance found\" }"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/SKILL.md",
+      ".agents/skills/launchdeck-agent/references/*.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "E-T-010",
+  "source_path": "test/control-plane-locks.test.js",
+  "summary": "锁系统测试 — acquireLock、竞争、过期、takeover、withLock 清理",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-010",
+    "source_path": "test/control-plane-locks.test.js",
+    "summary": "锁系统测试 — acquireLock、竞争、过期、takeover、withLock 清理",
+    "test_groups": [
+      "acquireLock 使用所有者元数据创建排他锁文件",
+      "acquireLock 在有界等待后拒绝竞争的锁",
+      "acquireLock 当所有者进程仍存活时拒绝接管过期锁",
+      "acquireLock 当所有者不存在时安全接管过期锁",
+      "withLock 在临界区完成后移除锁文件",
+      "withLock 在临界区抛出时移除锁文件"
+    ],
+    "key_assertions": [
+      "锁文件包含 version, lockName, ownerPid, ownerCommand, ownerCwd, transactionId, createdAt, expiresAt",
+      "竞争锁返回 lock_busy 或 task_lock_busy，包含所有者信息",
+      "过期锁但进程存活：返回 lock_busy, staleCandidate=true, takeoverAllowed=false",
+      "过期锁且进程不存在：返回新锁，覆盖所有者",
+      "withLock 成功时 lockPath 不存在",
+      "withLock 抛出异常时 lockPath 不存在"
+    ]
+  }
+}

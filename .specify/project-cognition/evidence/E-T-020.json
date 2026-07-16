@@ -1,0 +1,28 @@
+{
+  "id": "E-T-020",
+  "source_path": "test/runtime-state.test.js",
+  "summary": "运行时状态单元测试 — startManagedTask 状态形状、损坏状态、陈旧进程、日志、幂等 stop",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-020",
+    "source_path": "test/runtime-state.test.js",
+    "summary": "运行时状态单元测试 — startManagedTask 状态形状、损坏状态、陈旧进程、日志、幂等 stop",
+    "test_groups": [
+      "startManagedTask 为托管任务写入 v1 运行时状态形状",
+      "ps 报告 runtime_state_invalid 并保留损坏状态证据",
+      "ps 将退出的托管进程刷新为 stale 而不删除其记录",
+      "logs 在托管进程退出后返回日志内容",
+      "stop 对陈旧托管进程是幂等的并保留记录"
+    ],
+    "key_assertions": [
+      "startManagedTask 写入 state.json 包含 version=1, projectRoot, updatedAt, 进程信息",
+      "损坏 state.json 返回 error.code=runtime_state_invalid，文件被保留",
+      "pid=0 的进程被刷新为 status=stale, lastRefresh 被更新",
+      "logs 在状态为 stale 时仍返回日志内容 (match /request complete/)",
+      "停止陈旧进程：status=stopped, stoppedAt 设置"
+    ]
+  }
+}

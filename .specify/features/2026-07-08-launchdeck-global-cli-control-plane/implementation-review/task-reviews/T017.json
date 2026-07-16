@@ -1,0 +1,25 @@
+{
+  "task_ids": [
+    "T017"
+  ],
+  "verdict": "accepted",
+  "review_id": "T017-join-validation",
+  "accepted_at": "2026-07-08",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json"
+  ],
+  "validation": [
+    "ledger.json and executor-t017.json parse as JSON",
+    "node --test test/global-runtime.test.js test/managed-cli.test.js passed 36/36",
+    "npm run check passed"
+  ],
+  "findings": [],
+  "accepted_residual_risks": [
+    "US1 join evidence intentionally excludes later inspect, events, reconcile, restart/stop ownership, clean, and cross-platform release-smoke scope.",
+    "Validation was run in this Windows/PowerShell workspace only and is not a macOS/Linux release claim."
+  ],
+  "follow_up_work": [
+    "Proceed to US2 tests for external conflict and unified inspect.",
+    "Record macOS/Linux lifecycle smoke before making cross-platform release claims."
+  ]
+}

@@ -1,0 +1,633 @@
+{
+  "schema_version": 2,
+  "nodes": [
+    {
+      "id": "capability-project-lifecycle",
+      "type": "capability",
+      "title": "Project Lifecycle Control",
+      "paths": [
+        "src/cli.js",
+        "src/config.js",
+        "src/runtime.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "lifecycle",
+        "description": "Core lifecycle control: init, doctor, run, build, test, dev tasks"
+      }
+    },
+    {
+      "id": "capability-process-management",
+      "type": "capability",
+      "title": "Managed Process Management",
+      "paths": [
+        "src/control-plane/runs.js",
+        "src/control-plane/ownership.js",
+        "src/control-plane/locks.js",
+        "src/control-plane/state.js",
+        "src/global-runtime.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "process",
+        "description": "Start, stop, restart, force-stop, reconcile managed processes with ownership proof"
+      }
+    },
+    {
+      "id": "capability-registry",
+      "type": "capability",
+      "title": "Project Registry Management",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "registry",
+        "description": "Project registration, scanning, removal for cross-project visibility"
+      }
+    },
+    {
+      "id": "capability-inspect-observability",
+      "type": "capability",
+      "title": "Inspect & Observability",
+      "paths": [
+        "src/control-plane/inspect.js",
+        "src/control-plane/events.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "observability",
+        "description": "Status, ps, ports, conflicts, inspect, logs, events with streaming support"
+      }
+    },
+    {
+      "id": "capability-clean-safety",
+      "type": "capability",
+      "title": "Clean & Safety Hygiene",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "safety",
+        "description": "Safe and risky clean target separation, dry-run previews, ownership-based safety"
+      }
+    },
+    {
+      "id": "capability-agent-installer",
+      "type": "capability",
+      "title": "Agent Skill Installer",
+      "paths": [
+        "src/agent-installer.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "agent",
+        "description": "Install launchdeck-agent skill to codex, claude-code, github-copilot targets"
+      }
+    },
+    {
+      "id": "capability-json-output",
+      "type": "capability",
+      "title": "JSON Machine-Readable Output",
+      "paths": [
+        "src/output.js",
+        "src/errors.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "output",
+        "description": "Stable JSON envelope with ok/schemaVersion/command/data/next, compact mode"
+      }
+    },
+    {
+      "id": "module-cli-entrypoint",
+      "type": "module",
+      "title": "CLI Entrypoint",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Main CLI parser and command dispatcher",
+        "aliases": [
+          "cli",
+          "launchdeck",
+          "entrypoint"
+        ]
+      }
+    },
+    {
+      "id": "module-config",
+      "type": "module",
+      "title": "Config Management",
+      "paths": [
+        "src/config.js",
+        ".launchdeck.yml",
+        "schema/launchdeck.schema.json"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "config",
+        "description": "Launchdeck YAML config reading, parsing, validation"
+      }
+    },
+    {
+      "id": "module-errors",
+      "type": "module",
+      "title": "Error System",
+      "paths": [
+        "src/errors.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "errors",
+        "description": "Structured error types and codes"
+      }
+    },
+    {
+      "id": "module-output",
+      "type": "module",
+      "title": "Output Formatting",
+      "paths": [
+        "src/output.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "output",
+        "description": "JSON and human-readable output formatting"
+      }
+    },
+    {
+      "id": "module-control-plane-actions",
+      "type": "module",
+      "title": "Control Plane Actions",
+      "paths": [
+        "src/control-plane/actions.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Action execution within the control plane"
+      }
+    },
+    {
+      "id": "module-control-plane-events",
+      "type": "module",
+      "title": "Control Plane Events",
+      "paths": [
+        "src/control-plane/events.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Structured event system with streaming support"
+      }
+    },
+    {
+      "id": "module-control-plane-inspect",
+      "type": "module",
+      "title": "Control Plane Inspect",
+      "paths": [
+        "src/control-plane/inspect.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Unified inspection for projects, tasks, runs, ports, PIDs, conflicts"
+      }
+    },
+    {
+      "id": "module-control-plane-locks",
+      "type": "module",
+      "title": "Control Plane Locks",
+      "paths": [
+        "src/control-plane/locks.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Locking mechanism for concurrent operation safety"
+      }
+    },
+    {
+      "id": "module-control-plane-ownership",
+      "type": "module",
+      "title": "Control Plane Ownership",
+      "paths": [
+        "src/control-plane/ownership.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Launchdeck-owned process ownership verification"
+      }
+    },
+    {
+      "id": "module-control-plane-runs",
+      "type": "module",
+      "title": "Control Plane Runs",
+      "paths": [
+        "src/control-plane/runs.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "Managed run lifecycle tracking"
+      }
+    },
+    {
+      "id": "module-control-plane-state",
+      "type": "module",
+      "title": "Control Plane State",
+      "paths": [
+        "src/control-plane/state.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "control-plane",
+        "description": "State persistence for the control plane"
+      }
+    },
+    {
+      "id": "module-global-runtime",
+      "type": "module",
+      "title": "Global Runtime",
+      "paths": [
+        "src/global-runtime.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "runtime",
+        "description": "User-level global runtime supervisor"
+      }
+    },
+    {
+      "id": "module-runtime",
+      "type": "module",
+      "title": "Runtime",
+      "paths": [
+        "src/runtime.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "runtime",
+        "description": "Project-local runtime management"
+      }
+    },
+    {
+      "id": "module-agent-installer",
+      "type": "module",
+      "title": "Agent Installer",
+      "paths": [
+        "src/agent-installer.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "agent",
+        "description": "Agent skill installation to host-specific directories"
+      }
+    },
+    {
+      "id": "module-adapters-path",
+      "type": "module",
+      "title": "Path Adapter",
+      "paths": [
+        "src/adapters/path.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "adapters",
+        "description": "Cross-platform path utilities"
+      }
+    },
+    {
+      "id": "module-adapters-process",
+      "type": "module",
+      "title": "Process Adapter",
+      "paths": [
+        "src/adapters/process.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "adapters",
+        "description": "Cross-platform process management"
+      }
+    },
+    {
+      "id": "command-init",
+      "type": "command",
+      "title": "init Command",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Create .launchdeck.yml in current directory"
+      }
+    },
+    {
+      "id": "command-doctor",
+      "type": "command",
+      "title": "doctor Command",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Validate config and report findings"
+      }
+    },
+    {
+      "id": "command-run",
+      "type": "command",
+      "title": "run Command",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Execute a configured task"
+      }
+    },
+    {
+      "id": "command-start-stop",
+      "type": "command",
+      "title": "start/stop/restart Commands",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Manage long-running process lifecycle"
+      }
+    },
+    {
+      "id": "command-inspect",
+      "type": "command",
+      "title": "inspect/inspect-port Commands",
+      "paths": [
+        "src/control-plane/inspect.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Unified inspection for projects, tasks, runs, ports, PIDs"
+      }
+    },
+    {
+      "id": "command-project",
+      "type": "command",
+      "title": "project Commands (add/remove/scan/repair)",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Manage project registry entries"
+      }
+    },
+    {
+      "id": "command-clean",
+      "type": "command",
+      "title": "clean Command",
+      "paths": [
+        "src/cli.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Safe and risky project cleanup"
+      }
+    },
+    {
+      "id": "command-agent",
+      "type": "command",
+      "title": "agent Commands (paths/doctor/install)",
+      "paths": [
+        "src/cli.js",
+        "src/agent-installer.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-README-001"
+      ],
+      "attrs": {
+        "domain": "cli",
+        "description": "Manage launchdeck-agent skill installation"
+      }
+    },
+    {
+      "id": "file-schema",
+      "type": "file",
+      "title": "Launchdeck JSON Schema",
+      "paths": [
+        "schema/launchdeck.schema.json"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-SCHEMA-001"
+      ],
+      "attrs": {
+        "domain": "config",
+        "description": "JSON Schema for .launchdeck.yml validation"
+      }
+    },
+    {
+      "id": "file-ci-workflow",
+      "type": "file",
+      "title": "CI Workflow",
+      "paths": [
+        ".github/workflows/ci.yml"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-CI-001"
+      ],
+      "attrs": {
+        "domain": "ci",
+        "description": "Cross-platform CI: syntax check, tests, lifecycle smoke"
+      }
+    },
+    {
+      "id": "capability-ci",
+      "type": "capability",
+      "title": "Cross-Platform CI Pipeline",
+      "paths": [
+        ".github/workflows/ci.yml",
+        "scripts/smoke-lifecycle.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [
+        "E-CI-001"
+      ],
+      "attrs": {
+        "domain": "ci",
+        "description": "CI runs on windows/macos/ubuntu: syntax check, tests, lifecycle smoke"
+      }
+    },
+    {
+      "id": "test-surface-cli",
+      "type": "test",
+      "title": "CLI Contract Tests",
+      "paths": [
+        "test/cli.test.js",
+        "test/cli-contract.test.js",
+        "test/cli-control-plane-contract.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests verifying CLI command structure and contracts"
+      }
+    },
+    {
+      "id": "test-surface-control-plane",
+      "type": "test",
+      "title": "Control Plane Tests",
+      "paths": [
+        "test/control-plane-events.test.js",
+        "test/control-plane-locks.test.js",
+        "test/control-plane-ownership.test.js",
+        "test/control-plane-state.test.js",
+        "test/clean-control-plane.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests for control plane subsystems"
+      }
+    },
+    {
+      "id": "test-surface-safety",
+      "type": "test",
+      "title": "Safety Tests",
+      "paths": [
+        "test/clean-safety.test.js",
+        "test/lifecycle-ownership.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests for safety boundaries and ownership verification"
+      }
+    },
+    {
+      "id": "test-surface-managed",
+      "type": "test",
+      "title": "Managed Process Tests",
+      "paths": [
+        "test/managed-cli.test.js",
+        "test/global-runtime.test.js",
+        "test/runtime-state.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests for managed process lifecycle"
+      }
+    },
+    {
+      "id": "test-surface-config",
+      "type": "test",
+      "title": "Config Tests",
+      "paths": [
+        "test/config.test.js",
+        "test/config-contract.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests for config parsing and validation"
+      }
+    },
+    {
+      "id": "test-surface-recovery",
+      "type": "test",
+      "title": "Recovery & Observability Tests",
+      "paths": [
+        "test/recovery-observability.test.js",
+        "test/inspect-cli.test.js"
+      ],
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": {
+        "domain": "test",
+        "description": "Tests for recovery and observability features"
+      }
+    }
+  ]
+}

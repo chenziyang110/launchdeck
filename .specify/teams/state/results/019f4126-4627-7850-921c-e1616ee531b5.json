@@ -1,0 +1,21 @@
+{
+  "status": "DONE",
+  "changed_files": [
+    "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    "F:/github/launchdeck/.specify/teams/state/results/019f4126-4627-7850-921c-e1616ee531b5.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "Get-Content -Raw -LiteralPath .specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json | ConvertFrom-Json",
+      "result": "passed: ledger JSON parses"
+    },
+    {
+      "command": "focused field inspection",
+      "result": "requiredEnvelopeFields = ok, schemaVersion, command, data, next; refusal/error semantics include ok false, schemaVersion, command, stable domain-oriented code, actionable message, and safe next actions; release evidence = Windows lifecycle smoke, macOS lifecycle smoke, Linux lifecycle smoke"
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [],
+  "concerns": []
+}

@@ -1,0 +1,59 @@
+{
+  "status": "DONE",
+  "reported_status": "DONE_WITH_LEADER_REVIEW",
+  "execution_surface": "native-subagents",
+  "changed_files": [
+    "src/agent-installer.js",
+    "src/cli.js",
+    "src/errors.js",
+    "src/output.js",
+    "test/agent-installer.test.js",
+    "test/cli-contract.test.js",
+    "README.md",
+    ".agents/README.md",
+    "package.json",
+    ".planning/quick/2026-07-09-agent-installer-cli/STATUS.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json",
+    ".specify/project-cognition/updates/sp-quick-closeout.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --test test/agent-installer.test.js",
+      "result": "passed: 7 tests"
+    },
+    {
+      "command": "npm run check",
+      "result": "passed"
+    },
+    {
+      "command": "node src/cli.js agent paths --json --compact",
+      "result": "passed: returned canonical source and 8 scoped targets"
+    },
+    {
+      "command": "node src/cli.js agent doctor --json --compact",
+      "result": "passed: 3 checks, 0 errors"
+    },
+    {
+      "command": "npm test",
+      "result": "passed: 148 tests"
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "leader_review_corrections": [
+    "Compact install result now summarizes action counts and relative files instead of verbose per-file absolute source/target paths.",
+    "Public CLI contract test now includes agent installer error codes.",
+    "Installer refuses a non-directory target path even when --force is supplied.",
+    ".agents/README.md now points to the cross-platform CLI and scopes PowerShell sync as a repo-local helper.",
+    "Quick state corrected to record native subagent execution rather than leader-inline fallback."
+  ],
+  "recovery_guidance": [
+    "If a target is refused as divergent, inspect the existing target and rerun with --force only when overwriting source-managed files is intended.",
+    "If a future host uses a different skill-root convention, extend the adapter matrix in src/agent-installer.js and add a targeted test."
+  ],
+  "notes": [
+    "Tests used explicit temp --target directories and did not mutate real user home/tool directories.",
+    "No MCP, marketplace, remote publish/search/update, or lifecycle runtime behavior changed."
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "task_id": "T012",
+  "review_id": "T012-review-1",
+  "type": "task_review",
+  "verdict": "accepted",
+  "spec_verdict": "pass",
+  "quality_verdict": "pass",
+  "findings": [],
+  "controller_checks": [
+    {
+      "name": "syntax_check",
+      "status": "passed",
+      "evidence": "node --check test/global-runtime.test.js exited 0."
+    },
+    {
+      "name": "focused_suite_expected_red",
+      "status": "passed",
+      "evidence": "node --test test/global-runtime.test.js ran 14 tests with 13 passing and one intended RED failure for active owned project removal refusal."
+    },
+    {
+      "name": "coverage_expectations",
+      "status": "passed",
+      "evidence": "Tests cover alias uniqueness/idempotent add, repair path/config/alias without identity change, bounded scan metadata/generated-dir skip, and active remove refusal."
+    },
+    {
+      "name": "no_inline_long_running_node_e",
+      "status": "passed",
+      "evidence": "No inline long-running node -e usage was introduced."
+    },
+    {
+      "name": "test_only_scope",
+      "status": "passed_with_scope_limit",
+      "evidence": "Worker result lists only test/global-runtime.test.js plus result file; git diff provenance is limited by parent git root."
+    }
+  ],
+  "accepted_residual_risks": [
+    "One transient ports test failure was noted by reviewer but passed in isolation and subsequent full rerun.",
+    "Git diff provenance is limited because launchdeck appears untracked from the parent git root."
+  ],
+  "follow_up_work": [
+    "T014/T017 should implement active owned project remove refusal.",
+    "If transient ports readiness recurs, stabilize fixture readiness/start timing."
+  ],
+  "final_assessment": "accepted"
+}

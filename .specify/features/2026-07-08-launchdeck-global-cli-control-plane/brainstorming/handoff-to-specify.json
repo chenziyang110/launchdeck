@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "status": "ready-for-plan",
+  "feature": {
+    "name": "Launchdeck Global CLI Control Plane",
+    "branch_name": "2026-07-08-launchdeck-global-cli-control-plane",
+    "feature_dir": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane",
+    "created": "2026-07-08",
+    "next_command": "/sp.plan"
+  },
+  "source": {
+    "entry_source": "sp-discussion",
+    "discussion_slug": "launchdeck-cli-control-plane",
+    "handoff_status": "handoff-ready",
+    "planning_gate_status": "ready",
+    "quality_gate_status": "user_confirmed",
+    "hard_unknown_count": 0,
+    "open_conflict_count": 0,
+    "handoff_goal": "Specify Launchdeck Global CLI Control Plane as a user-scoped, CLI-first control plane for registering multiple local projects, preventing duplicate service starts, inspecting port/process ownership, safely stopping/restarting only Launchdeck-owned tasks, and preserving global status/log/event/recovery semantics.",
+    "source_handoff": "F:/github/launchdeck/.specify/discussions/launchdeck-cli-control-plane/handoff-to-specify.md",
+    "source_handoff_json": "F:/github/launchdeck/.specify/discussions/launchdeck-cli-control-plane/handoff-to-specify.json"
+  },
+  "artifacts": {
+    "spec": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+    "alignment": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/alignment.md",
+    "context": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/context.md",
+    "references": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/references.md",
+    "requirements_checklist": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/checklists/requirements.md",
+    "workflow_state": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/workflow-state.md"
+  },
+  "readiness": {
+    "decision": "ready-for-plan",
+    "reason": "The user-confirmed handoff has no hard unknowns or open conflicts, every upstream capability signal has a disposition, and the specification preserves the global control-plane model plus safety invariants.",
+    "recommended_next_command": "/sp.plan",
+    "do_not_use": [
+      "sp-quick for the whole feature",
+      "implementation before planning"
+    ]
+  },
+  "source_signal_disposition_status": "complete",
+  "source_signal_disposition": {
+    "preserved": [
+      "Global CLI Control Plane framing",
+      "CLI-first product surface",
+      "daemonless first approach",
+      "existing inspect-port compatibility",
+      "clean/reset separation",
+      "future clients reuse the same truth"
+    ],
+    "in_scope": [
+      "user-scoped namespace",
+      "single authoritative state namespace",
+      "project registry",
+      "projectId identity",
+      "unique alias",
+      "repairable path/config path",
+      "project add",
+      "project scan",
+      "project remove",
+      "project remove refuses active owned tasks",
+      "project repair",
+      "projects listing",
+      "global runtime run index",
+      "registry/project/task locks",
+      "stale lock recovery",
+      "transaction id",
+      "start in-progress evidence",
+      "duplicate-start prevention",
+      "start/dev",
+      "stop",
+      "restart",
+      "force-stop for owned trees",
+      "ownership proof",
+      "ownership confidence states",
+      "ready vs running",
+      "readiness checks",
+      "stale state detection",
+      "reconcile",
+      "status",
+      "ps",
+      "ports",
+      "conflicts",
+      "unified inspect",
+      "inspect target types",
+      "safe and blocked actions",
+      "logs",
+      "events",
+      "JSON Lines streams",
+      "secret-safe logs/events",
+      "clean hygiene",
+      "confirmation semantics",
+      "force semantics",
+      "non-interactive behavior",
+      "timeouts",
+      "stable JSON envelope",
+      "error codes",
+      "structured next actions",
+      "persistent state versioning",
+      "fail-closed state compatibility",
+      "official demo",
+      "documentation",
+      "security requirements",
+      "cross-platform lifecycle smoke"
+    ],
+    "deferred": [
+      "always-running daemon/service",
+      "exact lock timeout defaults",
+      "exact log/event retention defaults",
+      "destructive reset implementation",
+      "JSON schema version negotiation",
+      "GUI/TUI/MCP/editor clients",
+      "whole-machine or multi-user registry",
+      "exact cross-platform process-tree proof strategy"
+    ],
+    "dropped": [
+      "external process kill by default",
+      "kill by port or PID alone",
+      "clean deleting unknown files or project roots",
+      "agent-plugin-first framing",
+      "plugin marketplace",
+      "workspace orchestration",
+      "auto-restart policy",
+      "Docker volume/container ownership"
+    ],
+    "clarification_blocker": []
+  },
+  "must_preserve_coverage_status": "complete",
+  "must_preserve_ledger": [
+    {
+      "id": "MP-001",
+      "status": "preserved",
+      "coverage": "spec title, overview, scope, scenarios, decision capture"
+    },
+    {
+      "id": "MP-002",
+      "status": "preserved",
+      "coverage": "user-scoped registry and namespace requirements"
+    },
+    {
+      "id": "MP-003",
+      "status": "preserved",
+      "coverage": "daemonless-first scope and state namespace definition"
+    },
+    {
+      "id": "MP-004",
+      "status": "preserved",
+      "coverage": "FR-001 to FR-008"
+    },
+    {
+      "id": "MP-005",
+      "status": "preserved",
+      "coverage": "product model authority layers"
+    },
+    {
+      "id": "MP-006",
+      "status": "preserved",
+      "coverage": "primary scenario, FR-011, FR-017"
+    },
+    {
+      "id": "MP-007",
+      "status": "preserved",
+      "coverage": "safety invariants, FR-019 to FR-022"
+    },
+    {
+      "id": "MP-008",
+      "status": "preserved",
+      "coverage": "out of scope and safety invariants"
+    },
+    {
+      "id": "MP-009",
+      "status": "preserved",
+      "coverage": "FR-030 to FR-032"
+    },
+    {
+      "id": "MP-010",
+      "status": "preserved",
+      "coverage": "FR-040 to FR-044"
+    },
+    {
+      "id": "MP-011",
+      "status": "preserved",
+      "coverage": "safety invariants and permission requirements"
+    },
+    {
+      "id": "MP-012",
+      "status": "preserved",
+      "coverage": "FR-045 to FR-050"
+    },
+    {
+      "id": "MP-013",
+      "status": "preserved",
+      "coverage": "overview and future-client deferred scope"
+    },
+    {
+      "id": "MP-014",
+      "status": "preserved",
+      "coverage": "FR-051 to FR-052"
+    },
+    {
+      "id": "MP-015",
+      "status": "preserved",
+      "coverage": "FR-055 and safety invariants"
+    },
+    {
+      "id": "MP-016",
+      "status": "preserved",
+      "coverage": "FR-053 and acceptance proof"
+    },
+    {
+      "id": "MP-017",
+      "status": "preserved",
+      "coverage": "FR-056 and release claim requirement"
+    }
+  ],
+  "consumer_obligations": [
+    "CA-CP-001",
+    "CA-CP-002",
+    "CA-CP-003",
+    "CA-CP-004",
+    "CA-CP-005",
+    "CA-CP-006",
+    "CA-CP-007",
+    "CA-CP-008",
+    "CA-CP-009",
+    "CA-CP-010",
+    "CA-CP-011",
+    "CA-CP-012",
+    "CA-CP-013",
+    "CA-CP-014",
+    "CA-CP-015",
+    "CA-CP-016",
+    "CA-CP-017",
+    "CA-CP-018",
+    "CA-CP-019",
+    "CA-CP-020"
+  ],
+  "soft_unknowns_for_plan": [
+    "registry storage path and migration from current location",
+    "lock wait timeout and stale-lock metadata",
+    "event/log retention policy",
+    "inspect --json field names",
+    "JSON schema versioning timeline",
+    "official demo implementation details",
+    "cross-platform process-tree proof strategy"
+  ],
+  "stop_and_reopen_conditions": [
+    "External kill becomes required in base scope.",
+    "Daemon/service implementation becomes mandatory for this feature.",
+    "GUI/TUI/MCP/editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "quality_gate": {
+    "user_review_requested_for_spec_package": true,
+    "sp_specify_self_review": "passed",
+    "artifact_review": "reviewer-findings-repaired"
+  }
+}

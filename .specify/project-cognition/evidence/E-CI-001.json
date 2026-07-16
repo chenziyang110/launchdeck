@@ -1,0 +1,12 @@
+{
+  "id": "E-CI-001",
+  "source_path": ".github/workflows/ci.yml",
+  "summary": "CI workflow - 3 OS matrix with lifecycle smoke",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "sampled",
+  "confidence": "high",
+  "findings": {
+    "summary": "CI workflow - 3 OS matrix with lifecycle smoke"
+  }
+}

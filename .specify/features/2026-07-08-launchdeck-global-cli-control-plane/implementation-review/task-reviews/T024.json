@@ -1,0 +1,56 @@
+{
+  "taskId": "T024",
+  "reviewId": "T024-review-final",
+  "type": "task_review",
+  "status": "accepted",
+  "specVerdict": "pass",
+  "qualityVerdict": "pass",
+  "changedFiles": [
+    "src/control-plane/actions.js",
+    "src/cli.js",
+    "src/output.js",
+    "src/errors.js"
+  ],
+  "validation": [
+    {
+      "command": "node --check src/control-plane/actions.js; node --check src/cli.js; node --check src/output.js; node --check src/errors.js",
+      "result": "pass",
+      "summary": "Syntax checks passed."
+    },
+    {
+      "command": "node --test test/lifecycle-ownership.test.js test/cli-control-plane-contract.test.js",
+      "result": "pass",
+      "summary": "16 tests passed, 0 failed; lifecycle ownership and JSON contract coverage is green."
+    },
+    {
+      "command": "node --test test/managed-cli.test.js",
+      "result": "pass",
+      "summary": "12 tests passed, 0 failed; local managed CLI compatibility preserved."
+    },
+    {
+      "command": "npm run check",
+      "result": "pass",
+      "summary": "Repository syntax check completed successfully."
+    }
+  ],
+  "controllerChecks": [
+    "Global stop, force-stop, and restart route directly through action-layer stopManagedRun/restartManagedRun.",
+    "The rejected CLI fallback for action-layer ReferenceError was removed.",
+    "actions.js now defines task locking for lifecycle actions using project/task lock names consistent with the control-plane lock model.",
+    "stop JSON exposes stopped[] and failed[] for global lifecycle commands.",
+    "force-stop is routed but does not bypass the verified ownership gate.",
+    "restart JSON exposes stoppedRun, startedRun, and transactionId.",
+    "port_release_timeout surfaces as the direct domain error with next actions.",
+    "Failure and partial envelopes preserve next actions from LaunchdeckError details.",
+    "Leader process scan found no lifecycle fixture processes left after validation."
+  ],
+  "acceptedResidualRisks": [
+    "Force-stop currently shares the verified ownership gate and does not add a separate stronger termination method; deeper force escalation remains bounded by future tasks or platform support.",
+    "Cross-platform lifecycle smoke remains a later release-gate task."
+  ],
+  "followUpWork": [
+    "T025 join US3 owned restart and stop validation with ledger update."
+  ],
+  "uiFidelityResult": "not_applicable",
+  "finalAssessment": "accepted"
+}

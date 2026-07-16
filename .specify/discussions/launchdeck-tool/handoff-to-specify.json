@@ -1,0 +1,502 @@
+{
+  "status": "handoff_ready",
+  "quality_gate_status": "user_confirmed",
+  "user_review_required": false,
+  "user_confirmed_at": "2026-07-07T10:51:43.9189243+08:00",
+  "discussion_slug": "launchdeck-tool",
+  "created_at": "2026-07-06T19:00:15.2357122+08:00",
+  "source_workflow": "sp-discussion",
+  "entry_source": "sp-discussion",
+  "handoff_status": "handoff-ready",
+  "planning_gate_status": "ready",
+  "hard_unknown_count": 0,
+  "open_conflict_count": 0,
+  "handoff_kind": "discussion_requirement_contract",
+  "recommended_consumer_after_user_confirmation": "sp-specify",
+  "handoff_goal": "Specify Launchdeck v1 as a cross-platform CLI tool that can initialize, inspect, run, manage, log, stop, and safely clean local software projects through an explicit .launchdeck.yml lifecycle protocol.",
+  "context_boundary": {
+    "current_project_root": "F:/github/launchdeck",
+    "target_project_root": "F:/github/launchdeck",
+    "target_project_role": "implementation target",
+    "target_project_scope": "Launchdeck CLI, protocol docs, examples, schema, and local lifecycle runtime.",
+    "path_status": "target-read-confirmed",
+    "boundary_confidence": "high",
+    "external_systems_in_scope": []
+  },
+  "consumer_eligibility": {
+    "sp-specify": {
+      "status": "ready",
+      "reason": "The feature spans CLI command semantics, runtime behavior, safety policy, cross-platform verification, and compatibility contracts."
+    },
+    "sp-quick": {
+      "status": "not_recommended",
+      "reason": "The scope is not a small isolated fix; it needs a formal spec before further implementation."
+    },
+    "sp-plan": {
+      "status": "downstream_after_spec"
+    },
+    "sp-implement": {
+      "status": "downstream_after_spec_and_plan"
+    }
+  },
+  "target_need": "Developers need one project-local control surface for common software lifecycle operations across arbitrary stacks.",
+  "core_constraints": [
+    "Cross-platform support for Windows, macOS, and Linux is a first-class product requirement.",
+    "v1 is CLI-first and local-project scoped.",
+    "v1 is single-project, not workspace graph orchestration.",
+    "v1 is explicit-config first through .launchdeck.yml.",
+    "Runtime state, logs, stop behavior, and cleanup must be inspectable.",
+    "Cleanup must be conservative, project-local, and dry-run by default.",
+    "JSON output and error codes are compatibility surfaces.",
+    "Agent/MCP/skill integrations are consumers of the CLI/protocol, not the v1 core product."
+  ],
+  "scope": {
+    "in": [
+      "Config discovery from .launchdeck.yml, .launchdeck.yaml, launchdeck.yml, or launchdeck.yaml.",
+      "Config version 1.",
+      "Task declarations with command, cwd, env, description, risk, longRunning, ports, and log.",
+      "Clean declarations with clean.safe and clean.risky.",
+      "Commands: init, doctor, tasks, run, setup, build, package, test, lint, typecheck, dev, start, restart, ps, logs, stop, clean.",
+      "Runtime state under .launchdeck/runtime/state.json.",
+      "Logs under .launchdeck/logs/.",
+      "Platform-sensitive behavior behind runtime adapters.",
+      "Smoke verification for lifecycle behavior."
+    ],
+    "out": [
+      "GUI/TUI",
+      "MCP server",
+      "Agent skill package",
+      "Automatic project discovery as default behavior",
+      "Template marketplace",
+      "Workspace graph orchestration",
+      "Multi-project fan-out commands",
+      "Dependency-aware task ordering",
+      "Daemon/service mode",
+      "Remote execution or cloud environments",
+      "CI/CD replacement",
+      "Database reset",
+      "Docker volume/container reset built-in behavior",
+      "Destructive reset",
+      "Package manager abstraction",
+      "Plugin system",
+      "Shell completion generation",
+      "Native installer packaging as a product requirement",
+      "Multi-instance managed tasks",
+      "Config schema migration engine"
+    ],
+    "deferred": [
+      "init --scan",
+      "init --template <name>",
+      "doctor --suggest",
+      "Task platforms overrides",
+      "Richer shell configuration",
+      "Runtime state pruning",
+      "Standalone binaries",
+      "Homebrew, Scoop, and winget packaging",
+      "MCP server",
+      "Agent skill integration",
+      "UI/TUI dashboard",
+      "Monorepo orchestration"
+    ]
+  },
+  "cli_contract": {
+    "first_run_flow": [
+      "launchdeck init",
+      "launchdeck doctor",
+      "launchdeck tasks",
+      "launchdeck run build",
+      "launchdeck dev",
+      "launchdeck ps",
+      "launchdeck logs dev",
+      "launchdeck stop dev",
+      "launchdeck clean",
+      "launchdeck clean --safe"
+    ],
+    "init": [
+      "Creates editable .launchdeck.yml in target cwd.",
+      "Fails with config_exists if config already exists unless --force.",
+      "Does not install dependencies, run project commands, start processes, or clean files.",
+      "Does not overwrite ancestor configs discovered upward."
+    ],
+    "doctor": [
+      "Read-only readiness and safety command.",
+      "Does not mutate config, runtime state, processes, or files.",
+      "Reports error, warn, and info findings.",
+      "doctor --json exposes stable severity, status, and code."
+    ],
+    "tasks": [
+      "Read-only inventory command.",
+      "Does not execute or validate commands.",
+      "Shows task, type, risk, ports, and command.",
+      "Reserved lifecycle names sort first, then custom names alphabetically."
+    ],
+    "execution": [
+      "Task type is determined by longRunning.",
+      "run <task> is universal and respects metadata.",
+      "Foreground tasks stream output and return child exit code.",
+      "Long-running tasks are managed, logged, and recorded in runtime state.",
+      "dev equals start dev and requires longRunning true.",
+      "start and restart only apply to managed tasks.",
+      "Duplicate managed starts fail with process_already_running."
+    ],
+    "runtime": [
+      "Runtime state is an operation ledger.",
+      "ps refreshes liveness and shows running, stopped, stale, or unknown records.",
+      "logs can read existing logs after process exit.",
+      "stop is idempotent and preserves diagnostic state.",
+      "Runtime cleanup happens through configured clean targets or future pruning."
+    ],
+    "clean": [
+      "clean is dry-run preview.",
+      "clean --safe removes only clean.safe.",
+      "clean --all --yes removes safe and risky targets.",
+      "clean --all without confirmation fails with confirmation_required.",
+      "Cleanup refuses project root, out-of-root paths, empty targets, and ambiguous targets.",
+      "Clean is separate from future reset behavior."
+    ]
+  },
+  "json_and_exit_code_contract": {
+    "success_envelope": {
+      "ok": true,
+      "command": "doctor",
+      "status": "ok"
+    },
+    "failure_envelope": {
+      "ok": false,
+      "command": "run",
+      "error": {
+        "code": "task_not_found",
+        "message": "Task not found.",
+        "details": {}
+      }
+    },
+    "shared_fields": [
+      "ok",
+      "command",
+      "status",
+      "projectRoot",
+      "configPath",
+      "error"
+    ],
+    "exit_codes": [
+      "Success is 0.",
+      "Foreground task returns child exit code.",
+      "Launchdeck-level failures return 1.",
+      "doctor ok and warn return 0.",
+      "doctor error returns non-zero.",
+      "clean --all without confirmation returns non-zero."
+    ]
+  },
+  "error_codes": [
+    "unknown_command",
+    "invalid_arguments",
+    "config_not_found",
+    "config_exists",
+    "config_invalid",
+    "unsupported_config_version",
+    "task_required",
+    "task_not_found",
+    "task_not_managed",
+    "task_invalid",
+    "cwd_missing",
+    "cwd_outside_project",
+    "log_path_outside_project",
+    "invalid_task_port",
+    "invalid_task_risk",
+    "command_failed",
+    "command_spawn_failed",
+    "command_not_found",
+    "process_already_running",
+    "process_not_found",
+    "process_stop_failed",
+    "process_start_failed",
+    "runtime_state_invalid",
+    "runtime_state_write_failed",
+    "log_not_found",
+    "confirmation_required",
+    "clean_path_outside_project",
+    "clean_refuses_project_root",
+    "clean_target_invalid",
+    "clean_failed",
+    "platform_unsupported",
+    "platform_stop_unsupported",
+    "path_resolution_failed",
+    "partial_failure",
+    "internal_error"
+  ],
+  "verification_contract": {
+    "claim_levels": {
+      "dev-ready": "Local correctness plus lifecycle smoke on at least one dev OS.",
+      "platform-smoke-ready": "Lifecycle smoke passes on the named OS.",
+      "cross-platform-ready": "Lifecycle smoke passes on Windows, macOS, and Linux."
+    },
+    "smoke_coverage": [
+      "doctor",
+      "tasks",
+      "foreground run",
+      "managed start or dev",
+      "ps",
+      "logs",
+      "stop",
+      "clean",
+      "clean --safe",
+      "clean --all confirmation behavior",
+      "unsafe clean refusal"
+    ]
+  },
+  "open_questions_soft": [
+    "Exact command-specific JSON schemas.",
+    "Exact doctor finding code names.",
+    "Exact verbose tasks output.",
+    "Exact partial restart failure payload.",
+    "Exact corrupt runtime state behavior.",
+    "Exact clean action values.",
+    "Exact symlink/junction canonicalization rules.",
+    "Exact shell override fields.",
+    "Exact native process strategy per platform.",
+    "Exact CI provider or local platform execution setup.",
+    "Exact smoke artifact format.",
+    "Exact starter config shape.",
+    "Exact global --cwd syntax and placement.",
+    "Exact public error documentation format."
+  ],
+  "must_preserve_ledger": [
+    {
+      "id": "MP-001",
+      "type": "goal",
+      "claim": "Launchdeck is a universal lifecycle control tool for local software projects.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-004",
+        "CA-022"
+      ]
+    },
+    {
+      "id": "MP-002",
+      "type": "scope",
+      "claim": "v1 is CLI-first, local, single-project, explicit-config lifecycle control.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-022"
+      ]
+    },
+    {
+      "id": "MP-003",
+      "type": "non_goal",
+      "claim": "GUI/TUI, MCP, agent skill, automatic discovery default, monorepo orchestration, remote/cloud, reset, plugins, marketplace, and native packaging are out of v1.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-022"
+      ]
+    },
+    {
+      "id": "MP-004",
+      "type": "protocol",
+      "claim": ".launchdeck.yml v1 must be small, explicit, readable, and stable.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-008"
+      ]
+    },
+    {
+      "id": "MP-005",
+      "type": "platform",
+      "claim": "Windows, macOS, and Linux are first-class lifecycle platforms.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-006",
+        "CA-016",
+        "CA-017"
+      ]
+    },
+    {
+      "id": "MP-006",
+      "type": "flow",
+      "claim": "First-run flow prioritizes init, doctor, tasks, run/build, dev, ps, logs, stop, and clean preview/safe.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-010"
+      ]
+    },
+    {
+      "id": "MP-007",
+      "type": "doctor",
+      "claim": "doctor is read-only and reports error/warn/info findings with stable codes.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-011"
+      ]
+    },
+    {
+      "id": "MP-008",
+      "type": "tasks",
+      "claim": "tasks is read-only inventory, not validation or execution.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-012"
+      ]
+    },
+    {
+      "id": "MP-009",
+      "type": "execution",
+      "claim": "longRunning controls foreground vs managed execution.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-013"
+      ]
+    },
+    {
+      "id": "MP-010",
+      "type": "runtime",
+      "claim": "Runtime state and logs are inspectable recovery surfaces, not disposable cache.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-002",
+        "CA-005",
+        "CA-014"
+      ]
+    },
+    {
+      "id": "MP-011",
+      "type": "clean",
+      "claim": "Clean is dry-run by default, safe/risky split, project-local, root/out-of-root refusing, separate from reset.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-001",
+        "CA-015"
+      ]
+    },
+    {
+      "id": "MP-012",
+      "type": "adapters",
+      "claim": "OS-specific process/path/shell/clean behavior belongs behind runtime adapters.",
+      "blocking_level": "hard",
+      "owner": "specify, plan",
+      "status": "active",
+      "mapped_to": [
+        "CA-007",
+        "CA-016"
+      ]
+    },
+    {
+      "id": "MP-013",
+      "type": "verification",
+      "claim": "Release claims must name verification level; cross-platform-ready requires Windows/macOS/Linux smoke evidence.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-017"
+      ]
+    },
+    {
+      "id": "MP-014",
+      "type": "compatibility",
+      "claim": "JSON envelope, structured error object, exit-code stance, and stable error codes are compatibility surfaces.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "CA-003",
+        "CA-009",
+        "CA-020",
+        "CA-021"
+      ]
+    },
+    {
+      "id": "MP-015",
+      "type": "boundary",
+      "claim": "Target implementation project is F:/github/launchdeck.",
+      "blocking_level": "hard",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "context-boundary"
+      ]
+    },
+    {
+      "id": "MP-016",
+      "type": "unknowns",
+      "claim": "Remaining unknowns are soft downstream details, not handoff blockers.",
+      "blocking_level": "medium",
+      "owner": "specify",
+      "status": "active",
+      "mapped_to": [
+        "open-questions"
+      ]
+    }
+  ],
+  "consequence_obligations": [
+    "CA-001: Launchdeck must not make destructive cleanup implicit.",
+    "CA-002: Long-running processes must be inspectable and stoppable through Launchdeck state.",
+    "CA-003: Agent/tool-readable output must preserve enough structure for recovery and diagnosis.",
+    "CA-004: The config protocol must remain stack-agnostic and local-project scoped.",
+    "CA-005: Runtime state and logs must be observable and safe to clean.",
+    "CA-006: Windows, macOS, and Linux must be first-class supported platforms for lifecycle behavior.",
+    "CA-007: OS-specific behavior must be isolated behind a product-preserving runtime boundary.",
+    "CA-008: .launchdeck.yml v1 must remain small, explicit, readable, and stable enough for downstream tools to rely on.",
+    "CA-009: JSON output and error categories must be treated as compatibility surfaces.",
+    "CA-010: The CLI first-run flow must prioritize inspection and recoverability before mutation.",
+    "CA-011: doctor must remain read-only and classify findings with stable severity and codes.",
+    "CA-012: tasks must remain read-only and expose risk, managed/command type, ports, and command text before execution.",
+    "CA-013: Execution commands must respect longRunning, avoid implicit duplicate starts, preserve child exit codes for foreground tasks, and keep managed state inspectable after start/restart failures.",
+    "CA-014: Managed runtime commands must preserve inspectable state and logs across running, stopped, stale, missing-log, and stop-failed cases.",
+    "CA-015: clean must default to dry-run, separate safe and risky targets, refuse project-root/out-of-root deletion, and remain distinct from destructive reset behavior.",
+    "CA-016: Platform-sensitive behavior must be isolated behind runtime adapters for path, shell, process, executable lookup, cleanup, and logs, with validation evidence on Windows, macOS, and Linux before cross-platform release claims.",
+    "CA-017: Release claims must name the verification level achieved, and cross-platform readiness requires lifecycle smoke evidence on Windows, macOS, and Linux.",
+    "CA-018: init must create an explicit editable config without executing project commands, must not silently overwrite existing configs, and must keep scan/template inference advisory.",
+    "CA-019: Target cwd, config discovery, project root, task cwd, and runtime state location must be deterministic and visible, with init protected from accidental ancestor overwrite.",
+    "CA-020: JSON output must use a stable envelope and error object, while exit codes remain simple and preserve child process exit codes for foreground tasks.",
+    "CA-021: v1 error codes must be stable, actionable, snake_case, and grouped by user-action domain; internal_error should be rare and treated as a classification gap.",
+    "CA-022: v1 scope must remain local, single-project, CLI-first, explicit-config lifecycle control; deferred integrations and orchestration must not dilute the core lifecycle contracts."
+  ],
+  "return_to_discussion_if": [
+    "The product is changed back to agent-skill-first rather than tool-first.",
+    "v1 must include GUI/TUI, MCP, agent package, cloud execution, marketplace, plugin system, or monorepo orchestration.",
+    "Cleanup is expected to perform destructive reset behavior.",
+    "Cross-platform support is demoted from core requirement.",
+    ".launchdeck.yml stops being the explicit v1 protocol.",
+    "JSON/error compatibility is no longer required.",
+    "Target project root changes from F:/github/launchdeck."
+  ],
+  "self_review": {
+    "target_boundary_present": true,
+    "recommended_consumer_present": true,
+    "handoff_kind_present": true,
+    "must_preserve_ledger_present": true,
+    "consequence_obligations_present": true,
+    "hard_blockers": [],
+    "unresolved_conflicts": [],
+    "placeholders_requiring_user_input": [],
+    "quality_gate": "user_confirmed",
+    "user_confirmation_required_before_downstream_consumption": false,
+    "user_confirmed_at": "2026-07-07T10:51:43.9189243+08:00"
+  },
+  "quality_gate": {
+    "status": "user_confirmed",
+    "user_review_required": false,
+    "user_confirmed_at": "2026-07-07T10:51:43.9189243+08:00"
+  }
+}

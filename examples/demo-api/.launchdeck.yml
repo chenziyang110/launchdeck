@@ -1,0 +1,23 @@
+version: 1
+project:
+  name: launchdeck-demo-api
+tasks:
+  dev:
+    command: node scripts/server.js --port 8888
+    cwd: .
+    env:
+      PORT: "8888"
+    description: Start the official Launchdeck demo API
+    longRunning: true
+    ports: [8888]
+    risk: low
+    log: .launchdeck/logs/dev.log
+  check:
+    command: node --check scripts/server.js
+    description: Verify the demo server syntax
+    risk: low
+clean:
+  safe:
+    - { path: scratch/clean-safe, description: Demo-generated scratch target created by the server }
+  risky:
+    - { path: scratch/manual-cache, description: Optional manual cache used for cleanup previews }

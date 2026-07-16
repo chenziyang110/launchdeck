@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "task_id": "T033",
+  "title": "Create official demo project in examples/demo-api with checked-in fixture scripts",
+  "phase": "Final",
+  "story": null,
+  "priority": null,
+  "agent": "executor",
+  "depends_on": [
+    "T032: US5 join"
+  ],
+  "parallel_safe": true,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Demo quickstart",
+      "ref": "quickstart.md#2-register-the-demo-project"
+    },
+    {
+      "need": "Fixture research",
+      "ref": "research.md#r9-use-fixture-scripts-for-managed-process-tests-and-demos"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "examples/demo-api/.launchdeck.yml",
+      "examples/demo-api/package.json",
+      "examples/demo-api/scripts/server.js",
+      "examples/demo-api/README.md"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "examples/demo-api/.launchdeck.yml (new)",
+    "examples/demo-api/package.json (new)",
+    "examples/demo-api/scripts/server.js (new)",
+    "examples/demo-api/README.md (new)"
+  ],
+  "anti_goals": [
+    "Do not use inline node -e long-running commands.",
+    "Do not add external service dependencies."
+  ],
+  "does_not_remove": [
+    "Official demo acceptance proof"
+  ],
+  "capability_operations": [
+    "implements official demo project"
+  ],
+  "consumer_surfaces": [
+    "examples/demo-api"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "demo_evidence"
+  ],
+  "acceptance_criteria": [
+    "Demo supports project add, start, duplicate refusal, inspect, restart/stop, stale recovery, logs/events, and clean using checked-in scripts."
+  ],
+  "verify_commands": [
+    "node --check examples/demo-api/scripts/server.js",
+    "node src/cli.js project add examples/demo-api --alias demo --json"
+  ],
+  "guardrails": [
+    "G-DEMO"
+  ],
+  "mp": [
+    "MP-016"
+  ],
+  "ca": [
+    "CA-CP-020"
+  ],
+  "fr": [
+    "FR-053",
+    "FR-054"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "examples/demo-api/.launchdeck.yml",
+      "examples/demo-api/package.json",
+      "examples/demo-api/scripts/server.js",
+      "examples/demo-api/README.md"
+    ],
+    "validation_output": {
+      "node --check examples/demo-api/scripts/server.js": "<paste relevant output>",
+      "node src/cli.js project add examples/demo-api --alias demo --json": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

@@ -1,0 +1,43 @@
+{
+  "status": "success",
+  "task_id": "T013",
+  "agent": "executor",
+  "completed_at": "2026-07-07T16:42:36.7938843+08:00",
+  "changed_files": [
+    "src/runtime.js"
+  ],
+  "validation_output": {
+    "node_check_runtime": {
+      "command": "node --check src/runtime.js",
+      "exit_code": 0
+    },
+    "runtime_state_tests": {
+      "command": "node --test test/runtime-state.test.js",
+      "exit_code": 0,
+      "tests": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "us1_runtime_regression": {
+      "command": "node --test test/config-contract.test.js test/cli-contract.test.js test/runtime-state.test.js",
+      "exit_code": 0,
+      "tests": 29,
+      "passed": 29,
+      "failed": 0
+    },
+    "managed_cli_signal": {
+      "command": "node --test test/managed-cli.test.js",
+      "exit_code": 1,
+      "tests": 9,
+      "passed": 0,
+      "failed": 9,
+      "summary": "Remaining failures are CLI envelope and managed-command validation behavior in T014 scope."
+    }
+  },
+  "concerns": [],
+  "recovery_hints": [
+    "T014 should wrap dev/start/restart/ps/logs/stop JSON output in createSuccessEnvelope/createFailureEnvelope with projectRoot/configPath.",
+    "T014 should reject non-longRunning tasks for managed start/dev with task_not_managed."
+  ],
+  "runtime_state_contract_evidence": "Runtime state writes v1 fields version, projectRoot, updatedAt, processes, and process records with task, command, cwd, pid, ports, logPath, startedAt, lastRefresh, status. Invalid/corrupt state throws runtime_state_invalid without rewriting evidence. Refresh preserves stale records, updates lastRefresh, and maps exited running processes to stale. Logs read persisted log files after exit. Stop preserves records, is idempotent for stale/stopped, writes stoppedAt, verifies stop through the process adapter, and records stop_failed on failure."
+}

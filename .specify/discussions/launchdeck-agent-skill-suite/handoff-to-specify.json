@@ -1,0 +1,673 @@
+{
+  "version": 1,
+  "status": "handoff-ready",
+  "entry_source": "sp-discussion",
+  "discussion_slug": "launchdeck-agent-skill-suite",
+  "source_handoff": ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.md",
+  "source_handoff_json": ".specify/discussions/launchdeck-agent-skill-suite/handoff-to-specify.json",
+  "source_files_read": [
+    ".specify/discussions/launchdeck-agent-skill-suite/requirements.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/technical-options.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/project-context.md",
+    ".specify/discussions/launchdeck-agent-skill-suite/open-questions.md",
+    "README.md",
+    "src/cli.js",
+    "src/runtime.js",
+    "test/cli.test.js"
+  ],
+  "handoff_kind": "discussion_requirement_contract",
+  "handoff_goal": "Specify a v0 launchdeck-agent skill package that lets coding agents safely discover, adopt, operate, recover, observe, and clean local software projects through Launchdeck.",
+  "handoff_status": "handoff-ready",
+  "planning_gate_status": "ready-for-specify",
+  "coverage_status": "handoff-ready-complete-with-soft-unknowns",
+  "hard_unknown_count": 0,
+  "open_conflict_count": 0,
+  "quality_gate": {
+    "status": "handoff-ready",
+    "self_reviewed_at": "2026-07-09T16:29:56+08:00",
+    "user_review_required": true,
+    "user_confirmed_at": "2026-07-09T16:40:46+08:00",
+    "blocked_reasons": []
+  },
+  "consumer_eligibility": {
+    "sp-specify": {
+      "status": "ready",
+      "reason": "The discussion defines one coherent requirement boundary for a v0 skill package and the user confirmed the handoff-ready quality gate."
+    },
+    "sp-quick": {
+      "status": "blocked_requires_spec_first",
+      "reason": "The work spans a new skill package, multiple references, safety contracts, and eval criteria."
+    }
+  },
+  "recommended_consumer": "sp-specify",
+  "quick_task_candidate": {
+    "requires_spec_first": true,
+    "bounded_quick_scope": null,
+    "excluded_scope": "Creating the skill package directly without a formal specification.",
+    "expected_changed_surfaces": [
+      ".codex/skills/launchdeck-agent/",
+      "optional docs"
+    ],
+    "validation_route": [
+      "skill trigger evals",
+      "behavior and safety evals",
+      "compact-output evals"
+    ],
+    "consequence_model": [
+      "lifecycle operations",
+      "running processes",
+      "port ownership",
+      "stale state",
+      "cleanup safety",
+      "downstream agent behavior"
+    ]
+  },
+  "agent_requirement_contract": {
+    "target_need": "Agents should route natural local project lifecycle requests through Launchdeck instead of directly spawning commands or killing processes.",
+    "constraints": [
+      "Launchdeck is the execution authority.",
+      ".launchdeck.yml is the lifecycle authority.",
+      "V0 is one launchdeck-agent skill package with references.",
+      "Users should not need to name Launchdeck or choose a skill.",
+      "Stop, restart, and force-stop require Launchdeck ownership proof.",
+      "Unknown or external port occupants are inspect-only.",
+      "Clean defaults to safe clean and reset is out of automatic scope.",
+      "Agent-internal Launchdeck calls should prefer --json --compact."
+    ],
+    "success_criteria": [
+      "Unknown project adoption creates or proposes .launchdeck.yml before managed start.",
+      "Repeated start returns an existing managed run instead of duplicating.",
+      "External port occupant is inspected and reported, not killed.",
+      "Stop and restart require ownership proof.",
+      "Safe clean preserves evidence, secrets, data, source, and config files.",
+      "Eval prompts cover trigger, non-trigger, behavior/safety, and compact-output cases."
+    ],
+    "design_direction": "One trigger-rich router SKILL.md with progressive-disclosure references.",
+    "optimal_solution_approach": "Use a short router skill and reference subflows to preserve natural intent routing while minimizing context and maintaining Launchdeck safety boundaries.",
+    "scope": {
+      "in": [
+        "launchdeck-agent/SKILL.md",
+        "references/intent-routing.md",
+        "references/adoption-flow.md",
+        "references/discovery-rules.md",
+        "references/command-flows.md",
+        "references/recovery-playbooks.md",
+        "references/clean-safety.md",
+        "references/eval-prompts.md"
+      ],
+      "out": [
+        "GUI",
+        "MCP server",
+        "separate public subskills",
+        "direct OS process killing",
+        "production deployment management",
+        "destructive reset automation",
+        "replacing Launchdeck CLI behavior"
+      ],
+      "deferred": [
+        "scanner scripts",
+        "executable eval fixtures",
+        "monorepo-first behavior",
+        "ecosystem expansion beyond v0",
+        "splitting references into public skills"
+      ]
+    }
+  },
+  "context_boundary": {
+    "current_project_root": "F:/github/launchdeck",
+    "current_project_roles": [
+      {
+        "role": "implementation target",
+        "scope": "Launchdeck CLI product and future agent skill integration surface.",
+        "evidence_source": "active workspace and live reads",
+        "notes": "The skill package should live in this repository's skill surface unless sp-specify verifies a different local convention."
+      }
+    ],
+    "target_project_root": "F:/github/launchdeck",
+    "target_project_roles": [
+      {
+        "role": "implementation target",
+        "scope": "Same as current project.",
+        "evidence_source": "active workspace",
+        "notes": "No external target project is in scope."
+      }
+    ],
+    "reference_projects": [],
+    "external_systems": [],
+    "path_status": "target-read-confirmed",
+    "boundary_confidence": "high",
+    "boundary_unknowns": []
+  },
+  "implementation_target": {
+    "target_root": "F:/github/launchdeck",
+    "target_paths": [
+      ".codex/skills/launchdeck-agent/SKILL.md",
+      ".codex/skills/launchdeck-agent/references/intent-routing.md",
+      ".codex/skills/launchdeck-agent/references/adoption-flow.md",
+      ".codex/skills/launchdeck-agent/references/discovery-rules.md",
+      ".codex/skills/launchdeck-agent/references/command-flows.md",
+      ".codex/skills/launchdeck-agent/references/recovery-playbooks.md",
+      ".codex/skills/launchdeck-agent/references/clean-safety.md",
+      ".codex/skills/launchdeck-agent/references/eval-prompts.md"
+    ],
+    "target_paths_still_to_verify": [
+      "Exact local skill packaging path",
+      "Whether agents/openai.yaml or similar metadata is required"
+    ],
+    "target_project_cognition_status": "review",
+    "cross_project_authority_note": "Current project cognition cannot prove another project's implementation facts; no external target project is in scope."
+  },
+  "source_evidence": [
+    {
+      "source_type": "discussion_artifact",
+      "evidence_status": "verified",
+      "source": "requirements.md",
+      "claim": "Defines product requirements, non-goals, success signals, and v0 skill package requirements."
+    },
+    {
+      "source_type": "discussion_artifact",
+      "evidence_status": "verified",
+      "source": "technical-options.md",
+      "claim": "Defines selected v0 package shape, SKILL.md draft, reference responsibilities, script stance, and flow contracts."
+    },
+    {
+      "source_type": "live_repo",
+      "evidence_status": "verified",
+      "source": "README.md",
+      "claim": "Launchdeck provides registry, lifecycle commands, inspect/reconcile, logs/events, safe clean, ownership proof, and compact JSON."
+    },
+    {
+      "source_type": "live_repo",
+      "evidence_status": "verified",
+      "source": "src/cli.js",
+      "claim": "CLI exposes lifecycle, observe, recovery, clean, and --compact command surfaces."
+    },
+    {
+      "source_type": "live_repo",
+      "evidence_status": "verified",
+      "source": "src/runtime.js",
+      "claim": "Runtime manages process records, declared ports, logs, clean targets, ownership proof, and stop safety."
+    },
+    {
+      "source_type": "live_repo",
+      "evidence_status": "verified",
+      "source": "test/cli.test.js",
+      "claim": "Lifecycle tests cover doctor, build, test, dev idempotency, ps, logs, stop, and clean."
+    }
+  ],
+  "blocking_unknowns": {
+    "hard": [],
+    "soft": [
+      {
+        "id": "SU-001",
+        "claim": "Exact skill install/export path must be verified.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "sp-specify",
+        "stop_and_reopen_condition": "No valid local skill path exists."
+      },
+      {
+        "id": "SU-002",
+        "claim": "Automatic versus proposal-first .launchdeck.yml authoring should be finalized.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "sp-specify",
+        "stop_and_reopen_condition": "The decision changes the safety posture."
+      },
+      {
+        "id": "SU-003",
+        "claim": "Monorepo support in v0 remains deferred unless spec includes it.",
+        "owner": "downstream specification",
+        "latest_resolve_phase": "sp-specify",
+        "stop_and_reopen_condition": "V0 must manage multiple launchable apps in one repo."
+      }
+    ]
+  },
+  "downstream_instructions": {
+    "settled_decisions": [
+      "Build one v0 router skill named launchdeck-agent.",
+      "Keep SKILL.md short and reference-driven.",
+      "Treat Launchdeck as the only execution and mutation authority.",
+      "Prefer --json --compact for agent-internal Launchdeck commands.",
+      "Refuse direct process killing for unknown/external owners.",
+      "Keep clean, risky clean, and reset separate."
+    ],
+    "assumptions_to_preserve": [
+      "V0 targets local filesystem projects and current workspace behavior first.",
+      "Existing Launchdeck CLI surfaces are sufficient foundation for the skill package.",
+      "References come before scripts."
+    ],
+    "capability_map": [
+      "intent routing",
+      "adoption",
+      "discovery",
+      "operation",
+      "recovery",
+      "clean",
+      "eval"
+    ],
+    "dependencies": [
+      "Launchdeck CLI",
+      ".launchdeck.yml",
+      "Launchdeck registry",
+      "runtime state/logs/events",
+      "skill trigger metadata"
+    ],
+    "planning_constraints": [
+      "No separate public skills in v0 unless spec revises scope.",
+      "No mutating scripts in v0.",
+      "README prose alone cannot authorize a long-running start.",
+      "Port or PID alone cannot authorize stop.",
+      "No reset path hidden under clean."
+    ],
+    "deferred_scope": [
+      "scanner scripts",
+      "executable eval fixtures",
+      "monorepo-first behavior",
+      "ecosystem expansion",
+      "splitting references into public skills"
+    ],
+    "reopen_conditions": [
+      "Required Launchdeck CLI command is missing.",
+      "Skill packaging convention contradicts assumed path.",
+      "Eval design cannot verify duplicate-start or unsafe-kill prevention.",
+      "User changes v0 from local CLI skill package to GUI/MCP/product installer."
+    ]
+  },
+  "discussion_decision_digest": {
+    "locked_direction": [
+      "One launchdeck-agent router skill with bundled references.",
+      "Natural user intent routes internally.",
+      "First-run discovery persists lifecycle knowledge.",
+      "Launchdeck remains execution authority."
+    ],
+    "rejected_alternatives": [
+      "Six public skills for v0.",
+      "Direct agent-managed process killing.",
+      "GUI/MCP-first.",
+      "Clean-as-reset.",
+      "Automatic destructive cleanup."
+    ],
+    "accepted_tradeoffs": [
+      "Weak-confidence discovery stays conservative.",
+      "References remain internal until trigger behavior is proven.",
+      "Scanner scripts are deferred until evals prove need."
+    ],
+    "experience_commitments": [
+      "Users express intent, not skill names.",
+      "Agent reports conclusion, evidence, and safe next action.",
+      "Agent avoids duplicate local services."
+    ],
+    "review_criteria_carried_forward": [
+      "Trigger correctness",
+      "Non-trigger correctness",
+      "Behavior safety",
+      "Compact-output behavior"
+    ],
+    "must_not_dilute": [
+      "Observe before mutate.",
+      "Ownership proof before stop/restart/force-stop.",
+      "Inspect-only for unknown/external processes.",
+      "Safe clean only by default.",
+      "Compact JSON for agent loops."
+    ]
+  },
+  "ui_discussion": {
+    "ui_discussion_status": "not_applicable",
+    "confirmed_ui_decisions": [],
+    "deferred_ui_decisions": [],
+    "interaction_expectations": [],
+    "state_requirements": [],
+    "accessibility_expectations": [],
+    "ui_sketches_present": false,
+    "ui_sketch_summary": null,
+    "ui_sketch_reference": null
+  },
+  "senior_consequence_analysis": {
+    "consequence_gate_status": "triggered",
+    "trigger_reason": "Agent skills affect lifecycle operations, running processes, port conflict handling, shared Launchdeck state, cleanup safety, and downstream agent behavior.",
+    "affected_objects": [
+      "launchdeck-agent/SKILL.md",
+      "reference files",
+      ".launchdeck.yml",
+      "Launchdeck registry",
+      "runtime state/logs/events",
+      "managed process records",
+      "declared ports",
+      "clean targets"
+    ],
+    "state_behavior_matrix": {
+      "missing_config": "read-only discovery before mutation",
+      "adopted_project": "observe before mutation",
+      "running_matching_task": "report existing run",
+      "external_port_occupant": "inspect-only, no kill",
+      "stale_record": "reconcile before mutation",
+      "stop_failed": "force-stop only if Launchdeck-owned",
+      "risky_clean": "explicit confirmation",
+      "reset": "decline automatic reset"
+    },
+    "coverage_gaps": [
+      "Exact local skill packaging path",
+      "Executable eval fixture format",
+      "Monorepo behavior"
+    ],
+    "obligations": [
+      {
+        "id": "CA-AS-001",
+        "claim": "Skills must treat Launchdeck as the execution authority and must not independently kill unknown processes.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Any flow bypasses Launchdeck for process mutation."
+      },
+      {
+        "id": "CA-AS-002",
+        "claim": "Skills must discover and classify lifecycle commands before running or proposing managed configuration.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Unknown projects can start without evidence."
+      },
+      {
+        "id": "CA-AS-003",
+        "claim": "Skills must require Launchdeck ownership proof before stop/restart/force-stop decisions.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Port or PID alone authorizes stop."
+      },
+      {
+        "id": "CA-AS-004",
+        "claim": "Skills must prefer inspect/reconcile/status evidence before starting a service that may already exist.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Start flow can duplicate a running task."
+      },
+      {
+        "id": "CA-AS-005",
+        "claim": "Skills must preserve agent-readable output and use compact JSON when context budget matters.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Agent loops require verbose output by default."
+      },
+      {
+        "id": "CA-AS-006",
+        "claim": "Skills must distinguish read-only discovery, config proposal, config adoption, operation, recovery, and cleanup.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Subflows blur safety boundaries."
+      },
+      {
+        "id": "CA-AS-007",
+        "claim": "Skills must preserve user control over risky cleanup and destructive operations.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Risky clean or reset can run automatically."
+      },
+      {
+        "id": "CA-AS-008",
+        "claim": "Skills must support arbitrary local project stacks by detecting common project files while keeping .launchdeck.yml explicit as authority.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "Skill becomes stack-specific without fallback."
+      },
+      {
+        "id": "CA-AS-009",
+        "claim": "Skill invocation must be intent-routed from natural user requests, not dependent on users naming the correct skill.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "User must name skill explicitly for ordinary lifecycle requests."
+      },
+      {
+        "id": "CA-AS-010",
+        "claim": "Learned lifecycle knowledge must persist as Launchdeck config/registry state so later runs do not repeat expensive or risky discovery.",
+        "owner_workflow": "sp-specify",
+        "latest_resolve_phase": "spec",
+        "status": "mapped",
+        "stop_and_reopen_condition": "First-run discovery remains ephemeral."
+      }
+    ]
+  },
+  "must_preserve_ledger": [
+    {
+      "id": "MP-001",
+      "type": "goal",
+      "claim": "Create a v0 launchdeck-agent skill package for safe local project lifecycle management through Launchdeck.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must define this as the central target need.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Scope becomes CLI/MCP/GUI instead of skill package.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-002",
+      "type": "decision",
+      "claim": "V0 ships as one router skill with bundled references, not six public skills.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Spec must preserve one-package v0 shape.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Multiple public skills are proposed for v0.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-003",
+      "type": "decision",
+      "claim": "Users express natural intent; agent routing is internal.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must include natural-language trigger behavior.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "User must name Launchdeck or skill names.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-004",
+      "type": "decision",
+      "claim": "Launchdeck is the execution authority.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must forbid direct launch/kill bypasses when Launchdeck can manage the lifecycle.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Skill directly owns processes.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-005",
+      "type": "decision",
+      "claim": ".launchdeck.yml is lifecycle authority and first-run discovery must persist knowledge.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must require adoption flow and config reuse.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Skill remains one-off command runner.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-006",
+      "type": "decision",
+      "claim": "Observe before mutate.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Spec must require state preflight before lifecycle mutation.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Start/stop/restart flows skip evidence.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-007",
+      "type": "decision",
+      "claim": "Stop/restart/force-stop require Launchdeck ownership proof.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must preserve ownership gates.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Port or PID alone authorizes stop.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-008",
+      "type": "non_goal",
+      "claim": "Unknown or external processes are inspect-only and must not be killed automatically.",
+      "source": "open-questions.md",
+      "downstream_requirement": "Spec must include explicit refusal behavior.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Automatic kill is introduced.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-009",
+      "type": "decision",
+      "claim": "Safe clean, risky clean, and reset are separate; reset is out of automatic scope.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must preserve cleanup tiers and confirmation rules.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Clean can delete secrets, data, or reset state.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-010",
+      "type": "decision",
+      "claim": "Agent-internal Launchdeck calls should prefer --json --compact.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must include compact-output command posture.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Compact output is unavailable for a required flow.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-011",
+      "type": "scope",
+      "claim": "V0 discovery covers Node, Python, Docker Compose, and Make/Just/Taskfile first.",
+      "source": "requirements.md",
+      "downstream_requirement": "Spec must include these discovery references.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "V0 must cover a different ecosystem first.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-012",
+      "type": "tradeoff",
+      "claim": "V0 defers scripts unless evals show prose discovery is unreliable.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Spec must not add mutating scripts by default.",
+      "blocking_level": "soft",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Implementation requires a scanner for correctness.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-013",
+      "type": "reference",
+      "claim": "Eval prompts must test trigger, non-trigger, behavior/safety, and compact-output behavior.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Spec must include eval artifacts or acceptance criteria.",
+      "blocking_level": "hard",
+      "owner": "downstream-contract",
+      "latest_resolve_phase": "sp-specify",
+      "status": "mapped",
+      "deferred_to": null,
+      "stop_and_reopen_condition": "Verification ignores behavior safety.",
+      "superseded_by": null,
+      "mapped_to": []
+    },
+    {
+      "id": "MP-014",
+      "type": "blocking_question",
+      "claim": "Exact skill install/export path must be verified.",
+      "source": "handoff-assessment.md",
+      "downstream_requirement": "Spec must resolve target package path before implementation.",
+      "blocking_level": "soft",
+      "owner": "evidence",
+      "latest_resolve_phase": "sp-specify",
+      "status": "deferred",
+      "deferred_to": "sp-specify",
+      "stop_and_reopen_condition": "No valid local skill path exists.",
+      "superseded_by": null,
+      "mapped_to": []
+    }
+  ],
+  "handoff_reviewer_guide": {
+    "decision_to_make": "This handoff has been reviewed and confirmed as handoff-ready; if it is later repaired or re-reviewed, confirm it still captures the intended product direction or request changes.",
+    "review_order": [
+      "Handoff Goal",
+      "Context Boundary",
+      "Implementation Target",
+      "Source Evidence",
+      "Blocking Unknowns",
+      "Downstream Instructions",
+      "Must-Preserve Ledger",
+      "Consequence Obligations"
+    ],
+    "approve_if": [
+      "Goal matches user intent.",
+      "Target project and roles are correct.",
+      "No hard unknowns remain.",
+      "Soft unknowns are safe to resolve during specification.",
+      "Safety and consequence obligations cover drift-prone decisions."
+    ],
+    "request_changes_if": [
+      "Target or evidence boundary is wrong.",
+      "A hard decision is hidden as a soft unknown.",
+      "A safety non-goal is missing.",
+      "Markdown and JSON disagree on protected facts."
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "status": "success",
+  "reported_status": "success",
+  "task_id": "T003",
+  "changed_files": [
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+    ".agents/skills/launchdeck-agent/references/discovery-rules.md"
+  ],
+  "validation_evidence": [
+    {
+      "command": "adoption and discovery confidence check",
+      "result": "pass",
+      "status": "passed",
+      "passed": true,
+      "evidence": "adoption and discovery confidence check"
+    }
+  ],
+  "blockers": [],
+  "concerns": [],
+  "validation_output": {
+    "result": "pass",
+    "acceptance_criteria_met": true,
+    "status": "passed",
+    "passed": true
+  },
+  "validation": {
+    "status": "passed",
+    "result": "pass",
+    "passed": true
+  },
+  "validation_results": [
+    {
+      "name": "adoption and discovery confidence check",
+      "status": "passed",
+      "evidence": "adoption and discovery confidence check"
+    }
+  ]
+}

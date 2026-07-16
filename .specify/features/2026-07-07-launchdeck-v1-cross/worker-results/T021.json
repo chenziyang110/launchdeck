@@ -1,0 +1,31 @@
+{
+  "status": "success",
+  "task_id": "T021",
+  "agent": "executor",
+  "completed_at": "2026-07-07T18:12:44.7833608+08:00",
+  "changed_files": [
+    ".github/workflows/ci.yml"
+  ],
+  "validation_output": {
+    "npm_run_check": "passed",
+    "npm_test": {
+      "status": "passed on full rerun",
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    },
+    "focused_runtime_state_rerun": "passed after initial transient Windows EPERM temp cleanup failure",
+    "yaml_review": "passed: parsed .github/workflows/ci.yml with repo yaml dependency",
+    "local_lifecycle_smoke": "passed: extracted Lifecycle smoke step from workflow YAML and executed it locally via PowerShell with exit code 0",
+    "leader_join_validation": {
+      "command": "npm run check; npm test",
+      "exit_code": 0,
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    }
+  },
+  "ci_matrix_evidence": "Workflow defines a lifecycle-smoke job with fail-fast false and matrix os values windows-latest, macos-latest, and ubuntu-latest. Each matrix run performs actions/setup-node@v4 with Node 20, npm ci, npm run check, npm test, then a real CLI lifecycle smoke against a disposable project covering doctor, tasks, run build, run fail, managed start, duplicate start refusal, ps, logs, stop, idempotent stop, clean dry-run, clean --safe, and clean --all confirmation refusal.",
+  "concerns": [],
+  "recovery_hints": []
+}

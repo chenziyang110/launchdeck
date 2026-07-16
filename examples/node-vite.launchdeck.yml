@@ -1,0 +1,38 @@
+version: 1
+project:
+  name: node-vite-app
+tasks:
+  setup:
+    command: npm install
+    description: Install project dependencies
+    risk: medium
+  build:
+    command: npm run build
+    cwd: .
+    description: Build production assets
+    risk: medium
+  test:
+    command: npm test
+    cwd: .
+    description: Run the test suite
+  lint:
+    command: npm run lint
+    cwd: .
+    description: Run lint checks
+  dev:
+    command: npm run dev -- --host 127.0.0.1
+    cwd: .
+    env:
+      PORT: "5173"
+    description: Start the Vite dev server
+    longRunning: true
+    ports: [5173]
+    risk: medium
+    log: .launchdeck/logs/dev.log
+clean:
+  safe:
+    - dist
+    - { path: .vite, description: Local Vite cache }
+    - node_modules/.vite
+  risky:
+    - node_modules

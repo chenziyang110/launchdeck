@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "task_id": "T017",
+  "agent": "security-reviewer",
+  "completed_at": "2026-07-07T17:33:17.7890595+08:00",
+  "changed_files": [
+    "src/runtime.js",
+    "src/adapters/path.js"
+  ],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check src/runtime.js; node --check src/adapters/path.js",
+      "exit_code": 0
+    },
+    "config_smoke": {
+      "command": "node --test test/config.test.js",
+      "exit_code": 0,
+      "tests": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "runtime_negative_refusal_script": {
+      "status": "passed",
+      "summary": "Refused plan caused clean_failed and preserved approved dist/value.txt."
+    },
+    "planner_status_script": {
+      "status": "passed",
+      "summary": "empty/root/outside/absolute refusals and missing skips verified."
+    },
+    "clean_safety_tests": {
+      "command": "node --test test/clean-safety.test.js",
+      "exit_code": 1,
+      "tests": 7,
+      "passed": 0,
+      "failed": 7,
+      "remaining_scope": "CLI envelope/config-load integration remains for T018 or repair."
+    }
+  },
+  "concerns": [
+    "src/cli.js still emits old clean JSON shape without command/status/projectRoot/configPath/mode/removed envelope fields.",
+    "Invalid clean config entries are still rejected during config loading before CLI can return a refused-target clean plan; a config-boundary repair may be required outside T018's current src/cli.js write scope."
+  ],
+  "recovery_hints": [
+    "T018 should wire cleanCommand to the clean planner envelope and carry refused targets into JSON responses without deleting any target.",
+    "If T018 cannot satisfy root/out-of-root refused-plan tests without changing config.js, create a focused repair task to relax clean normalization and update config tests."
+  ],
+  "security_negative_test_evidence": "Direct runtime test built a plan with safe dist plus refused '..'; cleanTargets(plan) threw clean_failed before deletion and dist/value.txt remained present. Additional planner script verified clean_target_empty, clean_target_root, clean_target_outside_project, clean_target_ambiguous, and skipped_missing statuses."
+}

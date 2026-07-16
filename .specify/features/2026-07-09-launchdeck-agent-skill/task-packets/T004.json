@@ -1,0 +1,89 @@
+{
+  "task_id": "T004",
+  "id": "T004",
+  "title": "Create command-flows reference",
+  "agent": "executor",
+  "depends_on": [
+    "T001"
+  ],
+  "parallel_safe": true,
+  "objective": "Create Launchdeck-only command flow guidance for managed lifecycle operations and observability.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/references/command-flows.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    "README.md",
+    "src/cli.js",
+    "test/global-runtime.test.js"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    ".env",
+    "credential files",
+    "raw process recipes"
+  ],
+  "context_navigation": {
+    "command_requirements": "spec.md#Secondary-Scenario---Stop-Restart-And-Force-Stop-Stay-Ownership-Gated",
+    "cli_surface": "README.md#Command-reference and src/cli.js help",
+    "ownership_design": "plan.md#Operational-Consequence-Design",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/references/command-flows.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not instruct agents to background services directly.",
+    "Do not kill or restart through OS commands."
+  ],
+  "does_not_remove": [
+    "MP-004",
+    "MP-006",
+    "MP-007",
+    "MP-010",
+    "CA-AS-001",
+    "CA-AS-003",
+    "CA-AS-004",
+    "CA-AS-005",
+    "CA-AS-010"
+  ],
+  "capability_operations": [
+    "implements managed start",
+    "implements repeat start",
+    "implements restart stop force-stop",
+    "implements logs and events guidance"
+  ],
+  "consumer_surfaces": [
+    "command flow reference loaded by SKILL.md"
+  ],
+  "required_evidence": [
+    "command-name evidence",
+    "compact-output evidence",
+    "ownership evidence"
+  ],
+  "acceptance_criteria": [
+    "Start/dev/run observes state and declared ports before mutation.",
+    "Repeat start reports existing managed run when matched.",
+    "Restart, stop, and force-stop require Launchdeck ownership proof.",
+    "Logs and events are evidence.",
+    "Internal command examples use --json --compact where supported."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\references\\command-flows.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\references\\command-flows.md -Pattern 'status --all|ps --all|ports|inspect|start|restart|stop|force-stop|logs|events|--json --compact|ownership'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/references/command-flows.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

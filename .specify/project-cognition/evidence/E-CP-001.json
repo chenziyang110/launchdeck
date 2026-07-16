@@ -1,0 +1,51 @@
+{
+  "id": "E-CP-001",
+  "source_path": "src/control-plane/actions.js",
+  "summary": "项目注册表CRUD操作：addProjectToRegistry、removeProjectFromRegistry、listRegisteredProjects、repairProjectRegistration、scanProjectsIntoRegistry、resolveRegisteredProject",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-001",
+    "source_path": "src/control-plane/actions.js",
+    "summary": "项目注册表CRUD操作：addProjectToRegistry、removeProjectFromRegistry、listRegisteredProjects、repairProjectRegistration、scanProjectsIntoRegistry、resolveRegisteredProject",
+    "symbols": [
+      "readProjectRegistry",
+      "writeProjectRegistry",
+      "addProjectToRegistry",
+      "removeProjectFromRegistry",
+      "listRegisteredProjects",
+      "stopManagedRun",
+      "restartManagedRun",
+      "repairProjectRegistration",
+      "reconcileManagedRuns",
+      "resolveRegisteredProject",
+      "scanProjectsIntoRegistry",
+      "findActiveOwnedRuns"
+    ],
+    "exports": [
+      "readProjectRegistry",
+      "writeProjectRegistry",
+      "addProjectToRegistry",
+      "removeProjectFromRegistry",
+      "listRegisteredProjects",
+      "stopManagedRun",
+      "restartManagedRun",
+      "repairProjectRegistration",
+      "reconcileManagedRuns",
+      "resolveRegisteredProject",
+      "scanProjectsIntoRegistry",
+      "findActiveOwnedRuns"
+    ],
+    "dependencies": [
+      "config.js (loadConfig, CONFIG_FILES)",
+      "errors.js (LaunchdeckError)",
+      "runtime.js (listProcesses, readState, stopManagedTasks, waitForDeclaredPortsFree, writeState)",
+      "events.js (appendEvent)",
+      "locks.js (withLock)",
+      "runs.js (createRunContext, observedRun, readRunIndex, startManagedRun, updateRunRecord)",
+      "state.js (assertAliasAvailable, controlPlanePaths, normalizeProjectRegistration, readRegistryState, updateRegistryState, writeRegistryState)"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "status": "success",
+  "task_id": "T022",
+  "agent": "verifier",
+  "decision": "cleared",
+  "completed_at": "2026-07-07T18:18:00+08:00",
+  "changed_files": [],
+  "validation_output": {
+    "npm_run_check": "exit 0; syntax checks passed for src/errors.js, src/cli.js, src/config.js, src/runtime.js, test/config.test.js, and test/cli.test.js.",
+    "npm_test": {
+      "exit_code": 0,
+      "tests": 53,
+      "passed": 53,
+      "failed": 0
+    },
+    "quickstart_lifecycle_smoke": "exit 0; disposable Windows temp project smoke passed doctor, tasks, run build, run fail, managed start dev, duplicate start refusal, ps, logs, stop, idempotent stop, clean dry-run, clean --safe, and clean --all confirmation refusal."
+  },
+  "full_verification_evidence": "Verified against T022 packet, quickstart.md, plan.md, worker-results/T020.json, worker-results/T021.json, README.md, .github/workflows/ci.yml, and package.json. Local commands passed: npm run check and npm test with 53/53 tests. Quickstart smoke used a disposable project and exercised node src/cli.js doctor --json, tasks --json, run build --json, run fail --json, start dev --json, duplicate start refusal, ps --json, logs dev --json, stop dev --json twice, clean --json, clean --safe --json, and clean --all --json.",
+  "claim_level_evidence": {
+    "dev_ready": "supported",
+    "platform_smoke_ready": "supported",
+    "cross_platform_ready": "pending_ci_matrix",
+    "basis": "Windows local checks and lifecycle smoke passed in this workspace. The CI workflow defines a Windows/macOS/Ubuntu lifecycle-smoke matrix, but this run did not observe GitHub Actions evidence for all three OSes."
+  },
+  "remaining_human_needed_checks": [
+    "Collect or link GitHub Actions lifecycle-smoke evidence for macOS and Linux before promoting the release claim beyond platform-smoke-ready."
+  ],
+  "unresolved_gaps": [],
+  "concerns": [],
+  "recovery_hints": []
+}

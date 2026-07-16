@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "status": "ready-for-implement",
+  "entry_source": "sp-tasks",
+  "feature_dir": ".specify/features/2026-07-09-launchdeck-agent-skill",
+  "tasks": ".specify/features/2026-07-09-launchdeck-agent-skill/tasks.md",
+  "task_index": ".specify/features/2026-07-09-launchdeck-agent-skill/task-index.json",
+  "task_packets_dir": ".specify/features/2026-07-09-launchdeck-agent-skill/task-packets",
+  "execution_model": "adaptive",
+  "execution_mode": "light",
+  "workflow_status": "ready",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": false,
+  "delegated_task_generation_lanes": "none",
+  "feature_delivery_shape": "serial setup with one intra-phase parallel batch, then serial eval and final integration",
+  "target_root": "F:/github/launchdeck",
+  "confirmed_delivery_scope": [
+    "one launchdeck-agent router skill",
+    "seven reference files",
+    "bilingual natural lifecycle trigger coverage",
+    "Launchdeck-only lifecycle command guidance",
+    "eval prompts for trigger, non-trigger, behavior safety, and compact output"
+  ],
+  "task_ids": [
+    "T001",
+    "T002",
+    "T003",
+    "T004",
+    "T005",
+    "T006",
+    "T007",
+    "T008"
+  ],
+  "parallel_batches": [
+    {
+      "id": "PB-2.1",
+      "tasks": [
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "join_point": "JP-2.1"
+    }
+  ],
+  "join_points": [
+    {
+      "id": "JP-2.1",
+      "after": [
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006"
+      ],
+      "validation": "All reference files exist before T007."
+    },
+    {
+      "id": "JP-4.1",
+      "after": [
+        "T008"
+      ],
+      "validation": "Quickstart completion gate satisfied before completion claim."
+    }
+  ],
+  "must_preserve": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010",
+    "MP-011",
+    "MP-012",
+    "MP-013",
+    "MP-014"
+  ],
+  "ca_obligations": [
+    "CA-AS-001",
+    "CA-AS-002",
+    "CA-AS-003",
+    "CA-AS-004",
+    "CA-AS-005",
+    "CA-AS-006",
+    "CA-AS-007",
+    "CA-AS-008",
+    "CA-AS-009",
+    "CA-AS-010"
+  ],
+  "forbidden_actions": [
+    "edit src/",
+    "edit test/",
+    "edit package.json",
+    "add dependencies",
+    "start demo services",
+    "mutate Launchdeck runtime state",
+    "write raw process-kill recipes",
+    "create scanner scripts without renewed user confirmation"
+  ],
+  "validation_summary": {
+    "format": "tasks follow checklist format with enriched details",
+    "json_packets": "task-index and per-task packets generated",
+    "next_command": "/sp.implement"
+  },
+  "next_command": "/sp.implement"
+}

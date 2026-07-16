@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "task_id": "T027",
+  "title": "Implement reconcile and stale run repair in src/control-plane/runs.js and src/control-plane/actions.js",
+  "phase": "Phase 6",
+  "story": "US4",
+  "priority": "P2",
+  "agent": "executor",
+  "depends_on": [
+    "T026: recovery tests",
+    "T019: ownership evidence",
+    "T023: lifecycle actions"
+  ],
+  "parallel_safe": false,
+  "target_root": "F:/github/launchdeck",
+  "evidence_status": "project cognition partial_refresh/review; live reads and plan artifacts required",
+  "context_navigation": [
+    {
+      "need": "Locked decisions",
+      "ref": "plan.md#locked-planning-decisions"
+    },
+    {
+      "need": "Implementation constitution",
+      "ref": "plan.md#implementation-constitution"
+    },
+    {
+      "need": "State model",
+      "ref": "data-model.md#storage-namespaces"
+    },
+    {
+      "need": "CLI contract",
+      "ref": "contracts/cli-contract.md#cli-contract-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Validation scenario",
+      "ref": "quickstart.md#quickstart-launchdeck-global-cli-control-plane"
+    },
+    {
+      "need": "Reconcile command",
+      "ref": "contracts/cli-contract.md#recovery-commands"
+    },
+    {
+      "need": "Managed run transitions",
+      "ref": "data-model.md#entity-managedrun"
+    }
+  ],
+  "scope_boundaries": {
+    "write_scope": [
+      "src/control-plane/runs.js",
+      "src/control-plane/actions.js",
+      "src/control-plane/inspect.js",
+      "src/cli.js"
+    ],
+    "read_scope": [
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/spec.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/data-model.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/contracts/cli-contract.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/quickstart.md",
+      "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane/plan-contract.json",
+      "F:/github/launchdeck/.specify/memory/constitution.md"
+    ],
+    "forbidden": [
+      ".env",
+      ".env.*",
+      "**/*secret*",
+      "**/*credential*",
+      "**/node_modules/**",
+      "F:/github/* outside F:/github/launchdeck"
+    ]
+  },
+  "expected_outputs": [
+    "src/control-plane/runs.js (modify)",
+    "src/control-plane/actions.js (modify)",
+    "src/control-plane/inspect.js (modify)",
+    "src/cli.js (modify)"
+  ],
+  "anti_goals": [
+    "Do not kill processes during reconcile.",
+    "Do not silently delete stale state."
+  ],
+  "does_not_remove": [
+    "Inspectable stale state evidence"
+  ],
+  "capability_operations": [
+    "implements reconcile and stale state recovery"
+  ],
+  "consumer_surfaces": [
+    "launchdeck reconcile",
+    "launchdeck inspect stale task"
+  ],
+  "required_evidence": [
+    "real_entrypoint_evidence",
+    "stale_state_evidence"
+  ],
+  "acceptance_criteria": [
+    "Reconcile compares run index and OS observations, marks stale/stopped safely, writes events, preserves evidence, and blocks dangerous operations until safe."
+  ],
+  "verify_commands": [
+    "node --check src/control-plane/runs.js",
+    "node --check src/control-plane/actions.js",
+    "node --check src/control-plane/inspect.js",
+    "node --check src/cli.js",
+    "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js"
+  ],
+  "guardrails": [
+    "G-BOUNDARY"
+  ],
+  "mp": [
+    "MP-007",
+    "MP-009",
+    "MP-012"
+  ],
+  "ca": [
+    "CA-CP-009",
+    "CA-CP-011",
+    "CA-CP-017"
+  ],
+  "fr": [
+    "FR-016",
+    "FR-025",
+    "FR-033",
+    "FR-044"
+  ],
+  "boundary_constraints": [
+    "CLI-only",
+    "daemonless first",
+    "user-scoped state",
+    "no external kill",
+    "owned-only stop/restart",
+    "safe clean only",
+    "stable JSON envelope"
+  ],
+  "stop_and_reopen": [
+    "External kill becomes required in base scope.",
+    "Daemon or service implementation becomes mandatory for this feature.",
+    "GUI, TUI, MCP, or editor implementation becomes mandatory for this feature.",
+    "Clean absorbs destructive reset semantics.",
+    "Default scope changes from user-scoped to whole-machine or multi-user.",
+    "Safety invariants conflict with feasible cross-platform implementation."
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      "src/control-plane/runs.js",
+      "src/control-plane/actions.js",
+      "src/control-plane/inspect.js",
+      "src/cli.js"
+    ],
+    "validation_output": {
+      "node --check src/control-plane/runs.js": "<paste relevant output>",
+      "node --check src/control-plane/actions.js": "<paste relevant output>",
+      "node --check src/control-plane/inspect.js": "<paste relevant output>",
+      "node --check src/cli.js": "<paste relevant output>",
+      "node --test test/recovery-observability.test.js test/lifecycle-ownership.test.js": "<paste relevant output>"
+    },
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "independent_executability_gate": "ready: worker can complete using this packet and referenced context files"
+}

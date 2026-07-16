@@ -1,0 +1,74 @@
+{
+  "status": "DONE",
+  "task_id": "T010",
+  "changed_files": [
+    "src/output.js",
+    "src/errors.js"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check src/output.js",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "node --check src/errors.js",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js",
+      "exit_code": 0,
+      "result": "passed: 20 tests, 20 pass, 0 fail"
+    }
+  ],
+  "red_state_evidence": {
+    "command": "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js",
+    "exit_code": 1,
+    "result": "failed before edits: 20 tests, 14 pass, 6 fail",
+    "failing_contracts": [
+      "success envelope missing schemaVersion",
+      "success envelope missing data",
+      "success envelope missing default next []",
+      "failure envelope missing top-level schemaVersion/code/message/details",
+      "required control-plane ERROR_CODES missing 13 public codes",
+      "clean --all --json missing schemaVersion/structured next contract surface"
+    ]
+  },
+  "green_state_evidence": {
+    "command": "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js",
+    "exit_code": 0,
+    "result": "passed after edits: 20 tests, 20 pass, 0 fail"
+  },
+  "blockers": [],
+  "concerns": [
+    "No LSP diagnostics tool was available in this runtime; syntax checks and focused contract tests were run as required."
+  ],
+  "changed_paths": [
+    "src/output.js",
+    "src/errors.js",
+    ".specify/teams/state/results/019f4152-be81-75b0-a7a6-bb18df493181.json"
+  ],
+  "behavior_surfaces": [
+    "JSON success envelope now includes schemaVersion: 1, data, and next while preserving legacy top-level payload mirrors.",
+    "JSON failure and partial envelopes now include schemaVersion: 1, data, top-level domain error code/message/details, and next while preserving legacy nested error payloads and legacy payload fields.",
+    "confirmation_required refusals receive default non-interactive next actions when callers do not provide any.",
+    "Public ERROR_CODES now include the required control-plane domain codes without removing existing mappings."
+  ],
+  "state_contracts": [
+    "CA-CP-019 stable JSON envelope: schemaVersion/data/next added centrally in src/output.js.",
+    "CA-CP-014 non-interactive no prompts: confirmation_required failure envelopes return actionable next actions.",
+    "Compatibility transition: legacy top-level success payload fields and existing failure payload fields remain mirrored.",
+    "Existing public error-code aliases remain preserved; additional control-plane aliases were additive."
+  ],
+  "verification": [
+    "node --check src/output.js -> exit 0",
+    "node --check src/errors.js -> exit 0",
+    "node --test test/cli-control-plane-contract.test.js test/cli-contract.test.js -> exit 0, 20/20 passing"
+  ],
+  "confidence_notes": [
+    "Implementation was limited to src/output.js and src/errors.js plus this required result handoff file.",
+    "A failed intermediate run exposed a success-path regression, which was corrected before final validation.",
+    "No edits were made to CLI/runtime, state, locks, events, tests, docs, package files, or feature workflow artifacts."
+  ]
+}

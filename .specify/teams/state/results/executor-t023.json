@@ -1,0 +1,45 @@
+{
+  "status": "success_with_expected_residual",
+  "changed_files": [
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    "src/runtime.js",
+    ".specify/teams/state/results/executor-t023.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/actions.js": "exit 0",
+    "node --check src/control-plane/runs.js": "exit 0",
+    "node --check src/runtime.js": "exit 0",
+    "node --test test/managed-cli.test.js": "exit 0; tests 12, pass 12, fail 0",
+    "node --test test/lifecycle-ownership.test.js": "exit 1; tests 8, pass 4, fail 4. Passing T023 safety cases: probable-owned refusal, unknown ownership refusal, external process refusal, stop_failed persistence/event evidence.",
+    "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js": "exit 1; tests 20, pass 16, fail 4. Failures: stop --json stops a verified-owned run and records stopped evidence; force-stop --json preserves the verified ownership gate; restart --json stops, waits for port release, and starts a new run in one transaction; restart --json records port_release_timeout when the stopped task leaves its port occupied."
+  },
+  "concerns": [
+    {
+      "test": "stop --json stops a verified-owned run and records stopped evidence",
+      "owner": "T024 CLI/output wiring",
+      "details": "The verified-owned process is stopped and persisted as stopped, but src/cli.js still emits the legacy global stop payload with process instead of the contract data.stopped[]/data.failed[] shape."
+    },
+    {
+      "test": "force-stop --json preserves the verified ownership gate",
+      "owner": "T024 CLI routing",
+      "details": "The force-stop command is not routed in src/cli.js, so the CLI returns unknown_command before reaching the ownership-gated runtime/action layer."
+    },
+    {
+      "test": "restart --json stops, waits for port release, and starts a new run in one transaction",
+      "owner": "T024 CLI/output wiring",
+      "details": "The action layer has restartManagedRun with a single transaction id and port wait, but src/cli.js still uses the legacy restart route and emits process/readiness instead of stoppedRun/startedRun/transactionId."
+    },
+    {
+      "test": "restart --json records port_release_timeout when the stopped task leaves its port occupied",
+      "owner": "T024 CLI routing/output wiring",
+      "details": "The runtime exposes waitForDeclaredPortsFree and the action-layer restart maps timeout to port_release_timeout, but the legacy src/cli.js restart route reports partial_failure."
+    }
+  ],
+  "recovery_hints": [
+    "In T024, route launchdeck force-stop to the same stop action with force-owned semantics after verified ownership; do not let force grant ownership.",
+    "In T024, route global stop/restart through stopManagedRun/restartManagedRun from src/control-plane/actions.js and update JSON envelopes to the CLI contract shapes.",
+    "Keep the existing T023 runtime ownership gates intact: stored probable-owned, unknown, external, or stale-only evidence must continue to refuse before termination.",
+    "When wiring restart in T024, preserve the single transaction id from restartManagedRun and surface port_release_timeout directly instead of wrapping it as partial_failure."
+  ]
+}

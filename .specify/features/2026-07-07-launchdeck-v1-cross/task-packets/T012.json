@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T012",
+  "story": "US2",
+  "description": "Implement process and path adapter modules.",
+  "agent": "executor",
+  "depends_on": [
+    "T010",
+    "T011"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "research.md#r-002-use-node-child-process-primitives-behind-a-runtime-adapter",
+    "research.md#r-003-use-platform-specific-stop-strategies-behind-one-stop-contract"
+  ],
+  "write_scope": [
+    "src/adapters/process.js",
+    "src/adapters/path.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "src/adapters/process.js (new)",
+    "src/adapters/path.js (new)"
+  ],
+  "anti_goals": [
+    "Do not scatter process.platform branches through CLI.",
+    "Do not introduce native dependencies."
+  ],
+  "does_not_remove": [
+    "existing run/start capability"
+  ],
+  "capability_operations": [
+    "supports managed runtime",
+    "supports clean path safety"
+  ],
+  "acceptance_criteria": [
+    "Adapters expose process spawn/stop/liveness and canonical path helpers with classified errors."
+  ],
+  "verify_commands": [
+    "node --check src/adapters/process.js src/adapters/path.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-006",
+    "CA-007",
+    "CA-016"
+  ],
+  "mp_ids": [
+    "MP-005",
+    "MP-012"
+  ],
+  "consumer_surfaces": [
+    "runtime adapter boundary"
+  ],
+  "required_evidence": [
+    "adapter_boundary_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

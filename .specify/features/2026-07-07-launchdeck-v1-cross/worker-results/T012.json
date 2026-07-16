@@ -1,0 +1,31 @@
+{
+  "status": "success",
+  "task_id": "T012",
+  "agent": "executor",
+  "completed_at": "2026-07-07T16:35:14.5398092+08:00",
+  "changed_files": [
+    "src/adapters/process.js",
+    "src/adapters/path.js"
+  ],
+  "validation_output": {
+    "node_check_requested": {
+      "command": "node --check src/adapters/process.js; node --check src/adapters/path.js",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "adapter_import_smoke": {
+      "command": "node --input-type=module -e \"import * as p from './src/adapters/path.js'; import * as proc from './src/adapters/process.js'; ...\"",
+      "exit_code": 0,
+      "stdout": "{\"pathExports\":[\"assertContainedPath\",\"assertProjectRelativePath\",\"assertSafeCleanTarget\",\"canonicalPath\",\"canonicalProjectRoot\",\"isSamePath\",\"pathContains\",\"pathForPlatform\",\"resolveCleanTarget\",\"resolveProjectPath\",\"toProjectRelativePath\"],\"processExports\":[\"classifyAdapterError\",\"getLiveness\",\"isPidRunning\",\"normalizePid\",\"spawnForeground\",\"spawnManaged\",\"spawnShellCommand\",\"stopProcessTree\",\"stopProcessTreeSync\",\"waitForExit\"],\"contains\":true}"
+    }
+  },
+  "concerns": [
+    "T012 adapters are not wired into src/runtime.js or src/cli.js yet because those files are outside this task's write scope."
+  ],
+  "recovery_hints": [
+    "T013 should replace duplicated runtime process/path helpers with the adapter modules where appropriate.",
+    "T014 should complete CLI managed command envelopes after runtime state behavior is available."
+  ],
+  "adapter_boundary_evidence": "process adapter exports foreground/managed shell spawn, liveness, pid normalization, process-tree stop, and adapter error classification with Windows taskkill and POSIX process-group signaling contained in src/adapters/process.js. path adapter exports canonicalization, containment, project-relative, clean-target safety, and platform path helpers with Windows path flavor and case handling contained in src/adapters/path.js."
+}

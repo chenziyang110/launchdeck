@@ -1,0 +1,37 @@
+{
+  "id": "E-CP-008",
+  "source_path": "src/control-plane/locks.js",
+  "summary": "文件级分布式锁：基于mkdir/写文件原子性实现，支持TTL(默认30s)、stale检测、owner存活检查、lock takeover",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-008",
+    "source_path": "src/control-plane/locks.js",
+    "summary": "文件级分布式锁：基于mkdir/写文件原子性实现，支持TTL(默认30s)、stale检测、owner存活检查、lock takeover",
+    "symbols": [
+      "acquireLock",
+      "withLock",
+      "controlPlanePaths",
+      "createLockRecord",
+      "writeLockFile",
+      "createLockHandle",
+      "readExistingLock",
+      "isStaleCandidate",
+      "isOwnerAlive",
+      "isSameOwner",
+      "removeLockFile"
+    ],
+    "exports": [
+      "acquireLock",
+      "withLock",
+      "controlPlanePaths"
+    ],
+    "dependencies": [
+      "fs/promises",
+      "os",
+      "path"
+    ]
+  }
+}

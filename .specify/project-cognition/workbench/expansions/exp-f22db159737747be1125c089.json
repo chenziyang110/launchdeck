@@ -1,0 +1,769 @@
+{
+  "id": "exp-f22db159737747be1125c089",
+  "active_generation_id": "GEN-greenfield-20260706T073915.616696000Z",
+  "candidate_universe_version": 1,
+  "query_fingerprint": "f22db159737747be1125c089",
+  "sections": {
+    "coverage_gaps": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "graph_neighbors": {
+      "state": "available",
+      "estimated_items": 0
+    },
+    "raw_candidates": {
+      "state": "available",
+      "estimated_items": 31
+    },
+    "related_paths": {
+      "state": "available",
+      "estimated_items": 3
+    }
+  },
+  "section_payloads": {
+    "coverage_gaps": [],
+    "graph_neighbors": [],
+    "raw_candidates": [
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-planning-quick-2026-07-09-agent-skill-canonical-path"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-planning-quick-2026-07-09-agent-skill-canonical-path",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".planning/quick/2026-07-09-agent-skill-canonical-path"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "2026-07-09-agent-skill-canonical-path"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-README-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-README-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/README.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "README.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-SKILL-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-SKILL-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/SKILL.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "SKILL.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-planning-quick-2026-07-09-agent-skill-canonical-path-STATUS-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-planning-quick-2026-07-09-agent-skill-canonical-path-STATUS-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".planning/quick/2026-07-09-agent-skill-canonical-path/STATUS.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "STATUS.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-adoption-flow-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-adoption-flow-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/adoption-flow.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "adoption-flow.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-clean-safety-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-clean-safety-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/clean-safety.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "clean-safety.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-command-flows-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-command-flows-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/command-flows.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "command-flows.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-discovery-rules-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-discovery-rules-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/discovery-rules.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "discovery-rules.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-eval-prompts-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-eval-prompts-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/eval-prompts.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "eval-prompts.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-intent-routing-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-intent-routing-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/intent-routing.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "intent-routing.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-planning-quick-2026-07-09-agent-skill-canonical-path-worker-results-lane-001-json"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-planning-quick-2026-07-09-agent-skill-canonical-path-worker-results-lane-001-json",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".planning/quick/2026-07-09-agent-skill-canonical-path/worker-results/lane-001.json"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "lane-001.json"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "launchdeck-agent"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-skills-launchdeck-agent-references-recovery-playbooks-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-skills-launchdeck-agent-references-recovery-playbooks-md",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/skills/launchdeck-agent/references/recovery-playbooks.md"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "recovery-playbooks.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-scripts-sync-skills-ps1"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-scripts-sync-skills-ps1",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/scripts/sync-skills.ps1"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "sync-skills.ps1"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T101415-998484400Z-agents-scripts-validate-skills-ps1"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-agents-scripts-validate-skills-ps1",
+        "matched_terms": [
+          "launchdeck",
+          "agent",
+          "skill",
+          "cli",
+          "agents",
+          "skills",
+          "launchdeck-agent",
+          "as",
+          "canonical",
+          "source"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".agents/scripts/validate-skills.ps1"
+        ],
+        "score": 100,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "validate-skills.ps1"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-SKILL-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-SKILL-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/SKILL.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "SKILL.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-adoption-flow-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-adoption-flow-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/adoption-flow.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "adoption-flow.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-clean-safety-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-clean-safety-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/clean-safety.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "clean-safety.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-command-flows-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-command-flows-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/command-flows.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "command-flows.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-discovery-rules-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-discovery-rules-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/discovery-rules.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "discovery-rules.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-eval-prompts-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-eval-prompts-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/eval-prompts.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "eval-prompts.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-intent-routing-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-intent-routing-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/intent-routing.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "intent-routing.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260709T094014-939805100Z-codex-skills-launchdeck-agent-references-recovery-playbooks-md"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-codex-skills-launchdeck-agent-references-recovery-playbooks-md",
+        "matched_terms": [
+          "implement",
+          "launchdeck",
+          "agent",
+          "skill",
+          "skills",
+          "launchdeck-agent"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          ".codex/skills/launchdeck-agent/references/recovery-playbooks.md"
+        ],
+        "score": 53,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "recovery-playbooks.md"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260707T110546-563799500Z-examples-hands-on-demo--launchdeck-yml"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-examples-hands-on-demo--launchdeck-yml",
+        "matched_terms": [
+          "launchdeck"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "examples/hands-on-demo/.launchdeck.yml"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": ".launchdeck.yml"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-cli-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-cli-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/cli.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-cli-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-cli-test-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/cli.test.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "cli.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-config-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-config-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/config.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-test-config-test-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-test-config-test-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "test/config.test.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "config.test.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-errors-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-errors-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/errors.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "errors.js"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-package-json"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-package-json",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "package.json"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "package.json"
+      },
+      {
+        "confidence": "partial",
+        "evidence_ids": [
+          "E-update-upd-20260706T084217-837749100Z-src-runtime-js"
+        ],
+        "id": "concept:GEN-greenfield-20260706T073915.616696000Z:N-update-src-runtime-js",
+        "matched_terms": [
+          "cli"
+        ],
+        "node_type": "workflow_update",
+        "paths": [
+          "src/runtime.js"
+        ],
+        "score": 10,
+        "suppressed": false,
+        "suppression_reason": "",
+        "title": "runtime.js"
+      }
+    ],
+    "related_paths": [
+      ".planning/quick/2026-07-09-agent-skill-canonical-path",
+      ".agents/README.md",
+      ".agents/skills/launchdeck-agent/SKILL.md"
+    ]
+  },
+  "created_at": "2098-10-02T09:33:13Z"
+}

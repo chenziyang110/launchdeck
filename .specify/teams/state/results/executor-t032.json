@@ -1,0 +1,69 @@
+{
+  "status": "success",
+  "task_id": "T032",
+  "summary": "US5 safe clean join validation was recorded in the implementation review ledger. No production code, tests, task tracker, package files, reviews, or README files were modified.",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/executor-t032.json"
+  ],
+  "validation_output": {
+    "node --test test/clean-control-plane.test.js test/runtime-state.test.js": "exit 0; tests 12; pass 12; fail 0; skipped 0; duration_ms 2678.802. Passed clean path escape refusal, symlink/junction escape refusal, project-root refusal, unknown empty target refusal, running evidence preservation, latest failure evidence preservation, reset absence/deferred behavior, and runtime-state preservation cases.",
+    "npm run check": "exit 0; configured node --check chain completed successfully for source and listed test files."
+  },
+  "concerns": [
+    "Evidence is Windows-local from this PowerShell workspace and is not a macOS/Linux release claim.",
+    "Symlink/junction coverage passed in this run; the accepted test remains designed to skip only if a host cannot create the required link type.",
+    "Release/cross-platform smoke remains later work before any cross-platform-ready claim."
+  ],
+  "recovery_hints": [
+    "If clean path safety regresses, inspect src/adapters/path.js containment behavior and the clean target planning path before changing runtime deletion semantics.",
+    "If reset is later implemented, keep it in a separate feature contract and replace only the reset-absent assertion with explicit reset safety tests.",
+    "If Windows temp cleanup fails with EPERM, follow project memory: scan for test-owned Launchdeck fixture processes, clean up only those fixture processes, and rerun the focused test once."
+  ],
+  "consumer_evidence": [
+    "Ledger joinValidations.T032 records accepted US5 evidence for safe clean containment, protected target refusal, service non-interference, running/latest failure evidence retention, reset separation, and real CLI entrypoint coverage.",
+    "Focused validation used test/clean-control-plane.test.js and test/runtime-state.test.js through isolated temp projects and LAUNCHDECK_HOME state.",
+    "T030 accepted expected coverage for path escape refusal, symlink/junction escape refusal, project-root refusal, empty target refusal, running evidence preservation, latest failure evidence preservation, and reset absence/deferred.",
+    "T031 accepted clean safety after leader repair, including no clean service stop, registry removal, project-root deletion, external deletion, or reset behavior."
+  ],
+  "must_preserve_evidence": [
+    "MP-010: clean remains hygiene and reset remains separate/destructive/deferred.",
+    "MP-015: path escape and symlink/junction escape fail closed.",
+    "FR-040: clean removes only declared or Launchdeck-owned generated/stale/retention-expired hygiene data.",
+    "FR-041: clean never stops services, removes registry entries, kills processes, deletes project roots, deletes unknown files, or deletes outside the project root.",
+    "FR-042: clean preserves running evidence, latest failed evidence, and failure-linked logs/events.",
+    "FR-043: destructive reset remains deferred and separate from clean.",
+    "FR-055: security requirements fail closed for path escape and symlink/junction escape."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-015",
+      "claim": "Clean never deletes outside the project root and refuses unsafe targets with actionable refusal reasons.",
+      "affected_objects": [
+        "launchdeck clean --safe",
+        "clean target planner",
+        "path containment adapter",
+        "project root",
+        "unknown/external paths"
+      ],
+      "owner_workflow": "sp-implement T032",
+      "latest_resolve_phase": "join validation",
+      "status": "satisfied",
+      "stop_and_reopen_condition": "Any clean target can escape containment, delete a project root, delete an unknown external path, or convert clean into reset semantics."
+    },
+    {
+      "id": "CA-CP-016",
+      "claim": "Clean preserves active and latest failure-linked operational evidence.",
+      "affected_objects": [
+        "runtime state",
+        "global run index",
+        "events/events.jsonl",
+        ".launchdeck/logs"
+      ],
+      "owner_workflow": "sp-implement T032",
+      "latest_resolve_phase": "join validation",
+      "status": "satisfied",
+      "stop_and_reopen_condition": "Clean removes active run logs, latest failure evidence, failure-linked events, or evidence needed to explain recent status."
+    }
+  ]
+}

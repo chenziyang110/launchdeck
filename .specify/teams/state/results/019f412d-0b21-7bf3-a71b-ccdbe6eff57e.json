@@ -1,0 +1,67 @@
+{
+  "status": "completed",
+  "reported_status": "DONE",
+  "task_id": "T002",
+  "changed_files": [
+    "test/helpers/control-plane-fixture.js",
+    ".specify/teams/state/results/019f412d-0b21-7bf3-a71b-ccdbe6eff57e.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test/helpers/control-plane-fixture.js",
+      "result": "passed"
+    },
+    {
+      "command": "node --input-type=module -e \"const m = await import('./test/helpers/control-plane-fixture.js'); const f = m.createControlPlaneFixture(); try { if (!f.env.LAUNCHDECK_HOME || f.env.LAUNCHDECK_HOME !== f.homeDir) throw new Error('isolated home env missing'); if (!m.fixtureServerScriptContent().includes('createServer')) throw new Error('server script content missing'); } finally { f.cleanup(); }\"",
+      "result": "passed"
+    },
+    {
+      "command": "node --input-type=module -e \"const { createControlPlaneFixture, writeFixtureServerScript } = await import('./test/helpers/control-plane-fixture.js'); const { spawnSync } = await import('node:child_process'); const f = createControlPlaneFixture(); let exitCode = 0; try { const script = writeFixtureServerScript(f.project); const checked = spawnSync(process.execPath, ['--check', script], { encoding: 'utf8', windowsHide: true }); if (checked.status !== 0) { console.error(checked.stderr || checked.stdout); exitCode = checked.status ?? 1; } } finally { f.cleanup(); } if (exitCode !== 0) process.exit(exitCode);\"",
+      "result": "passed"
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [
+    {
+      "assumption": "Control-plane helper temp prefixes could use a new launchdeck-control-plane-* prefix.",
+      "evidence": "Import smoke failed because cli-fixture removeTempProject only removes directories whose basename starts with launchdeck-cli-.",
+      "resolution": "Changed helper prefixes to launchdeck-cli-control-plane-home- and launchdeck-cli-control-plane-project- so cleanup reuses the existing safety primitive."
+    },
+    {
+      "assumption": "writeFixtureServerScript did not need to return the generated file path.",
+      "evidence": "Generated server script syntax smoke could not check an undefined path.",
+      "resolution": "writeFixtureServerScript now returns the absolute path when the fixture exposes path(), and writeManagedFixtureProject includes absoluteScriptPath."
+    }
+  ],
+  "recovery_guidance": [],
+  "concerns": [
+    "No current test imports this helper yet; evidence is limited to syntax, import/cleanup smoke, and generated server script syntax.",
+    "LSP diagnostics tooling is not exposed in this runtime, so node --check and import smoke were used for the modified JavaScript file."
+  ],
+  "consumer_evidence": {
+    "exports": [
+      "createLaunchdeckHome",
+      "createControlPlaneFixture",
+      "withControlPlaneFixture",
+      "createManagedProjectFixture",
+      "writeManagedFixtureProject",
+      "managedProjectConfig",
+      "fixtureServerScriptContent",
+      "writeFixtureServerScript",
+      "runCliJson",
+      "createCliFixture"
+    ],
+    "example_import": "import { createControlPlaneFixture, writeManagedFixtureProject } from './helpers/control-plane-fixture.js';",
+    "example_usage": "await withControlPlaneFixture(async (fixture) => { writeManagedFixtureProject(fixture.project, { name: 'demo', port: 4173 }); const added = fixture.runCliJson(['project', 'add']); const status = fixture.runGlobalCliJson(['status', '--all']); });",
+    "capability_notes": [
+      "createLaunchdeckHome returns { homeDir, env, cleanup } with LAUNCHDECK_HOME isolated under a safe temp directory.",
+      "createControlPlaneFixture combines an isolated home and temp project root, wraps runCli/runCliJson with the isolated env, and exposes global CLI runners with cwd set to the home directory.",
+      "writeManagedFixtureProject writes .launchdeck.yml plus an actual script file such as scripts/dev-server.js instead of relying on inline long-running node -e commands.",
+      "fixtureServerScriptContent and writeFixtureServerScript provide reusable HTTP fixture server content for managed lifecycle and demo smoke tests.",
+      "cleanup reuses removeTempProject from cli-fixture.js, preserving the Windows EPERM retry behavior and existing safe temp-prefix guard."
+    ],
+    "ca_obligations": [
+      "CA-CP-020 remains visible because generated managed fixtures use project-local script files suitable for future demo and cross-platform lifecycle smoke."
+    ]
+  }
+}

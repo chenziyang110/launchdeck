@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T011",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3ba7-4663-7980-ba77-632894ec1d66",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/managed-cli.test.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check test/managed-cli.test.js",
+      "status": "passed"
+    },
+    "red_check": {
+      "command": "node --test test/managed-cli.test.js",
+      "status": "expected_red",
+      "tests": 9,
+      "passed": 0,
+      "failed": 9,
+      "classification": "managed CLI lifecycle and envelope gaps"
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [
+    "Focused T011 verification only; broader US2 join validation is leader-owned."
+  ],
+  "recovery_hints": [
+    "Implement common JSON envelopes for dev/start/ps/logs/stop.",
+    "Reject foreground tasks for start/restart with task_not_managed.",
+    "Return partial_failure for restart partial outcomes and stop-all per-task results."
+  ],
+  "real_entrypoint_evidence": [
+    {
+      "kind": "real_entrypoint",
+      "entrypoint": "launchdeck dev/start/restart/ps/logs/stop",
+      "producer": "src/cli.js managed commands",
+      "transformer": "test/managed-cli.test.js through createCliFixture.runCliJson",
+      "consumer": "test/managed-cli.test.js",
+      "boundary_or_executor": "CLI process",
+      "validation": "expected RED before US2 implementation"
+    }
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-009", "MP-010", "MP-012"],
+      "evidence": "Tests enforce longRunning managed boundary, inspectable runtime/logs, and real platform-sensitive CLI lifecycle behavior."
+    },
+    {
+      "ids": ["CA-002", "CA-007", "CA-013", "CA-014", "CA-016"],
+      "evidence": "Tests cover start/dev, duplicate start, restart partial, ps, logs, stop, stop all, and task_not_managed."
+    }
+  ],
+  "result_summary": "T011 managed CLI lifecycle tests added and verified as expected RED."
+}

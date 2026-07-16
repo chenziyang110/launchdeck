@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "command": "implement",
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "task_id": "T010",
+  "agent_type": "test-engineer",
+  "agent_id": "019f3ba6-df6f-7771-af51-fd37389a0785",
+  "reported_status": "success",
+  "status": "success",
+  "changed_files": [
+    "F:/github/launchdeck/test/runtime-state.test.js"
+  ],
+  "validation_output": {
+    "syntax_check": {
+      "command": "node --check test/runtime-state.test.js",
+      "status": "passed"
+    },
+    "red_check": {
+      "command": "node --test test/runtime-state.test.js",
+      "status": "expected_red",
+      "tests": 5,
+      "passed": 2,
+      "failed": 3,
+      "classification": "missing runtime state v1 shape, invalid-state handling, and stale refresh behavior"
+    },
+    "acceptance_criteria_met": true
+  },
+  "concerns": [
+    "Combined US2-RED run also surfaced temp cleanup EPERM around unmanaged child lifecycle, which is aligned with US2 stop/process repair scope."
+  ],
+  "recovery_hints": [
+    "Runtime state should include version, projectRoot, updatedAt, and process fields task/lastRefresh/status.",
+    "Invalid state JSON should produce runtime_state_invalid without overwriting evidence.",
+    "Refresh should preserve records and mark dead running records as stale."
+  ],
+  "must_preserve_evidence": [
+    {
+      "ids": ["MP-009", "CA-013"],
+      "evidence": "Tests assert managed behavior through longRunning task shape."
+    },
+    {
+      "ids": ["MP-010", "CA-002", "CA-005", "CA-014"],
+      "evidence": "Tests cover state/log recovery, stale refresh, invalid state, logs after exit, and idempotent stop."
+    }
+  ],
+  "result_summary": "T010 runtime state tests added and verified as expected RED."
+}

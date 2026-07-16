@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T021",
+  "story": "polish",
+  "description": "Add Windows, macOS, and Linux lifecycle smoke workflow.",
+  "agent": "executor",
+  "depends_on": [
+    "T009",
+    "T015",
+    "T019"
+  ],
+  "parallel_safe": true,
+  "context_navigation": [
+    "research.md#r-007-gate-release-claims-by-evidence-level",
+    "quickstart.md#verification-claim-levels"
+  ],
+  "write_scope": [
+    ".github/workflows/ci.yml"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    ".github/workflows/ci.yml (new)"
+  ],
+  "anti_goals": [
+    "Do not use CI to claim release readiness until smoke actually passes.",
+    "Do not add external services."
+  ],
+  "does_not_remove": [
+    "local npm run check",
+    "local npm test"
+  ],
+  "capability_operations": [
+    "validates cross-platform lifecycle"
+  ],
+  "acceptance_criteria": [
+    "Workflow defines Windows, macOS, Linux jobs running check, tests, and lifecycle smoke."
+  ],
+  "verify_commands": [
+    "Manual YAML review",
+    "npm run check",
+    "npm test"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-006",
+    "CA-016",
+    "CA-017"
+  ],
+  "mp_ids": [
+    "MP-005",
+    "MP-013"
+  ],
+  "consumer_surfaces": [
+    "CI matrix"
+  ],
+  "required_evidence": [
+    "ci_matrix_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

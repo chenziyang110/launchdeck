@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T006",
+  "story": "US1",
+  "description": "Implement v1 config discovery, version, project root, task cwd/log validation, and normalized task type.",
+  "agent": "executor",
+  "depends_on": [
+    "T005"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "contracts/launchdeck-config-v1.md",
+    "data-model.md#task",
+    "src/config.js"
+  ],
+  "write_scope": [
+    "src/config.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "src/config.js (modified)"
+  ],
+  "anti_goals": [
+    "Do not add automatic project scanning.",
+    "Do not add new dependencies."
+  ],
+  "does_not_remove": [
+    "existing upward config discovery",
+    "sample config creation"
+  ],
+  "capability_operations": [
+    "implements config protocol"
+  ],
+  "acceptance_criteria": [
+    "Config contract tests pass; unsupported version uses unsupported_config_version; cwd/log escapes use project_root_escape."
+  ],
+  "verify_commands": [
+    "node --test test/config-contract.test.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-004",
+    "CA-008",
+    "CA-019"
+  ],
+  "mp_ids": [
+    "MP-004",
+    "MP-015"
+  ],
+  "consumer_surfaces": [
+    ".launchdeck.yml"
+  ],
+  "required_evidence": [
+    "contract_test_pass"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

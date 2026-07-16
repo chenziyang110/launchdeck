@@ -1,0 +1,46 @@
+{
+  "status": "success",
+  "task_id": "T036",
+  "changed_files": [
+    "package.json",
+    "test/cli.test.js",
+    ".specify/teams/state/results/executor-t036.json"
+  ],
+  "validation_output": {
+    "npm_run_check": {
+      "status": "passed",
+      "command": "npm run check",
+      "evidence": "Exit code 0; check script syntax-checked current src/**/*.js, scripts/smoke-lifecycle.js, examples/demo-api/scripts/server.js, examples/hands-on-demo/scripts/*.js, test/**/*.js, and test/helpers/*.js."
+    },
+    "npm_test": {
+      "status": "passed_after_leader_repair",
+      "command": "npm test",
+      "initial_evidence": "Exit code 1; 136 tests run, 135 passed, 1 failed. Failing test: test/cli.test.js expected duplicate dev status 1 but actual status was 0.",
+      "leader_repair": "Updated the local CLI lifecycle test to match current duplicate-start semantics: duplicate dev --json succeeds, returns the existing run, and reports process.spawned=false.",
+      "final_evidence": "Exit code 0; 136 tests run, 136 passed, 0 failed.",
+      "focused_rerun": "node --test test/cli.test.js passed 2/2 after the leader repair."
+    }
+  },
+  "leader_repairs": [
+    "Updated test/cli.test.js duplicate local dev assertion from legacy task_already_running refusal to current idempotent existing-run success with spawned=false."
+  ],
+  "concerns": [],
+  "recovery_hints": [
+    "If future duplicate-start tests fail, verify whether the command path is local or global, then preserve the shared product rule: duplicate owned starts must not spawn a second service."
+  ],
+  "consumer_evidence": [
+    "package.json preserves scripts.check and scripts.test.",
+    "scripts.check now covers new source files under src/adapters and src/control-plane, smoke script, demo scripts, test files, and test helper files.",
+    "scripts.test remains `node --test` and continues to be the broad project test entrypoint.",
+    "The local CLI lifecycle test now asserts the same duplicate-start contract as managed/global tests and the official demo smoke."
+  ],
+  "must_preserve_evidence": [
+    "Do not remove npm run check or npm test.",
+    "Do not narrow npm test away from the broad Node test runner.",
+    "Do not add dependencies, privileged hooks, daemons, kill-by-port behavior, or long-running inline node -e commands."
+  ],
+  "consequence_obligations": [
+    "Future source, smoke, demo, helper, or test JavaScript files should be added to scripts.check unless the project replaces the explicit node --check list with an accepted non-inline checker.",
+    "Duplicate-start coverage must continue to prove no second process is spawned."
+  ]
+}

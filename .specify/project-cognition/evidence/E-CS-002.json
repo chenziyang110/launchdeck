@@ -1,0 +1,113 @@
+{
+  "id": "E-CS-002",
+  "source_path": "src/adapters/path.js",
+  "summary": "Cross-platform path safety adapter — path canonicalization, containment assertions, and clean-target validation with platform-aware case sensitivity.",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CS-002",
+    "source_path": "src/adapters/path.js",
+    "summary": "Cross-platform path safety adapter — path canonicalization, containment assertions, and clean-target validation with platform-aware case sensitivity.",
+    "symbols": [
+      "CASE_INSENSITIVE_PLATFORMS (const Set: ['win32'])"
+    ],
+    "exports": [
+      {
+        "name": "canonicalPath",
+        "kind": "function",
+        "signature": "(targetPath, options = {}) => string",
+        "description": "Resolves relative to basePath, normalizes, optionally checks existence and resolves symlinks"
+      },
+      {
+        "name": "canonicalProjectRoot",
+        "kind": "function",
+        "signature": "(projectRoot, options = {}) => string",
+        "description": "Convenience wrapper around canonicalPath with project-root defaults"
+      },
+      {
+        "name": "resolveProjectPath",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => string",
+        "description": "Resolves a path and asserts it stays inside project root"
+      },
+      {
+        "name": "pathContains",
+        "kind": "function",
+        "signature": "(parentPath, targetPath, options = {}) => boolean",
+        "description": "Returns true if target is under parent (allowRoot controls root-match behavior)"
+      },
+      {
+        "name": "assertContainedPath",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => string",
+        "description": "Throws LaunchdeckError with code 'project_root_escape' if path escapes project root"
+      },
+      {
+        "name": "isSamePath",
+        "kind": "function",
+        "signature": "(left, right, options = {}) => boolean",
+        "description": "Compares two paths for equality (case-insensitive on win32)"
+      },
+      {
+        "name": "assertProjectRelativePath",
+        "kind": "function",
+        "signature": "(targetPath, options = {}) => string",
+        "description": "Throws if path is absolute (checks win32 and posix isAbsolute)"
+      },
+      {
+        "name": "resolveCleanTarget",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => { path, absolutePath }",
+        "description": "Validates relative, contained, non-root path for clean operations"
+      },
+      {
+        "name": "planCleanTarget",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => CleanTargetRecord",
+        "description": "Full planning pipeline: validates, resolves, checks existence, symlinks, containment, returns status 'planned'|'refused'|'skipped_missing'"
+      },
+      {
+        "name": "assertSafeCleanTarget",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => { path, absolutePath }",
+        "description": "Variant that also refuses project root itself as a clean target"
+      },
+      {
+        "name": "toProjectRelativePath",
+        "kind": "function",
+        "signature": "(projectRoot, targetPath, options = {}) => string",
+        "description": "Converts absolute path to project-relative"
+      },
+      {
+        "name": "pathForPlatform",
+        "kind": "function",
+        "signature": "(platform = process.platform) => path.win32 | path.posix",
+        "description": "Returns the appropriate path API module for the platform"
+      }
+    ],
+    "internal_functions": [
+      "normalizePathValue(value, label, code)",
+      "comparablePath(value, platform) — normalizes and lowercases for case-insensitive platforms",
+      "safeCanonicalProjectRoot(projectRoot, platform) — returns undefined on failure",
+      "refusedCleanTarget(record, refusalCode, extra)",
+      "isSameComparablePath(left, right, platform)",
+      "pathContainsComparable(parentPath, targetPath, options)"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "src/errors.js"
+    ],
+    "lines": 348,
+    "key_design_points": [
+      "Case-insensitive path comparison for win32 using comparablePath (normalize + toLowerCase)",
+      "refusalCode system for planCleanTarget: 'clean_target_empty', 'clean_target_ambiguous', 'clean_target_root', 'clean_target_outside_project'",
+      "symlink resolution via fs.realpathSync.native for canonical containment checks",
+      "Dual isAbsolute check (win32 + posix) ensures correct behavior on all platforms",
+      "planCleanTarget handles both string and object targetPath inputs",
+      "safeCanonicalProjectRoot guards against project root resolution failures"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "status": "success",
+  "task_id": "T030",
+  "changed_files": [
+    "test/clean-control-plane.test.js",
+    ".specify/teams/state/results/test-engineer-t030.json"
+  ],
+  "validation_output": {
+    "node --check test/clean-control-plane.test.js": "passed with exit code 0",
+    "node --test test/clean-control-plane.test.js": "passed with exit code 0; tests 7, pass 7, fail 0, skipped 0; covered path escape refusal, symlink/junction escape refusal, project-root refusal, unknown empty target refusal, running evidence preservation, latest failure evidence preservation, and reset remaining absent/deferred.",
+    "residual fixture process scan": "passed with exit code 0; no matching node processes with launchdeck-cli-control-plane-project temp path were found."
+  },
+  "concerns": [
+    "The unknown empty target refusal is enforced at config-load validation before clean planning, so that test asserts the stable clean_target_empty refusal and file preservation rather than a clean plan target entry."
+  ],
+  "recovery_hints": [
+    "If future clean behavior moves empty target handling into the clean planner, update the unknown-target test to assert a refused target record with refusalCode clean_target_empty.",
+    "If reset is later implemented as a separate feature, replace the reset-absent assertion with the new reset contract tests in that feature's write scope."
+  ],
+  "consumer_evidence": [
+    "Focused Node test suite exercises CLI-level clean behavior through isolated LAUNCHDECK_HOME and temp project fixtures.",
+    "Retention tests seed only test-owned runtime, run-index, event, and log evidence; no real services are started."
+  ],
+  "must_preserve_evidence": [
+    "MP-010: JSON/error-code surface remains asserted for clean refusals.",
+    "MP-014: clean remains safe hygiene and reset remains separate/deferred.",
+    "MP-015: path containment and symlink/junction escape refusals remain covered.",
+    "FR-040: clean removes configured hygiene targets only.",
+    "FR-041: clean refuses outside/project-root/unknown targets and does not delete protected files.",
+    "FR-042: clean preserves running and latest failure evidence.",
+    "FR-043: destructive reset remains absent/deferred."
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-015",
+      "claim": "Clean never deletes outside project root and refuses unsafe targets.",
+      "status": "validated by focused tests"
+    }
+  ]
+}

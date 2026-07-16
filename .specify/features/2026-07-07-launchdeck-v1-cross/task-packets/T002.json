@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T002",
+  "story": "foundation",
+  "description": "Create reusable CLI fixture helpers.",
+  "agent": "test-engineer",
+  "depends_on": [
+    "T001"
+  ],
+  "parallel_safe": true,
+  "context_navigation": [
+    "test/cli.test.js",
+    "quickstart.md#lifecycle-smoke-project"
+  ],
+  "write_scope": [
+    "test/helpers/cli-fixture.js"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "test/helpers/cli-fixture.js (new)"
+  ],
+  "anti_goals": [
+    "Do not change production code.",
+    "Do not add dependencies."
+  ],
+  "does_not_remove": [
+    "existing CLI smoke helper behavior in test/cli.test.js"
+  ],
+  "capability_operations": [
+    "validates all CLI operations through reusable fixtures"
+  ],
+  "acceptance_criteria": [
+    "Helper can create temp projects, write configs/scripts, run CLI, parse JSON, and cleanup safely."
+  ],
+  "verify_commands": [
+    "node --check test/helpers/cli-fixture.js"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-010",
+    "CA-020"
+  ],
+  "mp_ids": [
+    "MP-006",
+    "MP-014"
+  ],
+  "consumer_surfaces": [
+    "test harness"
+  ],
+  "required_evidence": [
+    "syntax_check"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

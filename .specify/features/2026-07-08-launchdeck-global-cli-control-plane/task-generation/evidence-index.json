@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "delegated_task_generation_lanes": [],
+  "synthesis_mode": "leader-inline",
+  "accepted_handoffs": [],
+  "consumed_by": [
+    "tasks.md",
+    "handoff-to-tasks.json",
+    "task-index.json",
+    "task-packets/*.json"
+  ],
+  "source_artifacts": [
+    "spec.md",
+    "plan.md",
+    "data-model.md",
+    "contracts/cli-contract.md",
+    "quickstart.md",
+    "plan-contract.json",
+    "workflow-state.md"
+  ],
+  "integration_status": "complete"
+}

@@ -1,0 +1,24 @@
+{
+  "status": "success",
+  "task_id": "T018",
+  "agent": "executor",
+  "completed_at": "2026-07-07T17:57:49.5815514+08:00",
+  "changed_files": [],
+  "validation_output": {
+    "syntax": {
+      "command": "node --check src/cli.js",
+      "exit_code": 0
+    },
+    "clean_safety": {
+      "command": "node --test test/clean-safety.test.js",
+      "exit_code": 0,
+      "tests": 7,
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "real_entrypoint_evidence": "test/helpers/cli-fixture.js defines cliPath as repoRoot/src/cli.js and runCliJson spawns process.execPath with [cliPath, ...args]. The passing command node --test test/clean-safety.test.js exercises the real src/cli.js entrypoint.",
+  "json_contract_evidence": "test/clean-safety.test.js asserts clean JSON envelopes include ok, command=clean, status, projectRoot, configPath, dryRun, mode, targets, removed, and stable failure error.code values including confirmation_required, clean_target_root, clean_target_outside_project, and clean_target_ambiguous.",
+  "concerns": [],
+  "recovery_hints": []
+}

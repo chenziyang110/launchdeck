@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T020",
+  "story": "polish",
+  "description": "Update v1 user docs, examples, schema, and public error-code references.",
+  "agent": "writer",
+  "depends_on": [
+    "T009",
+    "T015",
+    "T019"
+  ],
+  "parallel_safe": true,
+  "context_navigation": [
+    "contracts/error-codes-v1.md",
+    "contracts/launchdeck-config-v1.md",
+    "quickstart.md"
+  ],
+  "write_scope": [
+    "README.md",
+    "examples/",
+    "schema/launchdeck.schema.json"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    "README.md (modified)",
+    "examples/ (modified)",
+    "schema/launchdeck.schema.json (modified)"
+  ],
+  "anti_goals": [
+    "Do not document deferred surfaces as v1.",
+    "Do not claim cross-platform-ready without evidence."
+  ],
+  "does_not_remove": [
+    "v1 command documentation",
+    "error code vocabulary"
+  ],
+  "capability_operations": [
+    "documents all in-scope operations",
+    "preserves deferred operations as deferred"
+  ],
+  "acceptance_criteria": [
+    "Docs/examples/schema match implemented commands, config, clean, runtime, JSON, and error codes."
+  ],
+  "verify_commands": [
+    "npm test"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-008",
+    "CA-009",
+    "CA-017",
+    "CA-022"
+  ],
+  "mp_ids": [
+    "MP-003",
+    "MP-004",
+    "MP-013",
+    "MP-014"
+  ],
+  "consumer_surfaces": [
+    "README",
+    "examples",
+    "schema"
+  ],
+  "required_evidence": [
+    "documentation_review_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

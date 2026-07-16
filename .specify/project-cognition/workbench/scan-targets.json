@@ -1,0 +1,5274 @@
+{
+  "schema_version": 1,
+  "selection_policy": "value_weighted",
+  "generated_at": "2026-07-16T06:01:55.884Z",
+  "selected_paths": [
+    ".github/workflows/ci.yml",
+    ".launchdeck.yml",
+    "package.json",
+    "schema/launchdeck.schema.json",
+    "scripts/smoke-lifecycle.js",
+    "src/adapters/path.js",
+    "src/adapters/process.js",
+    "src/agent-installer.js",
+    "src/cli.js",
+    "src/config.js",
+    "src/control-plane/actions.js",
+    "src/control-plane/events.js",
+    "src/control-plane/inspect.js",
+    "src/control-plane/locks.js",
+    "src/control-plane/ownership.js",
+    "src/control-plane/runs.js",
+    "src/control-plane/state.js",
+    "src/errors.js",
+    "src/global-runtime.js",
+    "src/output.js",
+    "src/runtime.js",
+    "test/agent-installer.test.js",
+    "test/clean-control-plane.test.js",
+    "test/clean-safety.test.js",
+    "test/cli-contract.test.js",
+    "test/cli-control-plane-contract.test.js",
+    "test/cli.test.js",
+    "test/config-contract.test.js",
+    "test/config.test.js",
+    "test/control-plane-events.test.js",
+    "test/control-plane-locks.test.js",
+    "test/control-plane-ownership.test.js",
+    "test/control-plane-state.test.js",
+    "test/global-runtime.test.js",
+    "test/helpers/cli-fixture.js",
+    "test/helpers/control-plane-fixture.js",
+    "test/inspect-cli.test.js",
+    "test/lifecycle-ownership.test.js",
+    "test/managed-cli.test.js",
+    "test/recovery-observability.test.js",
+    "test/runtime-state.test.js"
+  ],
+  "sampled_paths": [
+    ".agents/README.md",
+    ".agents/scripts/sync-skills.ps1",
+    ".agents/scripts/validate-skills.ps1",
+    ".agents/skills/launchdeck-agent/SKILL.md",
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+    ".agents/skills/launchdeck-agent/references/clean-safety.md",
+    ".agents/skills/launchdeck-agent/references/command-flows.md",
+    ".agents/skills/launchdeck-agent/references/discovery-rules.md",
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md",
+    ".agents/skills/launchdeck-agent/references/intent-routing.md",
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+    "docs/cross-platform-smoke.md",
+    "docs/product-discovery.md",
+    "docs/v0.1-protocol.md",
+    "examples/demo-api/.launchdeck.yml",
+    "examples/demo-api/.launchdeck/runtime/state.json",
+    "examples/demo-api/README.md",
+    "examples/demo-api/package.json",
+    "examples/demo-api/scratch/clean-safe/delete-me.txt",
+    "examples/demo-api/scratch/manual-cache/keep-until-clean-all.txt",
+    "examples/demo-api/scratch/run-evidence/last-start.json",
+    "examples/demo-api/scripts/server.js",
+    "examples/hands-on-demo/.launchdeck.yml",
+    "examples/hands-on-demo/README.md",
+    "examples/hands-on-demo/scripts/build.js",
+    "examples/hands-on-demo/scripts/dev.js",
+    "examples/hands-on-demo/scripts/fail.js",
+    "examples/node-vite.launchdeck.yml",
+    "examples/python-fastapi.launchdeck.yml"
+  ],
+  "inventory_only_paths": [],
+  "excluded_paths": [
+    ".launchdeck/runtime/state.json",
+    ".tmp/feel-demo-home/events/events.jsonl",
+    ".tmp/feel-demo-home/registry/projects.json",
+    ".tmp/feel-demo-home/runtime/runs.json",
+    ".agents/README.md",
+    ".agents/scripts/sync-skills.ps1",
+    ".agents/scripts/validate-skills.ps1",
+    ".agents/skills/launchdeck-agent/SKILL.md",
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+    ".agents/skills/launchdeck-agent/references/clean-safety.md",
+    ".agents/skills/launchdeck-agent/references/command-flows.md",
+    ".agents/skills/launchdeck-agent/references/discovery-rules.md",
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md",
+    ".agents/skills/launchdeck-agent/references/intent-routing.md",
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+    ".claude/hooks/README.md",
+    ".claude/hooks/claude-hook-dispatch.py",
+    ".claude/settings.json",
+    ".claude/skills/agent-introspection-debugging/SKILL.md",
+    ".claude/skills/c-testing/SKILL.md",
+    ".claude/skills/code-review-skill/.gitignore",
+    ".claude/skills/code-review-skill/CONTRIBUTING.md",
+    ".claude/skills/code-review-skill/LICENSE",
+    ".claude/skills/code-review-skill/SKILL.md",
+    ".claude/skills/code-review-skill/assets/pr-review-template.md",
+    ".claude/skills/code-review-skill/assets/review-checklist.md",
+    ".claude/skills/code-review-skill/reference/architecture-review-guide.md",
+    ".claude/skills/code-review-skill/reference/c.md",
+    ".claude/skills/code-review-skill/reference/code-review-best-practices.md",
+    ".claude/skills/code-review-skill/reference/common-bugs-checklist.md",
+    ".claude/skills/code-review-skill/reference/cpp.md",
+    ".claude/skills/code-review-skill/reference/css-less-sass.md",
+    ".claude/skills/code-review-skill/reference/go.md",
+    ".claude/skills/code-review-skill/reference/java.md",
+    ".claude/skills/code-review-skill/reference/performance-review-guide.md",
+    ".claude/skills/code-review-skill/reference/python.md",
+    ".claude/skills/code-review-skill/reference/qt.md",
+    ".claude/skills/code-review-skill/reference/react.md",
+    ".claude/skills/code-review-skill/reference/rust.md",
+    ".claude/skills/code-review-skill/reference/security-review-guide.md",
+    ".claude/skills/code-review-skill/reference/typescript.md",
+    ".claude/skills/code-review-skill/reference/vue.md",
+    ".claude/skills/code-review-skill/scripts/pr-analyzer.py",
+    ".claude/skills/cpp-coding-standards/SKILL.md",
+    ".claude/skills/cpp-testing/SKILL.md",
+    ".claude/skills/cs-testing/SKILL.md",
+    ".claude/skills/dart-testing/SKILL.md",
+    ".claude/skills/deep-research/SKILL.md",
+    ".claude/skills/dispatching-parallel-agents/SKILL.md",
+    ".claude/skills/frontend-design/LICENSE.txt",
+    ".claude/skills/frontend-design/SKILL.md",
+    ".claude/skills/go-testing/SKILL.md",
+    ".claude/skills/java-testing/SKILL.md",
+    ".claude/skills/js-testing/SKILL.md",
+    ".claude/skills/kotlin-testing/SKILL.md",
+    ".claude/skills/php-testing/SKILL.md",
+    ".claude/skills/project-to-prd/SKILL.md",
+    ".claude/skills/python-testing/SKILL.md",
+    ".claude/skills/ruby-testing/SKILL.md",
+    ".claude/skills/rust-testing/SKILL.md",
+    ".claude/skills/skill-creator/LICENSE.txt",
+    ".claude/skills/skill-creator/SKILL.md",
+    ".claude/skills/skill-creator/agents/analyzer.md",
+    ".claude/skills/skill-creator/agents/comparator.md",
+    ".claude/skills/skill-creator/agents/grader.md",
+    ".claude/skills/skill-creator/assets/eval_review.html",
+    ".claude/skills/skill-creator/eval-viewer/generate_review.py",
+    ".claude/skills/skill-creator/eval-viewer/viewer.html",
+    ".claude/skills/skill-creator/references/schemas.md",
+    ".claude/skills/skill-creator/scripts/__init__.py",
+    ".claude/skills/skill-creator/scripts/aggregate_benchmark.py",
+    ".claude/skills/skill-creator/scripts/generate_report.py",
+    ".claude/skills/skill-creator/scripts/improve_description.py",
+    ".claude/skills/skill-creator/scripts/package_skill.py",
+    ".claude/skills/skill-creator/scripts/quick_validate.py",
+    ".claude/skills/skill-creator/scripts/run_eval.py",
+    ".claude/skills/skill-creator/scripts/run_loop.py",
+    ".claude/skills/skill-creator/scripts/utils.py",
+    ".claude/skills/sp-accept/SKILL.md",
+    ".claude/skills/sp-analyze/SKILL.md",
+    ".claude/skills/sp-analyze/references/INDEX.md",
+    ".claude/skills/sp-analyze/references/semantic-work-contract.md",
+    ".claude/skills/sp-ask/SKILL.md",
+    ".claude/skills/sp-auto/SKILL.md",
+    ".claude/skills/sp-checklist/SKILL.md",
+    ".claude/skills/sp-checklist/references/INDEX.md",
+    ".claude/skills/sp-checklist/references/semantic-work-contract.md",
+    ".claude/skills/sp-clarify/SKILL.md",
+    ".claude/skills/sp-clarify/references/INDEX.md",
+    ".claude/skills/sp-clarify/references/semantic-work-contract.md",
+    ".claude/skills/sp-constitution/SKILL.md",
+    ".claude/skills/sp-debug/SKILL.md",
+    ".claude/skills/sp-debug/references/INDEX.md",
+    ".claude/skills/sp-debug/references/debug-state.md",
+    ".claude/skills/sp-debug/references/fix-gate.md",
+    ".claude/skills/sp-debug/references/hypothesis-and-root-cause.md",
+    ".claude/skills/sp-debug/references/intake-and-debug-checkpoint.md",
+    ".claude/skills/sp-debug/references/regression-validation-and-closeout.md",
+    ".claude/skills/sp-debug/references/reproduction-and-evidence.md",
+    ".claude/skills/sp-debug/references/semantic-work-contract.md",
+    ".claude/skills/sp-deep-research/SKILL.md",
+    ".claude/skills/sp-deep-research/references/INDEX.md",
+    ".claude/skills/sp-deep-research/references/semantic-work-contract.md",
+    ".claude/skills/sp-design/SKILL.md",
+    ".claude/skills/sp-design/references/INDEX.md",
+    ".claude/skills/sp-design/references/semantic-work-contract.md",
+    ".claude/skills/sp-discussion/SKILL.md",
+    ".claude/skills/sp-discussion/references/INDEX.md",
+    ".claude/skills/sp-discussion/references/context-boundary-and-truth.md",
+    ".claude/skills/sp-discussion/references/downstream-consumption.md",
+    ".claude/skills/sp-discussion/references/frontstage-backstage-persistence.md",
+    ".claude/skills/sp-discussion/references/handoff-contract.md",
+    ".claude/skills/sp-discussion/references/handoff-review-and-repair.md",
+    ".claude/skills/sp-discussion/references/quality-and-closeout.md",
+    ".claude/skills/sp-discussion/references/question-and-advice-contract.md",
+    ".claude/skills/sp-discussion/references/semantic-work-contract.md",
+    ".claude/skills/sp-explain/SKILL.md",
+    ".claude/skills/sp-fast/SKILL.md",
+    ".claude/skills/sp-fast/references/INDEX.md",
+    ".claude/skills/sp-fast/references/semantic-work-contract.md",
+    ".claude/skills/sp-implement-teams/SKILL.md",
+    ".claude/skills/sp-implement-teams/references/INDEX.md",
+    ".claude/skills/sp-implement-teams/references/semantic-work-contract.md",
+    ".claude/skills/sp-implement/SKILL.md",
+    ".claude/skills/sp-implement/references/INDEX.md",
+    ".claude/skills/sp-implement/references/branch-review-and-closeout.md",
+    ".claude/skills/sp-implement/references/join-point-review.md",
+    ".claude/skills/sp-implement/references/red-first-and-validation.md",
+    ".claude/skills/sp-implement/references/safe-repair-loop.md",
+    ".claude/skills/sp-implement/references/semantic-work-contract.md",
+    ".claude/skills/sp-implement/references/subagent-worker-contract.md",
+    ".claude/skills/sp-implement/references/task-intake-and-tracker.md",
+    ".claude/skills/sp-integrate/SKILL.md",
+    ".claude/skills/sp-map-build/SKILL.md",
+    ".claude/skills/sp-map-build/references/INDEX.md",
+    ".claude/skills/sp-map-build/references/semantic-work-contract.md",
+    ".claude/skills/sp-map-scan/SKILL.md",
+    ".claude/skills/sp-map-scan/references/INDEX.md",
+    ".claude/skills/sp-map-scan/references/semantic-work-contract.md",
+    ".claude/skills/sp-map-update/SKILL.md",
+    ".claude/skills/sp-map-update/references/INDEX.md",
+    ".claude/skills/sp-map-update/references/semantic-work-contract.md",
+    ".claude/skills/sp-plan/SKILL.md",
+    ".claude/skills/sp-plan/references/INDEX.md",
+    ".claude/skills/sp-plan/references/constitution-risk-and-complexity.md",
+    ".claude/skills/sp-plan/references/data-model-contracts-and-quickstart.md",
+    ".claude/skills/sp-plan/references/plan-contract-fields.md",
+    ".claude/skills/sp-plan/references/research-and-design-lanes.md",
+    ".claude/skills/sp-plan/references/semantic-work-contract.md",
+    ".claude/skills/sp-plan/references/spec-package-intake.md",
+    ".claude/skills/sp-plan/references/subagent-dispatch.md",
+    ".claude/skills/sp-prd-build/SKILL.md",
+    ".claude/skills/sp-prd-scan/SKILL.md",
+    ".claude/skills/sp-prd-scan/references/INDEX.md",
+    ".claude/skills/sp-prd-scan/references/semantic-work-contract.md",
+    ".claude/skills/sp-prd/SKILL.md",
+    ".claude/skills/sp-quick/SKILL.md",
+    ".claude/skills/sp-quick/references/INDEX.md",
+    ".claude/skills/sp-quick/references/handoff-consumption.md",
+    ".claude/skills/sp-quick/references/intake-and-checkpoint.md",
+    ".claude/skills/sp-quick/references/packetized-work.md",
+    ".claude/skills/sp-quick/references/semantic-work-contract.md",
+    ".claude/skills/sp-quick/references/validation-and-closeout.md",
+    ".claude/skills/sp-quick/references/workspace-state.md",
+    ".claude/skills/sp-research/SKILL.md",
+    ".claude/skills/sp-specify/SKILL.md",
+    ".claude/skills/sp-specify/references/INDEX.md",
+    ".claude/skills/sp-specify/references/artifact-package.md",
+    ".claude/skills/sp-specify/references/discussion-handoff-validation.md",
+    ".claude/skills/sp-specify/references/question-cadence-and-review.md",
+    ".claude/skills/sp-specify/references/self-review-and-quality-gates.md",
+    ".claude/skills/sp-specify/references/semantic-traceability.md",
+    ".claude/skills/sp-specify/references/semantic-work-contract.md",
+    ".claude/skills/sp-specify/references/ui-reference-lane.md",
+    ".claude/skills/sp-tasks/SKILL.md",
+    ".claude/skills/sp-tasks/references/INDEX.md",
+    ".claude/skills/sp-tasks/references/dependencies-and-parallel-safety.md",
+    ".claude/skills/sp-tasks/references/must-preserve-ledger.md",
+    ".claude/skills/sp-tasks/references/plan-intake.md",
+    ".claude/skills/sp-tasks/references/review-and-repair.md",
+    ".claude/skills/sp-tasks/references/semantic-work-contract.md",
+    ".claude/skills/sp-tasks/references/task-generation-sequence.md",
+    ".claude/skills/sp-tasks/references/task-packet-schema.md",
+    ".claude/skills/sp-taskstoissues/SKILL.md",
+    ".claude/skills/spec-kit-discussion-handoff-review/SKILL.md",
+    ".claude/skills/spec-kit-project-cognition-gate/SKILL.md",
+    ".claude/skills/spec-kit-project-learning/SKILL.md",
+    ".claude/skills/spec-kit-ui-design/SKILL.md",
+    ".claude/skills/spec-kit-workflow-routing/SKILL.md",
+    ".claude/skills/subagent-driven-development/SKILL.md",
+    ".claude/skills/subagent-driven-development/code-quality-reviewer-prompt.md",
+    ".claude/skills/subagent-driven-development/implementer-prompt.md",
+    ".claude/skills/subagent-driven-development/spec-reviewer-prompt.md",
+    ".claude/skills/swift-testing/SKILL.md",
+    ".claude/skills/systematic-debugging/CREATION-LOG.md",
+    ".claude/skills/systematic-debugging/SKILL.md",
+    ".claude/skills/systematic-debugging/condition-based-waiting-example.ts",
+    ".claude/skills/systematic-debugging/condition-based-waiting.md",
+    ".claude/skills/systematic-debugging/defense-in-depth.md",
+    ".claude/skills/systematic-debugging/find-polluter.sh",
+    ".claude/skills/systematic-debugging/root-cause-tracing.md",
+    ".claude/skills/systematic-debugging/test-academic.md",
+    ".claude/skills/systematic-debugging/test-pressure-1.md",
+    ".claude/skills/systematic-debugging/test-pressure-2.md",
+    ".claude/skills/systematic-debugging/test-pressure-3.md",
+    ".claude/skills/tdd-workflow/SKILL.md",
+    ".claude/skills/test-driven-development/SKILL.md",
+    ".claude/skills/test-driven-development/testing-anti-patterns.md",
+    ".claude/skills/theme-factory/LICENSE.txt",
+    ".claude/skills/theme-factory/SKILL.md",
+    ".claude/skills/theme-factory/themes/arctic-frost.md",
+    ".claude/skills/theme-factory/themes/botanical-garden.md",
+    ".claude/skills/theme-factory/themes/desert-rose.md",
+    ".claude/skills/theme-factory/themes/forest-canopy.md",
+    ".claude/skills/theme-factory/themes/golden-hour.md",
+    ".claude/skills/theme-factory/themes/midnight-galaxy.md",
+    ".claude/skills/theme-factory/themes/modern-minimalist.md",
+    ".claude/skills/theme-factory/themes/ocean-depths.md",
+    ".claude/skills/theme-factory/themes/sunset-boulevard.md",
+    ".claude/skills/theme-factory/themes/tech-innovation.md",
+    ".claude/skills/verification-before-completion/SKILL.md",
+    ".claude/skills/webapp-testing/LICENSE.txt",
+    ".claude/skills/webapp-testing/SKILL.md",
+    ".claude/skills/webapp-testing/examples/console_logging.py",
+    ".claude/skills/webapp-testing/examples/element_discovery.py",
+    ".claude/skills/webapp-testing/examples/static_html_automation.py",
+    ".claude/skills/webapp-testing/scripts/with_server.py",
+    ".claude/skills/zig-testing/SKILL.md",
+    ".codex/config.toml",
+    ".codex/skills/agent-introspection-debugging/SKILL.md",
+    ".codex/skills/c-testing/SKILL.md",
+    ".codex/skills/code-review-skill/.gitignore",
+    ".codex/skills/code-review-skill/CONTRIBUTING.md",
+    ".codex/skills/code-review-skill/LICENSE",
+    ".codex/skills/code-review-skill/SKILL.md",
+    ".codex/skills/code-review-skill/assets/pr-review-template.md",
+    ".codex/skills/code-review-skill/assets/review-checklist.md",
+    ".codex/skills/code-review-skill/reference/architecture-review-guide.md",
+    ".codex/skills/code-review-skill/reference/c.md",
+    ".codex/skills/code-review-skill/reference/code-review-best-practices.md",
+    ".codex/skills/code-review-skill/reference/common-bugs-checklist.md",
+    ".codex/skills/code-review-skill/reference/cpp.md",
+    ".codex/skills/code-review-skill/reference/css-less-sass.md",
+    ".codex/skills/code-review-skill/reference/go.md",
+    ".codex/skills/code-review-skill/reference/java.md",
+    ".codex/skills/code-review-skill/reference/performance-review-guide.md",
+    ".codex/skills/code-review-skill/reference/python.md",
+    ".codex/skills/code-review-skill/reference/qt.md",
+    ".codex/skills/code-review-skill/reference/react.md",
+    ".codex/skills/code-review-skill/reference/rust.md",
+    ".codex/skills/code-review-skill/reference/security-review-guide.md",
+    ".codex/skills/code-review-skill/reference/typescript.md",
+    ".codex/skills/code-review-skill/reference/vue.md",
+    ".codex/skills/code-review-skill/scripts/pr-analyzer.py",
+    ".codex/skills/cpp-coding-standards/SKILL.md",
+    ".codex/skills/cpp-testing/SKILL.md",
+    ".codex/skills/cs-testing/SKILL.md",
+    ".codex/skills/dart-testing/SKILL.md",
+    ".codex/skills/deep-research/SKILL.md",
+    ".codex/skills/dispatching-parallel-agents/SKILL.md",
+    ".codex/skills/frontend-design/LICENSE.txt",
+    ".codex/skills/frontend-design/SKILL.md",
+    ".codex/skills/go-testing/SKILL.md",
+    ".codex/skills/java-testing/SKILL.md",
+    ".codex/skills/js-testing/SKILL.md",
+    ".codex/skills/kotlin-testing/SKILL.md",
+    ".codex/skills/php-testing/SKILL.md",
+    ".codex/skills/project-to-prd/SKILL.md",
+    ".codex/skills/python-testing/SKILL.md",
+    ".codex/skills/ruby-testing/SKILL.md",
+    ".codex/skills/rust-testing/SKILL.md",
+    ".codex/skills/skill-creator/LICENSE.txt",
+    ".codex/skills/skill-creator/SKILL.md",
+    ".codex/skills/skill-creator/agents/analyzer.md",
+    ".codex/skills/skill-creator/agents/comparator.md",
+    ".codex/skills/skill-creator/agents/grader.md",
+    ".codex/skills/skill-creator/assets/eval_review.html",
+    ".codex/skills/skill-creator/eval-viewer/generate_review.py",
+    ".codex/skills/skill-creator/eval-viewer/viewer.html",
+    ".codex/skills/skill-creator/references/schemas.md",
+    ".codex/skills/skill-creator/scripts/__init__.py",
+    ".codex/skills/skill-creator/scripts/aggregate_benchmark.py",
+    ".codex/skills/skill-creator/scripts/generate_report.py",
+    ".codex/skills/skill-creator/scripts/improve_description.py",
+    ".codex/skills/skill-creator/scripts/package_skill.py",
+    ".codex/skills/skill-creator/scripts/quick_validate.py",
+    ".codex/skills/skill-creator/scripts/run_eval.py",
+    ".codex/skills/skill-creator/scripts/run_loop.py",
+    ".codex/skills/skill-creator/scripts/utils.py",
+    ".codex/skills/sp-accept/SKILL.md",
+    ".codex/skills/sp-analyze/SKILL.md",
+    ".codex/skills/sp-analyze/references/INDEX.md",
+    ".codex/skills/sp-analyze/references/semantic-work-contract.md",
+    ".codex/skills/sp-ask/SKILL.md",
+    ".codex/skills/sp-auto/SKILL.md",
+    ".codex/skills/sp-checklist/SKILL.md",
+    ".codex/skills/sp-checklist/references/INDEX.md",
+    ".codex/skills/sp-checklist/references/semantic-work-contract.md",
+    ".codex/skills/sp-clarify/SKILL.md",
+    ".codex/skills/sp-clarify/references/INDEX.md",
+    ".codex/skills/sp-clarify/references/semantic-work-contract.md",
+    ".codex/skills/sp-constitution/SKILL.md",
+    ".codex/skills/sp-debug/SKILL.md",
+    ".codex/skills/sp-debug/references/INDEX.md",
+    ".codex/skills/sp-debug/references/debug-state.md",
+    ".codex/skills/sp-debug/references/fix-gate.md",
+    ".codex/skills/sp-debug/references/hypothesis-and-root-cause.md",
+    ".codex/skills/sp-debug/references/intake-and-debug-checkpoint.md",
+    ".codex/skills/sp-debug/references/regression-validation-and-closeout.md",
+    ".codex/skills/sp-debug/references/reproduction-and-evidence.md",
+    ".codex/skills/sp-debug/references/semantic-work-contract.md",
+    ".codex/skills/sp-deep-research/SKILL.md",
+    ".codex/skills/sp-deep-research/references/INDEX.md",
+    ".codex/skills/sp-deep-research/references/semantic-work-contract.md",
+    ".codex/skills/sp-design/SKILL.md",
+    ".codex/skills/sp-design/references/INDEX.md",
+    ".codex/skills/sp-design/references/semantic-work-contract.md",
+    ".codex/skills/sp-discussion/SKILL.md",
+    ".codex/skills/sp-discussion/references/INDEX.md",
+    ".codex/skills/sp-discussion/references/context-boundary-and-truth.md",
+    ".codex/skills/sp-discussion/references/downstream-consumption.md",
+    ".codex/skills/sp-discussion/references/frontstage-backstage-persistence.md",
+    ".codex/skills/sp-discussion/references/handoff-contract.md",
+    ".codex/skills/sp-discussion/references/handoff-review-and-repair.md",
+    ".codex/skills/sp-discussion/references/quality-and-closeout.md",
+    ".codex/skills/sp-discussion/references/question-and-advice-contract.md",
+    ".codex/skills/sp-discussion/references/semantic-work-contract.md",
+    ".codex/skills/sp-explain/SKILL.md",
+    ".codex/skills/sp-fast/SKILL.md",
+    ".codex/skills/sp-fast/references/INDEX.md",
+    ".codex/skills/sp-fast/references/semantic-work-contract.md",
+    ".codex/skills/sp-implement-teams/SKILL.md",
+    ".codex/skills/sp-implement-teams/references/INDEX.md",
+    ".codex/skills/sp-implement-teams/references/semantic-work-contract.md",
+    ".codex/skills/sp-implement/SKILL.md",
+    ".codex/skills/sp-implement/references/INDEX.md",
+    ".codex/skills/sp-implement/references/branch-review-and-closeout.md",
+    ".codex/skills/sp-implement/references/join-point-review.md",
+    ".codex/skills/sp-implement/references/red-first-and-validation.md",
+    ".codex/skills/sp-implement/references/safe-repair-loop.md",
+    ".codex/skills/sp-implement/references/semantic-work-contract.md",
+    ".codex/skills/sp-implement/references/subagent-worker-contract.md",
+    ".codex/skills/sp-implement/references/task-intake-and-tracker.md",
+    ".codex/skills/sp-integrate/SKILL.md",
+    ".codex/skills/sp-map-build/SKILL.md",
+    ".codex/skills/sp-map-build/references/INDEX.md",
+    ".codex/skills/sp-map-build/references/semantic-work-contract.md",
+    ".codex/skills/sp-map-scan/SKILL.md",
+    ".codex/skills/sp-map-scan/references/INDEX.md",
+    ".codex/skills/sp-map-scan/references/semantic-work-contract.md",
+    ".codex/skills/sp-map-update/SKILL.md",
+    ".codex/skills/sp-map-update/references/INDEX.md",
+    ".codex/skills/sp-map-update/references/semantic-work-contract.md",
+    ".codex/skills/sp-plan/SKILL.md",
+    ".codex/skills/sp-plan/references/INDEX.md",
+    ".codex/skills/sp-plan/references/constitution-risk-and-complexity.md",
+    ".codex/skills/sp-plan/references/data-model-contracts-and-quickstart.md",
+    ".codex/skills/sp-plan/references/plan-contract-fields.md",
+    ".codex/skills/sp-plan/references/research-and-design-lanes.md",
+    ".codex/skills/sp-plan/references/semantic-work-contract.md",
+    ".codex/skills/sp-plan/references/spec-package-intake.md",
+    ".codex/skills/sp-plan/references/subagent-dispatch.md",
+    ".codex/skills/sp-prd-build/SKILL.md",
+    ".codex/skills/sp-prd-scan/SKILL.md",
+    ".codex/skills/sp-prd-scan/references/INDEX.md",
+    ".codex/skills/sp-prd-scan/references/semantic-work-contract.md",
+    ".codex/skills/sp-prd/SKILL.md",
+    ".codex/skills/sp-quick/SKILL.md",
+    ".codex/skills/sp-quick/references/INDEX.md",
+    ".codex/skills/sp-quick/references/handoff-consumption.md",
+    ".codex/skills/sp-quick/references/intake-and-checkpoint.md",
+    ".codex/skills/sp-quick/references/packetized-work.md",
+    ".codex/skills/sp-quick/references/semantic-work-contract.md",
+    ".codex/skills/sp-quick/references/validation-and-closeout.md",
+    ".codex/skills/sp-quick/references/workspace-state.md",
+    ".codex/skills/sp-research/SKILL.md",
+    ".codex/skills/sp-specify/SKILL.md",
+    ".codex/skills/sp-specify/references/INDEX.md",
+    ".codex/skills/sp-specify/references/artifact-package.md",
+    ".codex/skills/sp-specify/references/discussion-handoff-validation.md",
+    ".codex/skills/sp-specify/references/question-cadence-and-review.md",
+    ".codex/skills/sp-specify/references/self-review-and-quality-gates.md",
+    ".codex/skills/sp-specify/references/semantic-traceability.md",
+    ".codex/skills/sp-specify/references/semantic-work-contract.md",
+    ".codex/skills/sp-specify/references/ui-reference-lane.md",
+    ".codex/skills/sp-tasks/SKILL.md",
+    ".codex/skills/sp-tasks/references/INDEX.md",
+    ".codex/skills/sp-tasks/references/dependencies-and-parallel-safety.md",
+    ".codex/skills/sp-tasks/references/must-preserve-ledger.md",
+    ".codex/skills/sp-tasks/references/plan-intake.md",
+    ".codex/skills/sp-tasks/references/review-and-repair.md",
+    ".codex/skills/sp-tasks/references/semantic-work-contract.md",
+    ".codex/skills/sp-tasks/references/task-generation-sequence.md",
+    ".codex/skills/sp-tasks/references/task-packet-schema.md",
+    ".codex/skills/sp-taskstoissues/SKILL.md",
+    ".codex/skills/sp-teams/SKILL.md",
+    ".codex/skills/spec-kit-discussion-handoff-review/SKILL.md",
+    ".codex/skills/spec-kit-project-cognition-gate/SKILL.md",
+    ".codex/skills/spec-kit-project-learning/SKILL.md",
+    ".codex/skills/spec-kit-ui-design/SKILL.md",
+    ".codex/skills/spec-kit-workflow-routing/SKILL.md",
+    ".codex/skills/subagent-driven-development/SKILL.md",
+    ".codex/skills/subagent-driven-development/code-quality-reviewer-prompt.md",
+    ".codex/skills/subagent-driven-development/implementer-prompt.md",
+    ".codex/skills/subagent-driven-development/spec-reviewer-prompt.md",
+    ".codex/skills/swift-testing/SKILL.md",
+    ".codex/skills/systematic-debugging/CREATION-LOG.md",
+    ".codex/skills/systematic-debugging/SKILL.md",
+    ".codex/skills/systematic-debugging/condition-based-waiting-example.ts",
+    ".codex/skills/systematic-debugging/condition-based-waiting.md",
+    ".codex/skills/systematic-debugging/defense-in-depth.md",
+    ".codex/skills/systematic-debugging/find-polluter.sh",
+    ".codex/skills/systematic-debugging/root-cause-tracing.md",
+    ".codex/skills/systematic-debugging/test-academic.md",
+    ".codex/skills/systematic-debugging/test-pressure-1.md",
+    ".codex/skills/systematic-debugging/test-pressure-2.md",
+    ".codex/skills/systematic-debugging/test-pressure-3.md",
+    ".codex/skills/tdd-workflow/SKILL.md",
+    ".codex/skills/test-driven-development/SKILL.md",
+    ".codex/skills/test-driven-development/testing-anti-patterns.md",
+    ".codex/skills/theme-factory/LICENSE.txt",
+    ".codex/skills/theme-factory/SKILL.md",
+    ".codex/skills/theme-factory/themes/arctic-frost.md",
+    ".codex/skills/theme-factory/themes/botanical-garden.md",
+    ".codex/skills/theme-factory/themes/desert-rose.md",
+    ".codex/skills/theme-factory/themes/forest-canopy.md",
+    ".codex/skills/theme-factory/themes/golden-hour.md",
+    ".codex/skills/theme-factory/themes/midnight-galaxy.md",
+    ".codex/skills/theme-factory/themes/modern-minimalist.md",
+    ".codex/skills/theme-factory/themes/ocean-depths.md",
+    ".codex/skills/theme-factory/themes/sunset-boulevard.md",
+    ".codex/skills/theme-factory/themes/tech-innovation.md",
+    ".codex/skills/verification-before-completion/SKILL.md",
+    ".codex/skills/webapp-testing/LICENSE.txt",
+    ".codex/skills/webapp-testing/SKILL.md",
+    ".codex/skills/webapp-testing/examples/console_logging.py",
+    ".codex/skills/webapp-testing/examples/element_discovery.py",
+    ".codex/skills/webapp-testing/examples/static_html_automation.py",
+    ".codex/skills/webapp-testing/scripts/with_server.py",
+    ".codex/skills/zig-testing/SKILL.md",
+    ".gitignore",
+    ".planning/learnings/auto-capture.json",
+    ".planning/learnings/candidates.md",
+    ".planning/learnings/review.md",
+    ".planning/quick/2026-07-07-hands-on-example/STATUS.md",
+    ".planning/quick/2026-07-07-hands-on-example/SUMMARY.md",
+    ".planning/quick/2026-07-08-cli-supervisor-commands/STATUS.md",
+    ".planning/quick/2026-07-08-cli-supervisor-commands/SUMMARY.md",
+    ".planning/quick/2026-07-08-global-runtime-supervisor/STATUS.md",
+    ".planning/quick/2026-07-08-global-runtime-supervisor/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/STATUS.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json",
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/STATUS.md",
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/SUMMARY.md",
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/worker-results/lane-001.json",
+    ".planning/quick/2026-07-09-compact-json-output/STATUS.md",
+    ".planning/quick/2026-07-09-compact-json-output/SUMMARY.md",
+    ".planning/quick/index.json",
+    "docs/cross-platform-smoke.md",
+    "docs/product-discovery.md",
+    "docs/v0.1-protocol.md",
+    "examples/demo-api/.launchdeck.yml",
+    "examples/demo-api/.launchdeck/runtime/state.json",
+    "examples/demo-api/README.md",
+    "examples/demo-api/package.json",
+    "examples/demo-api/scratch/clean-safe/delete-me.txt",
+    "examples/demo-api/scratch/manual-cache/keep-until-clean-all.txt",
+    "examples/demo-api/scratch/run-evidence/last-start.json",
+    "examples/demo-api/scripts/server.js",
+    "examples/hands-on-demo/.launchdeck.yml",
+    "examples/hands-on-demo/README.md",
+    "examples/hands-on-demo/scripts/build.js",
+    "examples/hands-on-demo/scripts/dev.js",
+    "examples/hands-on-demo/scripts/fail.js",
+    "examples/node-vite.launchdeck.yml",
+    "examples/python-fastapi.launchdeck.yml",
+    "package-lock.json",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "DESIGN.md",
+    "README.md"
+  ],
+  "blocked_paths": [],
+  "path_details": {
+    ".agents/README.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/scripts/sync-skills.ps1": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/scripts/validate-skills.ps1": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/SKILL.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/clean-safety.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/command-flows.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/discovery-rules.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/intent-routing.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project agent skill definitions"
+      ]
+    },
+    ".claude/hooks/README.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/hooks/claude-hook-dispatch.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/settings.json": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/agent-introspection-debugging/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/c-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/.gitignore": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/CONTRIBUTING.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/LICENSE": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/assets/pr-review-template.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/assets/review-checklist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/architecture-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/c.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/code-review-best-practices.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/common-bugs-checklist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/cpp.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/css-less-sass.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/go.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/java.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/performance-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/python.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/qt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/react.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/rust.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/security-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/typescript.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/reference/vue.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/code-review-skill/scripts/pr-analyzer.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/cpp-coding-standards/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/cpp-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/cs-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/dart-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/deep-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/dispatching-parallel-agents/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/frontend-design/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/frontend-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/go-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/java-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/js-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/kotlin-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/php-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/project-to-prd/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/python-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/ruby-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/rust-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/agents/analyzer.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/agents/comparator.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/agents/grader.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/assets/eval_review.html": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/eval-viewer/generate_review.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/eval-viewer/viewer.html": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/references/schemas.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/__init__.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/aggregate_benchmark.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/generate_report.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/improve_description.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/package_skill.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/quick_validate.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/run_eval.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/run_loop.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/skill-creator/scripts/utils.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-accept/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-analyze/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-analyze/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-analyze/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-ask/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-auto/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-checklist/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-checklist/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-checklist/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-clarify/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-clarify/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-clarify/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-constitution/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/debug-state.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/fix-gate.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/hypothesis-and-root-cause.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/intake-and-debug-checkpoint.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/regression-validation-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/reproduction-and-evidence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-debug/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-deep-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-deep-research/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-deep-research/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-design/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-design/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/context-boundary-and-truth.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/downstream-consumption.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/frontstage-backstage-persistence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/handoff-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/handoff-review-and-repair.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/quality-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/question-and-advice-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-discussion/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-explain/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-fast/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-fast/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-fast/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement-teams/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement-teams/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement-teams/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/branch-review-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/join-point-review.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/red-first-and-validation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/safe-repair-loop.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/subagent-worker-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-implement/references/task-intake-and-tracker.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-integrate/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-build/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-build/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-build/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-scan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-scan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-scan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-update/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-update/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-map-update/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/constitution-risk-and-complexity.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/data-model-contracts-and-quickstart.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/plan-contract-fields.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/research-and-design-lanes.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/spec-package-intake.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-plan/references/subagent-dispatch.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-prd-build/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-prd-scan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-prd-scan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-prd-scan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-prd/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/handoff-consumption.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/intake-and-checkpoint.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/packetized-work.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/validation-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-quick/references/workspace-state.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/artifact-package.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/discussion-handoff-validation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/question-cadence-and-review.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/self-review-and-quality-gates.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/semantic-traceability.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-specify/references/ui-reference-lane.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/dependencies-and-parallel-safety.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/must-preserve-ledger.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/plan-intake.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/review-and-repair.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/task-generation-sequence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-tasks/references/task-packet-schema.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/sp-taskstoissues/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/spec-kit-discussion-handoff-review/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/spec-kit-project-cognition-gate/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/spec-kit-project-learning/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/spec-kit-ui-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/spec-kit-workflow-routing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/subagent-driven-development/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/subagent-driven-development/code-quality-reviewer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/subagent-driven-development/implementer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/subagent-driven-development/spec-reviewer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/swift-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/CREATION-LOG.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/condition-based-waiting-example.ts": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/condition-based-waiting.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/defense-in-depth.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/find-polluter.sh": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/root-cause-tracing.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/test-academic.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/test-pressure-1.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/test-pressure-2.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/systematic-debugging/test-pressure-3.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/tdd-workflow/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/test-driven-development/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/test-driven-development/testing-anti-patterns.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/arctic-frost.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/botanical-garden.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/desert-rose.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/forest-canopy.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/golden-hour.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/midnight-galaxy.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/modern-minimalist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/ocean-depths.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/sunset-boulevard.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/theme-factory/themes/tech-innovation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/verification-before-completion/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/examples/console_logging.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/examples/element_discovery.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/examples/static_html_automation.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/webapp-testing/scripts/with_server.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".claude/skills/zig-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/config.toml": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/agent-introspection-debugging/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/c-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/.gitignore": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/CONTRIBUTING.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/LICENSE": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/assets/pr-review-template.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/assets/review-checklist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/architecture-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/c.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/code-review-best-practices.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/common-bugs-checklist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/cpp.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/css-less-sass.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/go.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/java.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/performance-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/python.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/qt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/react.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/rust.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/security-review-guide.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/typescript.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/reference/vue.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/code-review-skill/scripts/pr-analyzer.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/cpp-coding-standards/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/cpp-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/cs-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/dart-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/deep-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/dispatching-parallel-agents/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/frontend-design/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/frontend-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/go-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/java-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/js-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/kotlin-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/php-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/project-to-prd/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/python-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/ruby-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/rust-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/agents/analyzer.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/agents/comparator.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/agents/grader.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/assets/eval_review.html": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/eval-viewer/generate_review.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/eval-viewer/viewer.html": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/references/schemas.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/__init__.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/aggregate_benchmark.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/generate_report.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/improve_description.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/package_skill.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/quick_validate.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/run_eval.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/run_loop.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/skill-creator/scripts/utils.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-accept/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-analyze/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-analyze/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-analyze/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-ask/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-auto/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-checklist/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-checklist/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-checklist/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-clarify/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-clarify/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-clarify/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-constitution/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/debug-state.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/fix-gate.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/hypothesis-and-root-cause.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/intake-and-debug-checkpoint.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/regression-validation-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/reproduction-and-evidence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-debug/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-deep-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-deep-research/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-deep-research/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-design/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-design/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/context-boundary-and-truth.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/downstream-consumption.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/frontstage-backstage-persistence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/handoff-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/handoff-review-and-repair.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/quality-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/question-and-advice-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-discussion/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-explain/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-fast/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-fast/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-fast/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement-teams/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement-teams/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement-teams/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/branch-review-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/join-point-review.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/red-first-and-validation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/safe-repair-loop.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/subagent-worker-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-implement/references/task-intake-and-tracker.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-integrate/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-build/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-build/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-build/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-scan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-scan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-scan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-update/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-update/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-map-update/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/constitution-risk-and-complexity.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/data-model-contracts-and-quickstart.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/plan-contract-fields.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/research-and-design-lanes.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/spec-package-intake.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-plan/references/subagent-dispatch.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-prd-build/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-prd-scan/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-prd-scan/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-prd-scan/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-prd/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/handoff-consumption.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/intake-and-checkpoint.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/packetized-work.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/validation-and-closeout.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-quick/references/workspace-state.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-research/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/artifact-package.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/discussion-handoff-validation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/question-cadence-and-review.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/self-review-and-quality-gates.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/semantic-traceability.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-specify/references/ui-reference-lane.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/INDEX.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/dependencies-and-parallel-safety.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/must-preserve-ledger.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/plan-intake.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/review-and-repair.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/semantic-work-contract.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/task-generation-sequence.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-tasks/references/task-packet-schema.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-taskstoissues/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/sp-teams/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/spec-kit-discussion-handoff-review/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/spec-kit-project-cognition-gate/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/spec-kit-project-learning/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/spec-kit-ui-design/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/spec-kit-workflow-routing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/subagent-driven-development/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/subagent-driven-development/code-quality-reviewer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/subagent-driven-development/implementer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/subagent-driven-development/spec-reviewer-prompt.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/swift-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/CREATION-LOG.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/condition-based-waiting-example.ts": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/condition-based-waiting.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/defense-in-depth.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/find-polluter.sh": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/root-cause-tracing.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/test-academic.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/test-pressure-1.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/test-pressure-2.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/systematic-debugging/test-pressure-3.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/tdd-workflow/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/test-driven-development/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/test-driven-development/testing-anti-patterns.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/arctic-frost.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/botanical-garden.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/desert-rose.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/forest-canopy.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/golden-hour.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/midnight-galaxy.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/modern-minimalist.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/ocean-depths.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/sunset-boulevard.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/theme-factory/themes/tech-innovation.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/verification-before-completion/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/LICENSE.txt": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/examples/console_logging.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/examples/element_discovery.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/examples/static_html_automation.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/webapp-testing/scripts/with_server.py": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".codex/skills/zig-testing/SKILL.md": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "host-specific tooling copies - vendored"
+      ]
+    },
+    ".github/workflows/ci.yml": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "CI workflow configuration"
+      ]
+    },
+    ".gitignore": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "uncategorized file"
+      ]
+    },
+    ".launchdeck.yml": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "launchdeck project configuration"
+      ]
+    },
+    ".launchdeck/runtime/state.json": {
+      "value_tier": "P3",
+      "scan_decision": "exclude",
+      "disposition": "excluded",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "runtime state / temporary output"
+      ]
+    },
+    ".planning/learnings/auto-capture.json": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/learnings/candidates.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/learnings/review.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-07-hands-on-example/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-07-hands-on-example/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-08-cli-supervisor-commands/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-08-cli-supervisor-commands/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-08-global-runtime-supervisor/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-08-global-runtime-supervisor/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-installer-cli/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-installer-cli/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-installer-cli/worker-results/lane-001.json": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-agent-skill-canonical-path/worker-results/lane-001.json": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-compact-json-output/STATUS.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/2026-07-09-compact-json-output/SUMMARY.md": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".planning/quick/index.json": {
+      "value_tier": "P2",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "planning artifacts - historical context"
+      ]
+    },
+    ".tmp/feel-demo-home/events/events.jsonl": {
+      "value_tier": "P3",
+      "scan_decision": "exclude",
+      "disposition": "excluded",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "runtime state / temporary output"
+      ]
+    },
+    ".tmp/feel-demo-home/registry/projects.json": {
+      "value_tier": "P3",
+      "scan_decision": "exclude",
+      "disposition": "excluded",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "runtime state / temporary output"
+      ]
+    },
+    ".tmp/feel-demo-home/runtime/runs.json": {
+      "value_tier": "P3",
+      "scan_decision": "exclude",
+      "disposition": "excluded",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "runtime state / temporary output"
+      ]
+    },
+    "AGENTS.md": {
+      "value_tier": "P1",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project documentation defining behavior and contracts"
+      ]
+    },
+    "CLAUDE.md": {
+      "value_tier": "P1",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project documentation defining behavior and contracts"
+      ]
+    },
+    "DESIGN.md": {
+      "value_tier": "P1",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project documentation defining behavior and contracts"
+      ]
+    },
+    "README.md": {
+      "value_tier": "P1",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "important",
+      "classification_reasons": [
+        "project documentation defining behavior and contracts"
+      ]
+    },
+    "docs/cross-platform-smoke.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "documentation"
+      ]
+    },
+    "docs/product-discovery.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "documentation"
+      ]
+    },
+    "docs/v0.1-protocol.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "documentation"
+      ]
+    },
+    "examples/demo-api/.launchdeck.yml": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/.launchdeck/runtime/state.json": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/README.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/package.json": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/scratch/clean-safe/delete-me.txt": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/scratch/manual-cache/keep-until-clean-all.txt": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/scratch/run-evidence/last-start.json": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/demo-api/scripts/server.js": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/hands-on-demo/.launchdeck.yml": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/hands-on-demo/README.md": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/hands-on-demo/scripts/build.js": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/hands-on-demo/scripts/dev.js": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/hands-on-demo/scripts/fail.js": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/node-vite.launchdeck.yml": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "examples/python-fastapi.launchdeck.yml": {
+      "value_tier": "P2",
+      "scan_decision": "sample",
+      "disposition": "sampled",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "example/demo projects"
+      ]
+    },
+    "package-lock.json": {
+      "value_tier": "P3",
+      "scan_decision": "inventory_only",
+      "disposition": "inventory_only",
+      "criticality": "low_risk",
+      "classification_reasons": [
+        "uncategorized file"
+      ]
+    },
+    "package.json": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "project manifest and dependency declarations"
+      ]
+    },
+    "schema/launchdeck.schema.json": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "launchdeck schema definition"
+      ]
+    },
+    "scripts/smoke-lifecycle.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "smoke test verification script"
+      ]
+    },
+    "src/adapters/path.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/adapters/process.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/agent-installer.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/cli.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/config.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/actions.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/events.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/inspect.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/locks.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/ownership.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/runs.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/control-plane/state.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/errors.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/global-runtime.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/output.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "src/runtime.js": {
+      "value_tier": "P0",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "critical",
+      "classification_reasons": [
+        "core source code - application entrypoints and services"
+      ]
+    },
+    "test/agent-installer.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/clean-control-plane.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/clean-safety.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/cli-contract.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/cli-control-plane-contract.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/cli.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/config-contract.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/config.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/control-plane-events.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/control-plane-locks.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/control-plane-ownership.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/control-plane-state.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/global-runtime.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/helpers/cli-fixture.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/helpers/control-plane-fixture.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/inspect-cli.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/lifecycle-ownership.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/managed-cli.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/recovery-observability.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    },
+    "test/runtime-state.test.js": {
+      "value_tier": "P1",
+      "scan_decision": "scan",
+      "disposition": "deep_read",
+      "criticality": "important",
+      "classification_reasons": [
+        "test verification surface"
+      ]
+    }
+  }
+}

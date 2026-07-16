@@ -1,0 +1,44 @@
+{
+  "id": "E-CP-006",
+  "source_path": "src/control-plane/inspect.js",
+  "summary": "全局状态观测(inspectTarget)：支持port/pid/task/project/run/conflict六种target类型，返回ownership证据、listeners、conflicts和suggested actions",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-006",
+    "source_path": "src/control-plane/inspect.js",
+    "summary": "全局状态观测(inspectTarget)：支持port/pid/task/project/run/conflict六种target类型，返回ownership证据、listeners、conflicts和suggested actions",
+    "symbols": [
+      "buildGlobalStatus",
+      "listGlobalRuns",
+      "listGlobalProcesses",
+      "listGlobalPorts",
+      "listGlobalConflicts",
+      "inspectPort",
+      "inspectTarget",
+      "assertTaskPortsAvailable"
+    ],
+    "exports": [
+      "buildGlobalStatus",
+      "listGlobalRuns",
+      "listGlobalProcesses",
+      "listGlobalPorts",
+      "listGlobalConflicts",
+      "inspectPort",
+      "inspectTarget",
+      "assertTaskPortsAvailable"
+    ],
+    "dependencies": [
+      "adapters/process.js (listPortListeners, normalizePort)",
+      "config.js (loadConfig)",
+      "errors.js (LaunchdeckError)",
+      "runtime.js (listProcesses)",
+      "actions.js (listRegisteredProjects)",
+      "ownership.js (buildPortObservation, inspectOnlyActionsForOwnership, legacyOwnershipFromProof, proveRunOwnership)",
+      "runs.js (observedRun, readRunIndex)",
+      "state.js (controlPlanePaths)"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "task_id": "T017",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/executor-t017.json"
+  ],
+  "validation_output": {
+    "node --test test/global-runtime.test.js test/managed-cli.test.js": "PASS: 36 tests passed, 0 failed, 0 cancelled, 0 skipped, 0 todo; duration_ms 66350.9988. Covered project add/projects idempotent isolated registry, alias idempotency, start project:task global run index, duplicate owned start idempotency, status --all next actions and summaries, ps --all aggregation, ports declared/current managed state, and managed CLI lifecycle envelopes.",
+    "npm run check": "PASS: node --check completed for src/errors.js, src/cli.js, src/config.js, src/adapters/process.js, src/global-runtime.js, src/runtime.js, src/control-plane/state.js, src/control-plane/locks.js, src/control-plane/events.js, and listed test files."
+  },
+  "concerns": [
+    "US1 join evidence intentionally excludes later inspect, events, reconcile, restart/stop ownership, and clean scope.",
+    "Validation was run in this Windows/PowerShell workspace only and is not a macOS/Linux cross-platform release claim."
+  ],
+  "recovery_hints": [
+    "If the focused tests regress, start with test/global-runtime.test.js cases for project add, duplicate start, status --all, ps --all, and ports before broadening the investigation.",
+    "If ledger parsing fails, preserve schemaVersion and existing content while repairing only the T017 joinValidations entry."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "status": "success",
+  "task_id": "T034",
+  "changed_files": [
+    "README.md",
+    ".specify/teams/state/results/writer-t034.json"
+  ],
+  "validation_output": {
+    "rg -n \"inspect|force-stop|reconcile|events|schemaVersion|no external|clean\" README.md": {
+      "status": 0,
+      "stdout": "5:The base feature is daemonless. Launchdeck keeps one authoritative control-plane namespace for the current user, with shared state, locks, logs, events, and live OS inspection.\n17:- `status --all`, `ps --all`, `ports`, `conflicts`, `inspect`, and `inspect-port` provide global visibility.\n18:- `logs` and `events` support bounded reads and `--follow` JSON Lines streaming.\n19:- `clean`, `clean --safe`, and `clean --all --yes` handle safe hygiene only.\n20:- `--json` emits a stable machine-readable envelope with `schemaVersion` and `next` actions.\n48:node src/cli.js inspect task:demo:dev --json\n49:node src/cli.js inspect port:8888 --json\n56:4. Read logs and events, then follow logs as JSON Lines.\n60:node src/cli.js events demo --json\n64:5. Reconcile stale state, then stop and clean safely.\n67:node src/cli.js reconcile demo --json\n69:node src/cli.js clean --safe --json\n79:- `clean` is hygiene only. Destructive `reset` is separate and deferred.\n179:| `launchdeck inspect <target> [--json]` | Unifies inspection for `project:<alias, id, or path>`, `task:<project:task>`, `run:<runId>`, `port:<port>`, `pid:<pid>`, and `conflict:<id>`. |\n180:| `launchdeck inspect-port <port> [--json]` | Compatibility wrapper for `launchdeck inspect port:<port>`. |\n185:| `launchdeck reconcile [project[:task]] [--json]` | Refreshes stale Launchdeck state against live OS observations without killing unmanaged processes. |\n187:| `launchdeck events [target] [--lines 80] [--follow] [--json]` | Reads structured event history. With `--follow --json`, it streams JSON Lines. |\n188:| `launchdeck clean [--safe] [--all --yes] [--json]` | Plans cleanup targets, previews by default, and requires confirmation for risky cleanup. |\n192:- `logs --follow --json` emits JSON Lines with `schemaVersion`, `type`, `runId`, `line`, and `timestamp`.\n193:- `events --follow --json` emits JSON Lines with `schemaVersion`, `eventId`, `transactionId`, `timestamp`, `level`, `type`, `projectId`, `alias`, `task`, `runId`, `message`, `data`, and `next`.\n204:`project remove` refuses active Launchdeck-owned runs and never deletes project files, runtime files, or logs. `reconcile` repairs stale state and explains unresolved evidence; it does not terminate unmanaged listeners.\n215:  \"schemaVersion\": 1,\n227:  \"schemaVersion\": 1,\n245:- `stop`, `restart`, and `force-stop` require verified Launchdeck ownership. Port or PID evidence alone is not enough.\n247:- `clean` is hygiene only. It does not stop services, remove registry entries, or delete project roots, unknown files, or paths outside the project root.\n248:- `clean --safe` preserves running evidence, latest failed evidence, and failure-linked logs and events needed to explain status.\n",
+      "stderr": ""
+    },
+    "rg -n -- \"daemon|GUI|TUI|MCP|external kill|reset\" README.md": {
+      "status": 0,
+      "stdout": "5:The base feature is daemonless. Launchdeck keeps one authoritative control-plane namespace for the current user, with shared state, locks, logs, events, and live OS inspection.\n79:- `clean` is hygiene only. Destructive `reset` is separate and deferred.\n249:- Destructive `reset` is not shipped as part of this release. It remains a separate feature boundary.\n",
+      "stderr": ""
+    },
+    "leader_readme_smoke": {
+      "status": 0,
+      "summary": "Isolated README flow smoke passed add/start/_demo/exit/reconcile/stop/clean and cleaned generated LAUNCHDECK_HOME plus examples/demo-api/scratch."
+    },
+    "leader_residual_scan": {
+      "status": 0,
+      "summary": "No listener remained on port 8888, no demo server process remained, and examples/demo-api/scratch was absent after cleanup."
+    }
+  },
+  "concerns": [
+    "The README intentionally mentions `daemonless` and `reset` only as boundary language, not as shipped behavior. The quick scan still matches those words because they are required for the scope and safety notes."
+  ],
+  "recovery_hints": [],
+  "consumer_evidence": [
+    "The command reference now covers `inspect`, `force-stop`, `reconcile`, `events`, `logs --follow` JSONL streaming, and the stable `schemaVersion` envelope.",
+    "The README now points to the official demo at `examples/demo-api/` and keeps the existing command reference instead of removing it.",
+    "The safety section now distinguishes hygiene from reset and documents no-external-kill and evidence-retention behavior.",
+    "Leader repair clarified the quick demo follow/stale/clean steps and validated the documented stale recovery flow with a real isolated smoke."
+  ],
+  "must_preserve_evidence": [
+    {
+      "id": "MP-010",
+      "status": "preserved",
+      "evidence": "README documents stable JSON/next-action semantics and retains the command reference."
+    },
+    {
+      "id": "MP-012",
+      "status": "preserved",
+      "evidence": "README documents logs/events JSONL follow behavior and unified inspect."
+    },
+    {
+      "id": "MP-014",
+      "status": "preserved",
+      "evidence": "README keeps clean/reset separation and marks reset as separate and deferred."
+    },
+    {
+      "id": "MP-016",
+      "status": "preserved",
+      "evidence": "README names the official demo at examples/demo-api and describes its smoke path."
+    },
+    {
+      "id": "MP-017",
+      "status": "preserved",
+      "evidence": "README requires recorded smoke evidence before release claims."
+    }
+  ],
+  "consequence_obligations": [
+    {
+      "id": "CA-CP-012",
+      "claim": "Unified inspect is the supported evidence surface.",
+      "status": "documented",
+      "evidence": "README command reference and concepts section now document `inspect` and `inspect-port` compatibility."
+    },
+    {
+      "id": "CA-CP-015",
+      "claim": "Clean never deletes outside the project root and preserves running evidence.",
+      "status": "documented",
+      "evidence": "README safety and clean-target sections now spell out no-external-kill, retention, and reset separation."
+    },
+    {
+      "id": "CA-CP-016",
+      "claim": "JSON and JSON Lines are stable compatibility surfaces.",
+      "status": "documented",
+      "evidence": "README JSON and observability sections now document `schemaVersion`, `next`, and follow-stream JSONL semantics."
+    },
+    {
+      "id": "CA-CP-020",
+      "claim": "Release claims require runnable demo and docs.",
+      "status": "documented",
+      "evidence": "README release-claim section now requires recorded smoke evidence and points to the official demo."
+    }
+  ]
+}

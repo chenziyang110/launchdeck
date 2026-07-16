@@ -1,0 +1,32 @@
+{
+  "id": "E-T-001",
+  "source_path": "test/agent-installer.test.js",
+  "summary": "Agent 安装器 CLI 测试 — 验证 agent paths、doctor、install 命令的合约行为",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-T-001",
+    "source_path": "test/agent-installer.test.js",
+    "summary": "Agent 安装器 CLI 测试 — 验证 agent paths、doctor、install 命令的合约行为",
+    "test_groups": [
+      "agent paths — 报告规范源和支持的适配器目标",
+      "agent doctor — 验证规范源和适配器矩阵",
+      "agent install dry-run — 计划复制但不变异目标",
+      "agent install compact — 不使用详细复制路径的摘要操作",
+      "agent install — 复制到显式目标且幂等",
+      "agent install — 拒绝有分歧的目标，除非强制",
+      "agent install — 拒绝非目录的技能目标，即使强制也不行"
+    ],
+    "key_assertions": [
+      "paths 返回 ok=true，包含 canonical source 和 4 个适配器目标 (codex, claude-code, github-copilot, visual-studio)",
+      "doctor 返回 status=ok，包含 canonical_source_exists 和 adapter_matrix_ready 检查",
+      "dry-run 设置 dryRun=true，不实际写入文件",
+      "compact 模式省略 actions 数组仅显示 counts",
+      "install 幂等：首次 status=installed，再次 status=already_installed",
+      "目标有分歧时拒绝并报 agent_target_conflict，--force 可覆盖",
+      "非目录目标返回 agent_target_conflict 错误"
+    ]
+  }
+}

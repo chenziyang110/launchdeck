@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "status": "ready_for_tasks",
+  "created_at": "2026-07-07T14:26:43.6824362+08:00",
+  "route": "/sp.tasks",
+  "intent": "Implement Launchdeck v1 as a cross-platform local CLI lifecycle control tool with explicit config, managed runtime state, safe cleanup, and stable automation contracts.",
+  "complexity_level": "standard",
+  "workflow_status": "ready",
+  "planning_gate": {
+    "quality_gate_status": "user_confirmed",
+    "hard_unknown_count": 0,
+    "open_conflict_count": 0,
+    "handoff_status": "ready_for_plan"
+  },
+  "execution_model": "adaptive",
+  "execution_mode": "standard",
+  "dispatch_shape": "leader-inline",
+  "execution_surface": "leader-inline",
+  "capability_degraded": true,
+  "blocked_reason": "Native subagent tools are available, but this environment requires the user to explicitly ask for subagents before spawning them; planning was completed inline.",
+  "delegated_planning_lanes": [],
+  "target": {
+    "project_root": "F:/github/launchdeck",
+    "source_paths": [
+      "src/cli.js",
+      "src/config.js",
+      "src/runtime.js",
+      "src/errors.js",
+      "test/cli.test.js",
+      "test/config.test.js"
+    ],
+    "artifact_paths": [
+      ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/research.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/launchdeck-config-v1.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/cli-json-contract.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/runtime-state-v1.md",
+      ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/error-codes-v1.md"
+    ]
+  },
+  "must_preserve": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010",
+    "MP-011",
+    "MP-012",
+    "MP-013",
+    "MP-014",
+    "MP-015",
+    "MP-016"
+  ],
+  "allowed_optimization_scope": [
+    "Refactor current CLI/runtime/config code only when behavior remains compatible with the contracts.",
+    "Add internal adapter modules for platform-owned path, shell, process, executable lookup, cleanup, and log behavior.",
+    "Add tests, examples, and documentation needed to prove v1 behavior."
+  ],
+  "forbidden_scope": [
+    "GUI or TUI",
+    "MCP server",
+    "agent skill package",
+    "automatic discovery default",
+    "remote or cloud execution",
+    "daemon mode",
+    "multi-project orchestration",
+    "plugin marketplace",
+    "destructive reset",
+    "database reset",
+    "Docker reset",
+    "native installer packaging requirement"
+  ],
+  "acceptance_obligations": [
+    "Every v1 command that supports JSON emits parseable success and classified failure envelopes.",
+    "Foreground execution preserves child exit codes.",
+    "Managed execution records state and logs and prevents duplicate starts.",
+    "Runtime inspection preserves stale records and logs.",
+    "Clean is dry-run by default and refuses root, out-of-root, empty, and ambiguous targets.",
+    "Error codes are stable and documented.",
+    "Verification claims identify dev-ready, platform-ready, or cross-platform-ready evidence level."
+  ],
+  "capability_operations": [
+    {
+      "operation": "init",
+      "entry_point": "launchdeck init",
+      "status": "in_scope"
+    },
+    {
+      "operation": "doctor",
+      "entry_point": "launchdeck doctor",
+      "status": "in_scope"
+    },
+    {
+      "operation": "tasks",
+      "entry_point": "launchdeck tasks",
+      "status": "in_scope"
+    },
+    {
+      "operation": "run",
+      "entry_point": "launchdeck run <task>",
+      "status": "in_scope"
+    },
+    {
+      "operation": "aliases",
+      "entry_point": "launchdeck setup|build|package|test|lint|typecheck",
+      "status": "in_scope"
+    },
+    {
+      "operation": "managed_runtime",
+      "entry_point": "launchdeck dev|start|restart|ps|logs|stop",
+      "status": "in_scope"
+    },
+    {
+      "operation": "clean",
+      "entry_point": "launchdeck clean",
+      "status": "in_scope"
+    },
+    {
+      "operation": "agent_integration",
+      "entry_point": "deferred",
+      "status": "out_of_scope_v1"
+    }
+  ],
+  "consequence_gate": {
+    "triggered": true,
+    "coverage": "CA-001 through CA-022 are represented in plan.md and this contract.",
+    "stop_and_reopen_conditions": [
+      "A required CA obligation cannot be implemented without changing v1 scope.",
+      "Cleanup safety cannot be proven for root/out-of-root/ambiguous targets.",
+      "Managed process stop cannot be made inspectable and failure-aware.",
+      "Cross-platform-ready is requested without all-OS smoke evidence.",
+      "A deferred integration becomes a required v1 surface."
+    ]
+  },
+  "consequence_obligations": [
+    {
+      "id": "CA-001",
+      "design": "Clean uses dry-run, safe, all-confirmed, refused, and skipped states; destructive cleanup is never implicit.",
+      "validation": "Clean refusal and dry-run tests."
+    },
+    {
+      "id": "CA-002",
+      "design": "Managed processes use running, stopped, stale, unknown, and stop_failed states with duplicate-start refusal.",
+      "validation": "Managed lifecycle and stale-state tests."
+    },
+    {
+      "id": "CA-003",
+      "design": "JSON uses shared success, error, and partial envelopes.",
+      "validation": "JSON parseability tests."
+    },
+    {
+      "id": "CA-004",
+      "design": "Config protocol supports no-config, configured, invalid, and unsupported-version states.",
+      "validation": "Config discovery and validation tests."
+    },
+    {
+      "id": "CA-005",
+      "design": "Runtime state and logs are durable recovery evidence.",
+      "validation": "Invalid state, stale record, and missing-log tests."
+    },
+    {
+      "id": "CA-006",
+      "design": "Release support is tracked across Windows, macOS, and Linux.",
+      "validation": "OS smoke matrix."
+    },
+    {
+      "id": "CA-007",
+      "design": "Runtime adapters own platform-specific execution behavior.",
+      "validation": "Adapter and OS smoke tests."
+    },
+    {
+      "id": "CA-008",
+      "design": "Config schema remains small, explicit, readable, and v1-compatible.",
+      "validation": "Config contract tests."
+    },
+    {
+      "id": "CA-009",
+      "design": "Error codes are stable compatibility fields.",
+      "validation": "Error vocabulary tests."
+    },
+    {
+      "id": "CA-010",
+      "design": "First-run flow orders inspection before mutation.",
+      "validation": "Quickstart lifecycle smoke."
+    },
+    {
+      "id": "CA-011",
+      "design": "Doctor is read-only with ok, warn, and error findings.",
+      "validation": "Doctor JSON and exit-code tests."
+    },
+    {
+      "id": "CA-012",
+      "design": "Tasks is read-only inventory.",
+      "validation": "Tasks JSON and no-runtime-write tests."
+    },
+    {
+      "id": "CA-013",
+      "design": "Execution respects longRunning, foreground child exits, duplicate managed starts, and restart partial states.",
+      "validation": "Foreground and managed execution tests."
+    },
+    {
+      "id": "CA-014",
+      "design": "Runtime commands preserve records/logs and handle missing-log and stop-failed states.",
+      "validation": "ps/logs/stop tests."
+    },
+    {
+      "id": "CA-015",
+      "design": "Clean defaults to dry-run, splits safe/risky, and refuses unsafe paths.",
+      "validation": "Canonical containment tests."
+    },
+    {
+      "id": "CA-016",
+      "design": "Platform-sensitive path, shell, process, clean, and log behavior is adapter-owned.",
+      "validation": "Adapter boundaries and OS smoke."
+    },
+    {
+      "id": "CA-017",
+      "design": "Verification claims are gated by evidence level.",
+      "validation": "Release claim checklist."
+    },
+    {
+      "id": "CA-018",
+      "design": "Init handles no-config, existing-config, and ancestor-config without silent overwrite.",
+      "validation": "Init overwrite/ancestor tests."
+    },
+    {
+      "id": "CA-019",
+      "design": "Project-root behavior is deterministic and visible in JSON.",
+      "validation": "Upward discovery/root JSON tests."
+    },
+    {
+      "id": "CA-020",
+      "design": "JSON and exit codes distinguish success, errors, child exits, and partial failures.",
+      "validation": "Exit-code tests."
+    },
+    {
+      "id": "CA-021",
+      "design": "Classified errors are preferred; internal_error is rare and review-worthy.",
+      "validation": "Error-code scan and tests."
+    },
+    {
+      "id": "CA-022",
+      "design": "v1 boundary remains local single-project CLI and excludes deferred integrations.",
+      "validation": "Out-of-scope checklist."
+    }
+  ],
+  "generated_artifacts": [
+    "plan.md",
+    "research.md",
+    "data-model.md",
+    "quickstart.md",
+    "contracts/launchdeck-config-v1.md",
+    "contracts/cli-json-contract.md",
+    "contracts/runtime-state-v1.md",
+    "contracts/error-codes-v1.md",
+    "planning/evidence-index.json"
+  ],
+  "handoff_to_tasks_ready": true,
+  "next_command": "/sp.tasks"
+}

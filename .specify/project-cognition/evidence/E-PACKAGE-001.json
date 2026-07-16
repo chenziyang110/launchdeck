@@ -1,0 +1,12 @@
+{
+  "id": "E-PACKAGE-001",
+  "source_path": "package.json",
+  "summary": "Package manifest for launchdeck v0.1.0",
+  "value_tier": "P1",
+  "criticality": "important",
+  "scan_decision": "sampled",
+  "confidence": "high",
+  "findings": {
+    "summary": "Package manifest for launchdeck v0.1.0"
+  }
+}

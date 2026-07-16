@@ -1,0 +1,19 @@
+{
+  "task_id": "T014",
+  "status": "success",
+  "summary": "Implemented lock-protected registry identity actions, kept legacy global-runtime compatibility, preserved project add/scan/remove/repair/projects behavior, refused active project removal with next actions, and added minimal run identity/index/readiness support required by the registry active-run contract.",
+  "changed_files": [
+    "src/control-plane/actions.js",
+    "src/global-runtime.js",
+    "src/cli.js",
+    ".specify/teams/state/results/executor-t014.json"
+  ],
+  "validation_output": {
+    "node --check src/control-plane/actions.js": "passed (no output)",
+    "node --check src/global-runtime.js": "passed (no output)",
+    "node --check src/cli.js": "passed (no output)",
+    "node --test test/global-runtime.test.js": "passed: 20 tests, 20 pass, 0 fail, duration 45028.128ms"
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

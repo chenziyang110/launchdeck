@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "handoffs": [
+    {
+      "packet_id": "lane-cli-entrypoints",
+      "handoff_id": "h01",
+      "handoff_path": ".specify/project-cognition/workbench/worker-results/lane-cli-entrypoints.json",
+      "acceptance": "pass"
+    },
+    {
+      "packet_id": "lane-control-plane",
+      "handoff_id": "h02",
+      "handoff_path": ".specify/project-cognition/workbench/worker-results/lane-control-plane.json",
+      "acceptance": "pass"
+    },
+    {
+      "packet_id": "lane-core-services",
+      "handoff_id": "h03",
+      "handoff_path": ".specify/project-cognition/workbench/worker-results/lane-core-services.json",
+      "acceptance": "pass"
+    },
+    {
+      "packet_id": "lane-tests",
+      "handoff_id": "h04",
+      "handoff_path": ".specify/project-cognition/workbench/worker-results/lane-tests.json",
+      "acceptance": "pass"
+    }
+  ],
+  "events": [
+    {
+      "type": "return",
+      "handoff_id": "h1",
+      "packet_id": "lane-cli-entrypoints"
+    },
+    {
+      "type": "return",
+      "handoff_id": "h2",
+      "packet_id": "lane-control-plane"
+    },
+    {
+      "type": "return",
+      "handoff_id": "h3",
+      "packet_id": "lane-core-services"
+    },
+    {
+      "type": "return",
+      "handoff_id": "h4",
+      "packet_id": "lane-tests"
+    }
+  ]
+}

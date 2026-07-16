@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "edges": [
+    {
+      "id": "E-cli-modules",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-config",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses config module to read .launchdeck.yml" }
+    },
+    {
+      "id": "E-cli-errors",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-errors",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses error system for structured errors" }
+    },
+    {
+      "id": "E-cli-output",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-output",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses output module for formatting" }
+    },
+    {
+      "id": "E-cli-runtime",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-runtime",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses runtime for project-local operations" }
+    },
+    {
+      "id": "E-cli-global-runtime",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-global-runtime",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses global runtime for cross-project visibility" }
+    },
+    {
+      "id": "E-cli-agent-installer",
+      "type": "depends_on",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "module-agent-installer",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI uses agent installer for skill deployment" }
+    },
+    {
+      "id": "E-cli-cap-lifecycle",
+      "type": "implements",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "capability-project-lifecycle",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI entrypoint implements lifecycle control" }
+    },
+    {
+      "id": "E-cli-cap-process",
+      "type": "implements",
+      "source_id": "module-control-plane-runs",
+      "target_id": "capability-process-management",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Runs module implements process management" }
+    },
+    {
+      "id": "E-cli-cap-registry",
+      "type": "implements",
+      "source_id": "module-cli-entrypoint",
+      "target_id": "capability-registry",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CLI project commands implement registry" }
+    },
+    {
+      "id": "E-cp-ownership-locks",
+      "type": "depends_on",
+      "source_id": "module-control-plane-ownership",
+      "target_id": "module-control-plane-locks",
+      "confidence": "medium",
+      "evidence_ids": [],
+      "attrs": { "description": "Ownership may use locking for safety" }
+    },
+    {
+      "id": "E-cp-runs-state",
+      "type": "depends_on",
+      "source_id": "module-control-plane-runs",
+      "target_id": "module-control-plane-state",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Run tracking uses state persistence" }
+    },
+    {
+      "id": "E-global-runtime-ownership",
+      "type": "depends_on",
+      "source_id": "module-global-runtime",
+      "target_id": "module-control-plane-ownership",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Global runtime needs ownership verification" }
+    },
+    {
+      "id": "E-global-runtime-runs",
+      "type": "depends_on",
+      "source_id": "module-global-runtime",
+      "target_id": "module-control-plane-runs",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Global runtime manages run tracking" }
+    },
+    {
+      "id": "E-runtime-adapters-path",
+      "type": "depends_on",
+      "source_id": "module-runtime",
+      "target_id": "module-adapters-path",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Runtime uses path adapter for cross-platform paths" }
+    },
+    {
+      "id": "E-runtime-adapters-process",
+      "type": "depends_on",
+      "source_id": "module-runtime",
+      "target_id": "module-adapters-process",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Runtime uses process adapter for cross-platform process mgmt" }
+    },
+    {
+      "id": "E-config-schema",
+      "type": "validates",
+      "source_id": "file-schema",
+      "target_id": "module-config",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "JSON Schema validates config module output" }
+    },
+    {
+      "id": "E-ci-workflow",
+      "type": "verifies",
+      "source_id": "file-ci-workflow",
+      "target_id": "capability-project-lifecycle",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "CI verifies lifecycle functionality across platforms" }
+    },
+    {
+      "id": "E-cap-lifecycle-process",
+      "type": "depends_on",
+      "source_id": "capability-project-lifecycle",
+      "target_id": "capability-process-management",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Lifecycle control uses process management for long-running tasks" }
+    },
+    {
+      "id": "E-cap-inspect-observability",
+      "type": "depends_on",
+      "source_id": "capability-inspect-observability",
+      "target_id": "module-control-plane-events",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Observability uses event system" }
+    },
+    {
+      "id": "E-cap-inspect-inspect-module",
+      "type": "depends_on",
+      "source_id": "capability-inspect-observability",
+      "target_id": "module-control-plane-inspect",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Observability uses inspect module" }
+    },
+    {
+      "id": "E-agent-installer-adapter-path",
+      "type": "depends_on",
+      "source_id": "module-agent-installer",
+      "target_id": "module-adapters-path",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Agent installer uses path adapter for target paths" }
+    },
+    {
+      "id": "E-tests-cli",
+      "type": "verifies",
+      "source_id": "test-surface-cli",
+      "target_id": "module-cli-entrypoint",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Tests verify CLI behavior" }
+    },
+    {
+      "id": "E-tests-control-plane",
+      "type": "verifies",
+      "source_id": "test-surface-control-plane",
+      "target_id": "capability-process-management",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Tests verify control plane subsystems" }
+    },
+    {
+      "id": "E-tests-safety",
+      "type": "verifies",
+      "source_id": "test-surface-safety",
+      "target_id": "capability-clean-safety",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Tests verify safety boundaries" }
+    },
+    {
+      "id": "E-tests-config",
+      "type": "verifies",
+      "source_id": "test-surface-config",
+      "target_id": "module-config",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Tests verify config parsing" }
+    },
+    {
+      "id": "E-tests-recovery",
+      "type": "verifies",
+      "source_id": "test-surface-recovery",
+      "target_id": "capability-process-management",
+      "confidence": "high",
+      "evidence_ids": [],
+      "attrs": { "description": "Tests verify recovery and observability" }
+    }
+  ]
+}

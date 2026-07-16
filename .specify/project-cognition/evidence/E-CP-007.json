@@ -1,0 +1,22 @@
+{
+  "id": "E-CP-007",
+  "source_path": "src/control-plane/inspect.js",
+  "summary": "端口冲突检测算法：基于ownership状态(external/unknown/conflict)分类为blocking或warning级别，附带可操作建议",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CP-007",
+    "source_path": "src/control-plane/inspect.js",
+    "summary": "端口冲突检测算法：基于ownership状态(external/unknown/conflict)分类为blocking或warning级别，附带可操作建议",
+    "symbols": [
+      "conflictsFromPorts",
+      "portConflict",
+      "conflictMessage",
+      "conflictTypeForOwnership"
+    ],
+    "exports": [],
+    "dependencies": []
+  }
+}

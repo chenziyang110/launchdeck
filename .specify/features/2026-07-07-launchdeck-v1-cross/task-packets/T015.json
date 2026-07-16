@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "target_root": "F:/github/launchdeck",
+  "task_id": "T015",
+  "story": "US2",
+  "description": "Validate User Story 2 and record checkpoint evidence.",
+  "agent": "quality-reviewer",
+  "depends_on": [
+    "T012",
+    "T013",
+    "T014"
+  ],
+  "parallel_safe": false,
+  "context_navigation": [
+    "quickstart.md#verification-claim-levels",
+    "tasks.md#user-observable-path-coverage"
+  ],
+  "write_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/spec.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/plan.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/data-model.md",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/contracts/",
+    ".specify/features/2026-07-07-launchdeck-v1-cross/quickstart.md",
+    "src/",
+    "test/",
+    "package.json",
+    "README.md"
+  ],
+  "forbidden": [
+    ".env",
+    "*.pem",
+    "*.key",
+    "secrets/",
+    "credentials/",
+    "F:/github/* outside F:/github/launchdeck",
+    "GUI/TUI/MCP/agent integration surfaces",
+    "destructive reset/database reset/Docker reset behavior"
+  ],
+  "expected_outputs": [
+    ".specify/features/2026-07-07-launchdeck-v1-cross/implementation-review/reviews.ndjson (append)"
+  ],
+  "anti_goals": [
+    "Do not edit source while reviewing.",
+    "Do not claim cross-platform-ready from local-only evidence."
+  ],
+  "does_not_remove": [
+    "managed runtime recovery"
+  ],
+  "capability_operations": [
+    "validates managed runtime"
+  ],
+  "acceptance_criteria": [
+    "US2 tests pass and review records platform evidence level."
+  ],
+  "verify_commands": [
+    "npm run check",
+    "npm test"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger",
+  "ca_ids": [
+    "CA-002",
+    "CA-005",
+    "CA-006",
+    "CA-014",
+    "CA-016"
+  ],
+  "mp_ids": [
+    "MP-005",
+    "MP-009",
+    "MP-010",
+    "MP-012",
+    "MP-013"
+  ],
+  "consumer_surfaces": [
+    "US2 CLI path"
+  ],
+  "required_evidence": [
+    "review_checkpoint_evidence"
+  ],
+  "stop_and_reopen": [
+    "A required CA obligation cannot be implemented without changing v1 scope.",
+    "A task requires edits outside write_scope.",
+    "A deferred product surface becomes required.",
+    "Verification cannot prove the task acceptance criteria."
+  ],
+  "status": "ready"
+}

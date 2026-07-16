@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "feature": "2026-07-07-launchdeck-v1-cross",
+  "delegated_lanes": [],
+  "status": "leader_inline_no_delegated_lanes",
+  "evidence": [
+    {
+      "id": "cognition-compass",
+      "source": "project-cognition compass",
+      "decision_shaped": "minimal live reads and advisory task generation context",
+      "consumed_by": ["tasks.md", "task-index.json", "handoff-to-tasks.json"]
+    },
+    {
+      "id": "plan-contract",
+      "source": "plan-contract.json",
+      "decision_shaped": "execution model, target root, must-preserve, consequence obligations",
+      "consumed_by": ["tasks.md", "task-index.json", "handoff-to-tasks.json"]
+    }
+  ]
+}

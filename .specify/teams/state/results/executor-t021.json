@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "task_id": "T021",
+  "changed_files": [
+    ".specify/features/2026-07-08-launchdeck-global-cli-control-plane/implementation-review/ledger.json",
+    ".specify/teams/state/results/executor-t021.json"
+  ],
+  "validation_output": {
+    "node --test test/inspect-cli.test.js test/global-runtime.test.js": "PASS: 30 tests passed, 0 failed, 0 cancelled, 0 skipped, 0 todo; duration_ms 33167.4634. Relevant passed tests included external occupied-port start refusal, inspect-port external compatibility, inspect port:<port> inspect-only conflict evidence, inspect pid:<pid> external inspect-only evidence, owned task inspect evidence, and owned pid inspect evidence.",
+    "npm run check": "PASS: launchdeck@0.1.0 check completed successfully; configured node --check chain passed for src/errors.js, src/cli.js, src/config.js, src/adapters/process.js, src/global-runtime.js, src/runtime.js, src/control-plane/state.js, src/control-plane/locks.js, src/control-plane/events.js, test/config.test.js, test/cli.test.js, test/global-runtime.test.js, test/control-plane-state.test.js, test/control-plane-locks.test.js, test/control-plane-events.test.js, and test/cli-control-plane-contract.test.js."
+  },
+  "concerns": [],
+  "recovery_hints": []
+}

@@ -1,0 +1,34 @@
+version: 1
+project:
+  name: python-fastapi-api
+tasks:
+  setup:
+    command: python -m pip install -r requirements.txt
+    description: Install Python dependencies
+    risk: medium
+  test:
+    command: python -m pytest
+    cwd: .
+    description: Run the test suite
+  lint:
+    command: python -m ruff check .
+    cwd: .
+    description: Run static checks
+  dev:
+    command: python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+    cwd: .
+    env:
+      PYTHONUNBUFFERED: "1"
+    description: Start the FastAPI dev server
+    longRunning: true
+    ports: [8000]
+    risk: medium
+    log: .launchdeck/logs/dev.log
+clean:
+  safe:
+    - .pytest_cache
+    - .ruff_cache
+    - __pycache__
+    - { path: .mypy_cache, description: Type-check cache }
+  risky:
+    - .venv

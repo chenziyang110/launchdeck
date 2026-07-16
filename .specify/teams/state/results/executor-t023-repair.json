@@ -1,0 +1,85 @@
+{
+  "status": "repaired_with_t024_residuals",
+  "changed_files": [
+    "src/control-plane/runs.js",
+    "src/runtime.js",
+    "test/lifecycle-ownership.test.js",
+    ".specify/teams/state/results/executor-t023-repair.json"
+  ],
+  "validation_output": {
+    "syntax": [
+      {
+        "command": "node --check src/control-plane/actions.js",
+        "status": "passed",
+        "output": ""
+      },
+      {
+        "command": "node --check src/control-plane/runs.js",
+        "status": "passed",
+        "output": ""
+      },
+      {
+        "command": "node --check src/runtime.js",
+        "status": "passed",
+        "output": ""
+      },
+      {
+        "command": "node --check test/lifecycle-ownership.test.js",
+        "status": "passed",
+        "output": ""
+      }
+    ],
+    "tests": [
+      {
+        "command": "node --test test/control-plane-ownership.test.js",
+        "status": "passed",
+        "summary": "4/4 passed"
+      },
+      {
+        "command": "node --test test/lifecycle-ownership.test.js test/managed-cli.test.js",
+        "status": "failed_with_expected_t024_residuals",
+        "summary": "17/21 passed",
+        "passed_ownership_repairs": [
+          "stop --json refuses probable-owned runs without stopping the fixture process",
+          "stop --json refuses unknown ownership without stopping the fixture process",
+          "stop --json refuses matching pid and listener without trusted spawn proof",
+          "stop --json refuses an external process without stopping the external listener",
+          "stop --json preserves stop_failed evidence when termination does not complete",
+          "managed CLI start/stop ownership flows outside T024 output residuals"
+        ],
+        "remaining_failures": [
+          {
+            "test": "stop --json stops a verified-owned run and records stopped evidence",
+            "actual": "Stop succeeds and releases the process, but JSON shape returns data.process instead of data.stopped[]/data.failed[].",
+            "classification": "T024 CLI/output"
+          },
+          {
+            "test": "force-stop --json preserves the verified ownership gate",
+            "actual": "CLI route returns unknown_command for force-stop.",
+            "classification": "T024 CLI/output"
+          },
+          {
+            "test": "restart --json stops, waits for port release, and starts a new run in one transaction",
+            "actual": "Restart succeeds, but JSON shape returns readiness/process instead of stoppedRun/startedRun/transactionId.",
+            "classification": "T024 CLI/output"
+          },
+          {
+            "test": "restart --json records port_release_timeout when the stopped task leaves its port occupied",
+            "actual": "CLI output/error mapping reports partial_failure instead of port_release_timeout.",
+            "classification": "T024 CLI/output"
+          }
+        ]
+      }
+    ]
+  },
+  "concerns": [
+    "No CLI/output files were edited, so the four remaining lifecycle failures are preserved for T024.",
+    "The workspace is nested under a broader git root where launchdeck appears untracked, so git diff is not available for this project subtree."
+  ],
+  "recovery_hints": [
+    "Runtime stop/restart no longer upgrades PID/port/local-state-only evidence to verified-owned.",
+    "A Launchdeck-started process receives a source=launchdeck-spawn ownership proof at spawn persistence time; existing processes do not receive this proof.",
+    "Stop accepts current proveRunOwnership verified-owned evidence, or a validated launchdeck-spawn proof when current evidence is unknown/probable and not contradicted by listener mismatch or dead process evidence.",
+    "Regression coverage: test/lifecycle-ownership.test.js includes a matching PID/listener stale-state case with no trusted spawn proof and asserts stop refuses without killing the listener."
+  ]
+}

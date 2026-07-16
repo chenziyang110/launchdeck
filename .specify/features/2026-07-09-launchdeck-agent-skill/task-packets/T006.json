@@ -1,0 +1,78 @@
+{
+  "task_id": "T006",
+  "id": "T006",
+  "title": "Create clean-safety reference",
+  "agent": "executor",
+  "depends_on": [
+    "T001"
+  ],
+  "parallel_safe": true,
+  "objective": "Create clean safety guidance that separates safe clean, risky clean, and reset refusal.",
+  "target_root": "F:/github/launchdeck",
+  "write_scope": [
+    ".agents/skills/launchdeck-agent/references/clean-safety.md"
+  ],
+  "read_scope": [
+    ".specify/features/2026-07-09-launchdeck-agent-skill/spec.md",
+    ".specify/features/2026-07-09-launchdeck-agent-skill/plan.md",
+    "README.md",
+    "test/clean-safety.test.js"
+  ],
+  "forbidden": [
+    "src/**",
+    "test/**",
+    ".env",
+    "credential files",
+    "runtime state deletion recipes"
+  ],
+  "context_navigation": {
+    "clean_requirements": "spec.md#Secondary-Scenario---Safe-Clean-Does-Not-Become-Reset",
+    "clean_safety_evidence": "README.md#Safety-model and test/clean-safety.test.js",
+    "clean_consequence_design": "plan.md#Operational-Consequence-Design",
+    "data_model_contracts_status": "plan.md#Project-Structure"
+  },
+  "expected_outputs": [
+    ".agents/skills/launchdeck-agent/references/clean-safety.md （新建）"
+  ],
+  "anti_goals": [
+    "Do not make clean imply stop, registry removal, dependency deletion, volume deletion, or reset."
+  ],
+  "does_not_remove": [
+    "MP-009",
+    "CA-AS-007"
+  ],
+  "capability_operations": [
+    "implements safe clean",
+    "implements risky clean confirmation",
+    "implements reset refusal"
+  ],
+  "consumer_surfaces": [
+    "clean safety reference loaded by SKILL.md"
+  ],
+  "required_evidence": [
+    "clean classification evidence",
+    "destructive-action refusal evidence"
+  ],
+  "acceptance_criteria": [
+    "Separates safe clean, risky clean, and reset.",
+    "States clean does not stop services.",
+    "Preserves logs, events, and runtime evidence required for diagnosis.",
+    "Requires explicit confirmation for risky clean targets.",
+    "Declines reset as a separate destructive request."
+  ],
+  "verify_commands": [
+    "Test-Path .codex\\skills\\launchdeck-agent\\references\\clean-safety.md",
+    "Select-String -Path .codex\\skills\\launchdeck-agent\\references\\clean-safety.md -Pattern 'clean --safe|risky|reset|confirmation|logs|events|does not stop'"
+  ],
+  "handoff_format": {
+    "status": "success | failed | blocked",
+    "changed_files": [
+      ".agents/skills/launchdeck-agent/references/clean-safety.md"
+    ],
+    "validation_output": {},
+    "concerns": [],
+    "recovery_hints": []
+  },
+  "retry_max": 2,
+  "escalation": "debugger"
+}

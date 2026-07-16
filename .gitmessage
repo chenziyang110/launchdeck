@@ -1,0 +1,5 @@
+# <type>(<scope>): <subject>
+#
+# Types: feat, fix, docs, test, refactor, perf, build, ci, chore, revert
+# Use imperative mood, keep the subject concise, and explain why in the body.
+# Add issue references or BREAKING CHANGE footers when applicable.

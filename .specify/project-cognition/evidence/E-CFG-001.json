@@ -1,0 +1,59 @@
+{
+  "id": "E-CFG-001",
+  "source_path": "src/config.js",
+  "summary": "Configuration loader and normalizer for .launchdeck.yml files",
+  "value_tier": "P0",
+  "criticality": "critical",
+  "scan_decision": "deep_read",
+  "confidence": "high",
+  "findings": {
+    "id": "E-CFG-001",
+    "source_path": "src/config.js",
+    "summary": "Configuration loader and normalizer for .launchdeck.yml files",
+    "symbols": [
+      "CONFIG_FILES",
+      "RISK_LEVELS",
+      "LaunchdeckConfigError (class, extends LaunchdeckError)",
+      "findConfig(startDir)",
+      "loadConfig(startDir)",
+      "normalizeConfig(input, context)",
+      "normalizeTask(name, value, projectRoot)",
+      "normalizeProject(project, projectRoot)",
+      "normalizeClean(clean)",
+      "normalizeCleanList(value, fieldName, kind)",
+      "normalizeEnv(env)",
+      "normalizePorts(ports, taskName)",
+      "normalizeString(value, message, code)",
+      "optionalString(value)",
+      "assertContainedPath(projectRoot, targetPath, message, code)",
+      "isInsidePath(rootPath, targetPath)",
+      "createSampleConfig(projectName)"
+    ],
+    "exports": [
+      "CONFIG_FILES",
+      "RISK_LEVELS",
+      "LaunchdeckConfigError",
+      "findConfig",
+      "loadConfig",
+      "normalizeConfig",
+      "normalizeTask",
+      "createSampleConfig"
+    ],
+    "dependencies": [
+      "node:fs",
+      "node:path",
+      "yaml",
+      "./errors.js (LaunchdeckError)"
+    ],
+    "notes": [
+      "Searches up the directory tree for config files (.launchdeck.yml/.yaml, launchdeck.yml/.yaml)",
+      "Config version must be 1, tasks object is required with at least one task",
+      "Task normalization: strings become shorthand {command}, objects support full spec (description, cwd, env, longRunning, ports, risk, log)",
+      "Path safety: cwd and log paths must stay inside project root (assertContainedPath)",
+      "Port normalization: deduplicated, validated 1-65535",
+      "Risk levels: low, medium (default), high, destructive",
+      "Environment variables cannot be null, coerced to strings",
+      "createSampleConfig generates a starter template with setup/build/test/dev tasks"
+    ]
+  }
+}

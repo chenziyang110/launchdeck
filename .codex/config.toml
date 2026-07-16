@@ -1,0 +1,1 @@
+notify = ["uvx", "--from", "git+https://github.com/chenziyang110/spec-kit-plus.git@f16f8acacd8c215abcce0c7fc1a02e706e5c8bae", "specify", "sp-teams", "notify-hook"]

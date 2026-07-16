@@ -1,0 +1,51 @@
+{
+  "status": "success",
+  "task_id": "T014",
+  "agent": "executor",
+  "completed_at": "2026-07-07T16:49:32.2388405+08:00",
+  "changed_files": [
+    "src/cli.js"
+  ],
+  "validation_output": {
+    "node_check_cli": {
+      "command": "node --check src/cli.js",
+      "exit_code": 0
+    },
+    "managed_cli_tests": {
+      "command": "node --test test/managed-cli.test.js",
+      "exit_code": 0,
+      "tests": 9,
+      "passed": 9,
+      "failed": 0
+    },
+    "contract_regression_first_run": {
+      "command": "node --test test/config-contract.test.js test/cli-contract.test.js test/runtime-state.test.js test/managed-cli.test.js",
+      "exit_code": 1,
+      "tests": 38,
+      "passed": 37,
+      "failed": 1,
+      "summary": "One Windows EPERM temp-directory cleanup failure in runtime-state fixture cleanup; no assertion failure."
+    },
+    "contract_regression_rerun": {
+      "command": "node --test test/config-contract.test.js test/cli-contract.test.js test/runtime-state.test.js test/managed-cli.test.js",
+      "exit_code": 0,
+      "tests": 38,
+      "passed": 38,
+      "failed": 0
+    },
+    "residual_process_check": {
+      "command": "Get-CimInstance Win32_Process filtered for launchdeck-cli/setInterval/dev tick/api tick",
+      "exit_code": 0,
+      "matches": 0
+    }
+  },
+  "concerns": [
+    "A first combined regression run hit one Windows EPERM temp cleanup race after assertions passed; immediate process inspection found no matching residual Node/CMD processes, and rerun passed 38/38."
+  ],
+  "recovery_hints": [
+    "T015 should include npm run check and npm test review evidence and classify platform evidence carefully.",
+    "If EPERM cleanup recurs, harden test helper cleanup or stop verification in a repair task."
+  ],
+  "real_entrypoint_evidence": "managed-cli tests exercised dev/start/restart/ps/logs/stop through real CLI fixture processes; standalone suite passed 9/9.",
+  "json_contract_evidence": "Managed and existing CLI contract suites passed together on rerun: success/failure/partial envelopes include command/status/projectRoot/configPath and expected command payloads; 38/38 passed."
+}

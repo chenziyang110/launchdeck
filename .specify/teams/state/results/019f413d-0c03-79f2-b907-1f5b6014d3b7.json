@@ -1,0 +1,51 @@
+{
+  "status": "DONE",
+  "reported_status": "DONE",
+  "task_id": "T004",
+  "changed_files": [
+    "F:/github/launchdeck/test/control-plane-locks.test.js",
+    "F:/github/launchdeck/.specify/teams/state/results/019f413d-0c03-79f2-b907-1f5b6014d3b7.json"
+  ],
+  "validation_evidence": [
+    {
+      "command": "node --check test/control-plane-locks.test.js",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 0,
+      "evidence": "Syntax check passed with no output."
+    },
+    {
+      "command": "node --test test/control-plane-locks.test.js",
+      "cwd": "F:/github/launchdeck",
+      "exit_code": 1,
+      "evidence": "RED verified: Node failed with Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'F:\\github\\launchdeck\\src\\control-plane\\locks.js' imported from F:\\github\\launchdeck\\test\\control-plane-locks.test.js. This is the intended future implementation owner for the lock behavior; the test file itself passed syntax validation."
+    }
+  ],
+  "blockers": [],
+  "failed_assumptions": [],
+  "recovery_guidance": [
+    {
+      "next_action": "Implement src/control-plane/locks.js with acquireLock and withLock matching the test contract.",
+      "details": "The tests expect exclusive creation under LAUNCHDECK_HOME/locks, LockRecord owner metadata, bounded wait busy errors, conservative stale takeover rules, and release cleanup on callback success or failure."
+    }
+  ],
+  "concerns": [
+    {
+      "concern": "Because src/control-plane/locks.js does not exist yet, the focused RED run stops at module resolution before executing individual assertions.",
+      "impact": "This is acceptable for the assigned RED lane because the missing module is the intended implementation owner and node --check proves the test file is syntactically valid."
+    }
+  ],
+  "consumer_evidence": {
+    "covered_behaviors": [
+      "exclusive lock creation writes locks/<name>.lock under LAUNCHDECK_HOME",
+      "LockRecord metadata includes lockName, ownerPid, ownerCommand, ownerCwd, createdAt, expiresAt, and supplied transactionId",
+      "bounded wait timeout returns lock_busy/task_lock_busy style actionable error data with safe owner metadata and next actions",
+      "expired lock held by a live owner fails closed",
+      "expired lock with absent owner can be safely taken over",
+      "withLock removes lock files after critical section completion",
+      "withLock removes lock files after critical section failure"
+    ],
+    "result_path": "F:/github/launchdeck/.specify/teams/state/results/019f413d-0c03-79f2-b907-1f5b6014d3b7.json",
+    "write_scope_observed": true,
+    "production_source_edited": false
+  }
+}

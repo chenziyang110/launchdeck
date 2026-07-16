@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "changed_files": [
+    "test/recovery-observability.test.js",
+    ".specify/teams/state/results/test-engineer-t026.json"
+  ],
+  "validation_output": {
+    "node --check test/recovery-observability.test.js": "exit 0",
+    "node --test test/recovery-observability.test.js": "exit 1; tests 7; pass 1; fail 6; cancelled 0; skipped 0; todo 0. Passing: logs project:task continues to read existing managed log content. Expected RED failures: status --all reports disappeared owned run as ready instead of stale; reconcile command returns unknown_command; events command returns unknown_command; logs --follow --json exits before JSONL because follow is unsupported; clean --safe removes protected running/latest-failed log evidence; logs --follow --json redaction test exits before JSONL because follow is unsupported."
+  },
+  "concerns": [
+    "The stale-state test kills only the fixture-owned managed pid created by launchdeck start, then expects status --all to keep the run record and mark it stale with inspect/reconcile next actions.",
+    "The follow tests spawn a bounded launchdeck CLI follower process and terminate only that test-owned follower in cleanup.",
+    "Retention coverage configures .launchdeck/logs as a safe clean target to prove clean retention policy protects current running logs, latest failed logs, and failure-linked events even when a broad configured hygiene target overlaps logs."
+  ],
+  "recovery_hints": [
+    "Implement reconcile as a safe state-refresh command that updates dead owned runs to stale or stopped, writes events, and does not kill external or unknown listeners.",
+    "Add an events CLI command that reads bounded JSONL history by target and returns the standard JSON envelope; --json --follow should stream JSON Lines.",
+    "Replace logs --follow unsupported_option with visible follow streaming; with --json, emit one JSON object per line containing schemaVersion, type, runId, line, timestamp, projectId, and task.",
+    "Apply redaction to log/event streaming output before writing JSONL to stdout.",
+    "Teach clean retention to preserve active run logs, latest failed run logs, and events needed to explain recent failures before removing configured generated targets."
+  ]
+}
