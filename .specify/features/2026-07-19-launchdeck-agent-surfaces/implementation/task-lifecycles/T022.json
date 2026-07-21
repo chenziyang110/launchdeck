@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "task_id": "T022",
+  "task_ref": "task-index.json#/tasks/T022",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-real-recovery-routes",
+    "reason": "T021 isolates missing/expired operation result mapping while every recovery/no-replay path already passes.",
+    "commands": [
+      "node --test --test-concurrency=1 test/e2e/operation-recovery.test.js test/e2e/operation-response-loss.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "4/5 pass; MCP maps missing/expired to scope_not_resolved and CLI returns no nested Agent result."
+  },
+  "changed_paths": [
+    "src/kernel/policy.js",
+    "src/kernel/application-kernel.js",
+    "src/kernel/operations/operation.js",
+    "src/cli.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T022.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/e2e/operation-recovery.test.js test/e2e/operation-response-loss.test.js","status":"passed","summary":"The inherited recovery suite passes 5/5 across real CLI/MCP response loss, correlation, missing/expired, and indeterminate branches."},
+    {"command":"node --test --test-concurrency=1 <journal/fault/policy/CLI schema regressions>","status":"passed","summary":"26/26 focused Kernel journal, correlation, fault, policy, and CLI schema tests pass."},
+    {"command":"npm run check; git diff --check","status":"passed","summary":"Syntax check passes for 96 JavaScript files and whitespace validation reports no errors."}
+  ],
+  "review": {
+    "trigger": "task-completion-recovery-gate",
+    "verdict": "cleared",
+    "evidence": "operation.get/reconcile remain the only project-optional recovery routes; handlers convert journal read failures to effect-free Agent failures; CLI preserves schemaVersion 1 and nonzero exit; no handler replay, broad list, or recovery journal record was introduced."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"CLI and MCP missing/expired routes now share the same Kernel operation handler and physical journal authority."},
+    {"ref":"MP-004","status":"satisfied","evidence":"CLI failures use schemaVersion 1 failure envelopes with nested Agent results and stable nonzero exit behavior."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Recovery changes neither adapter nor managed-resource lifetime and do not create Plugin-local state."},
+    {"ref":"CA-011","status":"satisfied","evidence":"Known/lost recovery suite passes with get/reconcile or one bounded list and never calls the original handler."},
+    {"ref":"CA-028","status":"satisfied","evidence":"Same ID reads original evidence and digest-shaped extra authority remains input_invalid without writes."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Missing and expired IDs now return operation_record_missing_or_expired on both surfaces with effects none and no new record."},
+    {"ref":"CA-042","status":"satisfied","evidence":"Response-loss external effect and journal counters remain exactly one after all recovery calls."},
+    {"ref":"CA-043","status":"satisfied","evidence":"Zero/ambiguous correlation still carries no retry action and list bounds remain schema-enforced."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Insufficient indeterminate foreground evidence remains unresolved and its counter remains one through CLI/MCP reconciliation."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

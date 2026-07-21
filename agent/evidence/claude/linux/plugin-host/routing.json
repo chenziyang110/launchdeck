@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CLAUDE-INSTALL-ROUTING-LINUX-UNEXECUTED-48cc9c90",
+  "status": "not_executed_host_owned",
+  "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:d732a2a8af67d2ad99a712da7a0d471af142765157700781f89ae48eeb845e90",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "claudeHostMetadata": "sha256:a10a7fcb75e49c4bace133624a66bf6a7e75c3c7e868a2418d9650c667883828",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "claude_plugin",
+    "operations": [
+      "capabilities.get",
+      "task.list"
+    ]
+  },
+  "host": {
+    "kind": "claude",
+    "versions": {
+      "claude": "unobserved"
+    },
+    "scope": "user"
+  },
+  "platform": {
+    "os": "linux",
+    "version": null,
+    "build": null,
+    "architecture": null,
+    "distribution": null
+  },
+  "runtime": {
+    "nodeExecutable": null,
+    "nodeVersion": null
+  },
+  "scenario": {
+    "id": "CLAUDE-INSTALL-ROUTING",
+    "family": "claude-install-routing",
+    "description": "Native linux Claude Code host cell reserved for the generated candidate; no executor or host version was observed in this task."
+  },
+  "fixture": {
+    "digest": "sha256:a3f2fc117e26e33c95245a775fcc2259f7760bf342f6180b96721751f9988a53",
+    "harnessDigest": "sha256:3df8e8967dc149f2e7108430811b30602ee734ac3542a5c21b5aef95be22342f"
+  },
+  "execution": {
+    "startedAt": null,
+    "completedAt": null,
+    "actions": [],
+    "commands": []
+  },
+  "result": {
+    "code": "native_claude_host_not_executed",
+    "summary": "No native linux Claude Code host execution was available; no install, routing, lifecycle, update, reload, disable, uninstall, or takeover readiness is claimed.",
+    "assertions": [
+      {
+        "id": "native-host-cell",
+        "status": "not_executed",
+        "evidenceRefs": []
+      }
+    ]
+  },
+  "evidence": {
+    "rawRefs": []
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T11:16:18.653Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {
+        "claude": "unobserved"
+      },
+      "os": "linux",
+      "osVersion": null,
+      "osBuild": null,
+      "architecture": null,
+      "nodeVersion": null,
+      "fixtureDigest": "sha256:a3f2fc117e26e33c95245a775fcc2259f7760bf342f6180b96721751f9988a53",
+      "harnessDigest": "sha256:3df8e8967dc149f2e7108430811b30602ee734ac3542a5c21b5aef95be22342f"
+    }
+  }
+}

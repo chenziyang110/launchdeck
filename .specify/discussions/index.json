@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "generated_at": "2026-07-19T10:26:53Z",
+  "discussions": [
+    {
+      "slug": "agent-surfaces-skill-mcp-plugin",
+      "workspace": "agent-surfaces-skill-mcp-plugin",
+      "workspace_path": "F:\\github\\launchdeck\\.specify\\discussions\\agent-surfaces-skill-mcp-plugin",
+      "status": "completed",
+      "lifecycle_phase": "consumed",
+      "summary": "Handoff assessment is ready-for-contract. The current Launchdeck repository is the locked implementation target; first release is one shared Kernel with backward-compatible CLI, low-risk local stdio MCP, one canonical Skill, and separately generated Codex/Claude Plugins. Hard unknowns and conflicts are zero; host elicitation and path-variable verification remain non-blocking soft unknowns.",
+      "updated_at": "2026-07-19T10:26:53Z",
+      "closed_at": "2026-07-19T10:26:53Z",
+      "archived_at": null,
+      "next_command": "none",
+      "handoff_consumption_status": "consumed",
+      "consumed_at": "2026-07-19T10:26:53Z",
+      "consumed_by_feature_dir": ".specify/features/2026-07-19-launchdeck-agent-surfaces",
+      "archived": false
+    },
+    {
+      "slug": "launchdeck-agent-skill-suite",
+      "workspace": "launchdeck-agent-skill-suite",
+      "workspace_path": "F:\\github\\launchdeck\\.specify\\discussions\\launchdeck-agent-skill-suite",
+      "status": "completed",
+      "lifecycle_phase": "closed",
+      "summary": "Discussing a Launchdeck skill suite for agents. Users should express natural intent such as \"start this project\"; the agent should route that intent into Launchdeck skills, discover and persist lifecycle knowledge, then use Launchdeck as the control plane so later runs are fast, safe, and free from duplicate starts, port conflicts, and unmanaged process cleanup.",
+      "updated_at": "2026-07-09T16:59:13+08:00",
+      "closed_at": "2026-07-09T16:59:13+08:00",
+      "archived_at": null,
+      "next_command": "none",
+      "handoff_consumption_status": "consumed",
+      "consumed_at": "2026-07-09T16:59:13+08:00",
+      "consumed_by_feature_dir": ".specify/features/2026-07-09-launchdeck-agent-skill",
+      "archived": false
+    },
+    {
+      "slug": "launchdeck-cli-control-plane",
+      "workspace": "launchdeck-cli-control-plane",
+      "workspace_path": "F:\\github\\launchdeck\\.specify\\discussions\\launchdeck-cli-control-plane",
+      "status": "completed",
+      "lifecycle_phase": "closed",
+      "summary": "The post-v1 product discussion now frames Launchdeck as a CLI-only, single-user global control plane for local project services. The goal is to make all terminals, agents, and scripts see one authoritative task/process/port state without requiring a daemon in the first product shape.",
+      "updated_at": "2026-07-08T16:50:55.6971188+08:00",
+      "closed_at": null,
+      "archived_at": null,
+      "next_command": "none",
+      "handoff_consumption_status": "consumed",
+      "consumed_at": "2026-07-08T16:50:55.6971188+08:00",
+      "consumed_by_feature_dir": "F:/github/launchdeck/.specify/features/2026-07-08-launchdeck-global-cli-control-plane",
+      "archived": false
+    },
+    {
+      "slug": "launchdeck-tool",
+      "workspace": "launchdeck-tool",
+      "workspace_path": "F:\\github\\launchdeck\\.specify\\discussions\\launchdeck-tool",
+      "status": "completed",
+      "lifecycle_phase": "closed",
+      "summary": "The discussion has shifted from a skill suite idea to building Launchdeck as a universal local project lifecycle control tool. The current repository is the implementation target unless the user overrides that boundary.",
+      "updated_at": "2026-07-07T10:51:43.9189243+08:00",
+      "closed_at": null,
+      "archived_at": null,
+      "next_command": "none",
+      "handoff_consumption_status": "consumed",
+      "consumed_at": "2026-07-07T10:51:43.9189243+08:00",
+      "consumed_by_feature_dir": "F:/github/launchdeck/.specify/features/2026-07-07-launchdeck-v1-cross",
+      "archived": false
+    }
+  ]
+}

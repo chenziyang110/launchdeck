@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.dev/schemas/agent-operation-result.schema.json",
+  "title": "Launchdeck Agent Operation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocolVersion", "operation", "outcome", "resource", "effects", "safety", "error", "nextActions", "provenance"],
+  "properties": {
+    "protocolVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$" },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "inputDigest", "journalStatus"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(?:op|req)_[A-Za-z0-9_-]{16,128}$" },
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[A-Za-z][A-Za-z0-9]*)+$" },
+        "inputDigest": { "$ref": "#/$defs/sha256" },
+        "journalStatus": { "enum": ["not_applicable", "unavailable", "prepared", "running", "succeeded", "failed", "refused", "indeterminate", "reconciled"] }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "code", "message", "reusedExistingRun"],
+      "properties": {
+        "kind": { "enum": ["succeeded", "failed", "partial", "refused", "indeterminate"] },
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z0-9_]+)*$" },
+        "message": { "type": "string", "maxLength": 2048 },
+        "reusedExistingRun": { "type": "boolean" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "status", "projectRef", "taskRef", "runId"],
+      "properties": {
+        "kind": { "enum": ["capabilities", "diagnostic", "projectCollection", "project", "inspection", "adoptionPlan", "taskCollection", "task", "run", "logPage", "eventPage", "operationCollection", "operation", "cleanPlan", "cleanResult"] },
+        "id": { "type": ["string", "null"], "maxLength": 256 },
+        "status": { "enum": ["available", "healthy", "degraded", "configured", "unconfigured", "missing", "ambiguous", "idle", "prepared", "starting", "running", "ready", "stopping", "stopped", "completed", "failed", "partial", "stale", "unknown", "external", "planned", "applied", "unchanged", "indeterminate", "reconciled", "refused"] },
+        "projectRef": { "type": ["string", "null"], "maxLength": 256 },
+        "taskRef": { "type": ["string", "null"], "maxLength": 128 },
+        "runId": { "type": ["string", "null"], "maxLength": 256 },
+        "data": { "type": "object" }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["certainty", "changed", "evidenceRefs"],
+      "properties": {
+        "certainty": { "enum": ["none", "confirmed", "possible", "unknown"] },
+        "changed": { "type": ["boolean", "null"] },
+        "evidenceRefs": { "type": "array", "maxItems": 50, "items": { "type": "string", "maxLength": 512 } }
+      },
+      "allOf": [
+        { "if": { "properties": { "certainty": { "const": "none" } }, "required": ["certainty"] }, "then": { "properties": { "changed": { "const": false } } } },
+        { "if": { "properties": { "certainty": { "const": "confirmed" } }, "required": ["certainty"] }, "then": { "properties": { "changed": { "type": "boolean" } } } }
+      ]
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk", "decision", "ownership", "projectScope"],
+      "properties": {
+        "risk": { "enum": ["none", "low", "medium", "high", "destructive", "unknown"] },
+        "decision": { "enum": ["allowed", "refused", "not_applicable"] },
+        "ownership": { "enum": ["verified", "not_required", "unknown", "external", "mismatch"] },
+        "projectScope": { "enum": ["resolved", "not_required", "missing", "ambiguous", "out_of_scope", "unconfigured"] }
+      }
+    },
+    "error": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "message", "details"],
+          "properties": {
+            "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z0-9_]+)*$" },
+            "message": { "type": "string", "maxLength": 2048 },
+            "details": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "nextActions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "label", "operationName", "input", "reason"],
+        "properties": {
+          "kind": { "enum": ["inspect", "read", "reconcile", "resolve_scope", "fix_config", "upgrade_component", "view_logs", "view_events", "manual_action"] },
+          "label": { "type": "string", "maxLength": 200 },
+          "operationName": { "type": ["string", "null"], "maxLength": 128 },
+          "input": { "type": ["object", "null"] },
+          "reason": { "type": "string", "maxLength": 512 }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "host", "runtimeKind", "runtimeVersion", "runtimePath", "stateHome", "buildIdentity", "agentProtocolVersion", "cliSchemaVersion"],
+      "properties": {
+        "surface": { "enum": ["cli", "mcp"] },
+        "host": { "enum": ["standalone", "codex", "claude", "unknown"] },
+        "runtimeKind": { "enum": ["package-cli", "package-mcp", "plugin-bundled-mcp"] },
+        "runtimeVersion": { "type": "string", "maxLength": 128 },
+        "runtimePath": { "type": "string", "maxLength": 4096 },
+        "stateHome": { "type": "string", "maxLength": 4096 },
+        "buildIdentity": { "$ref": "#/$defs/sha256" },
+        "agentProtocolVersion": { "type": "string", "maxLength": 128 },
+        "cliSchemaVersion": { "oneOf": [{ "const": 1 }, { "type": "null" }] }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

@@ -40,7 +40,7 @@ Return one structured verdict:
 
 For the visible human review, explain the decision being requested, scope and exclusions, readiness checks, protected review criteria, carry-forward coverage, blocking issues, required changes, and next action. The agent chooses the visible headings and layout; no fixed review card is required.
 
-Deterministic field/schema/digest failures are repaired through `specify discussion validate-handoff` and `sp-discussion`. Review judgment must not silently patch upstream truth.
+Deterministic field/schema/digest failures are repaired through `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify discussion validate-handoff` and `sp-discussion`. Review judgment must not silently patch upstream truth.
 
 After changes, recompute the digest and require confirmation of the current revision. Do not treat confirmation of an older digest as approval.
 

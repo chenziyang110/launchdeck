@@ -32,6 +32,13 @@ credentials, protected systems, human decisions/reviews, or physical access.
 Tailor steps, expected results, failure paths, evidence, and resume action to
 CI, visual review, or product decisions. Never claim completion.
 
+For a feature runtime blocker, do not invent `resume_argv` or overwrite an
+existing blocker. The CLI returns a read-only `show_argv` and structured
+`resolution_action`; `next_argv` stays empty while evidence is missing. After
+the criteria are proven, attach sanitized evidence using the action's declared
+input and execute its base argv. It restores the same owner and keeps the full
+blocker audit.
+
 # sp-ask
 
 You are the Evidence-Backed Project Q&A agent.
@@ -44,9 +51,13 @@ Project cognition provides advisory navigation. Live evidence is authoritative.
 
 The CLI is the only agent-facing Learning read surface:
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
-2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json` only to filter or page.
 3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+After minimal live inspection identifies a reused operation or changed entry point, rerun targeted recall with current code, tests, and task/contract evidence, for example `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json`. Do not derive these facets from archived specifications. An exact operation-owner match may surface a cross-command candidate even when the new consumer differs; treat it as a candidate, expand one `show_argv`, verify it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist the live facets as `learning_context`, the contextual invocation as `learning_search_refs`, and returned refs as `learning_candidate_refs`. Record exactly one `applied`, `not_applicable`, or `deferred` item in `learning_dispositions` for every candidate. Do not silently ignore a candidate: applied Learning traces to requirement/consequence refs, not-applicable needs current evidence, and deferred needs an explicit deferral ref.
 
 `start`, `list`, and `show` are read-only. Current repository evidence,
 `.specify/memory/constitution.md`, and explicit user direction override stale or
@@ -54,7 +65,7 @@ candidate Learning.
 
 At closeout, corrections, retries, route changes, recovery, false leads, hidden
 dependencies, validation/tooling/state/cognition gaps, constraints, and near
-misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto`
 from owning state; manual capture includes summary, problem, action, triggers,
 success criteria, avoid items, exceptions, and evidence.
 
@@ -179,20 +190,20 @@ Allowed operations are narrow file reads, `rg`, project memory reads, generated-
 Start with:
 
 ```text
-C:\Users\11034\.specify\bin\project-cognition.exe compass --intent ask --query=\"$ARGUMENTS\" --format json
+C:\Users\11034\.specify\bin\project-cognition.exe compass --intent ask '--query="$ARGUMENTS"' --format json
 ```
 
 Treat project cognition as advisory navigation. Live evidence is authoritative.
 
-Use `project-cognition query --intent ask` only after you build a semantic intake or query plan from the user's wording and the project vocabulary because the compass output or live evidence is ambiguous or has incomplete coverage. Stale or localization-sensitive results are examples that still require that ambiguity or incomplete-coverage reason.
+Use `C:\Users\11034\.specify\bin\project-cognition.exe query --intent ask` only after you build a semantic intake or query plan from the user's wording and the project vocabulary because the compass output or live evidence is ambiguous or has incomplete coverage. Stale or localization-sensitive results are examples that still require that ambiguity or incomplete-coverage reason.
 
 ```text
-C:\Users\11034\.specify\bin\project-cognition.exe query --intent ask --query-plan \"<query_plan_json>\" --format json
+C:\Users\11034\.specify\bin\project-cognition.exe query --intent ask --query-plan '"<query_plan_json>"' --format json
 ```
 
-When shell quoting makes inline JSON brittle, write the planned object to a file and call `project-cognition query --intent ask --query-plan-file <path> --format json` instead.
+When shell quoting makes inline JSON brittle, write the planned object to a file and call `C:\Users\11034\.specify\bin\project-cognition.exe query --intent ask --query-plan-file <path> --format json` instead.
 
-Use `project-cognition lexicon --intent ask --mode catalog --format json` only when you need vocabulary candidates before writing the query plan.
+Use `C:\Users\11034\.specify\bin\project-cognition.exe lexicon --intent ask --mode catalog --format json` only when you need vocabulary candidates before writing the query plan.
 
 For localized, mixed-language, CJK, colloquial, or project-slang questions, agent-owned semantic normalization is mandatory before broad source search. Extract embedded project terms such as command names, UI labels, file stems, state names, adapter names, package names, extension names, and route names. Write `alias_interpretations`, `normalized_query`, `intent_facets`, `expanded_queries`, and `repository_search_terms` from the alias catalog and live hints before deciding what to read.
 
@@ -201,7 +212,7 @@ Same-topic follow-up mode:
 - Use when the current user question is a direct continuation of the prior `sp-ask` answer in the same chat.
 - Reuse the previous target project root, evidence set, compass or query packet, semantic intake, and proven facts when they still cover the new question.
 - Read only delta evidence for new claims, missing surfaces, changed terminology, or unresolved uncertainty.
-- Rerun `project-cognition compass --intent ask` when the follow-up changes topic, target project root, evidence family, or boundary, or when the prior evidence is not available in the conversation.
+- Rerun `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent ask` when the follow-up changes topic, target project root, evidence family, or boundary, or when the prior evidence is not available in the conversation.
 
 ## Question Classifier
 

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "healthy_mcp_start",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "succeeded" },
+        { "kind": "report", "outcome": "succeeded" }
+      ]
+    },
+    {
+      "id": "pre_handshake_cli_fallback",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "transport", "surface": "mcp", "outcome": "unavailable_before_dispatch" },
+        { "kind": "decision", "name": "fallback", "outcome": "compatible_cli_allowed" },
+        { "kind": "call", "surface": "cli", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "cli", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "cli", "operation": "task.start", "outcome": "succeeded" },
+        { "kind": "report", "outcome": "succeeded" }
+      ]
+    },
+    {
+      "id": "capability_omission_cli_fallback",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "operation_omitted" },
+        { "kind": "decision", "name": "fallback", "outcome": "compatible_cli_allowed" },
+        { "kind": "call", "surface": "cli", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "cli", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "cli", "operation": "task.start", "outcome": "succeeded" },
+        { "kind": "report", "outcome": "succeeded" }
+      ]
+    },
+    {
+      "id": "business_refusal",
+      "appliesTo": [
+        "risk_not_low",
+        "ownership_not_verified",
+        "scope_not_resolved",
+        "compatibility_mismatch",
+        "resource_busy",
+        "plan_digest_mismatch",
+        "config_invalid",
+        "input_invalid"
+      ],
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "refused" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "response_loss_known_id",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "transport_lost_after_dispatch", "operationId": "op_known" },
+        { "kind": "call", "surface": "mcp", "operation": "operation.get", "input": { "operationId": "op_known" }, "outcome": "succeeded" },
+        { "kind": "report", "outcome": "recovered" }
+      ]
+    },
+    {
+      "id": "response_loss_lost_id_unique",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "transport_lost_after_dispatch" },
+        {
+          "kind": "call",
+          "surface": "mcp",
+          "operation": "operation.list",
+          "input": {
+            "projectRef": "fixture-project",
+            "operationName": "task.start",
+            "taskRef": "dev",
+            "since": "2026-07-20T00:00:00.000Z",
+            "until": "2026-07-20T00:15:00.000Z",
+            "states": ["prepared", "running", "succeeded", "failed", "indeterminate"],
+            "limit": 20
+          },
+          "outcome": "unique"
+        },
+        { "kind": "call", "surface": "mcp", "operation": "operation.reconcile", "input": { "operationId": "op_correlated" }, "outcome": "succeeded" },
+        { "kind": "report", "outcome": "recovered" }
+      ]
+    },
+    {
+      "id": "response_loss_lost_id_zero",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "transport_lost_after_dispatch" },
+        { "kind": "call", "surface": "mcp", "operation": "operation.list", "input": { "projectRef": "fixture-project", "operationName": "task.start", "taskRef": "dev", "windowMinutes": 15, "limit": 20 }, "outcome": "zero" },
+        { "kind": "report", "outcome": "unresolved" }
+      ]
+    },
+    {
+      "id": "response_loss_lost_id_ambiguous",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "transport_lost_after_dispatch" },
+        { "kind": "call", "surface": "mcp", "operation": "operation.list", "input": { "projectRef": "fixture-project", "operationName": "task.start", "taskRef": "dev", "windowMinutes": 15, "limit": 20 }, "outcome": "ambiguous" },
+        { "kind": "report", "outcome": "unresolved" }
+      ]
+    },
+    {
+      "id": "forbidden_force",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_risky_clean",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_raw_command",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_remote_control",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_external_termination",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_adoption_apply",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_medium_risk",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    },
+    {
+      "id": "forbidden_permanent_follow",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
+        { "kind": "report", "outcome": "refused" }
+      ]
+    }
+  ]
+}

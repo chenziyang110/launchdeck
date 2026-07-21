@@ -16,14 +16,33 @@ or `.planning/learnings/**` directly during normal workflow execution.
 
 ## Consume With Progressive Disclosure
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json`.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json`.
 2. Use the returned compact cards to identify matching trigger signals.
-3. If more summaries are needed, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json`. Use `--query`, `--type`, `--status`, `--cursor`, or `--all` only when needed.
+3. If more summaries are needed, run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json`. Use `--query`, `--type`, `--status`, `--cursor`, or `--all` only when needed.
 4. Run the selected card's `show_argv` for one Learning at a time. Do not expand every detail.
 5. Apply guidance only when its applicability and trigger signals match live evidence. Current repository evidence overrides stale Learning.
 
-Command shape: `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <command> --format json`
-and then `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning show --ref <ref> --format json`.
+After minimal live inspection identifies a reused operation or changed entry
+point, run a contextual second pass from current code, tests, and task/contract
+evidence:
+
+```text
+uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json
+```
+
+Do not derive context facets from archived specifications. Exact operation
+owner matches may recall cross-command candidates even when the new consumer
+differs. Expand one selected match, validate it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist `learning_context`,
+`learning_search_refs`, and all returned `learning_candidate_refs` in its one
+spec contract. Give every candidate one `applied`, `not_applicable`, or
+`deferred` item in `learning_dispositions`; do not silently ignore it. Applied
+Learning traces to requirement/consequence refs, not-applicable needs current
+evidence, and deferred needs an explicit deferral ref.
+
+Command shape: `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<command>' --format json`
+and then `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning show --ref '<ref>' --format json`.
 
 SPX names map to the same Classic namespace: `spx-implement` consumes
 `--command implement`; `spx-research` consumes `--command deep-research`.
@@ -36,7 +55,7 @@ or promote Learning.
 Prefer deterministic capture from durable workflow state:
 
 ```text
-specify learning capture-auto --command <command> <state locator> --format json
+uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto --command '<command>' '<state' 'locator>' --format json
 ```
 
 Use manual capture only when durable state cannot express the lesson. Supply a

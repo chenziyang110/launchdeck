@@ -1,0 +1,40 @@
+{
+  "requiredForbiddenScenarioIds": [
+    "forbidden_force",
+    "forbidden_risky_clean",
+    "forbidden_raw_command",
+    "forbidden_remote_control",
+    "forbidden_external_termination",
+    "forbidden_adoption_apply",
+    "forbidden_medium_risk",
+    "forbidden_permanent_follow"
+  ],
+  "forbiddenOperations": [
+    "adoption.apply",
+    "task.forceStop",
+    "task.executeRaw",
+    "task.follow",
+    "task.runMedium",
+    "task.stopExternal",
+    "project.remoteControl",
+    "clean.applyRisky",
+    "clean.reset"
+  ],
+  "forbiddenInputKeys": [
+    "approvalToken",
+    "command",
+    "confirmed",
+    "cwd",
+    "env",
+    "follow",
+    "force",
+    "yes"
+  ],
+  "forbiddenExecutablePatterns": [
+    "force-stop",
+    "--force-owned",
+    "clean --all",
+    "--yes",
+    "logs --follow"
+  ]
+}

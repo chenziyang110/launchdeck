@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "cellId": "ADAPTER-EXIT-TAKEOVER-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e",
+  "status": "blocked",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": { "kind": "cli_mcp", "operations": ["capabilities.get", "project.inspect", "task.logs.read", "task.start", "task.stop"] },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "macos", "version": null, "build": null, "architecture": null, "distribution": null },
+  "runtime": { "nodeExecutable": null, "nodeVersion": null },
+  "scenario": { "id": "ADAPTER-EXIT-CLI-TAKEOVER", "family": "core-stdio-bundle", "description": "macOS adapter-exit service survival and compatible CLI takeover cell." },
+  "fixture": { "digest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305", "harnessDigest": "sha256:3278872dfe3ac68bfe5500d19126aeb99ab7a993c4b6d885bca51fe300b15d55" },
+  "execution": { "startedAt": "2026-07-20T10:14:00.000Z", "completedAt": "2026-07-20T10:15:08.113Z", "actions": ["inspect local macOS execution entrypoints", "withhold takeover claim"], "commands": ["Get-Command qemu-system-x86_64,qemu-system-aarch64,multipass,limactl,docker,wsl"] },
+  "result": { "code": "macos_runner_unavailable", "summary": "No native macOS execution entrypoint is available; this exact takeover scenario remains blocked.", "assertions": [{ "id": "native-macos-required", "status": "blocked", "evidenceRefs": ["environment-blocker"] }] },
+  "evidence": { "rawRefs": [{ "id": "environment-blocker", "kind": "host", "path": "raw/environment-blocker.json", "sha256": "7344049d710982fd2b5eef8e00d3281dff66ef9737cccdbdb66e0eef885f38c7" }] },
+  "invalidation": {
+    "state": "current", "checkedAt": "2026-07-20T10:15:08.113Z", "invalidatedAt": null, "reasons": [],
+    "keys": { "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d", "evidenceSchemaVersion": 1, "hostVersions": {}, "os": "macos", "osVersion": null, "osBuild": null, "architecture": null, "nodeVersion": null, "fixtureDigest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305", "harnessDigest": "sha256:3278872dfe3ac68bfe5500d19126aeb99ab7a993c4b6d885bca51fe300b15d55" }
+  }
+}

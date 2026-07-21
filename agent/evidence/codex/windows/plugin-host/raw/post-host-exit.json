@@ -1,0 +1,15 @@
+{
+  "capturedAt": "2026-07-20T10:47:52.4225458Z",
+  "runId": "run_v3ZefiY9qQFN",
+  "pid": 22356,
+  "port": 59037,
+  "processAlive": false,
+  "portOpen": false,
+  "stateStatus": "running",
+  "inspectClassification": "stale-owned",
+  "inspectRunStatus": "stale",
+  "observedProcessAlive": false,
+  "staleReason": "recorded_pid_not_running",
+  "cliBuildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+  "stateHome": "C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\launchdeck-home"
+}

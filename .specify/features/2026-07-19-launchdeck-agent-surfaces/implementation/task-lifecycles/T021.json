@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "task_id": "T021",
+  "task_ref": "task-index.json#/tasks/T021",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first-real-recovery-boundaries",
+    "reason": "T021 owns public response-loss and bounded recovery integration contracts; incomplete route behavior belongs to T022.",
+    "commands": [
+      "node --test --test-concurrency=1 test/e2e/operation-recovery.test.js test/e2e/operation-response-loss.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED: 4/5 recovery tests pass. Missing and expired operation IDs expose one T022-owned gap: MCP returns scope_not_resolved and CLI throws before producing a nested Agent result instead of operation_record_missing_or_expired."
+  },
+  "changed_paths": [
+    "test/e2e/operation-recovery.test.js",
+    "test/e2e/operation-response-loss.test.js",
+    "test/helpers/deterministic-fault-injector.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T021.json"
+  ],
+  "validation": [
+    {"command":"node --check <three T021 files>; npm run check","status":"passed","summary":"Fault proxy and both recovery suites parse; syntax check passes for 96 JavaScript files."},
+    {"command":"node --test --test-concurrency=1 test/e2e/operation-recovery.test.js test/e2e/operation-response-loss.test.js","status":"failed-as-expected","summary":"Final 4/5 pass. Real CLI/MCP response loss, known/lost ID recovery, zero/unique/ambiguous correlation, same-ID reads, digest-shaped input refusal, and indeterminate non-replay pass; missing/expired normalization is the sole failure."}
+  ],
+  "review": {
+    "trigger": "intentional-red-public-recovery-gap",
+    "verdict": "cleared",
+    "evidence": "The deterministic proxy drops only the response after the real CLI/MCP process completes; independent finite-task and journal record counters remain one. The final failure captures all four missing/expired CLI/MCP outcomes together and does not weaken expected semantics."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-007","status":"satisfied","evidence":"Fault proxies terminate only adapter processes; managed/runtime state and operation journal remain independently durable."},
+    {"ref":"MP-008","status":"satisfied","evidence":"Evidence is scoped to source CLI/stdin MCP processes and isolated current-OS fixtures; no broader runtime claim is made."},
+    {"ref":"CA-011","status":"satisfied","evidence":"Known ID uses get/reconcile; lost ID uses one exact project/operation/task/state/window/limit correlation query; no original mutation is called again."},
+    {"ref":"CA-028","status":"satisfied","evidence":"Same-ID reads return the original input digest and record twice; digest-shaped extra input is rejected without a journal record."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Missing and physically expired records are asserted to fail without creating work; their currently incorrect public mapping is the only RED."},
+    {"ref":"CA-042","status":"satisfied","evidence":"External finite-task receipt and journal record counts never exceed one after dropped responses and all recovery queries."},
+    {"ref":"CA-043","status":"satisfied","evidence":"Zero/multiple correlation outcomes contain no retry authority; unique outcome points only to get/reconcile."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Seeded indeterminate foreground evidence remains indeterminate through real CLI/MCP reconcile and its external counter stays one."},
+    {"ref":"CA-046","status":"satisfied","evidence":"MCP recovery and response-loss evidence traverses official SDK over a JSON-RPC forwarding proxy into the real stdio server."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

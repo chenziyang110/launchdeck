@@ -1,0 +1,10 @@
+command: docker run node:20-bookworm-slim node --test --test-concurrency=1 test/packaging/bundle-isolation.test.js
+exitCode: 0
+stderr: empty
+ok 1 - esbuild emits one Node 20 ESM runtime with no external npm import (1.975788ms)
+ok 2 - relocated Codex and Claude bundles initialize, list, and call over real stdio without node_modules (217.665224ms)
+ok 3 - build refuses an observed Node below the declared prerequisite without emitting artifacts (137.723201ms)
+tests: 3
+pass: 3
+fail: 0
+durationMs: 1176.774162

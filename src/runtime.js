@@ -18,6 +18,7 @@ import {
   resolveProjectPath
 } from './adapters/path.js';
 import { appendEvent } from './control-plane/events.js';
+import { withMutationLocksSync } from './control-plane/locks.js';
 import { OWNERSHIP_CONFIDENCE, proveRunOwnership } from './control-plane/ownership.js';
 import { controlPlanePaths } from './control-plane/state.js';
 
@@ -110,6 +111,79 @@ export function listProcesses(projectRoot) {
   return Object.values(state.processes).sort((a, b) => a.task.localeCompare(b.task));
 }
 
+export function observeTaskOwnership(projectRoot, taskName, options = {}) {
+  const state = readState(projectRoot);
+  const processInfo = state.processes?.[taskName];
+  const runIndex = safeReadRunIndex(options.env);
+  const run = processInfo
+    ? findRunForProcess(runIndex, projectRoot, taskName, processInfo)
+    : findActiveRunForTask(runIndex, projectRoot, taskName);
+
+  if (processInfo) {
+    try {
+      const proof = assertVerifiedStopOwnership(projectRoot, taskName, processInfo, run);
+      return { classification: 'verified', proof, processInfo, run };
+    } catch (error) {
+      const proof = error?.details?.ownershipProof;
+      if (options.allowVerifiedSpawnedParent === true && hasTrustedSpawnRecord(run, processInfo)) {
+        return {
+          classification: 'verified',
+          proof: {
+            ...(proof ?? {}),
+            confidence: OWNERSHIP_CONFIDENCE.VERIFIED_OWNED,
+            reasons: [...(proof?.reasons ?? []), 'verified_spawned_parent_restart']
+          },
+          processInfo,
+          run
+        };
+      }
+      return {
+        classification: ownershipClassification(error?.code, proof?.confidence),
+        proof,
+        processInfo,
+        run,
+        code: error?.code
+      };
+    }
+  }
+
+  if (run) {
+    const proof = proveOwnershipForRun(run);
+    return {
+      classification: ownershipClassification(undefined, proof.confidence),
+      proof,
+      processInfo: null,
+      run
+    };
+  }
+
+  const config = safeLoadConfig(projectRoot);
+  const listeners = (config?.tasks?.[taskName]?.ports ?? [])
+    .filter(Number.isInteger)
+    .flatMap((port) => safeListPortListeners(port));
+  if (listeners.length > 0) {
+    const proof = proveRunOwnership(null, { listeners });
+    return {
+      classification: ownershipClassification(undefined, proof.confidence),
+      proof,
+      processInfo: null,
+      run: null,
+      code: proof.confidence === OWNERSHIP_CONFIDENCE.EXTERNAL ? 'external_process' : 'unknown_process_owner',
+      ports: [...new Set(proof.portEvidence.map((entry) => entry.port).filter(Number.isInteger))]
+    };
+  }
+  return {
+    classification: 'verified',
+    proof: {
+      confidence: OWNERSHIP_CONFIDENCE.VERIFIED_OWNED,
+      processAlive: false,
+      reasons: ['no_active_run_or_declared_listener']
+    },
+    processInfo: null,
+    run: null
+  };
+}
+
 export function startManagedTask(taskName, task, projectRoot) {
   const state = refreshState(projectRoot);
   const existing = state.processes[taskName];
@@ -196,7 +270,8 @@ export function runTask(task, projectRoot, options = {}) {
   return spawnForeground(task.command, {
     cwd,
     env: task.env,
-    captureOutput: options.captureOutput
+    captureOutput: options.captureOutput,
+    maxOutputBytes: options.maxOutputBytes
   });
 }
 
@@ -381,6 +456,95 @@ export function resolveCleanTargets(projectRoot, clean, mode = 'safe') {
   return plan;
 }
 
+export function buildSafeCleanPlan(config, options = {}) {
+  const protectedPaths = collectProtectedEvidencePaths(config, options);
+  const safePlan = applyCleanRetention(
+    resolveCleanTargets(config.projectRoot, config.clean, 'safe'),
+    protectedPaths
+  );
+  const allPlan = resolveCleanTargets(config.projectRoot, config.clean, 'all');
+  return {
+    version: 1,
+    configDigest: digestCleanConfiguration(config.clean),
+    targets: safePlan.filter((target) => target.status !== 'refused'),
+    refusals: safePlan.filter((target) => target.status === 'refused'),
+    protectedPaths,
+    excludedRiskyTargets: allPlan.filter((target) => target.kind === 'risky')
+  };
+}
+
+export function applySafeCleanPlan(plan) {
+  if ((plan?.refusals?.length ?? 0) > 0) {
+    throw new LaunchdeckError('clean_failed', 'Launchdeck refuses to apply an unsafe clean plan.', {
+      refused: plan.refusals
+    });
+  }
+  return cleanTargets(plan?.targets ?? []);
+}
+
+export function collectProtectedEvidencePaths(config, options = {}) {
+  const env = options.env ?? process.env;
+  const protectedPaths = [];
+  const localPaths = runtimePaths(config.projectRoot);
+  const sharedPaths = controlPlanePaths(env);
+
+  for (const candidate of [
+    localPaths.statePath,
+    sharedPaths.registryPath,
+    sharedPaths.runsPath,
+    sharedPaths.eventsPath,
+    path.join(sharedPaths.runtimeDir, 'operations')
+  ]) {
+    if (fs.existsSync(candidate)) protectedPaths.push(candidate);
+  }
+
+  try {
+    const state = readState(config.projectRoot);
+    for (const processInfo of Object.values(state.processes ?? {})) {
+      if (ACTIVE_RUN_STATUSES.has(processInfo.status) && processInfo.logPath) {
+        protectedPaths.push(processInfo.logPath);
+      }
+    }
+  } catch {
+    // Safe clean remains conservative with every readable evidence source.
+  }
+
+  const runIndex = safeReadRunIndex(env);
+  for (const run of runIndex.runs ?? []) {
+    if (!samePath(run.projectRoot, config.projectRoot) || !run.logPath) continue;
+    if (ACTIVE_RUN_STATUSES.has(run.status) || ['failed', 'stop_failed', 'stale'].includes(run.status)) {
+      protectedPaths.push(run.logPath);
+    }
+  }
+
+  for (const event of readRecentRuntimeEvents(sharedPaths.eventsPath, 1_000)) {
+    const logPath = event?.data?.logPath;
+    if (
+      typeof logPath === 'string'
+      && ['failed', 'stop_failed'].includes(event.status)
+      && isInsidePath(config.projectRoot, logPath)
+    ) {
+      protectedPaths.push(logPath);
+    }
+  }
+
+  try {
+    if (fs.existsSync(localPaths.logsDir)) {
+      for (const entry of fs.readdirSync(localPaths.logsDir)) {
+        const candidate = path.join(localPaths.logsDir, entry);
+        if (entry.includes('failed') && fs.statSync(candidate).isFile()) {
+          protectedPaths.push(candidate);
+        }
+      }
+    }
+  } catch {
+    // Failure-log filename fallback is a retention hint only.
+  }
+
+  return uniqueCleanPaths(protectedPaths)
+    .filter((candidate) => isInsidePath(config.projectRoot, candidate));
+}
+
 export function cleanTargets(targets) {
   const refused = targets.filter((target) => target.status === 'refused');
   if (refused.length > 0) {
@@ -497,73 +661,14 @@ function assertNoExternalDeclaredOwner(projectRoot, taskName, runIndex) {
 }
 
 function withLifecycleLocksSync(projectRoot, taskName, callback) {
-  const locks = acquireLifecycleLocksSync(projectRoot, taskName);
-  try {
-    return callback();
-  } finally {
-    for (const lock of locks.reverse()) {
-      releaseLifecycleLockSync(lock);
-    }
-  }
-}
-
-function acquireLifecycleLocksSync(projectRoot, taskName) {
   const projectId = stableProjectId(projectRoot);
-  const locks = [];
-  locks.push(acquireLifecycleLockSync(`project-${safePathToken(projectId)}`));
-  if (taskName) {
-    locks.push(acquireLifecycleLockSync(`task-${safePathToken(projectId)}-${safePathToken(taskName)}`));
-  }
-  return locks;
-}
-
-function acquireLifecycleLockSync(lockName, env = process.env) {
-  const locksDir = controlPlanePaths(env).locksDir;
-  const lockPath = path.join(locksDir, `${lockName}.lock`);
-  fs.mkdirSync(locksDir, { recursive: true });
-  const record = {
-    version: 1,
-    lockName,
-    ownerPid: process.pid,
-    ownerCommand: process.argv.join(' '),
-    ownerCwd: process.cwd(),
-    createdAt: new Date().toISOString()
-  };
-  try {
-    const fd = fs.openSync(lockPath, 'wx');
-    fs.writeFileSync(fd, `${JSON.stringify(record, null, 2)}\n`);
-    fs.closeSync(fd);
-    return { lockPath, record };
-  } catch (error) {
-    if (error?.code !== 'EEXIST') {
-      throw error;
-    }
-    throw new LaunchdeckError(lockName.startsWith('task-') ? 'task_lock_busy' : 'project_lock_busy', `Lock '${lockName}' is already held.`, {
-      lockName,
-      lockPath,
-      next: [
-        {
-          label: 'Inspect active Launchdeck state',
-          command: 'launchdeck status --all --json',
-          reason: 'Shows active work before retrying the lifecycle command.',
-          risk: 'safe'
-        }
-      ]
-    });
-  }
-}
-
-function releaseLifecycleLockSync(lock) {
-  try {
-    const current = JSON.parse(fs.readFileSync(lock.lockPath, 'utf8'));
-    if (current?.ownerPid === lock.record.ownerPid && current?.createdAt === lock.record.createdAt) {
-      fs.rmSync(lock.lockPath, { force: true });
-    }
-  } catch (error) {
-    if (error?.code !== 'ENOENT') {
-      throw error;
-    }
-  }
+  return withMutationLocksSync({
+    operationId: `op_${crypto.randomUUID().replaceAll('-', '')}`,
+    projectId,
+    taskRef: taskName,
+    env: process.env,
+    ownerCommand: process.argv.join(' ')
+  }, callback);
 }
 
 function assertVerifiedStopOwnership(projectRoot, taskName, processInfo, run) {
@@ -641,6 +746,23 @@ function isTrustedSpawnOwnershipProof(proof) {
     && typeof proof.startedAt === 'string';
 }
 
+function hasTrustedSpawnRecord(run, processInfo) {
+  const proof = run?.ownershipProof ?? processInfo?.ownershipProof;
+  return Boolean(
+    run
+    && processInfo
+    && isTrustedSpawnOwnershipProof(proof)
+    && proof.runId === run.runId
+    && proof.projectId === run.projectId
+    && proof.task === run.task
+    && Number(proof.pid) === Number(run.pid)
+    && Number(processInfo.pid) === Number(run.pid)
+    && proof.startedAt === run.startedAt
+    && proof.command === run.command
+    && samePath(proof.cwd, run.cwd)
+  );
+}
+
 function withLocalOwnershipEvidence(run, processInfo) {
   if (!run) {
     return run;
@@ -694,6 +816,13 @@ function ownershipRefusalError(projectRoot, taskName, run, proof = undefined) {
     ownershipProof: proof,
     next
   });
+}
+
+function ownershipClassification(code, confidence) {
+  if (code === 'external_process' || confidence === OWNERSHIP_CONFIDENCE.EXTERNAL) return 'external';
+  if (confidence === OWNERSHIP_CONFIDENCE.VERIFIED_OWNED) return 'verified';
+  if (confidence === 'mismatch') return 'mismatch';
+  return 'unknown';
 }
 
 function safeReadRunIndex(env = process.env) {
@@ -863,14 +992,6 @@ function makeRuntimeId(prefix) {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
 }
 
-function safePathToken(value) {
-  const token = String(value ?? '').trim();
-  if (!token) {
-    return 'unknown';
-  }
-  return token.replace(/[^a-zA-Z0-9._-]/g, '_');
-}
-
 function samePath(left, right) {
   if (!left || !right) {
     return false;
@@ -922,6 +1043,78 @@ function cleanRefusalError(target) {
     resolvedPath: target.resolvedPath ?? target.absolutePath,
     canonicalPath: target.canonicalPath
   });
+}
+
+function applyCleanRetention(targets, protectedPaths) {
+  if (protectedPaths.length === 0) return targets;
+  return targets.map((target) => {
+    const targetPath = target.absolutePath ?? target.resolvedPath;
+    if (!targetPath || target.status === 'refused') return target;
+    const protectedInsideTarget = protectedPaths.filter((protectedPath) =>
+      samePath(protectedPath, targetPath) || isInsidePath(targetPath, protectedPath)
+    );
+    if (protectedInsideTarget.length === 0) return target;
+    return {
+      ...target,
+      retention: {
+        policy: 'preserve-running-and-failure-evidence',
+        reason: 'Safe clean preserves shared state, active run evidence, and latest failure evidence.',
+        protectedPaths: protectedInsideTarget
+      },
+      protectedPaths: protectedInsideTarget
+    };
+  });
+}
+
+function digestCleanConfiguration(clean = {}) {
+  const normalizeEntries = (entries) => (Array.isArray(entries) ? entries : [])
+    .map((entry) => typeof entry === 'string' ? { rawPath: entry } : stableCleanValue(entry))
+    .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+  const snapshot = {
+    safe: normalizeEntries(clean.safe),
+    risky: normalizeEntries(clean.risky)
+  };
+  return `sha256:${crypto.createHash('sha256').update(JSON.stringify(snapshot)).digest('hex')}`;
+}
+
+function stableCleanValue(value) {
+  if (Array.isArray(value)) return value.map(stableCleanValue);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value).sort().map((key) => [key, stableCleanValue(value[key])])
+  );
+}
+
+function readRecentRuntimeEvents(eventPath, limit) {
+  if (!fs.existsSync(eventPath)) return [];
+  try {
+    const events = fs.readFileSync(eventPath, 'utf8')
+      .split(/\r?\n/)
+      .filter((line) => line.trim())
+      .flatMap((line) => {
+        try {
+          return [JSON.parse(line)];
+        } catch {
+          return [];
+        }
+      });
+    return events.slice(Math.max(0, events.length - limit));
+  } catch {
+    return [];
+  }
+}
+
+function uniqueCleanPaths(paths) {
+  const seen = new Set();
+  return paths
+    .filter((entry) => typeof entry === 'string' && entry)
+    .filter((entry) => {
+      const normalized = normalizePath(entry);
+      if (seen.has(normalized)) return false;
+      seen.add(normalized);
+      return true;
+    })
+    .sort((left, right) => normalizePath(left).localeCompare(normalizePath(right)));
 }
 
 function cleanDirectoryPreserving(targetPath, protectedPaths) {

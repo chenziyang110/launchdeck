@@ -5,6 +5,7 @@ import { LaunchdeckError } from '../errors.js';
 const DEFAULT_STOP_TIMEOUT_MS = 2_000;
 const DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS = 750;
 const STOP_POLL_INTERVAL_MS = 50;
+const DEFAULT_CAPTURE_BYTES = 65_536;
 
 export function spawnForeground(command, options = {}) {
   const child = spawnShellCommand(command, {
@@ -13,12 +14,16 @@ export function spawnForeground(command, options = {}) {
     stdio: options.captureOutput ? ['ignore', 'pipe', 'pipe'] : (options.stdio ?? 'inherit')
   });
 
-  if (options.captureOutput) {
-    child.stdout?.resume();
-    child.stderr?.resume();
-  }
+  if (!options.captureOutput) return waitForExit(child);
 
-  return waitForExit(child);
+  const maxBytes = normalizeCaptureBytes(options.maxOutputBytes);
+  const stdout = collectBoundedOutput(child.stdout, maxBytes);
+  const stderr = collectBoundedOutput(child.stderr, maxBytes);
+  return Promise.all([waitForExit(child), stdout, stderr]).then(([result, stdoutValue, stderrValue]) => ({
+    ...result,
+    stdout: stdoutValue,
+    stderr: stderrValue
+  }));
 }
 
 export function spawnManaged(command, options = {}) {
@@ -96,6 +101,37 @@ export function waitForExit(child) {
       });
     });
   });
+}
+
+function collectBoundedOutput(stream, maxBytes) {
+  if (!stream) return Promise.resolve('');
+  return new Promise((resolve) => {
+    const chunks = [];
+    let capturedBytes = 0;
+    let settled = false;
+    stream.on('data', (chunk) => {
+      const buffer = Buffer.from(chunk);
+      const remaining = maxBytes - capturedBytes;
+      if (remaining <= 0) return;
+      const captured = buffer.subarray(0, remaining);
+      chunks.push(captured);
+      capturedBytes += captured.length;
+    });
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve(Buffer.concat(chunks).toString('utf8'));
+    };
+    stream.once('end', finish);
+    stream.once('close', finish);
+    stream.once('error', finish);
+  });
+}
+
+function normalizeCaptureBytes(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 1_048_576
+    ? value
+    : DEFAULT_CAPTURE_BYTES;
 }
 
 export function isPidRunning(pid) {

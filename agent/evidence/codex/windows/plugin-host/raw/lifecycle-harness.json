@@ -1,0 +1,10 @@
+{
+  "command": "codex exec -C <fixture> --sandbox workspace-write --ephemeral --json <prompt>",
+  "prompt": "Use the installed launchdeck-agent Skill and only the launchdeck MCP server. For projectRef codex-host-evidence, call capabilities.get first, then task.status for taskRef managed, then perform exactly one low-risk mutation by calling task.start for managed. Do not call list_mcp_resources, do not run shell commands, and do not repeat any mutation. Report the run ID, PID, port, state home, build identity, and operation ID.",
+  "expected": [
+    "one mutation",
+    "host exit preserves process",
+    "standalone CLI observes same run without respawn"
+  ],
+  "stopCondition": "If the managed process does not survive host exit, mark lifecycle failed and do not continue update/disable/uninstall survival claims."
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "task_id": "T008",
+  "task_ref": "task-index.json#/tasks/T008",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first",
+    "reason": "T007 froze the T008 operation-journal, fault, recovery, retention, and no-replay contract before implementation.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/operation-journal.test.js test/kernel/operation-journal-faults.test.js test/kernel/operation-journal-retention.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "0 passed and 3 files failed only because src/control-plane/operation-journal.js is missing."
+  },
+  "changed_paths": [
+    "src/control-plane/operation-journal.js",
+    "src/control-plane/events.js",
+    "src/kernel/application-kernel.js",
+    "src/kernel/operations/operation.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T008.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/kernel/operation-journal.test.js test/kernel/operation-journal-faults.test.js test/kernel/operation-journal-retention.test.js","status":"passed","summary":"13/13 journal durability, crash, recovery, retention, schema, index, event, and no-replay tests passed after the atomic-hook repair."},
+    {"command":"targeted Kernel/event/lock/state regression","status":"passed","summary":"43/43 T005-T008 Kernel, journal, event, lock, and state tests passed together."},
+    {"command":"real default withMutationLocks + journal proof probe","status":"passed","summary":"A journaled task.start completed under real operation/project/task/run-index locks, persisted succeeded, and released every lock."},
+    {"command":"operation.list/get/reconcile storage-handler probe","status":"passed","summary":"Handlers listed, read, and reconciled the original record without invoking mutation work."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 65 JavaScript files after the final change."},
+    {"command":"npm test","status":"passed","summary":"204 total; 203 passed; 1 existing POSIX platform skip; 0 failures; 126.4 seconds."},
+    {"command":"task-path whitespace and diff checks","status":"passed","summary":"No trailing whitespace or tracked-diff whitespace errors in T007/T008 paths."}
+  ],
+  "review": {
+    "trigger": "journal-state-and-recovery-boundary",
+    "verdict": "cleared",
+    "evidence": "The review verified one authoritative atomic record per operation, rebuildable state-free indexes, existing operation-first lock semantics with persisted lock proof, terminal-only pruning, indefinite unresolved retention, bounded fail-closed diagnosis of newer records, and recovery APIs that accept evidence callbacks but never an original mutation handler. Existing registry/run/runtime/ownership authorities remain unchanged and the full regression passes."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"The Application Kernel owns journal transitions while existing handlers and control-plane stores remain the only resource-effect and resource-state authorities."},
+    {"ref":"MP-007","status":"satisfied","evidence":"operation.list/get/reconcile are storage/evidence primitives; recover never accepts or invokes the original mutation handler and missing IDs cannot create work."},
+    {"ref":"CA-011","status":"satisfied","evidence":"All post-dispatch fault points retain the original prepared/running/terminal record and expose only recovery, never a second execution or fallback."},
+    {"ref":"CA-028","status":"satisfied","evidence":"Kernel persists prepared, then running, before invoking the handler; the handler test observes running before its first declared effect."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Running/indeterminate records reconcile through evidence-only callbacks, and handler/effect counters remain unchanged during recovery."},
+    {"ref":"CA-042","status":"satisfied","evidence":"Persistence and result semantics distinguish recoverable idempotency from indeterminate effects and make no universal exactly-once claim."},
+    {"ref":"CA-043","status":"satisfied","evidence":"Same ID/same digest returns the original record; different digest refuses; record revisions and immutable fields prevent a second prepared identity."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Indeterminate work cannot transition to running, unresolved records never age-prune, and public recovery handlers contain no replay path."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

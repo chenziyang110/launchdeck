@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "task_id": "T026",
+  "task_ref": "task-index.json#/tasks/T026",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-deterministic-skill-traces",
+    "reason": "T025 isolates canonical Skill trace publication and unsafe public route removal to T026.",
+    "commands": [
+      "node --test --test-concurrency=1 test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "6/8 pass; canonical trace markers are absent and five force/risky-clean executable command spans remain."
+  },
+  "changed_paths": [
+    ".agents/skills/launchdeck-agent/SKILL.md",
+    ".agents/skills/launchdeck-agent/references/intent-routing.md",
+    ".agents/skills/launchdeck-agent/references/command-flows.md",
+    ".agents/skills/launchdeck-agent/references/recovery-playbooks.md",
+    ".agents/skills/launchdeck-agent/references/clean-safety.md",
+    ".agents/skills/launchdeck-agent/references/adoption-flow.md",
+    ".agents/skills/launchdeck-agent/references/eval-prompts.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T026.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js","status":"passed","summary":"8/8 ordered routing, fallback, refusal, recovery, and forbidden-call assertions pass."},
+    {"command":"python -X utf8 <skill-creator>/scripts/quick_validate.py .agents/skills/launchdeck-agent","status":"passed-after-recovery","summary":"Canonical Skill package is valid; the initial Windows default-GBK invocation was rerun in explicit UTF-8 mode because the supported frontmatter includes Chinese triggers."},
+    {"command":"node --test --test-concurrency=1 test/agent-installer.test.js test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js","status":"passed","summary":"15/15 installer and Skill routing tests pass."},
+    {"command":"npm run check; git diff --check; npm test","status":"passed","summary":"Syntax passes for 100 files; whitespace validation is clean; full suite passes 272 total, 271 passed, 1 existing POSIX skip, 0 failures."}
+  ],
+  "review": {"trigger":"canonical-skill-consumer-gate","verdict":"cleared","evidence":"One canonical reference-driven Skill publishes the deterministic trace contract, selects MCP first, permits CLI only before dispatch, treats refusal/uncertainty as terminal for fallback, and exposes no public force/risky/follow/adoption-apply execution route."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-005","status":"satisfied","evidence":"The single canonical launchdeck-agent Skill is intent-driven, MCP-first, and reference-based."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Post-dispatch loss uses only known-ID or one bounded journal correlation; no CLI replay is permitted."},
+    {"ref":"CA-011","status":"satisfied","evidence":"Fallback is explicitly limited to pre-dispatch transport/capability absence."},
+    {"ref":"CA-014","status":"satisfied","evidence":"Raw command/env/cwd/force and stronger process-control routes are absent from public Skill execution."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Host hints and model/user approval never elevate Kernel authority."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Uncertain work is never reissued; operation get/list/reconcile are the only recovery calls."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Zero/ambiguous correlation terminates unresolved and cannot trigger fallback."},
+    {"ref":"CA-045","status":"satisfied","evidence":"Machine-readable traces record actual call order, surface, operation, and outcome."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "The Skill validator inherited the Windows GBK locale and could not decode valid UTF-8 Chinese triggers. Explicit Python UTF-8 mode passed, followed by focused and full unchanged validation."
+}

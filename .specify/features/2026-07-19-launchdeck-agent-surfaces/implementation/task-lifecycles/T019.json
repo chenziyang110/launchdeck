@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "task_id": "T019",
+  "task_ref": "task-index.json#/tasks/T019",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first-real-entrypoints",
+    "reason": "T019 owns normalized CLI/MCP equivalence and the four US1 real-entrypoint journeys; implementation repair belongs to T020.",
+    "commands": [
+      "node --test --test-concurrency=1 test/contracts/cli-mcp-equivalence.test.js test/e2e/agent-surface-us1.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED after repairing one test-owned sentinel reference: 7/8 real-entrypoint journeys pass; task.list alone exposes CLI type/command/cwd versus MCP longRunning projection drift for T020."
+  },
+  "changed_paths": [
+    "test/contracts/cli-mcp-equivalence.test.js",
+    "test/e2e/agent-surface-us1.test.js",
+    "test/fixtures/agent-surfaces/expected/us1-normalization.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T019.json"
+  ],
+  "validation": [
+    {"command":"node --check <T019 test files>; npm run check","status":"passed","summary":"Both integration suites parse and the repository syntax check passes for 93 JavaScript files."},
+    {"command":"node --test --test-concurrency=1 test/contracts/cli-mcp-equivalence.test.js test/e2e/agent-surface-us1.test.js","status":"failed-during-test-recovery","summary":"Initial run passed 6/8; one valid task.list projection mismatch and one T019-owned incorrect sentinel ID."},
+    {"command":"node --test --test-concurrency=1 test/contracts/cli-mcp-equivalence.test.js test/e2e/agent-surface-us1.test.js","status":"failed-as-expected","summary":"After the test-owned repair, 7/8 pass; the sole remaining failure is the precise task.list CLI/MCP projection mismatch owned by T020."}
+  ],
+  "review": {
+    "trigger": "intentional-red-cross-surface-semantic-drift",
+    "verdict": "cleared",
+    "evidence": "The final failure compares the frozen semantic result fields through real CLI and official-SDK stdio entrypoints and differs only in task inventory shape; all generated IDs and approved provenance differences are excluded explicitly rather than weakening semantics."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"All tests traverse real CLI or MCP into the same state, run, journal, ownership, and clean authorities."},
+    {"ref":"MP-003","status":"satisfied","evidence":"Only approved queries and low-risk mutations are exercised; medium/force/external/unknown inputs remain refusal cases."},
+    {"ref":"MP-004","status":"satisfied","evidence":"CLI schemaVersion 1 envelopes and nested Agent results are retained and asserted before normalization."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Cross-surface reuse proves one detached managed run survives adapter boundaries and remains independently owned by Launchdeck runtime state."},
+    {"ref":"MP-008","status":"satisfied","evidence":"The expected fixture lists the exact allowed surface differences and makes no unsupported Plugin, host, bundle, or platform claim."},
+    {"ref":"CA-001","status":"satisfied","evidence":"Real start/run/stop/clean MCP calls and CLI commands return Kernel-shaped AgentOperationResult records."},
+    {"ref":"CA-003","status":"satisfied","evidence":"CLI-first, MCP-first, and synchronized starts each produce one run/spawn with honest reuse effects."},
+    {"ref":"CA-004","status":"satisfied","evidence":"External and unknown live processes remain alive after both surfaces refuse; no extra spawn receipt is created."},
+    {"ref":"CA-005","status":"satisfied","evidence":"Old safe-clean digest returns plan_digest_mismatch and preserves safe/risky targets; adoption.apply stays absent."},
+    {"ref":"CA-009","status":"satisfied","evidence":"Every MCP journey uses the exact registered project ID and never process cwd as authority."},
+    {"ref":"CA-013","status":"satisfied","evidence":"Target existence drift changes the recomputed plan under locks and refuses before deletion."},
+    {"ref":"CA-024","status":"satisfied","evidence":"Normalization compares complete outcome and resource objects independently for query, run, clean, refusal, and adoption branches."},
+    {"ref":"CA-025","status":"satisfied","evidence":"CLI schemaVersion 1 and MCP cliSchemaVersion null are separately asserted while shared protocol/build versions must match."},
+    {"ref":"CA-031","status":"satisfied","evidence":"Byte inventory, process receipt, and port checks prove adoption inspection has zero writes/starts and no apply action."},
+    {"ref":"CA-036","status":"satisfied","evidence":"All MCP evidence uses the real stdio helper whose raw framing isolation remains enforced."},
+    {"ref":"CA-041","status":"satisfied","evidence":"The expected normalization fixture excludes only generated operation IDs and approved provenance fields; task inventory shape is intentionally not normalized away."},
+    {"ref":"CA-046","status":"satisfied","evidence":"All MCP legs use official Client/StdioClientTransport against the real server process."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

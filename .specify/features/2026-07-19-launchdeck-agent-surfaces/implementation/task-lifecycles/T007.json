@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "task_id": "T007",
+  "task_ref": "task-index.json#/tasks/T007",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T007 owns the failure-first operation-journal, crash, recovery, retention, index-rebuild, and no-replay contract; T008 owns its implementation.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/operation-journal.test.js test/kernel/operation-journal-faults.test.js test/kernel/operation-journal-retention.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED rerun: all three test files fail only because the T008-owned src/control-plane/operation-journal.js module is missing."
+  },
+  "changed_paths": [
+    "test/kernel/operation-journal.test.js",
+    "test/kernel/operation-journal-faults.test.js",
+    "test/kernel/operation-journal-retention.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T007.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {"command":"node --check test/kernel/operation-journal.test.js && node --check test/kernel/operation-journal-faults.test.js && node --check test/kernel/operation-journal-retention.test.js","status":"passed","summary":"All three T007 fault-first test files parse successfully."},
+    {"command":"node --test --test-concurrency=1 test/kernel/operation-journal.test.js test/kernel/operation-journal-faults.test.js test/kernel/operation-journal-retention.test.js","status":"failed-as-expected","summary":"0 passed and 3 files failed at the missing T008-owned operation-journal module; the exact RED was rerun after the final test correction."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 63 JavaScript files."},
+    {"command":"git diff --check -- test/kernel/operation-journal*.test.js implementation lifecycle","status":"passed","summary":"No whitespace errors in T007 test and lifecycle paths."}
+  ],
+  "review": {
+    "trigger": "intentional-red-boundary",
+    "verdict": "cleared",
+    "evidence": "The suite is test-only and freezes authoritative per-record state, derived indexes, atomic revision transitions, exact terminal/unresolved retention, fail-closed newer versions, deterministic crash windows, and no-replay recovery. It does not make the index authoritative, duplicate resource truth, or introduce an execution path."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-007","status":"satisfied","evidence":"Recovery tests permit only get/reconcile of the original record and prove the mutation handler/effect counters never increase during recovery."},
+    {"ref":"CA-011","status":"satisfied","evidence":"Every post-dispatch crash window is represented by durable original evidence; no test authorizes CLI/MCP fallback or a second mutation."},
+    {"ref":"CA-028","status":"satisfied","evidence":"The handler asserts the record is already durable and running before its first declared effect, while after-prepared and after-running faults retain zero effects."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Running and indeterminate recovery uses evidence-only reconciliation and handler/effect counters remain exactly one."},
+    {"ref":"CA-042","status":"satisfied","evidence":"The tests explicitly model recoverable and indeterminate outcomes instead of claiming universal exactly-once execution."},
+    {"ref":"CA-043","status":"satisfied","evidence":"Same ID/same digest returns or reconciles the original record; same ID/different digest refuses without changing it."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Prepared/running/indeterminate states never transition back into handler execution and unresolved evidence is retained without age expiry."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

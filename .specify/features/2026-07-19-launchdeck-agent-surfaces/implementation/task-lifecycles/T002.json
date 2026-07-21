@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "task_id": "T002",
+  "task_ref": "task-index.json#/tasks/T002",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "missing-build-contract",
+    "reason": "The planned exact dependencies and inert source/evidence boundaries do not exist yet.",
+    "commands": [
+      "node --input-type=module -e <assert exact T002 dependencies and inert directories>"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Exact SDK, Zod, semver, and esbuild pins were absent and all four inert directory boundaries were missing."
+  },
+  "selected_versions": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.3",
+    "esbuild": "0.28.1",
+    "semver": "7.8.5"
+  },
+  "changed_paths": [
+    "package.json",
+    "package-lock.json",
+    "src/kernel/.gitkeep",
+    "src/mcp/.gitkeep",
+    "agent/plugins/.gitkeep",
+    "agent/evidence/.gitkeep",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T002.json"
+    ,".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {
+      "command": "node --input-type=module -e <assert exact pins, lock root, inert directories, absent install hooks, and esbuild metafile>",
+      "status": "passed",
+      "summary": "All four direct versions are exact in package.json and package-lock.json; four inert boundaries exist; one Node 20 ESM output was produced with zero external npm imports; no install lifecycle script exists."
+    },
+    {
+      "command": "npm install --save-exact @modelcontextprotocol/sdk@1.29.0 zod@4.4.3 semver@7.8.5",
+      "status": "passed",
+      "summary": "Runtime dependency install completed with zero reported vulnerabilities."
+    },
+    {
+      "command": "npm install --save-dev --save-exact esbuild@0.28.1",
+      "status": "passed",
+      "summary": "Build dependency install completed with zero reported vulnerabilities."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 46 JavaScript files."
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "summary": "160 total; 159 passed; 1 existing platform skip; 0 failures; lifecycle tests remained serialized."
+    }
+  ],
+  "review": {
+    "trigger": "review-window-changed-paths",
+    "verdict": "cleared",
+    "evidence": "Task-scoped diff contains only exact dependency pins, the generated lockfile, inert .gitkeep boundaries, and workflow trackers. No runtime behavior, install hook, policy authority, state path, host claim, or package payload behavior was added."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "ref": "MP-002",
+      "status": "satisfied",
+      "evidence": "All dependency, directory, and tracker writes remain in F:/github/launchdeck."
+    },
+    {
+      "ref": "MP-003",
+      "status": "satisfied",
+      "evidence": "Only the local stdio Node toolchain boundary was prepared; no remote, UI, native, enterprise, medium-risk, or adoption surface was activated."
+    },
+    {
+      "ref": "MP-008",
+      "status": "satisfied",
+      "evidence": "The task records toolchain feasibility only and makes no MCP, Plugin, host, OS, update, uninstall, or recovery readiness claim."
+    },
+    {
+      "ref": "CA-033",
+      "status": "satisfied",
+      "evidence": "The esbuild probe emitted one ESM output with zero external npm imports; package scripts contain no preinstall/install/postinstall entry."
+    },
+    {
+      "ref": "CA-034",
+      "status": "satisfied",
+      "evidence": "The existing package engine remains Node >=20, and every selected direct dependency supports that floor."
+    },
+    {
+      "ref": "CA-036",
+      "status": "satisfied",
+      "evidence": "No MCP runtime behavior or stdout writer was introduced; the future stdio boundary remains isolated under src/mcp."
+    },
+    {
+      "ref": "CA-046",
+      "status": "satisfied",
+      "evidence": "No handler-only MCP-ready claim was made; real stdio verification remains assigned to later tasks."
+    },
+    {
+      "ref": "CA-050",
+      "status": "satisfied",
+      "evidence": "No readiness label or evidence roll-up was added; agent/evidence is an inert boundary only."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

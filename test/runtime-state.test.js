@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import net from 'node:net';
 import path from 'node:path';
 import test from 'node:test';
 import { createCliFixture } from './helpers/cli-fixture.js';
@@ -11,12 +12,14 @@ import {
   tailLog
 } from '../src/runtime.js';
 
-test('startManagedTask writes the v1 runtime state shape for a managed task', () => {
-  withFixture((fixture) => {
-    fixture.writeConfig(configWithManagedDev());
+test('startManagedTask writes the v1 runtime state shape for a managed task', async () => {
+  const fixture = createCliFixture();
+  const port = await getFreePort();
+  try {
+    fixture.writeConfig(configWithManagedDev(port));
     writeManagedDevScript(fixture);
 
-    const processInfo = startManagedTask('dev', configWithManagedDev().tasks.dev, fixture.projectRoot);
+    const processInfo = startManagedTask('dev', configWithManagedDev(port).tasks.dev, fixture.projectRoot);
 
     try {
       const state = readRuntimeState(fixture.projectRoot);
@@ -28,7 +31,7 @@ test('startManagedTask writes the v1 runtime state shape for a managed task', ()
       assert.equal(state.processes.dev.command, processInfo.command);
       assert.equal(state.processes.dev.cwd, fixture.projectRoot);
       assert.equal(Number.isInteger(state.processes.dev.pid), true);
-      assert.deepEqual(state.processes.dev.ports, [4173]);
+      assert.deepEqual(state.processes.dev.ports, [port]);
       assert.equal(state.processes.dev.logPath, fixture.path('.launchdeck', 'logs', 'dev.log'));
       assert.equal(typeof state.processes.dev.startedAt, 'string');
       assert.equal(typeof state.processes.dev.lastRefresh, 'string');
@@ -36,7 +39,9 @@ test('startManagedTask writes the v1 runtime state shape for a managed task', ()
     } finally {
       stopManagedTasks(fixture.projectRoot, 'dev');
     }
-  });
+  } finally {
+    fixture.cleanup();
+  }
 });
 
 test('ps reports runtime_state_invalid and preserves corrupt state evidence', () => {
@@ -143,7 +148,7 @@ function withFixture(callback) {
   }
 }
 
-function configWithManagedDev() {
+function configWithManagedDev(port = 4173) {
   return {
     version: 1,
     project: {
@@ -151,17 +156,30 @@ function configWithManagedDev() {
     },
     tasks: {
       dev: {
-        command: 'node scripts/dev.js',
+        command: `node scripts/dev.js ${port}`,
         longRunning: true,
         risk: 'low',
-        ports: [4173]
+        ports: [port]
       }
     }
   };
 }
 
 function writeManagedDevScript(fixture) {
-  fixture.writeScript('scripts/dev.js', 'setInterval(() => {}, 1000);');
+  fixture.writeScript('scripts/dev.js', `
+import net from 'node:net';
+
+const server = net.createServer();
+server.listen(Number(process.argv[2]), '127.0.0.1');
+
+function stop() {
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(0), 2_000).unref();
+}
+
+process.once('SIGINT', stop);
+process.once('SIGTERM', stop);
+`);
 }
 
 function managedRecord(fixture, overrides = {}) {
@@ -177,6 +195,19 @@ function managedRecord(fixture, overrides = {}) {
     status: 'running',
     ...overrides
   };
+}
+
+async function getFreePort() {
+  const server = net.createServer();
+  const port = await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      server.off('error', reject);
+      resolve(server.address().port);
+    });
+  });
+  await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  return port;
 }
 
 function readRuntimeState(projectRoot) {

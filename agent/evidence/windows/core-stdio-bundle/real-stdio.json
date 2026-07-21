@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cellId": "REAL-STDIO-WINDOWS-10.0.26200-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "mcp",
+    "operations": ["capabilities.get", "task.status", "task.run", "task.start"]
+  },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "windows", "version": "10.0.26200", "build": "26200", "architecture": "x64", "distribution": null },
+  "runtime": { "nodeExecutable": "C:/nvm4w/nodejs/node.exe", "nodeVersion": "24.14.0" },
+  "scenario": {
+    "id": "REAL-STDIO-PROTOCOL",
+    "family": "core-stdio-bundle",
+    "description": "Official SDK initialize, tools/list, tools/call, concurrency, restart, project scope, and stdout isolation."
+  },
+  "fixture": {
+    "digest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+    "harnessDigest": "sha256:5d0d4b6cf4cf47d9495c3c8b669411a1375821eec2067f35ac3d7e0ac3863243"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:00:00.000Z",
+    "completedAt": "2026-07-20T10:06:24.715Z",
+    "actions": ["initialize", "list 18 tools", "call success and refusal", "run concurrent starts", "restart adapter", "verify stdout JSON-RPC only"],
+    "commands": ["node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js"]
+  },
+  "result": {
+    "code": "passed",
+    "summary": "All six exact real-stdio scenarios passed on this Windows build.",
+    "assertions": [
+      { "id": "official-sdk-wire", "status": "passed", "evidenceRefs": ["stdio-protocol"] },
+      { "id": "protocol-pure-stdout", "status": "passed", "evidenceRefs": ["stdio-stdout", "stdio-stderr"] },
+      { "id": "restart-no-replay", "status": "passed", "evidenceRefs": ["stdio-protocol"] }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      { "id": "stdio-protocol", "kind": "protocol", "path": "raw/real-stdio.tap.txt", "sha256": "eeb6a1eabf44d85b4f6b1ba327c803bbbe8c3ee08632433d633227cfa806b9c5" },
+      { "id": "stdio-stdout", "kind": "stdout", "path": "raw/real-stdio.tap.txt", "sha256": "eeb6a1eabf44d85b4f6b1ba327c803bbbe8c3ee08632433d633227cfa806b9c5" },
+      { "id": "stdio-stderr", "kind": "stderr", "path": "raw/real-stdio.tap.txt", "sha256": "eeb6a1eabf44d85b4f6b1ba327c803bbbe8c3ee08632433d633227cfa806b9c5" },
+      { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44" }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:06:24.715Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {},
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+      "harnessDigest": "sha256:5d0d4b6cf4cf47d9495c3c8b669411a1375821eec2067f35ac3d7e0ac3863243"
+    }
+  }
+}

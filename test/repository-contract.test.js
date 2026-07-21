@@ -12,6 +12,7 @@ test('release metadata keeps system tests deterministic and the npm payload boun
   assert.deepEqual(packageJson.files, [
     'src/',
     'schema/',
+    'agent/compatibility-manifest.json',
     '.agents/skills/launchdeck-agent/'
   ]);
   assert.equal(packageJson.repository.url, 'git+https://github.com/chenziyang110/launchdeck.git');

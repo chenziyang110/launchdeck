@@ -1,0 +1,13 @@
+version: 1
+project:
+  name: codex-host-evidence
+tasks:
+  managed:
+    command: node server.js 59037
+    longRunning: true
+    ports:
+      - 59037
+    risk: low
+clean:
+  safe: []
+  risky: []

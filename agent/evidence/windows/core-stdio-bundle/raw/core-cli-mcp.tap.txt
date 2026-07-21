@@ -1,0 +1,12 @@
+command: node --test --test-concurrency=1 test/e2e/agent-surface-us1.test.js
+exitCode: 0
+stderr: empty
+✔ CLI then MCP and MCP then CLI reuse the exact managed run without a second spawn (8642.9517ms)
+✔ synchronized real MCP starts converge on one run and one append-only spawn receipt (3399.7091ms)
+✔ external and unknown ownership refuse across real CLI and MCP before spawn or signal effects (3929.7931ms)
+✔ stale safe-clean digest refuses under locks before deleting any current target (928.3328ms)
+✔ CLI and MCP adoption inspection preserve byte inventory, process state, ports, and public surface (1235.8967ms)
+tests: 5
+pass: 5
+fail: 0
+durationMs: 18403.9896

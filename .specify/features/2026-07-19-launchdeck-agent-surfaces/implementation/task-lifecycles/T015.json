@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "task_id": "T015",
+  "task_ref": "task-index.json#/tasks/T015",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T015 owns the failure-first canonical clean plan, digest drift, protected evidence, unsafe path, journal, reconciliation, and CLI compatibility contract; T016 owns implementation and CLI migration.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/clean-operations.test.js test/kernel/clean-operation-faults.test.js test/contracts/clean-cli-compatibility.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED: risky clean and forbidden confirmation-shaped inputs pass; preview/apply/mapping assertions fail only on missing T016 cutover, and both Kernel files fail only because the T016-owned clean handler module is absent."
+  },
+  "changed_paths": [
+    "test/kernel/clean-operations.test.js",
+    "test/kernel/clean-operation-faults.test.js",
+    "test/contracts/clean-cli-compatibility.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T015.json"
+  ],
+  "validation": [
+    {
+      "command": "node --check <three T015 contract files>",
+      "status": "passed",
+      "summary": "All three safe-clean contract files parse successfully."
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/kernel/clean-operations.test.js test/kernel/clean-operation-faults.test.js test/contracts/clean-cli-compatibility.test.js",
+      "status": "failed-as-expected",
+      "summary": "1/6 discovered units passes the risky/confirmation exclusion boundary; three real CLI cases fail only on missing planDigest/Agent mapping, and two Kernel files fail only on missing src/kernel/operations/clean.js."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 83 JavaScript files."
+    },
+    {
+      "command": "git diff --check -- <T015 paths>",
+      "status": "passed",
+      "summary": "All T015 contract and lifecycle changes passed whitespace validation."
+    }
+  ],
+  "review": {
+    "trigger": "intentional-red-safe-clean-boundary",
+    "verdict": "cleared",
+    "evidence": "The RED contract freezes canonical order-independent plans, lock-held recomputation, digest drift refusal before deletion, root/outside/symlink refusal, protected evidence propagation, prepared/running fault windows, evidence-only recovery, schemaVersion 1 CLI mirrors, and explicit exclusion of risky/confirmation-shaped Agent authority."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-003","status":"satisfied","evidence":"Tests expose only configured local safe targets; risky clean remains CLI-only and public Agent requests cannot nominate paths or risky targets."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Fault contracts require durable prepared/running evidence, one apply effect, and reconciliation of the original operation without replay."},
+    {"ref":"CA-005","status":"satisfied","evidence":"Only clean.plan and digest-bound clean.applySafe are tested as public routes; clean --all --yes remains outside Agent results."},
+    {"ref":"CA-013","status":"satisfied","evidence":"The stale-digest contract requires recomputation while mutation locks are held, plan_digest_mismatch, zero apply calls, effects none, and a refused journal record."},
+    {"ref":"CA-026","status":"satisfied","evidence":"A matching digest authorizes only the already public safe operation; it cannot authorize risky targets or replace human confirmation for CLI-only clean --all."},
+    {"ref":"CA-027","status":"satisfied","evidence":"yes, confirmed, approvalToken, riskyTargets, path, and nested confirmation-shaped fields are all rejected by the closed clean.applySafe input contract."},
+    {"ref":"CA-028","status":"satisfied","evidence":"Fault tests require prepared persistence before revalidation/deletion, running persistence before the first apply effect, and retained evidence for post-effect recovery."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

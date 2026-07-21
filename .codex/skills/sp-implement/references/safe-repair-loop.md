@@ -39,8 +39,7 @@ Preserved Contract: repair stays evidence-bound and routes unresolved defects to
 When a commit is technically required to obtain protected-CI evidence that is
 `mandatory_for_completion`, keep the task unchecked and its task lifecycle
 blocked with the Actionable Blocker Resolution fields above. Validate the
-non-final commit with `specify hook validate-commit --commit-message <message>
---feature-dir <feature-dir> --commit-intent external-evidence-checkpoint`.
+non-final commit with `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify hook validate-commit --commit-message '<message>' --feature-dir '<feature-dir>' --commit-intent external-evidence-checkpoint`.
 On Claude or Gemini native hooks, carry the explicit intent on the actual
 commit with `git -c specify.commitIntent=external-evidence-checkpoint commit -m
 "<message>"`; the hook binds it to the active feature and repeats the shared

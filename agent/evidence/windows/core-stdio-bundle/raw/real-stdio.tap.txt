@@ -1,0 +1,13 @@
+command: node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js
+exitCode: 0
+stderr: empty
+✔ concurrent matching MCP starts serialize effects and converge on one managed run (3278.3633ms)
+✔ closing and restarting the MCP adapter leaves the managed run alive and never replays start (4643.2764ms)
+✔ foreground child stdout and stderr stay inside protocol results and every server stdout line is JSON-RPC (972.7338ms)
+✔ Plugin installation cwd never supplies executable project scope (722.5284ms)
+✔ official SDK initializes the real server and lists exactly 18 closed registry-projected tools (794.6616ms)
+✔ real tools/call separates success tool and domain errors with complete structured results (872.9015ms)
+tests: 6
+pass: 6
+fail: 0
+durationMs: 12090.4901

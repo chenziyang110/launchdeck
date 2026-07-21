@@ -32,6 +32,13 @@ credentials, protected systems, human decisions/reviews, or physical access.
 Tailor steps, expected results, failure paths, evidence, and resume action to
 CI, visual review, or product decisions. Never claim completion.
 
+For a feature runtime blocker, do not invent `resume_argv` or overwrite an
+existing blocker. The CLI returns a read-only `show_argv` and structured
+`resolution_action`; `next_argv` stays empty while evidence is missing. After
+the criteria are proven, attach sanitized evidence using the action's declared
+input and execute its base argv. It restores the same owner and keeps the full
+blocker audit.
+
 # Codex Implement Teams
 
 ## Objective
@@ -65,9 +72,13 @@ Run the existing implementation contract through the durable Codex teams runtime
 
 The CLI is the only agent-facing Learning read surface:
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
-2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json` only to filter or page.
 3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+After minimal live inspection identifies a reused operation or changed entry point, rerun targeted recall with current code, tests, and task/contract evidence, for example `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json`. Do not derive these facets from archived specifications. An exact operation-owner match may surface a cross-command candidate even when the new consumer differs; treat it as a candidate, expand one `show_argv`, verify it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist the live facets as `learning_context`, the contextual invocation as `learning_search_refs`, and returned refs as `learning_candidate_refs`. Record exactly one `applied`, `not_applicable`, or `deferred` item in `learning_dispositions` for every candidate. Do not silently ignore a candidate: applied Learning traces to requirement/consequence refs, not-applicable needs current evidence, and deferred needs an explicit deferral ref.
 
 `start`, `list`, and `show` are read-only. Current repository evidence,
 `.specify/memory/constitution.md`, and explicit user direction override stale or
@@ -75,7 +86,7 @@ candidate Learning.
 
 At closeout, corrections, retries, route changes, recovery, false leads, hidden
 dependencies, validation/tooling/state/cognition gaps, constraints, and near
-misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto`
 from owning state; manual capture includes summary, problem, action, triggers,
 success criteria, avoid items, exceptions, and evidence.
 
@@ -151,11 +162,11 @@ Before the teams runtime starts concrete work, ensure the current ready batch is
 
 Before assigning team-managed work, preserve the same project cognition compass contract that `sp-implement` uses:
 
-1. run `project-cognition compass --intent implement --query="$ARGUMENTS" --format json` and include the compass packet in the execution context bundle
+1. run `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement '--query="$ARGUMENTS"' --format json` and include the compass packet in the execution context bundle
 2. Read and carry `epistemic_contract`; require `graph_role=route_candidate_only`, `fact_source_of_truth=live_repository`, `live_verification_required=true`, `graph_only_claims_allowed=false`, and `unverified_claim_action=withhold`. The contract cannot authorize source changes and cannot prove current behavior; contradictory live evidence overrides the route candidate. Graph claims are indexed assertions; even `verified_in_graph_generation` is only an active graph-generation state, not current repository truth. Graph claims cannot authorize source changes and cannot set workflow `claim_ready=true`; bounded live evidence and the separate workflow final-claim gate remain required. Carry `epistemic_contract` in every teammate context packet.
 3. read top-level `minimal_live_reads` first, then use lane-level `first_pass_paths` reasons, evidence hints, `verification_hints`, `followup_surfaces`, and `before_fix_claim` checks
 4. preserve `coverage_diagnostics` as confidence and closeout signals, not route candidates
-5. treat `expansion_ref` as a normal continuation path and run `project-cognition expand --id <id> --section <section> --format json` only when coverage state or live evidence requires more map detail
+5. treat `expansion_ref` as a normal continuation path and run `C:\Users\11034\.specify\bin\project-cognition.exe expand --id '<id>' --section '<section>' --format json` only when coverage state or live evidence requires more map detail
 6. do not infer final edit scope from `minimal_live_reads` or `first_pass_paths`; carry them as advisory first-pass evidence routes in every teammate context packet
 7. use the advanced `lexicon -> semantic_intake -> query` path only when explicit concept decisions are needed or coverage cannot be resolved from the default compass packet
 8. in that precision escalation, normalize user input and write a `semantic_intake` object with `workflow_intent`, `normalized_query`, `intent_facets`, `negative_constraints`, `alias_interpretations`, and `open_semantic_questions`
@@ -164,7 +175,7 @@ Before assigning team-managed work, preserve the same project cognition compass 
 11. keep `alias_interpretations` object-shaped, for example `{"alias": "<user term>", "meaning": "<project term>", "confidence": "medium"}`, never as a string array
 12. build a `query_plan` with `selected_concepts`, `rejected_concepts`, `concept_decisions`, `covered_facets`, `missing_facets`, `match_sources`, `lexicon_generation_id`, `expanded_queries`, `repository_search_terms`, and justified `paths`
 13. derive project-language search terms from the alias catalog before source search; do not search only the raw user words; include component names, state names, file names, command names, UI labels, and route names from candidates, aliases, matched terms, returned paths, `normalized_query`, and `expanded_queries`
-14. run `project-cognition query --intent implement --query-plan "<query_plan_json>" --format json` only for that precision escalation, and preserve returned readiness, `minimal_live_reads`, `first_pass_paths`, and the task-local bundle in every teammate context packet
+14. run `C:\Users\11034\.specify\bin\project-cognition.exe query --intent implement --query-plan '"<query_plan_json>"' --format json` only for that precision escalation, and preserve returned readiness, `minimal_live_reads`, `first_pass_paths`, and the task-local bundle in every teammate context packet
 15. if the query reports diagnostics, preserve `warnings`, `repair_hints`, normalized `query_plan`, structured `errors`, and `expected_shape` so the leader can repair the plan instead of losing the diagnostics in team chat
 
 The only intended difference is the dispatch path:
@@ -222,8 +233,8 @@ Successful runs should leave the user with:
 - Worker result contract: preserve the shared `WorkerTaskResult` semantics even when the runtime calls lanes subagents.
 - Preferred result contract: WorkerTaskResult contract with status, changed files, validation evidence, blockers, failed assumptions, and recovery guidance.
 - Result file handoff path: .specify/teams/state/results/<request-id>.json
-- Runtime-managed result paths require a dispatch request id; compute the path with `specify result path --command implement --request-id <request-id>` and report final completion through the active runtime-managed result channel for that request id.
-- `specify result path` emits JSON and does not accept `--format`; do not append `--format`.
+- Runtime-managed result paths require a dispatch request id; compute the path with `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify result path --command implement --request-id '<request-id>'` and report final completion through the active runtime-managed result channel for that request id.
+- `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify result path --help` documents a JSON-only command; do not append `--format`.
 - Normalize subagent-reported statuses like `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, and `NEEDS_CONTEXT` into the shared `WorkerTaskResult` contract before the leader accepts the handoff.
 - Keep `reported_status` when normalization occurs so runtime-specific subagent language can be reconciled with canonical orchestration state.
 - Wait for every subagent's structured handoff before accepting the join point, closing the batch, or declaring completion.

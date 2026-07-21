@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "task_id": "T018",
+  "task_ref": "task-index.json#/tasks/T018",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first-real-protocol",
+    "reason": "T017 froze the official-SDK real-process handshake, tool projection, error, framing, concurrency, lifecycle-independence, and Plugin-cwd scope contract.",
+    "commands": [
+      "node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "All six real-wire scenarios fail at connection close because src/mcp/stdio-server.js is absent."
+  },
+  "changed_paths": [
+    "src/mcp/stdio-server.js",
+    "src/mcp/tool-projection.js",
+    "src/mcp/diagnostics.js",
+    "src/kernel/operations/capabilities.js",
+    "src/control-plane/operation-journal.js",
+    "src/adapters/process.js",
+    "src/runtime.js",
+    "package.json",
+    "package-lock.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T018.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js","status":"passed","summary":"6/6 official-SDK real-process protocol, concurrency, adapter restart, output isolation, and Plugin-cwd scope scenarios passed."},
+    {"command":"node --test --test-concurrency=1 <shared process/lock/task/journal/CLI regression files>","status":"passed","summary":"49 passed, 1 existing POSIX-only skip, and 0 failures across shared process capture, lock, journal, task, and CLI contracts."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 91 JavaScript files."},
+    {"command":"npm run package:check","status":"passed","summary":"The npm payload contains launchdeck-mcp plus the stdio server, diagnostics, tool projection, schemas, and shared Kernel/runtime sources."},
+    {"command":"npm test","status":"passed","summary":"Full serialized suite: 247 total, 246 passed, 1 existing platform skip, 0 failures."},
+    {"command":"git diff --check","status":"passed","summary":"No whitespace errors were introduced."}
+  ],
+  "review": {
+    "trigger": "changed-path-window-exceeded",
+    "verdict": "cleared",
+    "evidence": "Bounded review confirmed one official SDK stdio transport, registry/schema-derived tools, explicit registered-project resolution, shared Kernel lifecycle/journal/clean authorities, bounded diagnostic stderr and foreground output, protocol-only stdout, and no adapter-owned managed-task lifetime."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"All 18 MCP tools call the same Application Kernel and existing registry, run, ownership, process, event, clean, and operation-journal authorities used by CLI."},
+    {"ref":"MP-003","status":"satisfied","evidence":"The projection exposes only the approved low-risk catalog; medium task execution and nested force inputs refuse before effects."},
+    {"ref":"MP-008","status":"satisfied","evidence":"Runtime provenance identifies source stdio/package-mcp and current host only; no Plugin, bundle, update, or other-OS readiness is claimed."},
+    {"ref":"CA-001","status":"satisfied","evidence":"Every public MCP mutation reaches Application Kernel policy and ownership resolution before the shared effect handler."},
+    {"ref":"CA-002","status":"satisfied","evidence":"MCP annotations are derived descriptive hints; Kernel policy independently refuses medium risk and invalid authority-bearing input."},
+    {"ref":"CA-006","status":"satisfied","evidence":"Log and event providers use bounded inputs and existing bounded observation projection; permanent follow and arbitrary paths remain absent."},
+    {"ref":"CA-009","status":"satisfied","evidence":"MCP never supplies process cwd as scope; explicit registry aliases resolve and Plugin-cwd omission returns scope_not_resolved."},
+    {"ref":"CA-014","status":"satisfied","evidence":"Closed projected schemas and Kernel validation reject recursively nested force/command/env/cwd authority before journaling or effects."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Host identity and annotations cannot elevate Kernel risk, ownership, scope, or compatibility decisions."},
+    {"ref":"CA-021","status":"satisfied","evidence":"Closing and restarting MCP preserves the detached managed task and reuses its exact run ID with one spawn receipt."},
+    {"ref":"CA-036","status":"satisfied","evidence":"Raw server stdout contains JSON-RPC frames only; foreground stdout/stderr is captured to bounded structuredContent and diagnostics are metadata-only stderr."},
+    {"ref":"CA-041","status":"satisfied","evidence":"MCP lifecycle output preserves shared AgentOperationResult semantics and CLI-visible run/state identity, with only surface provenance differing."},
+    {"ref":"CA-046","status":"satisfied","evidence":"Evidence comes from official Client/StdioClientTransport against the real src/mcp/stdio-server.js process, including list/call/concurrency/close/restart."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

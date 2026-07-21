@@ -1,0 +1,13 @@
+command: docker run node:20-bookworm-slim node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js
+exitCode: 0
+stderr: empty
+ok 1 - concurrent matching MCP starts serialize effects and converge on one managed run (1466.295088ms)
+ok 2 - closing and restarting the MCP adapter leaves the managed run alive and never replays start (2161.501041ms)
+ok 3 - foreground child stdout and stderr stay inside protocol results and every server stdout line is JSON-RPC (1021.158775ms)
+ok 4 - Plugin installation cwd never supplies executable project scope (945.05321ms)
+ok 5 - official SDK initializes the real server and lists exactly 18 closed registry-projected tools (1134.459588ms)
+ok 6 - real tools/call separates success tool and domain errors with complete structured results (1086.331659ms)
+tests: 6
+pass: 6
+fail: 0
+durationMs: 8471.628721

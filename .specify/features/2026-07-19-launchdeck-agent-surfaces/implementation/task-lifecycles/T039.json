@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "task_id": "T039",
+  "task_ref": "task-index.json#/tasks/T039",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": null,
+  "changed_paths": [
+    "README.md",
+    "agent/evidence/index.json",
+    "test/host/evidence-index.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T039.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": ["npm run check", "npm run smoke", "npm run package:check", "npm run agent:build", "node scripts/run-agent-evidence.js --validate agent/evidence/windows agent/evidence/linux agent/evidence/macos agent/evidence/codex agent/evidence/claude agent/evidence/cross-host", "git diff --check"],
+      "summary": "Syntax check covers 114 files; isolated Windows smoke passes; npm payload is bounded to 52 files; both generated host artifacts and archives share build 48cc9c90; all 28 evidence cells validate with zero diagnostics; diff whitespace check passes."
+    },
+    {
+      "status": "recovered",
+      "commands": ["npm test", "node --test --test-concurrency=1 test/global-runtime.test.js"],
+      "summary": "The full suite ran 313 tests with 311 passing, one existing POSIX skip, and one temporary test-lock timeout caused by a prior externally terminated test process. The affected global-runtime suite was rerun immediately and passes 24/24; no assertion regression remains, but the original full-suite process exit is retained as nonzero evidence."
+    },
+    {
+      "status": "passed",
+      "commands": ["node --test --test-concurrency=1 test/host/evidence-index.test.js test/contracts/final-surface-exclusion.test.js test/packaging/final-policy-audit.test.js test/skill/final-routing-audit.test.js"],
+      "summary": "The evidence index maps every listed cell to its exact build identity and cannot carry a broad release field; final surface and policy audits pass."
+    }
+  ],
+  "review": {
+    "trigger": "technical release closeout",
+    "verdict": "cleared-with-withheld-host-claims",
+    "evidence": "Documentation and index distinguish the current 48cc9c90 candidate from superseded core/Codex evidence. Current Claude routing failed before dispatch, Codex lifecycle remains an older failed cell, cross-host lifecycle is not executed, and macOS lacks a native executor; none is presented as host readiness."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "refs": ["CA-001", "CA-002", "CA-003", "CA-004", "CA-005", "CA-006", "CA-007", "CA-008", "CA-009", "CA-010", "CA-011", "CA-012", "CA-013", "CA-014", "CA-015", "CA-016", "CA-017", "CA-018", "CA-019", "CA-020", "CA-021", "CA-022", "CA-023", "CA-024", "CA-025", "CA-026", "CA-027", "CA-028", "CA-029", "CA-030", "CA-031", "CA-032", "CA-033", "CA-034", "CA-035", "CA-036", "CA-037", "CA-038", "CA-039", "CA-040", "CA-041", "CA-042", "CA-043", "CA-044", "CA-045", "CA-046", "CA-047", "CA-048", "CA-049", "CA-050"],
+      "status": "implemented-or-claim-bounded",
+      "evidence": "Automated contracts, smoke, package build, real stdio/CLI suites, deterministic artifact tests, exact evidence validation, and the final audit provide the implementation evidence. Host/OS/lifecycle gaps remain explicit in agent/evidence/index.json and are not widened into a release claim."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [
+    {
+      "classification": "project_cognition_readiness",
+      "owner": "maintainer",
+      "evidence": ["project-cognition closeout-plan returned status blocked with exit status 128", "project-cognition mark-dirty reports status.json exists but project-cognition.db is missing", "feature workflow-runtime.json is reopened at specify revision 8"],
+      "exact_next_action": "Restore the project-cognition database and use the upgraded Spec Kit workflow to reconcile the reopened specify/plan/tasks metadata before invoking the mandatory sp-review handoff.",
+      "approval_question": null,
+      "unblock_criteria": "Project cognition accepts the inline closeout update and the workflow runtime accepts an implementation complete-stage transition for the current revision.",
+      "implementation_can_continue": false,
+      "completion_impact": "external_baseline_maintenance"
+    }
+  ],
+  "recovery": "Technical implementation is complete by explicit user direction. Preserve the exact evidence index and task lifecycles; defer workflow-runtime reconciliation as external baseline maintenance, without hand-editing workflow-runtime.json or claiming an Implement-to-Review transition."
+}

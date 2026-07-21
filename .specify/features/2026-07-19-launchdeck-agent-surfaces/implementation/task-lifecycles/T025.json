@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "task_id": "T025",
+  "task_ref": "task-index.json#/tasks/T025",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first-skill-traces",
+    "reason": "T025 owns ordered routing and forbidden-call evaluations; the canonical Skill behavior update belongs to T026.",
+    "commands": [
+      "node --test --test-concurrency=1 test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "6/8 pass; only the missing canonical trace block and five executable force/risky-clean routes fail, exactly at T026's Skill-content boundary."
+  },
+  "changed_paths": [
+    "test/skill/fixtures/routing-traces.json",
+    "test/skill/fixtures/forbidden-calls.json",
+    "test/skill/routing-traces.test.js",
+    "test/skill/forbidden-calls.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T025.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js","status":"failed-as-expected","summary":"6/8 pass; the missing trace contract and existing public force/risky-clean command spans are the only intentional failures."},
+    {"command":"npm run check; git diff --check","status":"passed","summary":"Syntax check passes for 100 JavaScript files and whitespace validation reports no errors."}
+  ],
+  "review": {"trigger":"test-first-boundary","verdict":"cleared","evidence":"Fixtures assert ordered calls rather than final prose, exactly one healthy mutation, pre-dispatch-only CLI fallback, no fallback after refusal/uncertainty, bounded journal recovery, and zero-call refusal for all dropped intents."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-003","status":"covered","evidence":"The deterministic trace begins with lifecycle intent gating and requires MCP-first routing."},
+    {"ref":"MP-005","status":"covered","evidence":"The trace model makes business refusal and post-dispatch uncertainty terminal for surface fallback."},
+    {"ref":"MP-007","status":"covered","evidence":"Traces reference only the shared MCP/CLI semantic operations and no Skill-owned state or service lifetime."},
+    {"ref":"CA-011","status":"covered","evidence":"Known and lost response traces permit only get/list/reconcile after dispatch."},
+    {"ref":"CA-014","status":"covered","evidence":"Forbidden semantic operations and raw command/cwd/env/force fields are rejected by fixture scans."},
+    {"ref":"CA-017","status":"covered","evidence":"No host approval or model-authored approval input exists in any trace."},
+    {"ref":"CA-018","status":"covered","evidence":"Medium-risk intent has a zero-call refusal trace."},
+    {"ref":"CA-019","status":"covered","evidence":"Confirmation-shaped input keys are absent and forbidden."},
+    {"ref":"CA-027","status":"covered","evidence":"confirmed/yes/approvalToken are recursively excluded from trace inputs."},
+    {"ref":"CA-029","status":"covered","evidence":"Indeterminate work routes to journal recovery without repeating the original handler."},
+    {"ref":"CA-030","status":"covered","evidence":"adoption.apply is forbidden and its intent ends without calls."},
+    {"ref":"CA-044","status":"covered","evidence":"Zero and ambiguous correlation traces stop unresolved without retry."},
+    {"ref":"CA-045","status":"covered","evidence":"Assertions operate on machine-readable ordered traces and executable code spans, not plausible prose."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "The first run used a Skill URL one directory above the repository. Both test paths were corrected and the original command rerun before accepting the intentional RED."
+}

@@ -1,3 +1,4 @@
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -6,6 +7,15 @@ const LOCK_RECORD_VERSION = 1;
 const DEFAULT_TTL_MS = 30_000;
 const DEFAULT_WAIT_MS = 0;
 const RETRY_INTERVAL_MS = 10;
+
+export const MUTATION_LOCK_ORDER = Object.freeze([
+  'operation',
+  'registry',
+  'project',
+  'task',
+  'run-index',
+  'journal-index'
+]);
 
 export async function acquireLock(options = {}) {
   const lockName = normalizeLockName(options.lockName);
@@ -67,6 +77,105 @@ export async function withLock(options, callback) {
   }
 }
 
+export function acquireLockSync(options = {}) {
+  const lockName = normalizeLockName(options.lockName);
+  const lockPath = pathForLock(lockName, options);
+  const ttlMs = normalizeDuration(options.ttlMs, DEFAULT_TTL_MS, 'ttlMs');
+  const record = createLockRecord({
+    lockName,
+    ownerCommand: options.ownerCommand,
+    ownerCwd: options.ownerCwd,
+    transactionId: options.transactionId,
+    ttlMs
+  });
+  fsSync.mkdirSync(path.dirname(lockPath), { recursive: true });
+  try {
+    const descriptor = fsSync.openSync(lockPath, 'wx');
+    try {
+      fsSync.writeFileSync(descriptor, `${JSON.stringify(record, null, 2)}\n`, 'utf8');
+    } finally {
+      fsSync.closeSync(descriptor);
+    }
+  } catch (error) {
+    if (error?.code !== 'EEXIST') throw error;
+    throw lockBusyError({
+      lockName,
+      lockPath,
+      owner: readExistingLockSync(lockPath, lockName),
+      staleCandidate: false,
+      takeoverAllowed: false
+    });
+  }
+  return createSyncLockHandle({ lockName, lockPath, record });
+}
+
+export function withLockSync(options, callback) {
+  const lock = acquireLockSync(options);
+  try {
+    return callback(lock);
+  } finally {
+    lock.release();
+  }
+}
+
+export function mutationLockNames(options = {}) {
+  const operationId = normalizeRequiredToken(options.operationId, 'operationId');
+  const names = [`operation-${safePathToken(operationId)}`];
+  if (options.registryMutation === true) names.push('registry');
+  if (options.projectId !== undefined && options.projectId !== null) {
+    const projectId = normalizeRequiredToken(options.projectId, 'projectId');
+    names.push(`project-${safePathToken(projectId)}`);
+    if (options.taskRef !== undefined && options.taskRef !== null) {
+      names.push(`task-${safePathToken(projectId)}-${safePathToken(normalizeRequiredToken(options.taskRef, 'taskRef'))}`);
+    }
+  } else if (options.taskRef !== undefined && options.taskRef !== null) {
+    throw invalidLockOption('projectId is required when taskRef is provided.');
+  }
+  if (options.includeRunIndex === true) names.push('run-index');
+  if (options.includeJournalIndex === true) names.push('operation-journal-index');
+  return names;
+}
+
+export async function withMutationLocks(options, callback) {
+  const names = mutationLockNames(options);
+  const lockRunner = options.lockRunner ?? withLock;
+  const held = [];
+
+  async function acquireAt(index) {
+    if (index === names.length) return callback(Object.freeze([...held]));
+    return lockRunner(lockOptions(options, names[index]), async (lock) => {
+      held.push(lock);
+      try {
+        return await acquireAt(index + 1);
+      } finally {
+        held.pop();
+      }
+    });
+  }
+
+  return acquireAt(0);
+}
+
+export function withMutationLocksSync(options, callback) {
+  const names = mutationLockNames(options);
+  const lockRunnerSync = options.lockRunnerSync ?? withLockSync;
+  const held = [];
+
+  function acquireAt(index) {
+    if (index === names.length) return callback(Object.freeze([...held]));
+    return lockRunnerSync(lockOptions(options, names[index]), (lock) => {
+      held.push(lock);
+      try {
+        return acquireAt(index + 1);
+      } finally {
+        held.pop();
+      }
+    });
+  }
+
+  return acquireAt(0);
+}
+
 export function controlPlanePaths(env = process.env) {
   const homeDir = env.LAUNCHDECK_HOME
     ? path.resolve(env.LAUNCHDECK_HOME)
@@ -123,6 +232,27 @@ function createLockHandle({ lockName, lockPath, record }) {
   };
 }
 
+function createSyncLockHandle({ lockName, lockPath, record }) {
+  let released = false;
+  return {
+    lockName,
+    lockPath,
+    record,
+    release() {
+      if (released) return;
+      released = true;
+      const current = readExistingLockSync(lockPath, lockName);
+      if (isSameOwner(current, record)) {
+        try {
+          fsSync.unlinkSync(lockPath);
+        } catch (error) {
+          if (error?.code !== 'ENOENT') throw error;
+        }
+      }
+    }
+  };
+}
+
 async function readExistingLock(lockPath, lockName) {
   try {
     const content = await fs.readFile(lockPath, 'utf8');
@@ -132,6 +262,26 @@ async function readExistingLock(lockPath, lockName) {
     if (error?.code === 'ENOENT') {
       return undefined;
     }
+    return {
+      version: undefined,
+      lockName,
+      ownerPid: undefined,
+      ownerCommand: 'unknown',
+      ownerCwd: 'unknown',
+      transactionId: undefined,
+      createdAt: undefined,
+      expiresAt: undefined,
+      invalid: true,
+      parseError: error?.message ?? String(error)
+    };
+  }
+}
+
+function readExistingLockSync(lockPath, lockName) {
+  try {
+    return normalizeExistingRecord(JSON.parse(fsSync.readFileSync(lockPath, 'utf8')), lockName);
+  } catch (error) {
+    if (error?.code === 'ENOENT') return undefined;
     return {
       version: undefined,
       lockName,
@@ -258,6 +408,29 @@ function normalizeLockName(lockName) {
     throw invalidLockOption(`Invalid lock name: ${normalized}`);
   }
   return normalized;
+}
+
+function normalizeRequiredToken(value, label) {
+  const token = String(value ?? '').trim();
+  if (!token) throw invalidLockOption(`${label} is required.`);
+  return token;
+}
+
+function safePathToken(value) {
+  return String(value).replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
+function lockOptions(options, lockName) {
+  return {
+    lockName,
+    env: options.env,
+    locksDir: options.locksDir,
+    ownerCommand: options.ownerCommand,
+    ownerCwd: options.ownerCwd,
+    transactionId: options.transactionId ?? options.operationId,
+    ttlMs: options.ttlMs,
+    waitMs: options.waitMs
+  };
 }
 
 function normalizeDuration(value, defaultValue, label) {

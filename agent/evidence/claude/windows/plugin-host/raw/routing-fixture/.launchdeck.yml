@@ -1,0 +1,6 @@
+version: 1
+project:
+  name: claude-host-evidence
+tasks:
+  inspect:
+    command: node --version

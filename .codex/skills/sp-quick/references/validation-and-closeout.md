@@ -17,7 +17,7 @@ Preserved Contract: quick completion requires changed surfaces, verification evi
   - the change itself is implemented in code, docs, config, or templates as needed
   - at least one smallest meaningful executable verification step has run
   - any unverified surface or remaining gap is called out explicitly instead of being implied away
-- The final `SUMMARY.md` must include `changed_code_paths` with modified, added, deleted, and renamed paths; `changed_behavior_surfaces` for affected commands, APIs, templates, generated assets, state files, tests, docs, validators, packets, or runtime assumptions; `verification_evidence`; and `project_cognition_refresh` with the inline update result or fallback `project-cognition mark-dirty` outcome whenever project cognition might be affected.
+- The final `SUMMARY.md` must include `changed_code_paths` with modified, added, deleted, and renamed paths; `changed_behavior_surfaces` for affected commands, APIs, templates, generated assets, state files, tests, docs, validators, packets, or runtime assumptions; `verification_evidence`; and `project_cognition_refresh` with the inline update result or fallback `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty` outcome whenever project cognition might be affected.
 - `should be fine`, `likely unaffected`, or `not expected to break` are not completion evidence.
 - If the change is implemented but verification or coverage is incomplete, do not claim the task is complete. Mark the remaining gap explicitly and continue the sweep or leave the task blocked with the concrete reason.
 ### Inline Project Cognition Update
@@ -27,13 +27,13 @@ Workflow-owned mutation closeout is not an external map-maintenance handoff and 
 Call the planner first:
 
 ```text
-project-cognition closeout-plan --workflow "$ACTIVE_WORKFLOW" --format json
+C:\Users\11034\.specify\bin\project-cognition.exe closeout-plan --workflow '"$ACTIVE_WORKFLOW"' --format json
 ```
 
 When `DELTA_SESSION_ID` exists, pass it into the planner:
 
 ```text
-project-cognition closeout-plan --workflow "$ACTIVE_WORKFLOW" --delta-session "$DELTA_SESSION_ID" --format json
+C:\Users\11034\.specify\bin\project-cognition.exe closeout-plan --workflow '"$ACTIVE_WORKFLOW"' --delta-session '"$DELTA_SESSION_ID"' --format json
 ```
 
 Consume `workflow_canonical`, `update_mode`, `payload_draft`, `required_agent_fields`, `unknown_paths`, `unknown_path_dispositions`, `delta_append_draft`, display-only `delta_append_command`, `update_argv`, display-only `update_command`, and `recommended_next_command`.
@@ -70,8 +70,8 @@ Completed payload drafts preserve the planner-owned `changed_paths` and `scope_p
 Structured `update` invalidates related claims and returns their stable IDs in `affected_graph_claims`. This is separate from update readiness: generic workflow verification and `result_state=ready` must not re-promote stale or contradicted graph claims. Only when this workflow already has decisive claim-specific bounded live evidence for an exact returned claim ID may it submit semantic reconciliation intent and run:
 
 ```text
-project-cognition claim-reconcile prepare --input <intent.json> --format json
-project-cognition claim-reconcile apply --input <prepared_packet_path> --format json
+C:\Users\11034\.specify\bin\project-cognition.exe claim-reconcile prepare --input '<intent.json>' --format json
+C:\Users\11034\.specify\bin\project-cognition.exe claim-reconcile apply --input '<prepared_packet_path>' --format json
 ```
 
 Provide only reconciliation intent: workflow, stable `claim_id`, reason, and evidence containing repository-relative `source_path`, bounded line `span`, and `supporting` or `contradicting` role. Add verification only when it is claim-specific. The runtime owns the contract version, active generation, expected state and revision, UTC observation and expiry, source kind, content hashes, repository snapshot, IDs, and prepared packet path. Do not author or edit those integrity fields; execute the returned `apply_argv` exactly. If no such evidence exists, leave the claim stale. If reconciliation returns ready, rerun Compass once so later routing consumes the current evidence basis; partial or blocked reconciliation remains withheld and follows `recommended_next_action`.
@@ -88,10 +88,10 @@ Clean closeout keys on `result_state`, not `status=ok`, `update_id`, `last_updat
 
 Never run the `complete-refresh` or `clear-dirty` helper after `result_state=partial_refresh`, `needs_rebuild`, `blocked`, or legacy `recorded`; those helpers are only for states that the runtime and validation prove ready.
 
-Dirty fallback command shape: `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason \"<reason>\" --format json`.
-Use `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason \"workflow-closeout-failed\" --format json` only when inline update cannot complete: when the planner or update command is unavailable, cannot record useful update data, cannot identify workflow-owned scope, or cannot be trusted because verification/workflow completion is not trustworthy. Dirty only when inline update cannot complete.
+Dirty fallback command shape: `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason '"<reason>"' --format json`.
+Use `C:\Users\11034\.specify\bin\project-cognition.exe mark-dirty --reason '"workflow-closeout-failed"' --format json` only when inline update cannot complete: when the planner or update command is unavailable, cannot record useful update data, cannot identify workflow-owned scope, or cannot be trusted because verification/workflow completion is not trustworthy. Dirty only when inline update cannot complete.
 
-sp-map-update is for manual/external maintenance and follow-up repair. `$sp-map-update` remains the external/manual workflow for user edits, interrupted workflow repair, explicit map maintenance, and follow-up repair. It is not routine cleanup for changes this workflow just made. If `sp-map-update` already ran `project-cognition update --reason map-update` for the same changed paths, do not run a second `workflow-finalize` closeout update for those paths.
+sp-map-update is for manual/external maintenance and follow-up repair. `$sp-map-update` remains the external/manual workflow for user edits, interrupted workflow repair, explicit map maintenance, and follow-up repair. It is not routine cleanup for changes this workflow just made. If `sp-map-update` already ran `C:\Users\11034\.specify\bin\project-cognition.exe update --reason map-update` for the same changed paths, do not run a second `workflow-finalize` closeout update for those paths.
 - Manual map maintenance may record ordinary uncertain closure, partial/low-confidence facts, known unknowns, and `minimal_live_reads` for external repair cases. After a successful existing-baseline maintenance refresh, use `C:\Users\11034\.specify\bin\project-cognition.exe complete-refresh --format json` only for incremental freshness finalization; `sp-map-build` owns `build-from-scan` and `C:\Users\11034\.specify\bin\project-cognition.exe validate-build --format json`, so do not run `complete-refresh` as a rebuild finalizer.
 
 ## Propagating Change Rule

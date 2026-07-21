@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "cellId": "ISOLATED-BUNDLE-WINDOWS-10.0.26200-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "isolated_bundle",
+    "operations": ["capabilities.get", "task.status"]
+  },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "windows", "version": "10.0.26200", "build": "26200", "architecture": "x64", "distribution": null },
+  "runtime": { "nodeExecutable": "C:/nvm4w/nodejs/node.exe", "nodeVersion": "24.14.0" },
+  "scenario": {
+    "id": "ISOLATED-BUNDLE-REAL-WIRE",
+    "family": "core-stdio-bundle",
+    "description": "Relocated Codex and Claude bundles launch over real stdio without node_modules or external npm imports."
+  },
+  "fixture": {
+    "digest": "sha256:02b51006ad645d7c62ee6ba98818aa03f9dbcfdc1f19aeb249144e3ee77cbdd7",
+    "harnessDigest": "sha256:af734a116dce1a617ce83ea3d5e1fcdba7757f83139baf5d7d8990da4b43050a"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:00:00.000Z",
+    "completedAt": "2026-07-20T10:06:24.715Z",
+    "actions": ["build one ESM file", "relocate to non-ASCII path", "launch each host artifact", "list and call over stdio", "refuse Node 18 build"],
+    "commands": ["node --test --test-concurrency=1 test/packaging/bundle-isolation.test.js"]
+  },
+  "result": {
+    "code": "passed",
+    "summary": "All three exact isolated-bundle scenarios passed on this Windows build.",
+    "assertions": [
+      { "id": "single-file-no-external-npm", "status": "passed", "evidenceRefs": ["bundle-artifact"] },
+      { "id": "relocated-real-stdio", "status": "passed", "evidenceRefs": ["bundle-artifact"] },
+      { "id": "node-prerequisite", "status": "passed", "evidenceRefs": ["bundle-artifact"] }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      { "id": "bundle-artifact", "kind": "artifact", "path": "raw/isolated-bundle.tap.txt", "sha256": "d030f30ffd8321651bf00a2906b34c69c5d2b94cde07e2de0e2e92b4796dddc0" },
+      { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44" }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:06:24.715Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {},
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:02b51006ad645d7c62ee6ba98818aa03f9dbcfdc1f19aeb249144e3ee77cbdd7",
+      "harnessDigest": "sha256:af734a116dce1a617ce83ea3d5e1fcdba7757f83139baf5d7d8990da4b43050a"
+    }
+  }
+}

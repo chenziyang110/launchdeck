@@ -1,0 +1,1308 @@
+{
+  "version": 1,
+  "lane_id": "data-model-state",
+  "status": "complete",
+  "design_authority": {
+    "kernel": "Application Kernel owns operation definitions, request normalization, policy decisions, journal transitions, recovery, and Agent result normalization.",
+    "resource_truth": "Existing registry, project-local runtime state, global run index, ownership proofs, process/port adapters, logs, and events remain the resource-state authorities; the operation journal references rather than replaces them.",
+    "shared_state": "Every persisted record is rooted under the same resolved LAUNCHDECK_HOME for CLI, MCP runtime, and both Plugin packages. No Plugin-local registry, journal, lock, or run index is permitted.",
+    "basis": "Locked by spec-contract constraints, D-001, D-007, D-010, CAP-001..CAP-004, and evidenced by src/control-plane/state.js and src/control-plane/runs.js."
+  },
+  "live_evidence": [
+    {
+      "path": "src/control-plane/state.js",
+      "span": "controlPlanePaths, lines 9-27",
+      "claim": "LAUNCHDECK_HOME already owns the versioned registry, runtime run index, indexes, locks, events, and logs namespaces, so the operation journal belongs in this user-scoped tree rather than a Plugin directory."
+    },
+    {
+      "path": "src/control-plane/state.js",
+      "span": "readRegistryState/writeRegistryState, lines 49-83; validation, lines 209-252; atomicWriteJson, lines 286-290",
+      "claim": "Current state practice is explicit schema versioning, fail-closed reads for unsupported versions, validation before writes, stable identity, and temp-file-plus-rename atomic replacement."
+    },
+    {
+      "path": "src/control-plane/state.js",
+      "span": "normalizeLegacyRegistry, lines 185-207",
+      "claim": "Current migration practice normalizes legacy state in memory and records migratedFrom metadata before a later mutation persists the current schema."
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "span": "RUN_INDEX_VERSION/ACTIVE_RUN_STATUSES and startManagedRun, lines 9-64",
+      "claim": "The global run index is versioned; active run states are starting/running/ready/stopping; start is protected by project then task locks and reuses an existing managed process before spawning."
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "span": "createRunContext, lines 67-80; recordGlobalRun, lines 196-229",
+      "claim": "Runs already carry stable project identity, runId, transactionId, state-home provenance, process identity, status, declared ports, log path, and ownership evidence."
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "span": "existingManagedProcess, lines 232-260",
+      "claim": "Repeated start returns the existing run metadata with spawned=false and records the same run rather than creating another process."
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "span": "observedRun, lines 159-189",
+      "claim": "An active run whose recorded owned PID is no longer alive maps to stale while retaining ownership proof and explicit stale evidence."
+    },
+    {
+      "path": "src/control-plane/runs.js",
+      "span": "withProjectLock/withTaskLock/withRunIndexLock, lines 386-410; atomicWriteJson, lines 425-429",
+      "claim": "Current asynchronous mutations use project, task, and run-index locks plus atomic JSON replacement."
+    },
+    {
+      "path": "src/control-plane/locks.js",
+      "span": "constants and acquireLock, lines 5-58; lock record and release, lines 80-123; stale/takeover checks, lines 171-198",
+      "claim": "Locks are exclusive files with owner PID, transaction, TTL, bounded wait, owner-aware stale takeover, and release guarded by exact owner identity."
+    },
+    {
+      "path": "src/control-plane/ownership.js",
+      "span": "OWNERSHIP_CONFIDENCE and proveRunOwnership, lines 8-197",
+      "claim": "Ownership confidence is verified-owned, probable-owned, stale-owned, external, or unknown and is derived from run, listener PID, liveness, cwd, command, environment marker, and start-time evidence."
+    },
+    {
+      "path": "src/control-plane/ownership.js",
+      "span": "inspectOnlyActionsForOwnership, lines 295-339",
+      "claim": "Only verified-owned observations expose stop; unknown or external ownership is inspect-only and blocks stop, force-stop, and restart."
+    },
+    {
+      "path": "src/control-plane/ownership.js",
+      "span": "trustedSpawnProofMatchesRun, lines 446-473",
+      "claim": "Persisted spawn proof is accepted only when run, project, task, PID, start time, command, cwd, transaction, and project root identities agree."
+    },
+    {
+      "path": "src/runtime.js",
+      "span": "readState/writeState and process refresh, lines 62-110; validateRuntimeState, lines 972-1025",
+      "claim": "Project-local runtime state is schemaVersion 1, bound to an exact project root, and validates process record fields and lifecycle status before use."
+    },
+    {
+      "path": "src/runtime.js",
+      "span": "stopManagedTasksUnlocked, lines 210-305; assertVerifiedStopOwnership, lines 569-696",
+      "claim": "Stop transitions running to stopping then stopped or stop_failed, persists both local and global evidence, and refuses when ownership is external, unknown, stale, or otherwise unverified."
+    },
+    {
+      "path": "src/runtime.js",
+      "span": "resolveCleanTargets/cleanTargets, lines 357-438",
+      "claim": "Clean is already plan-then-apply at the target level, refuses the whole mutation when any target is unsafe, and preserves per-target missing/removed/partially_removed evidence."
+    },
+    {
+      "path": "src/control-plane/actions.js",
+      "span": "resolveRegisteredProject, lines 303-330",
+      "claim": "Configured project resolution already accepts stable ID, alias, name, basename, or exact root and refuses missing and ambiguous matches."
+    },
+    {
+      "path": "src/control-plane/actions.js",
+      "span": "reconcileRunsInScope, lines 512-574; markLocalProcessStale, lines 638-665",
+      "claim": "Reconciliation is scope-bounded, repairs stale evidence only when runId or PID matches, and leaves live or insufficiently proven runs unresolved."
+    },
+    {
+      "path": "src/control-plane/events.js",
+      "span": "appendEvent/readEvents, lines 13-74; event record and limits, lines 85-121; redaction, lines 124-166",
+      "claim": "Events are versioned JSONL with transaction/run correlation, bounded default 200 and maximum 1000 reads, malformed-line diagnostics, and persistence-time secret redaction."
+    },
+    {
+      "path": "src/config.js",
+      "span": "RISK_LEVELS and normalizeTask, lines 13 and 110-156; normalizeClean, lines 171-220",
+      "claim": "Configured task risk is one of low/medium/high/destructive and commands, cwd, env, ports, lifecycle kind, and safe/risky clean declarations come from validated project configuration."
+    },
+    {
+      "path": "test/global-runtime.test.js",
+      "span": "test 'start project:task returns the existing run without spawning a second process', lines 353-368",
+      "claim": "Existing verification proves repeat-start runId/PID reuse and a single spawn."
+    },
+    {
+      "path": "test/control-plane-state.test.js",
+      "span": "tests at lines 12, 44, 90, 122, 150",
+      "claim": "Registry creation, legacy migration, stable project identity, alias collision, unsupported-version refusal, and repair are current verification owners."
+    },
+    {
+      "path": "test/control-plane-locks.test.js",
+      "span": "tests at lines 11, 44, 90, 126, 161, 177",
+      "claim": "Exclusive acquisition, bounded contention, live-owner refusal, dead-owner takeover, and release on success/error are verified lock behaviors."
+    },
+    {
+      "path": "test/control-plane-ownership.test.js",
+      "span": "tests at lines 10, 25, 39, 57, 74, 92",
+      "claim": "Ownership verification requires corroboration; mismatched spawn proof cannot upgrade unknown evidence; unknown ownership stays visible as unknown."
+    },
+    {
+      "path": "test/clean-control-plane.test.js",
+      "span": "tests at lines 9, 34, 64, 89, 111, 154, 208",
+      "claim": "Clean refusal is all-or-nothing for unsafe targets and preserves running/latest-failure evidence; reset remains absent."
+    },
+    {
+      "path": "test/agent-installer.test.js",
+      "span": "canonical target and idempotency tests, lines 7-27 and 103-138; divergent target test, lines 140-181",
+      "claim": "A canonical Skill source, multi-host targets, idempotent identical installs, and divergent-target refusal already exist; the forced overwrite branch is a contract gap to constrain for the new non-destructive duplicate policy."
+    }
+  ],
+  "entities": [
+    {
+      "id": "OperationDefinition",
+      "owner": "Application Kernel / Operation Registry",
+      "basis": "Spec-owned: D-001, CAP-001, public_operation_contract; phase-owned placement recommendation.",
+      "fields": {
+        "name": "Stable canonical ID such as task.start or operation.reconcile.",
+        "definitionVersion": "Positive integer version for the operation contract.",
+        "kind": "observation or mutation.",
+        "inputSchemaRef": "Single source schema consumed by Kernel validation and MCP tool generation/validation.",
+        "allowedSurfaces": "cli, mcp, skill-routing-internal, or diagnostic-only set.",
+        "projectScopePolicy": "configured-project requirement and permitted resolver sources.",
+        "riskEvaluator": "Kernel function that evaluates current configured risk at execution time.",
+        "ownershipRequirement": "none, inspect-only, free-or-same-run, or verified-owned.",
+        "compatibilityRequirement": "Required protocol/state/schema/component axes for observation and mutation.",
+        "lockScopes": "Ordered lock key templates, normally operation then project then task then run-index.",
+        "journalPolicy": "none for pure observations or required-before-effects for mutations.",
+        "effectModel": "Declared possible resource/effect classes used for reconciliation.",
+        "handlerRef": "Kernel-owned executor; adapters never own alternate handlers.",
+        "resultMapperRef": "Normalizer to AgentOperationResult plus CLI schemaVersion 1 mapping.",
+        "deprecatedAliases": "Optional CLI compatibility aliases that resolve to this definition without changing canonical identity."
+      },
+      "invariants": [
+        "Operation names are unique and immutable within an Agent protocol major version.",
+        "Public MCP inputs are a strict projection of the Kernel schema and never add command, shell, env, cwd, force, yes, confirmed, approvalToken, or arbitraryPath.",
+        "Risk annotations in MCP or host manifests are descriptive only; riskEvaluator is authoritative.",
+        "A mutation cannot be registered without required-before-effects journaling, explicit effectModel, lock scopes, and reconciliation behavior."
+      ]
+    },
+    {
+      "id": "OperationRequest",
+      "owner": "Surface adapter for transport decoding; Kernel after schema validation",
+      "basis": "Spec-owned by public_operation_contract and CA-002/CA-008/CA-017; canonical digest rules are phase-owned.",
+      "fields": {
+        "operationName": "Canonical OperationDefinition.name.",
+        "input": "Validated bounded operation-specific input.",
+        "projectRef": "Optional declared project stable ID or alias.",
+        "taskRef": "Optional configured task name.",
+        "explicitProjectRoot": "Optional typed root hint that must resolve to a registered project; never an arbitrary execution path.",
+        "hostProjectRoot": "Optional host-reported workspace root, treated as untrusted resolution evidence.",
+        "recoveryOperationId": "Optional previously Kernel-issued ID, valid only for get/reconcile/recovery of original work.",
+        "surface": "cli or mcp.",
+        "host": "standalone, codex, claude, or unknown.",
+        "requestId": "Transport correlation ID; not the operation identity.",
+        "receivedAt": "Kernel ingress timestamp."
+      },
+      "invariants": [
+        "Adapters do not synthesize approvals or relax the input schema.",
+        "A recoveryOperationId never nominates a new operation ID.",
+        "Conflicting project references are a scope refusal rather than precedence-based guessing.",
+        "The normalized input digest excludes transport requestId and presentation metadata but includes canonical operation name, validated input, resolved projectId/taskRef, relevant config/task-definition digest, and supplied clean plan digest."
+      ]
+    },
+    {
+      "id": "OperationContext",
+      "owner": "Application Kernel",
+      "basis": "Spec-owned by CAP-002..CAP-004 and result_contract provenance; existing run context evidenced at src/control-plane/runs.js:67-80.",
+      "fields": {
+        "operationId": "Kernel-issued immutable op_<base64url> for new mutations, or recovered known ID.",
+        "inputDigest": "sha256 over canonical versioned semantic input.",
+        "definition": "Resolved OperationDefinition identity/version.",
+        "projectScope": "ProjectScopeResolution.",
+        "configSnapshot": "Config version/path/hash and selected task-definition digest; no unredacted secrets in journal projection.",
+        "riskDecision": "RiskDecision computed immediately before mutation.",
+        "ownershipEvidence": "OwnershipEvidence when the operation can affect a run/process/port.",
+        "compatibility": "Compatibility evaluation and exact ComponentIdentity set.",
+        "lockKeys": "Canonical ordered resource lock keys.",
+        "runtimeProvenance": "Surface, host, runtime kind/version/path, state home, build identity, protocol/schema versions.",
+        "clock": "Request/prepared/running timestamps from one Kernel clock source."
+      },
+      "invariants": [
+        "Context is derived, not caller-authored.",
+        "Resolved stateHome must be identical to the registry/run/journal state root used by the executor.",
+        "Policy-sensitive fields are re-evaluated after locks are held and before the running transition/first effect.",
+        "Journal projection is redacted and bounded; raw command/env may remain only in existing protected runtime/config authorities, not the public Agent result."
+      ]
+    },
+    {
+      "id": "AgentOperationResult",
+      "owner": "Application Kernel result normalizer",
+      "basis": "Specified exactly by D-006 and spec-contract.result_contract.",
+      "fields": {
+        "protocolVersion": "Agent protocol version independent from CLI schemaVersion.",
+        "operation": "{id,name,inputDigest,journalStatus}.",
+        "outcome": "{kind,code,message,reusedExistingRun}; kind is succeeded, failed, partial, refused, or indeterminate.",
+        "resource": "{kind,id,status,projectRef,taskRef,runId}; lifecycle status is independent from outcome.kind.",
+        "effects": "{certainty,changed,evidenceRefs}.",
+        "safety": "{risk,decision,ownership,projectScope}.",
+        "error": "Nullable {code,message,details} with bounded/redacted details.",
+        "nextActions": "Typed safe actions; never smuggles forbidden raw controls.",
+        "provenance": "{surface,host,runtimeKind,runtimeVersion,runtimePath,stateHome,buildIdentity,agentProtocolVersion,cliSchemaVersion}."
+      },
+      "invariants": [
+        "All nine top-level fields are present; nullable fields use null rather than disappearing where schemas require presence.",
+        "outcome.kind never substitutes for resource.status.",
+        "A reused active run is outcome succeeded, resource running or ready, effects certainty confirmed, effects.changed false, and reusedExistingRun true.",
+        "An indeterminate outcome has effects certainty possible or unknown and only operation.get/reconcile next actions.",
+        "The CLI adapter preserves schemaVersion 1 field meaning and may nest/map this result without replacing the public CLI envelope."
+      ]
+    },
+    {
+      "id": "EffectsAssessment",
+      "owner": "Application Kernel operation handler and reconciler",
+      "basis": "Specified by result_contract.effects_certainty and D-007.",
+      "fields": {
+        "certainty": "none, confirmed, possible, or unknown.",
+        "changed": "Boolean when known; null when certainty is unknown.",
+        "effectKinds": "Bounded declared effect classes such as process_spawned, process_stopped, files_removed, registry_unchanged.",
+        "evidenceRefs": "Stable references to journal snapshots, run records, ownership proof, events, or clean target results.",
+        "observedAt": "Timestamp of the evidence basis.",
+        "reconciliationRequired": "True for possible or unknown mutation effects."
+      },
+      "invariants": [
+        "none means evidence proves no external mutation began.",
+        "confirmed means evidence proves the reported change or no-change; it does not imply every intended effect succeeded.",
+        "possible means at least one declared effect may have occurred but final state is incomplete; unknown means available evidence cannot bound occurrence.",
+        "possible/unknown is never automatically replayed through either surface."
+      ]
+    },
+    {
+      "id": "OperationJournalRecord",
+      "owner": "Application Kernel journal service",
+      "basis": "Specified by D-007, journal_contract, AC-006/AC-007, and CA-005/CA-011/CA-026..CA-029/CA-042..CA-044; physical layout is phase-owned.",
+      "fields": {
+        "schemaVersion": "Journal record schema version.",
+        "operationId": "Immutable Kernel-issued ID and primary key.",
+        "operationName": "Canonical OperationDefinition.name.",
+        "definitionVersion": "Operation contract version used for execution.",
+        "inputDigest": "Immutable semantic request digest.",
+        "requestSummary": "Bounded redacted summary sufficient for diagnosis and lost-response correlation.",
+        "projectRef": "Resolved stable projectId plus display alias snapshot.",
+        "taskRef": "Configured task name or null.",
+        "state": "prepared, running, succeeded, failed, refused, indeterminate, or reconciled.",
+        "effectsCertainty": "none, confirmed, possible, or unknown.",
+        "effectEvidenceRefs": "References into existing run/ownership/event/clean evidence.",
+        "resourceRef": "Resource kind/id/runId without duplicating mutable resource truth.",
+        "resultRef": "Inline bounded terminal AgentOperationResult snapshot or relative immutable result blob ref.",
+        "resolvedOutcome": "Required when state is reconciled; succeeded, failed, partial, or refused.",
+        "createdAt": "Prepared persistence time.",
+        "startedAt": "Running transition time or null.",
+        "updatedAt": "Last journal transition time.",
+        "terminalAt": "Terminal/reconciled transition time or null.",
+        "retainUntil": "terminalAt plus default 30 days for terminal full records; null for unresolved records.",
+        "runtimeProvenance": "Exact component/build/protocol/schema/stateHome provenance.",
+        "revision": "Monotonic record revision used for compare-and-update diagnostics.",
+        "lastError": "Bounded/redacted error snapshot or null."
+      },
+      "invariants": [
+        "A mutation record reaches durable prepared before project/task side effects.",
+        "operationId, operationName, definitionVersion, inputDigest, projectRef, taskRef, createdAt, and original runtimeProvenance never change.",
+        "Same operationId plus same digest returns current/original work; it never executes a second handler.",
+        "Same operationId plus a different digest returns operation_id_digest_mismatch without changing the record or starting work.",
+        "A supplied unknown, pruned, or expired recovery ID returns operation_record_missing_or_expired and cannot become a new record.",
+        "prepared, running, and indeterminate have retainUntil null and are not age-pruned.",
+        "Journal state does not overwrite run/resource status; it records operation progress and links to resource evidence."
+      ]
+    },
+    {
+      "id": "ProjectScopeResolution",
+      "owner": "Application Kernel project resolver over existing registry",
+      "basis": "Spec-owned by CAP-002, AC-009, CA-009/CA-020; registered resolver behavior evidenced at src/control-plane/actions.js:303-330. Precedence details are phase-owned.",
+      "fields": {
+        "status": "resolved, missing, ambiguous, conflicting, or scope_violation.",
+        "source": "project_ref, explicit_root, host_root, cli_local_config, or none.",
+        "projectId": "Stable registered project ID when resolved.",
+        "alias": "Display alias snapshot.",
+        "projectRoot": "Canonical registered root, never Plugin installation cwd.",
+        "configPath": "Canonical registered config path.",
+        "configHash": "Current validated config digest.",
+        "candidates": "Bounded candidate summaries for ambiguous/conflicting results.",
+        "evidence": "Normalized supplied refs and exact registry match reasons.",
+        "allowedScope": "configured-project, cli-local-compatible, or diagnostic-only."
+      },
+      "invariants": [
+        "Public MCP mutations resolve only to exactly one configured registry project.",
+        "projectRef has no silent fallback: all supplied hints must resolve to the same project or the request is conflicting.",
+        "A sole explicit/host root must exactly match one registered canonical root for MCP; it never authorizes an unregistered project.",
+        "No hint yields missing unless a CLI-local compatibility path explicitly resolves the current project by existing CLI rules.",
+        "Plugin package/install directories are excluded as default project roots."
+      ]
+    },
+    {
+      "id": "OwnershipEvidence",
+      "owner": "Existing control-plane ownership service; Kernel consumes its decision",
+      "basis": "Live-evidenced at src/control-plane/ownership.js:8-197 and 446-473; mutation rule locked by AC-004/CA-004/CA-021/CA-031.",
+      "fields": {
+        "confidence": "verified-owned, probable-owned, stale-owned, external, or unknown.",
+        "source": "launchdeck-spawn, live-process, port-listener, liveness, or composite.",
+        "runId": "Expected Launchdeck run identity.",
+        "projectId": "Expected stable project identity.",
+        "taskRef": "Expected configured task.",
+        "pid": "Observed/recorded PID.",
+        "pidMatchesRun": "Boolean.",
+        "processAlive": "Boolean.",
+        "cwdMatches": "true, false, or unavailable.",
+        "commandMatches": "true, false, or unavailable.",
+        "envMarkerMatches": "true, false, or unavailable.",
+        "startTimeMatches": "true, false, or unavailable.",
+        "portEvidence": "Bounded listener PID/source evidence for declared ports.",
+        "trustedSpawnProof": "Persisted immutable spawn proof when exact identity checks pass.",
+        "checkedAt": "Observation timestamp.",
+        "reasons": "Stable machine-readable evidence/rejection reasons."
+      },
+      "invariants": [
+        "PID or port alone never proves Launchdeck ownership.",
+        "A listener PID mismatch is external; incomplete listener/process evidence is unknown.",
+        "Only verified-owned permits stop/restart or other process mutation.",
+        "probable-owned, stale-owned, external, and unknown remain inspect/reconcile only.",
+        "No operation, Plugin lifecycle, clean, rollback, or fallback path terminates an external or unknown-owned process."
+      ]
+    },
+    {
+      "id": "RiskDecision",
+      "owner": "Application Kernel policy evaluator",
+      "basis": "Spec-owned by D-003, CAP-003, AC-005, CA-007/CA-008/CA-017; risk vocabulary live-evidenced at src/config.js:13,110-156.",
+      "fields": {
+        "configuredRisk": "low, medium, high, or destructive from current validated task/config.",
+        "effectiveRisk": "Kernel-evaluated risk after operation, resource, plan, and current-state modifiers.",
+        "surface": "cli or mcp.",
+        "decision": "allow or refuse.",
+        "reasonCodes": "Stable reasons including risk_not_low, scope_not_resolved, ownership_not_verified, compatibility_mismatch, plan_digest_stale, lock_busy.",
+        "policyVersion": "Kernel policy contract version.",
+        "evaluatedAt": "Execution-time timestamp.",
+        "inputDigest": "Operation input digest being authorized.",
+        "scopeStatus": "ProjectScopeResolution.status.",
+        "ownershipConfidence": "OwnershipEvidence.confidence or not_applicable.",
+        "compatibilityStatus": "compatible, incompatible, or diagnosis_only."
+      },
+      "invariants": [
+        "First-release public MCP mutation allows only current effectiveRisk low with resolved configured project, compatible components, required ownership, and acquired locks.",
+        "Host approvals, MCP annotations, and model-authored confirmation fields cannot change decision.",
+        "Medium/high/destructive MCP execution is refused even if the CLI has an existing interactive path.",
+        "Policy is recomputed after relevant locks are acquired and before the first side effect."
+      ]
+    },
+    {
+      "id": "CompatibilityManifest",
+      "owner": "Build/release source manifest; Kernel compatibility evaluator consumes generated runtime copy",
+      "basis": "Spec-owned by D-002/D-005/D-010, AC-010/AC-011, CA-010/CA-025/CA-032..CA-035; schema shape is phase-owned.",
+      "fields": {
+        "manifestVersion": "Compatibility manifest schema version.",
+        "buildIdentity": "One immutable build ID shared by generated artifacts.",
+        "packageVersion": "Launchdeck package/release version.",
+        "nodeRange": ">=20.",
+        "agentProtocolVersion": "Independent Agent protocol version/range.",
+        "cliSchemaVersion": "1 for the existing CLI contract.",
+        "stateSchemas": "Registry, run-index, project-runtime, journal, lock, and event readable/writable ranges.",
+        "operationSchemaVersion": "Operation definition/input/result schema identity.",
+        "componentDigests": "Canonical runtime bundle, operation schemas, Skill content manifest, and host manifest digests.",
+        "supportedOperations": "Canonical operation IDs plus definition versions and public surface/risk limits.",
+        "hostArtifacts": "Separate Codex and Claude package identities generated from this manifest.",
+        "migrationCapabilities": "Explicit readable, writable, and diagnostic-only version edges."
+      },
+      "invariants": [
+        "Package, Agent protocol, CLI schema, state schema, operation schema, Skill digest, runtime digest, and host artifact identity are separate axes.",
+        "Mutation requires readable-and-writable state compatibility plus matching required runtime/schema/build digests; mismatch fails writes closed.",
+        "Bounded capabilities/diagnosis may run in diagnostic-only mode on a mismatch and must report exact axes.",
+        "Codex and Claude artifacts have distinct host identities but the same buildIdentity and canonical component digests."
+      ]
+    },
+    {
+      "id": "ComponentIdentity",
+      "owner": "Each CLI/MCP/Skill/Plugin component; verified by Kernel capabilities",
+      "basis": "Spec-owned by result provenance, compatibility constraints, and CA-010/CA-035/CA-037/CA-038.",
+      "fields": {
+        "kind": "cli, mcp-runtime, canonical-skill, codex-plugin, or claude-plugin.",
+        "componentVersion": "Component/package version.",
+        "buildIdentity": "CompatibilityManifest build identity.",
+        "manifestDigest": "Digest of the manifest consumed at build/install.",
+        "runtimeDigest": "Bundled/runtime executable content digest where applicable.",
+        "schemaDigest": "Operation/protocol schema digest.",
+        "skillDigest": "Canonical Skill content-manifest digest where applicable.",
+        "host": "standalone, codex, or claude.",
+        "installedPath": "Observed absolute component path for provenance only, never policy authority.",
+        "stateHome": "Resolved shared LAUNCHDECK_HOME.",
+        "observedAt": "Identity observation timestamp."
+      },
+      "invariants": [
+        "A path match does not establish component compatibility; digests and version ranges do.",
+        "Compatible newer CLI/Plugin may control an older run only when state schema, operation semantics, and ownership proof pass.",
+        "Host exit/update/disable/uninstall does not own managed-task lifetime or shared-state lifetime."
+      ]
+    },
+    {
+      "id": "SkillInstallationObservation",
+      "owner": "Agent installer/doctor and Plugin diagnostics",
+      "basis": "Specified by D-008, skill_migration_contract, AC-013, CA-023/CA-047/CA-048; current installer evidence at test/agent-installer.test.js:7-181.",
+      "fields": {
+        "canonicalSkill": "launchdeck-agent.",
+        "observations": "Array of {locationKind,path,exists,entryType,contentManifestDigest,buildIdentity,componentIdentity,readError}.",
+        "locationKind": "codex-current-user, codex-legacy-user, codex-project, claude-project, plugin-bundled-codex, or plugin-bundled-claude.",
+        "state": "absent, single, duplicate-identical, duplicate-divergent, invalid-target, or unreadable.",
+        "digestGroups": "Locations grouped by canonical content-manifest digest.",
+        "selectedLocation": "Deterministic host-preferred active location only when absent/single/identical rules permit.",
+        "ambiguity": "Bounded differing paths/digests/build identities.",
+        "recommendedActions": "User-controlled install, migrate, select, or cleanup instructions.",
+        "observedAt": "Scan timestamp."
+      },
+      "invariants": [
+        "Codex scans both $HOME/.agents/skills/launchdeck-agent and ~/.codex/skills/launchdeck-agent.",
+        "Canonical digest is sha256 over a sorted versioned manifest of relative path, file type, size, and per-file content digest; arbitrary absolute paths and mtimes are excluded.",
+        "Identical duplicates are reported, current Codex location wins deterministic precedence, and cleanup is only suggested.",
+        "Divergent duplicates preserve every file, expose every digest, select no silent winner, and require explicit user-selected migration/removal before single-active readiness.",
+        "New Codex user installation targets only $HOME/.agents/skills; an identical target is idempotent; divergent target content is not overwritten by automatic install/update.",
+        "Plugin-bundled copies remain version-coupled to their bundled runtime and are never silently treated as the user installation."
+      ]
+    },
+    {
+      "id": "CleanPlan",
+      "owner": "Application Kernel clean planner",
+      "basis": "Spec-owned by CAP-009, AC-008, CA-013/CA-030; existing target planning evidenced at src/runtime.js:357-438. Digest envelope is phase-owned.",
+      "fields": {
+        "schemaVersion": "Clean plan schema version.",
+        "planId": "Diagnostic plan identity; not execution authority by itself.",
+        "projectId": "Stable configured project identity.",
+        "projectRootDigest": "Digest of canonical root identity, never the raw root as public authority.",
+        "configHash": "Validated configuration snapshot hash.",
+        "mode": "safe only for public Agent apply.",
+        "targets": "Sorted array of {rawPathLabel,canonicalRelativePath,kind,status,protectedPathDigests,exists,type}.",
+        "refusals": "Unsafe/ambiguous target codes; any entry blocks apply.",
+        "createdAt": "Preview time.",
+        "planDigest": "sha256 of versioned canonical projectId/configHash/mode/target/refusal payload.",
+        "effectsPreview": "Bounded expected removals/skips and evidence refs."
+      },
+      "invariants": [
+        "clean.plan performs no deletion.",
+        "clean.applySafe accepts only planDigest plus declared project reference, creates a mutation journal record, acquires operation/project locks, recomputes a fresh plan, and compares exact digest before effects.",
+        "Any config, target, canonical path, protected evidence, existence/type, or refusal drift produces plan_digest_stale with effects none/changed false.",
+        "Only targets still classified safe are deleted; risky, root, outside-root, symlink escape, empty, or ambiguous targets are refused.",
+        "Safe clean never removes shared LAUNCHDECK_HOME or evidence needed to identify active/current failed runs."
+      ]
+    },
+    {
+      "id": "ObservationCursor",
+      "owner": "Kernel bounded-observation service",
+      "basis": "Spec-owned by CAP-007, public_operation_contract.observation_boundary, CA-036; limits reuse src/control-plane/events.js:5-7,105-121 and src/runtime.js:335-354. Cursor token design is phase-owned.",
+      "fields": {
+        "version": "Cursor schema version.",
+        "kind": "task-logs, task-events, or operation-list.",
+        "resourceId": "Resolved project/task or journal namespace identity; no caller path.",
+        "queryDigest": "Digest of normalized project/task/filter/order/window/limit query.",
+        "nextOffset": "Opaque service-owned byte/record offset.",
+        "snapshotHighWater": "File length or createdAt/operationId tuple fixed for this paging session.",
+        "issuedAt": "Cursor creation time.",
+        "expiresAt": "Bounded cursor validity; cursor expiry never affects underlying journal retention.",
+        "token": "base64url canonical payload plus integrity digest; treated as opaque by callers."
+      },
+      "invariants": [
+        "The cursor cannot select an arbitrary path and is rejected if kind/resource/query digest changes.",
+        "Each call is bounded: events default 200/max 1000 records; logs default 80/max 1000 lines and max 256 KiB response; operation.list default 50/max 200 records.",
+        "snapshotHighWater prevents one page sequence from becoming permanent follow; end-of-snapshot returns nextCursor null.",
+        "A new call is required to observe later data.",
+        "Secret redaction occurs before persistence for events and before response projection for logs/journal summaries."
+      ]
+    },
+    {
+      "id": "ReadinessEvidenceCell",
+      "owner": "Verification/release evidence registry",
+      "basis": "Locked by D-010, AC-014/AC-015, CA-039/CA-040/CA-046/CA-049/CA-050; physical artifact format is phase-owned.",
+      "fields": {
+        "cellId": "Stable digest/key over exact readiness dimensions.",
+        "buildIdentity": "Tested CompatibilityManifest build.",
+        "surface": "operation-contract, cli, stdio-mcp, skill, codex-host, claude-host, update, uninstall, recovery, or platform.",
+        "operationSet": "Exact operation IDs/definition versions covered.",
+        "host": "standalone, codex version, or claude version.",
+        "os": "Exact OS/version and architecture.",
+        "scenario": "Positive, refusal, interruption, restart, concurrency, host-exit, update, disable, uninstall, takeover, or recovery.",
+        "status": "passed, failed, blocked, or unsupported.",
+        "evidenceRefs": "Test IDs, artifact paths, command receipts, and captured build/component identities.",
+        "executedAt": "Evidence time.",
+        "expiresOrRevalidateOn": "Build, host, OS, schema, or manifest changes that invalidate the cell.",
+        "dependsOn": "Other exact cells required for a composed claim."
+      },
+      "invariants": [
+        "A passed cell proves only its exact build/surface/operation/host/OS/scenario dimensions.",
+        "Failed, blocked, unsupported, missing, or stale cells withhold that claim and every aggregate depending on it.",
+        "Codex evidence never proves Claude, one OS never proves another, and install never proves update/uninstall/recovery.",
+        "Every readiness claim exposes evidence refs and compatibility identity."
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from": "OperationDefinition",
+      "to": "OperationRequest",
+      "cardinality": "1:N",
+      "rule": "The definition validates and normalizes every request; adapters cannot fork semantics."
+    },
+    {
+      "from": "OperationRequest",
+      "to": "OperationContext",
+      "cardinality": "1:1",
+      "rule": "Kernel resolves project, config, risk, ownership, compatibility, digest, operation ID, and lock keys."
+    },
+    {
+      "from": "OperationContext",
+      "to": "OperationJournalRecord",
+      "cardinality": "1:0..1",
+      "rule": "Every mutation has one durable journal record before effects; pure observations may be not-journaled but still return an ephemeral invocation operation ID."
+    },
+    {
+      "from": "OperationJournalRecord",
+      "to": "AgentOperationResult",
+      "cardinality": "1:1 current terminal snapshot",
+      "rule": "The journal persists/refers to the normalized result; same-ID recovery returns it without re-execution."
+    },
+    {
+      "from": "OperationJournalRecord",
+      "to": "run/resource authorities",
+      "cardinality": "N:0..1 primary resource plus N evidence refs",
+      "rule": "resourceRef/runId links existing run/ownership/event/clean evidence; mutable resource state is never duplicated as a second authority."
+    },
+    {
+      "from": "ProjectScopeResolution",
+      "to": "RiskDecision",
+      "cardinality": "1:1 per decision",
+      "rule": "Missing, ambiguous, conflicting, or out-of-scope resolution forces refusal."
+    },
+    {
+      "from": "OwnershipEvidence",
+      "to": "RiskDecision",
+      "cardinality": "0..1:1",
+      "rule": "Process-affecting mutations require verified-owned; start additionally requires declared ports free or attributable to the same reused run."
+    },
+    {
+      "from": "CompatibilityManifest",
+      "to": "ComponentIdentity",
+      "cardinality": "1:N",
+      "rule": "Capabilities compares each observed component against independently versioned axes and digests."
+    },
+    {
+      "from": "SkillInstallationObservation",
+      "to": "ComponentIdentity",
+      "cardinality": "1:N",
+      "rule": "Each discovered user or Plugin Skill copy reports digest/build coupling and host location separately."
+    },
+    {
+      "from": "CleanPlan",
+      "to": "OperationJournalRecord",
+      "cardinality": "1:0..1",
+      "rule": "Preview is read-only; applySafe journals a new mutation and binds/revalidates planDigest before deletion."
+    },
+    {
+      "from": "ObservationCursor",
+      "to": "events/logs/journal index",
+      "cardinality": "N:1 snapshot",
+      "rule": "Cursor pages only a bounded high-water snapshot of an already resolved source."
+    },
+    {
+      "from": "ReadinessEvidenceCell",
+      "to": "CompatibilityManifest",
+      "cardinality": "N:1 build identity",
+      "rule": "Evidence is invalidated when its tested build/manifest/runtime/schema/Skill identities change."
+    }
+  ],
+  "state_machines": {
+    "operation_journal": {
+      "basis": "Spec-contract.journal_contract; exact transition guards are phase-owned design.",
+      "states": [
+        "prepared",
+        "running",
+        "succeeded",
+        "failed",
+        "refused",
+        "indeterminate",
+        "reconciled"
+      ],
+      "initial": "prepared",
+      "transitions": [
+        {
+          "from": "new mutation request",
+          "to": "prepared",
+          "guard": "Definition/input/scope are syntactically valid and a new Kernel operation ID is allocated.",
+          "actions": "Persist immutable identity/digest/context summary with effectsCertainty none before effects."
+        },
+        {
+          "from": "prepared",
+          "to": "running",
+          "guard": "Operation lock plus declared resource locks are held; execution-time risk, scope, ownership, compatibility, and optional plan digest all pass.",
+          "actions": "Persist running/revision/startedAt before first declared side effect."
+        },
+        {
+          "from": "prepared",
+          "to": "refused",
+          "guard": "Any execution-time policy/scope/ownership/compatibility/lock/plan precondition refuses before effects.",
+          "actions": "Persist terminal refusal with effects none, changed false, and safe next actions."
+        },
+        {
+          "from": "prepared",
+          "to": "failed",
+          "guard": "A non-policy internal failure is proven to occur before effects.",
+          "actions": "Persist terminal failure with effects none and diagnostic evidence."
+        },
+        {
+          "from": "running",
+          "to": "succeeded",
+          "guard": "Declared postconditions/evidence confirm the intended result or confirmed idempotent no-change.",
+          "actions": "Persist terminal result; effects confirmed; resource status remains separately mapped."
+        },
+        {
+          "from": "running",
+          "to": "failed",
+          "guard": "Failure and final effects are bounded by evidence.",
+          "actions": "Persist outcome failed or partial with effects none/confirmed/possible as justified; possible additionally requires reconcile next action."
+        },
+        {
+          "from": "running",
+          "to": "indeterminate",
+          "guard": "Transport/process interruption or persistence failure prevents a defensible final effect determination.",
+          "actions": "Persist possible or unknown effects when possible, emit recovery evidence, never retry automatically."
+        },
+        {
+          "from": "prepared",
+          "to": "reconciled",
+          "guard": "Explicit operation.reconcile after crash proves no effect or a final resource outcome.",
+          "actions": "Persist resolvedOutcome, evidence refs, terminalAt, and retention horizon without executing original work."
+        },
+        {
+          "from": "running",
+          "to": "reconciled",
+          "guard": "Explicit reconciliation after abandoned executor proves a final resource outcome.",
+          "actions": "Persist resolvedOutcome/effects from live and durable evidence; no replay."
+        },
+        {
+          "from": "indeterminate",
+          "to": "reconciled",
+          "guard": "Explicit reconciliation obtains sufficient run/process/port/file evidence.",
+          "actions": "Persist resolvedOutcome succeeded/failed/partial/refused and confirmed/none effects; if evidence remains insufficient, stay indeterminate."
+        }
+      ],
+      "terminal": [
+        "succeeded",
+        "failed",
+        "refused",
+        "reconciled"
+      ],
+      "prohibited": [
+        "Any terminal state back to running",
+        "indeterminate back to running",
+        "Same operation ID creating a second prepared record",
+        "Recovery of a missing/expired ID as new execution",
+        "Automatic replay across CLI/MCP/Skill fallback"
+      ]
+    },
+    "run_and_resource_lifecycle_mapping": {
+      "basis": "Current run states evidenced in src/control-plane/runs.js and src/runtime.js; normalized mapping is phase-owned under D-006.",
+      "resource_states": [
+        "not_running",
+        "starting",
+        "running",
+        "ready",
+        "stopping",
+        "stopped",
+        "completed",
+        "failed",
+        "stop_failed",
+        "stale",
+        "unknown_owner",
+        "external_owner"
+      ],
+      "mappings": [
+        {
+          "operation": "task.start",
+          "condition": "No matching active run; spawn and readiness confirmed.",
+          "journal": "succeeded",
+          "outcome": "succeeded",
+          "resource": "running or ready",
+          "effects": "confirmed/changed=true"
+        },
+        {
+          "operation": "task.start",
+          "condition": "Matching active owned run exists.",
+          "journal": "succeeded",
+          "outcome": "succeeded with reusedExistingRun=true",
+          "resource": "running or ready with original runId/PID",
+          "effects": "confirmed/changed=false"
+        },
+        {
+          "operation": "task.start",
+          "condition": "Declared port/process is external, unknown, or conflicting.",
+          "journal": "refused",
+          "outcome": "refused",
+          "resource": "external_owner or unknown_owner",
+          "effects": "none/changed=false"
+        },
+        {
+          "operation": "task.stop",
+          "condition": "Verified-owned run stops and declared ports release.",
+          "journal": "succeeded",
+          "outcome": "succeeded",
+          "resource": "stopped",
+          "effects": "confirmed/changed=true"
+        },
+        {
+          "operation": "task.stop",
+          "condition": "Stop attempted but process/port final state is bounded as failed.",
+          "journal": "failed",
+          "outcome": "failed or partial",
+          "resource": "stop_failed or stopped",
+          "effects": "confirmed or possible; reconcile required when possible"
+        },
+        {
+          "operation": "task.restart",
+          "condition": "Old run stopped and new run ready.",
+          "journal": "succeeded",
+          "outcome": "succeeded",
+          "resource": "new run ready",
+          "effects": "confirmed/changed=true with old/new run evidence"
+        },
+        {
+          "operation": "task.restart",
+          "condition": "Old run stopped but new start fails definitively.",
+          "journal": "failed",
+          "outcome": "partial",
+          "resource": "stopped or failed",
+          "effects": "confirmed/changed=true"
+        },
+        {
+          "operation": "task.run",
+          "condition": "Foreground command exits.",
+          "journal": "succeeded for zero exit, failed for nonzero, indeterminate on lost exit evidence",
+          "outcome": "succeeded, failed, or indeterminate",
+          "resource": "completed or failed",
+          "effects": "per declared effect model; never inferred from exit code alone when mutations are possible"
+        },
+        {
+          "operation": "operation.reconcile",
+          "condition": "Original prepared/running/indeterminate record is resolved.",
+          "journal": "original becomes reconciled; reconcile invocation succeeds as observation/recovery",
+          "outcome": "original resolvedOutcome kept separate from current resource status",
+          "resource": "observed current state",
+          "effects": "none or confirmed from evidence"
+        }
+      ]
+    },
+    "component_compatibility": {
+      "basis": "Spec-owned by compatibility rules and D-005/D-010; evaluation ordering is phase-owned.",
+      "states": [
+        "compatible",
+        "diagnosis_only",
+        "incompatible",
+        "unknown"
+      ],
+      "transitions": [
+        {
+          "from": "unknown",
+          "to": "compatible",
+          "guard": "All required version ranges and digests match and state schemas are readable/writable for requested operation."
+        },
+        {
+          "from": "unknown",
+          "to": "diagnosis_only",
+          "guard": "Identity can be read but a write axis is incompatible or digest mismatch exists."
+        },
+        {
+          "from": "unknown",
+          "to": "incompatible",
+          "guard": "Required protocol/state/manifest cannot be safely interpreted."
+        },
+        {
+          "from": "compatible",
+          "to": "diagnosis_only or incompatible",
+          "guard": "Runtime/Skill/schema digest drift, unsupported state version, or build mismatch is observed."
+        },
+        {
+          "from": "diagnosis_only or incompatible",
+          "to": "compatible",
+          "guard": "Explicit compatible update/migration is installed and exact identities revalidate."
+        }
+      ],
+      "mutation_rule": "Only compatible permits mutation; diagnosis_only/incompatible/unknown fail writes closed while returning bounded capabilities/diagnosis where readable.",
+      "lifetime_rule": "Plugin host exit, disable, update, or uninstall changes component presence only; it never transitions managed runs or deletes shared state."
+    },
+    "skill_installation": {
+      "basis": "Specified by skill_migration_contract; content manifest algorithm and scan ordering are phase-owned.",
+      "states": [
+        "absent",
+        "single",
+        "duplicate-identical",
+        "duplicate-divergent",
+        "invalid-target",
+        "unreadable"
+      ],
+      "transitions": [
+        {
+          "from": "absent",
+          "to": "single",
+          "guard": "New install writes canonical content to host-preferred location only."
+        },
+        {
+          "from": "single",
+          "to": "single",
+          "guard": "Observed target digest is identical; install/update is idempotent."
+        },
+        {
+          "from": "single",
+          "to": "duplicate-identical",
+          "guard": "Second scanned location has the same canonical content digest."
+        },
+        {
+          "from": "single or duplicate-identical",
+          "to": "duplicate-divergent",
+          "guard": "Any scanned copy has a distinct content digest or incompatible build coupling."
+        },
+        {
+          "from": "duplicate-identical",
+          "to": "single",
+          "guard": "User explicitly removes one identical duplicate; tool never deletes automatically."
+        },
+        {
+          "from": "duplicate-divergent",
+          "to": "single or duplicate-identical",
+          "guard": "User explicitly selects/migrates/removes content and a fresh scan proves convergence."
+        }
+      ],
+      "selection": "For Codex identical duplicates, $HOME/.agents/skills wins over ~/.codex/skills. Divergent duplicates have no silent active selection/readiness claim.",
+      "prohibited": [
+        "Automatic overwrite of divergent user content",
+        "Automatic deletion of any duplicate",
+        "Treating a Plugin-bundled copy as interchangeable with a user copy without build/digest reporting"
+      ]
+    },
+    "readiness_cell": {
+      "basis": "D-010 and CA-039/CA-040/CA-046/CA-049/CA-050.",
+      "states": [
+        "passed",
+        "failed",
+        "blocked",
+        "unsupported",
+        "stale"
+      ],
+      "transitions": [
+        {
+          "from": "missing/stale",
+          "to": "passed, failed, blocked, or unsupported",
+          "guard": "Exact cell scenario executes or a documented environment limitation is captured."
+        },
+        {
+          "from": "passed",
+          "to": "stale",
+          "guard": "Build identity, relevant component digest/schema, host version, OS contract, or scenario implementation changes."
+        }
+      ],
+      "rollup": "A composite readiness label is passed only when every explicitly required exact cell is current and passed; otherwise it reports the narrow missing/failed/blocked/unsupported dimensions."
+    }
+  },
+  "persistence_layout_recommendation": {
+    "basis": "Phase-owned design that extends the evidenced controlPlanePaths layout and atomic-write/lock patterns.",
+    "root": "<LAUNCHDECK_HOME>",
+    "paths": [
+      {
+        "path": "registry/projects.json",
+        "authority": "existing configured project registry v2",
+        "change": "reuse unchanged; ProjectScopeResolution reads this authority"
+      },
+      {
+        "path": "runtime/runs.json",
+        "authority": "existing run/resource index v1",
+        "change": "reuse and evolve only through its own schema migration; journal links via runId"
+      },
+      {
+        "path": "runtime/operations/v1/records/<operationId>.json",
+        "authority": "one atomic full OperationJournalRecord per mutation",
+        "change": "new; temp-file plus rename under operation lock"
+      },
+      {
+        "path": "runtime/operations/v1/indexes/by-created/<YYYY-MM-DD>.jsonl",
+        "authority": "derived immutable creation index for bounded operation.list correlation",
+        "change": "new; append one redacted creation entry under operation-journal-index lock; record state is re-read from the authoritative record"
+      },
+      {
+        "path": "runtime/operations/v1/results/<operationId>.json",
+        "authority": "optional bounded terminal Agent result blob when too large for record",
+        "change": "new; digest referenced by resultRef; no raw stdout/unbounded logs"
+      },
+      {
+        "path": "locks/operation-<operationId>.lock",
+        "authority": "same-ID serialization and recovery exclusion",
+        "change": "new lock family using existing owner-aware lock record"
+      },
+      {
+        "path": "locks/operation-journal-index.lock",
+        "authority": "creation-index append/compaction serialization",
+        "change": "new lock family"
+      },
+      {
+        "path": "events/events.jsonl and logs/...",
+        "authority": "existing observations",
+        "change": "reuse; add operationId to sanitized event correlation and expose only through cursor-bounded service"
+      }
+    ],
+    "record_write_protocol": [
+      "Acquire operation-<operationId> lock.",
+      "For new mutation, atomically persist prepared record and append its one creation-index entry before resource locks/effects.",
+      "Acquire resource locks in canonical order: operation, registry when needed, project, task, run-index/journal-index as short inner locks.",
+      "Re-evaluate scope/risk/ownership/compatibility/plan digest, atomically transition record, then execute.",
+      "Each later transition atomically replaces the operation record with revision+1; append sanitized lifecycle event for observability.",
+      "The date index is derived: missing/corrupt index can be rebuilt from records without inventing operation state; index disagreement never authorizes execution."
+    ]
+  },
+  "migrations_and_retention": {
+    "basis": "D-007/journal_contract plus existing fail-closed/migratedFrom patterns; compaction scheduling is phase-owned.",
+    "journal_schema": [
+      "Initial journal schemaVersion is 1 under an explicit v1 directory.",
+      "Readers reject unsupported newer record versions for mutation and return bounded diagnostic metadata/path/version.",
+      "A future migration writes a new version atomically while preserving operationId/inputDigest/original provenance/effect evidence and records migratedFrom {schemaVersion,recordDigest,migratedAt}.",
+      "Unresolved prepared/running/indeterminate records are never destructively migrated without preserving raw evidence and a reversible diagnostic copy/reference.",
+      "Registry v2, run index v1, project runtime v1, lock v1, and event v1 keep independent versions; journal introduction does not rewrite them."
+    ],
+    "retention": {
+      "terminal_full_record_default_days": 30,
+      "terminal_states": [
+        "succeeded",
+        "failed",
+        "refused",
+        "reconciled"
+      ],
+      "terminal_clock": "terminalAt; reconciled records count from reconciliation terminalAt.",
+      "unresolved_rule": "prepared, running, and indeterminate records have no age-based expiry and remain until explicit evidence-based reconciliation or separately specified safe administrative resolution.",
+      "prune_rule": "Compaction acquires the journal-index lock, verifies record is terminal and retainUntil is in the past, removes result/full record atomically, and rebuilds/prunes derived indexes. It never infers terminal state from age or dead PID alone.",
+      "recovery_after_prune": "Any supplied operation ID whose full record is absent returns operation_record_missing_or_expired and never creates new work, whether the ID never existed or was pruned.",
+      "shared_state_rule": "Plugin update/disable/uninstall never runs journal, run, registry, log, or event retention as a package-removal side effect."
+    },
+    "skill_migration": [
+      "Scan legacy/current Codex user locations and Plugin copies before install/update.",
+      "Identical copies are idempotent and non-destructive; current Codex user path has precedence.",
+      "Divergent copies remain untouched until explicit user-selected migration/removal, followed by a fresh digest scan.",
+      "The current test allowing --force overwrite is a verification/implementation gap against the new automatic non-destructive contract and must be partitioned or replaced by an explicitly reviewed migration operation, not exposed through public Agent inputs."
+    ]
+  },
+  "concurrency_and_idempotency": {
+    "basis": "Spec-owned by AC-003/AC-006/AC-007 and journal_contract; lock order extends live src/control-plane lock practice.",
+    "lock_order": [
+      "operation-<operationId>",
+      "registry (only registry mutation)",
+      "project-<projectId>",
+      "task-<projectId>-<taskRef>",
+      "run-index or operation-journal-index as short inner critical sections"
+    ],
+    "rules": [
+      "All Kernel paths use one canonical lock implementation; the current synchronous lifecycle-lock helpers and asynchronous control-plane locks must converge to avoid competing lock semantics.",
+      "A new mutation receives its Kernel ID and durable prepared record under the operation lock before any resource effect.",
+      "The operation lock remains outermost through execution/terminal transition; live owner PID blocks TTL takeover, and dead-owner takeover permits inspection/reconciliation only, not implicit resume.",
+      "Project/task locks protect run deduplication. After locks, start re-reads local/global run evidence; a matching active owned run returns original runId/PID and changed=false.",
+      "Same ID/same digest reads/reconciles the original record; running/indeterminate never invokes the handler again.",
+      "Same ID/different digest and missing/expired ID are hard refusals.",
+      "A new request without a recovery ID may create a new operation only after ordinary resource idempotency checks; this is not an exactly-once promise.",
+      "Restart records one operation identity across stop/start sub-effects and links old/new run IDs so partial completion is visible."
+    ],
+    "lost_response_recovery": {
+      "known_id": "Call operation.get/reconcile with the exact Kernel-issued ID.",
+      "unknown_id": "operation.list requires resolved projectRef, operationName, createdSince, one or more journal states, and taskRef or explicit null; default lookback 15 minutes, maximum lookback 30 retained days, default limit 50, maximum 200.",
+      "ordering": "createdAt descending then operationId descending under a snapshot high-water cursor.",
+      "correlation": "Exactly one candidate may be selected for subsequent get/reconcile. Zero returns operation_correlation_not_found; multiple returns operation_correlation_ambiguous with bounded summaries.",
+      "safety": "Neither list result authorizes retry or execution, and Skill fallback stops after uncertain mutation."
+    }
+  },
+  "observability": {
+    "basis": "Spec-owned by CA-005/CA-006/CA-036/CA-042 and existing event redaction/limits.",
+    "events": [
+      "Emit sanitized operation.prepared, operation.running, operation.succeeded, operation.failed, operation.refused, operation.indeterminate, and operation.reconciled events.",
+      "Each event carries operationId, transactionId equal to operationId unless an existing run transaction is separately linked, projectId, taskRef, runId, journal state, outcome code, effects certainty, build identity, and evidence refs.",
+      "Never persist request secrets, arbitrary environment values, full raw command output, or host protocol frames in journal/events."
+    ],
+    "diagnostics": [
+      "Capabilities reports exact stateHome, schema versions, supported operations, risk boundary, host, project-scope modes, build/component digests, and compatibility status.",
+      "operation.get shows immutable identity, transition timestamps, current state, effects, resource refs, and provenance without raw unbounded observations.",
+      "Logs/events/operation.list use ObservationCursor bounds and return warnings for malformed/corrupt entries without treating partial reads as mutation authority.",
+      "Plugin/component and Skill duplicate observations remain visible after update/disable/uninstall via standalone CLI diagnosis when shared state is readable."
+    ]
+  },
+  "validation_routes": [
+    {
+      "route": "operation-contract unit/contract tests",
+      "covers": "OperationDefinition validation, canonical digest fixtures, journal transition table, effects certainty, AgentOperationResult schema, resource/outcome separation, same-ID rules, expired ID refusal.",
+      "evidence_owner": "new Kernel/journal tests",
+      "refs": [
+        "AC-001",
+        "AC-006",
+        "AC-007",
+        "CA-024",
+        "CA-026",
+        "CA-027",
+        "CA-028",
+        "CA-029",
+        "CA-043",
+        "CA-044"
+      ]
+    },
+    {
+      "route": "state migration/retention/fault tests",
+      "covers": "Prepared-before-effects crash points, atomic replacement, corrupt/higher schema refusal, index rebuild, 30-day terminal pruning, indefinite unresolved retention, dead-lock owner takeover without replay.",
+      "evidence_owner": "new journal state tests plus test/control-plane-state.test.js and test/control-plane-locks.test.js",
+      "refs": [
+        "AC-006",
+        "AC-007",
+        "CA-005",
+        "CA-011",
+        "CA-042",
+        "CA-043",
+        "CA-044"
+      ]
+    },
+    {
+      "route": "run/ownership/reconcile tests",
+      "covers": "same-run reuse, start contention, unknown/external inspect-only, verified stop, stale mapping, restart partial state, cross-version CLI takeover.",
+      "evidence_owner": "existing global-runtime/control-plane ownership tests plus new Kernel adapter-equivalence and fault tests",
+      "refs": [
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-010",
+        "CA-003",
+        "CA-004",
+        "CA-014",
+        "CA-021",
+        "CA-031"
+      ]
+    },
+    {
+      "route": "scope/risk/compatibility tests",
+      "covers": "missing/ambiguous/conflicting/unregistered roots, no Plugin-directory default, dynamic low-only MCP, forbidden inputs, component mismatch diagnosis-only and write refusal.",
+      "evidence_owner": "new Kernel policy and MCP schema tests",
+      "refs": [
+        "AC-005",
+        "AC-009",
+        "AC-011",
+        "CA-007",
+        "CA-008",
+        "CA-009",
+        "CA-010",
+        "CA-017",
+        "CA-020",
+        "CA-025",
+        "CA-035"
+      ]
+    },
+    {
+      "route": "clean plan/apply fault tests",
+      "covers": "canonical digest fixture, fresh recomputation, drift refusal before deletion, all target safety cases, crash effects/reconcile, preserved run/failure evidence.",
+      "evidence_owner": "test/clean-control-plane.test.js plus new Kernel clean digest tests",
+      "refs": [
+        "AC-008",
+        "CA-013",
+        "CA-030"
+      ]
+    },
+    {
+      "route": "bounded observation tests",
+      "covers": "cursor query binding, high-water snapshot, max limits/bytes, expiry, no arbitrary paths, no permanent follow, redaction, malformed lines.",
+      "evidence_owner": "test/control-plane-events.test.js plus new logs/events/journal cursor tests",
+      "refs": [
+        "AC-014",
+        "CA-006",
+        "CA-036"
+      ]
+    },
+    {
+      "route": "Skill installation/doctor tests",
+      "covers": "current and legacy Codex scan, absent/single/identical/divergent/non-directory/unreadable, deterministic precedence, no automatic overwrite/delete, Plugin build coupling.",
+      "evidence_owner": "test/agent-installer.test.js evolved for canonical digest contract and real host smoke",
+      "refs": [
+        "AC-013",
+        "CA-023",
+        "CA-047",
+        "CA-048"
+      ]
+    },
+    {
+      "route": "readiness evidence matrix validation",
+      "covers": "cell identity, stale invalidation, exact host/OS/update/uninstall/recovery dimensions, roll-up refusal on any missing/non-pass cell.",
+      "evidence_owner": "release evidence tooling and real Codex/Claude host smokes",
+      "refs": [
+        "AC-014",
+        "AC-015",
+        "CA-039",
+        "CA-040",
+        "CA-046",
+        "CA-049",
+        "CA-050"
+      ]
+    }
+  ],
+  "architecture_impacts": [
+    {
+      "impact": "Introduce one Kernel-owned operation registry, context/policy pipeline, normalized result mapper, journal/recovery service, compatibility evaluator, and bounded observation service.",
+      "basis": "Spec-owned by D-001/D-006/D-007; module paths are plan-owned.",
+      "risk": "If CLI or MCP retains private mutation orchestration, safety and journal semantics diverge.",
+      "mitigation": "Adapters resolve a declared operation and render results only; shared operation-contract and semantic-equivalence tests gate cutover."
+    },
+    {
+      "impact": "Extend controlPlanePaths with journal paths and reuse existing LAUNCHDECK_HOME, project/task/run-index locks, atomic JSON, events, and ownership evidence.",
+      "basis": "Live-evidenced state owner; physical journal subpaths are phase-owned.",
+      "risk": "Parallel helpers in src/runtime.js and src/control-plane modules currently expose more than one lock/run update path.",
+      "mitigation": "Converge writes behind the control-plane owners during Kernel extraction; do not add a third Plugin/MCP state path."
+    },
+    {
+      "impact": "Compatibility manifest and component identities become prerequisites to mutation and readiness evidence.",
+      "basis": "Spec-owned by CA-010/CA-025/CA-032..CA-035.",
+      "risk": "Conflated versions or path-based trust can allow unsafe cross-version writes.",
+      "mitigation": "Separate axes/digests, diagnosis-only mismatch state, and fail writes closed."
+    },
+    {
+      "impact": "Agent installer/doctor must model observations across current/legacy user paths and Plugin copies instead of treating one explicit target as sufficient.",
+      "basis": "Spec-owned by D-008; current explicit target/idempotency behavior is live-tested.",
+      "risk": "Forced overwrite can destroy divergent user content or hide two active Skills.",
+      "mitigation": "Canonical manifest digest, no silent winner for divergent copies, explicit migration route, and post-action rescan."
+    },
+    {
+      "impact": "Release status becomes a persisted/produced matrix of exact evidence cells, not one aggregate boolean.",
+      "basis": "Spec-owned by D-010.",
+      "risk": "CLI/MCP unit success can be misreported as host/update/uninstall/platform readiness.",
+      "mitigation": "Dimension-keyed cells and dependency-aware roll-up."
+    }
+  ],
+  "CA_refs": {
+    "kernel_result_and_policy": [
+      "CA-001",
+      "CA-002",
+      "CA-007",
+      "CA-008",
+      "CA-010",
+      "CA-016",
+      "CA-017",
+      "CA-024",
+      "CA-025",
+      "CA-041"
+    ],
+    "project_run_ownership_scope": [
+      "CA-003",
+      "CA-004",
+      "CA-009",
+      "CA-014",
+      "CA-020",
+      "CA-021",
+      "CA-031"
+    ],
+    "journal_recovery_clean": [
+      "CA-005",
+      "CA-011",
+      "CA-013",
+      "CA-026",
+      "CA-027",
+      "CA-028",
+      "CA-029",
+      "CA-030",
+      "CA-042",
+      "CA-043",
+      "CA-044"
+    ],
+    "skill_plugin_compatibility_lifetime": [
+      "CA-012",
+      "CA-015",
+      "CA-022",
+      "CA-023",
+      "CA-032",
+      "CA-033",
+      "CA-034",
+      "CA-035",
+      "CA-037",
+      "CA-038",
+      "CA-047",
+      "CA-048"
+    ],
+    "bounded_observation_and_readiness": [
+      "CA-006",
+      "CA-036",
+      "CA-039",
+      "CA-040",
+      "CA-045",
+      "CA-046",
+      "CA-049",
+      "CA-050"
+    ],
+    "deferred_confirmation_boundaries": [
+      "CA-018",
+      "CA-019"
+    ],
+    "coverage_statement": "CA-001 through CA-050 are all represented. CA-018/CA-019 remain deferred boundaries: no current medium-risk execution entity/state is activated. CA-030 is represented only as clean/adoption-plan digest safety; adoption.inspect never transitions to apply/start."
+  },
+  "MP_refs": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008"
+  ],
+  "coverage_gaps": [
+    {
+      "id": "DM-GAP-001",
+      "gap": "No operation journal, canonical input digest fixture, result schema implementation, or retention/index compactor exists in the inspected live state modules.",
+      "owner": "implementation and new Kernel/journal tests",
+      "blocking": false,
+      "basis": "Phase-owned implementation gap; current live files expose registry/run/event state only."
+    },
+    {
+      "id": "DM-GAP-002",
+      "gap": "Current event/log observations are limit-bounded but do not expose stable high-water cursors; tailLog reads the full file before slicing.",
+      "owner": "bounded-observation implementation/tests",
+      "blocking": false,
+      "basis": "Live evidence src/control-plane/events.js:24-121 and src/runtime.js:335-354."
+    },
+    {
+      "id": "DM-GAP-003",
+      "gap": "Current synchronous lifecycle locks and asynchronous control-plane locks have different metadata/takeover behavior, so Kernel cutover must establish one mutation lock owner.",
+      "owner": "Kernel/control-plane extraction",
+      "blocking": false,
+      "basis": "Live evidence src/runtime.js:499-567 versus src/control-plane/locks.js:5-223."
+    },
+    {
+      "id": "DM-GAP-004",
+      "gap": "Current installer verification covers explicit targets and permits a forced divergent overwrite; it does not yet prove dual Codex-location digest classification or non-destructive divergent migration.",
+      "owner": "installer/doctor implementation and host verification",
+      "blocking": false,
+      "basis": "Live evidence test/agent-installer.test.js:7-181 plus locked skill_migration_contract."
+    },
+    {
+      "id": "DM-GAP-005",
+      "gap": "ReadinessEvidenceCell storage/reporting and exact host/OS/update/uninstall/recovery receipts do not exist in the inspected state owners.",
+      "owner": "verification/release planning lanes",
+      "blocking": false,
+      "basis": "Spec-owned required evidence, implementation phase gap."
+    }
+  ],
+  "blockers": [],
+  "integration_targets": [
+    {
+      "target": "Plan-level Application Kernel and Operation Registry modules",
+      "need": "Own OperationDefinition, OperationRequest/Context, RiskDecision, AgentOperationResult, and all mutations.",
+      "basis": "Spec-owned; final paths to be selected by leader architecture synthesis."
+    },
+    {
+      "target": "src/control-plane/state.js",
+      "need": "Remain LAUNCHDECK_HOME path/version authority and expose journal path helpers without Plugin-local alternatives.",
+      "basis": "Live-evidenced owner."
+    },
+    {
+      "target": "src/control-plane/runs.js and src/runtime.js",
+      "need": "Remain run/project-local resource truth while moving mutation entry behind Kernel and converging duplicate lock/run-index write helpers.",
+      "basis": "Live-evidenced owners."
+    },
+    {
+      "target": "src/control-plane/ownership.js and process/port adapters",
+      "need": "Produce OwnershipEvidence; Kernel never reimplements ownership heuristics.",
+      "basis": "Live-evidenced owner."
+    },
+    {
+      "target": "src/control-plane/events.js plus log reader",
+      "need": "Add operation correlation and bounded cursor service while preserving redaction and existing event/log authorities.",
+      "basis": "Live-evidenced owner plus phase-owned service boundary."
+    },
+    {
+      "target": "Agent installer/doctor and Plugin packaging plan",
+      "need": "Produce SkillInstallationObservation and ComponentIdentity from one CompatibilityManifest with non-destructive duplicate handling.",
+      "basis": "Spec-owned contract; current verification owner identified."
+    },
+    {
+      "target": "CLI and MCP adapters",
+      "need": "Consume the same Kernel result and journal recovery API; CLI maps to schemaVersion 1, MCP returns typed AgentOperationResult.",
+      "basis": "Spec-owned."
+    },
+    {
+      "target": "Verification/release evidence artifacts",
+      "need": "Emit exact ReadinessEvidenceCell records and prevent unsupported roll-up.",
+      "basis": "Spec-owned; final artifact placement to be selected by leader."
+    }
+  ]
+}

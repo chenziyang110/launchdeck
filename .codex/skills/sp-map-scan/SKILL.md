@@ -32,6 +32,13 @@ credentials, protected systems, human decisions/reviews, or physical access.
 Tailor steps, expected results, failure paths, evidence, and resume action to
 CI, visual review, or product decisions. Never claim completion.
 
+For a feature runtime blocker, do not invent `resume_argv` or overwrite an
+existing blocker. The CLI returns a read-only `show_argv` and structured
+`resolution_action`; `next_argv` stays empty while evidence is missing. After
+the criteria are proven, attach sanitized evidence using the action's declared
+input and execute its base argv. It restores the same owner and keeps the full
+blocker audit.
+
 ## User Input
 
 ```text
@@ -50,7 +57,7 @@ Generate a complete graph-native evidence baseline for the current codebase.
 - This command owns graph-native evidence-baseline outputs only; it must not write final cognition truth.
 - Legacy atlas artifacts such as `PROJECT-HANDBOOK.md` may be read only when explicitly relevant to migration or export parity; they must not become scan targets.
 - `.specify/**` is workflow/runtime state, not project graph evidence; `.specify/**` paths may be read only for command operation or validation and must not become scan targets or graph paths.
-- Resolve the candidate scan set through `project-cognition scan-set` before repository inventory, evidence, coverage, or packet scope. The runtime applies project cognition ignore rules from root `.cognitionignore` and `.specify/project-cognition/.cognitionignore`, built-in low-signal exclusions, binary-file suppression, and obvious secret-path suppression. These rules are for project cognition only.
+- Resolve the candidate scan set through `C:\Users\11034\.specify\bin\project-cognition.exe scan-set` before repository inventory, evidence, coverage, or packet scope. The runtime applies project cognition ignore rules from root `.cognitionignore` and `.specify/project-cognition/.cognitionignore`, built-in low-signal exclusions, binary-file suppression, and obvious secret-path suppression. These rules are for project cognition only.
 - Before subagent dispatch, write the canonical boundary in `.specify/project-cognition/workbench/repository-universe.json` from the resolved scan-set file; do not substitute raw `rg --files`, broad directory globs, or free-form agent judgment about what to omit.
 - [AGENT] Treat `scan-queue.json` and `handoff-ledger.json` as required scan workbench artifacts before `validate-scan`.
 - Stage the canonical boundary artifact before dispatch, then accept scan packets only after the leader verifies packet-local ledger accounting for every assigned path and a `worker-results/<packet-id>.json` handoff whose `paths_read` is a non-empty concrete path array.
@@ -104,8 +111,8 @@ Use `execution_surface: native-subagents`.
 
 ## Process
 
-- Before repository inventory, run `project-cognition generate-ignore --format json`. If it creates `.specify/project-cognition/.cognitionignore`, ask the user to review the starter suggestions and wait for confirmation before continuing.
-- After the ignore gate is clear, run `project-cognition scan-set --out .specify/project-cognition/tmp/scan-files.json --format json` and use the returned file list as the candidate scan set. The agent may choose scan intent and concrete `--scope` values, but `project-cognition scan-set` decides the initial included file list through deterministic runtime rules; do not let the agent freely decide which files to omit.
+- Before repository inventory, run `C:\Users\11034\.specify\bin\project-cognition.exe generate-ignore --format json`. If it creates `.specify/project-cognition/.cognitionignore`, ask the user to review the starter suggestions and wait for confirmation before continuing.
+- After the ignore gate is clear, run `C:\Users\11034\.specify\bin\project-cognition.exe scan-set --out .specify/project-cognition/tmp/scan-files.json --format json` and use the returned file list as the candidate scan set. The agent may choose scan intent and concrete `--scope` values, but `C:\Users\11034\.specify\bin\project-cognition.exe scan-set` decides the initial included file list through deterministic runtime rules; do not let the agent freely decide which files to omit.
 - Build a value-weighted evidence baseline before any graph reconstruction work begins.
 - First spread out the resolved scan set as a cheap inventory pass: enumerate paths, metadata, runtime exclusion status, Git tracking status, size, extension, directory family, and likely generated/vendor/test/doc/config/source classification without deep-reading file contents.
 - Classify every non-excluded candidate path by value tier before dispatch: `P0` core behavior and entry surfaces, `P1` supporting contracts and runtime/config surfaces, `P2` selective tests/docs/examples, and `P3` low-signal generated/vendor/assets/cache/static output.
@@ -201,9 +208,13 @@ activation. `low_risk_open_gap` may pass only with owner, reason,
 
 The CLI is the only agent-facing Learning read surface:
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
-2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json` only to filter or page.
 3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+After minimal live inspection identifies a reused operation or changed entry point, rerun targeted recall with current code, tests, and task/contract evidence, for example `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json`. Do not derive these facets from archived specifications. An exact operation-owner match may surface a cross-command candidate even when the new consumer differs; treat it as a candidate, expand one `show_argv`, verify it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist the live facets as `learning_context`, the contextual invocation as `learning_search_refs`, and returned refs as `learning_candidate_refs`. Record exactly one `applied`, `not_applicable`, or `deferred` item in `learning_dispositions` for every candidate. Do not silently ignore a candidate: applied Learning traces to requirement/consequence refs, not-applicable needs current evidence, and deferred needs an explicit deferral ref.
 
 `start`, `list`, and `show` are read-only. Current repository evidence,
 `.specify/memory/constitution.md`, and explicit user direction override stale or
@@ -211,7 +222,7 @@ candidate Learning.
 
 At closeout, corrections, retries, route changes, recovery, false leads, hidden
 dependencies, validation/tooling/state/cognition gaps, constraints, and near
-misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto`
 from owning state; manual capture includes summary, problem, action, triggers,
 success criteria, avoid items, exceptions, and evidence.
 
@@ -357,7 +368,7 @@ but new scan artifacts must write `rows`; do not maintain separate `rows` and
 - Each `result_handoff_path` must point to `.specify/project-cognition/workbench/worker-results/<packet-id>.json`.
 - Every `scan-packets/<lane-id>.md` file must have exactly one matching `worker-results/<lane-id>.json` handoff, and worker results without a matching scan packet are invalid.
 - Worker result handoffs are the machine-checkable evidence surface for packet acceptance.
-- Use `project-cognition scan-set` for inventory discovery before escalating to deeper reads. `rg --files` may support diagnostics, but it must not replace the runtime-resolved scan set.
+- Use `C:\Users\11034\.specify\bin\project-cognition.exe scan-set` for inventory discovery before escalating to deeper reads. `rg --files` may support diagnostics, but it must not replace the runtime-resolved scan set.
 - Treat Git-tracked file lists and user-provided scan hints as metadata or `scan-set --scope` inputs; they must not become scan targets until `project-cognition scan-set` returns them in `.specify/project-cognition/tmp/scan-files.json`.
 - Raw inventory notes or raw chat summaries are not sufficient.
 - Idle subagent output is not an accepted scan result.
@@ -494,7 +505,7 @@ evidence supports it.
 
 ## Concept Retrieval Signal Evidence
 
-- Collect concept retrieval signals that let `project-cognition lexicon` surface
+- Collect concept retrieval signals that let `C:\Users\11034\.specify\bin\project-cognition.exe lexicon` surface
   useful `concept_candidates` instead of only path or symbol matches.
 - Record colloquial user phrases, aliases, shorthand, command names, workflow
   names, symptoms, and domain vocabulary that maintainers naturally use when

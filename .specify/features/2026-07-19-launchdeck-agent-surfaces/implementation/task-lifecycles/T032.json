@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "task_id": "T032",
+  "task_ref": "task-index.json#/tasks/T032",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": null,
+  "changed_paths": [
+    "agent/evidence/windows/core-stdio-bundle/",
+    "agent/evidence/schema.json",
+    "scripts/run-agent-evidence.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T032.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": ["five serialized Windows candidate test commands", "node scripts/run-agent-evidence.js --validate agent/evidence/windows/core-stdio-bundle", "node --test --test-concurrency=1 test/host/readiness-evidence.test.js", "npm run check"],
+      "summary": "Five cells and 20 scenarios pass for Windows 10.0.26200 x64; raw transcript/platform digests validate and the runner reports zero diagnostics."
+    }
+  ],
+  "review": {"trigger": null, "verdict": "cleared", "evidence": "Windows evidence is candidate-bound and does not assert macOS, Linux, Codex, or Claude readiness."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"refs": ["CA-003", "CA-004", "CA-006", "CA-009", "CA-011", "CA-013", "CA-021", "CA-028", "CA-036", "CA-041", "CA-043", "CA-044", "CA-046"], "status": "passed", "evidence": "Exact Windows cells cover reuse/concurrency, refusal, bounded stdio, recovery/no-replay, clean drift, adoption zero-write, and adapter takeover."},
+    {"refs": ["CA-039", "CA-050"], "status": "passed", "evidence": "Every receipt names Windows 10.0.26200 x64 and standalone surfaces only; no cross-OS or host claim is emitted."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "Runner now ignores raw/ JSON receipt payloads when discovering evidence-cell documents; those files remain digest-verified through cell refs."
+}

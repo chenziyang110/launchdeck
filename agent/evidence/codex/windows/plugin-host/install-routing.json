@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CODEX-INSTALL-ROUTING-WINDOWS-0.144.4-USER-2f0ae201",
+  "status": "passed",
+  "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:0b6941163dd94ee2bc5d5d3282fd6225714c459aabb97d986429e2280eacc6f9",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "codexHostMetadata": "sha256:cc1c9a0b820f9c75c93dcc48efafb3f52dba3bffd7a7f92a37ce11207e5f07ed",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "codex_plugin",
+    "operations": [
+      "capabilities.get",
+      "task.list"
+    ]
+  },
+  "host": {
+    "kind": "codex",
+    "versions": {
+      "codex": "0.144.4"
+    },
+    "scope": "user"
+  },
+  "platform": {
+    "os": "windows",
+    "version": "10.0.26200",
+    "build": "26200",
+    "architecture": "x64",
+    "distribution": null
+  },
+  "runtime": {
+    "nodeExecutable": "C:/nvm4w/nodejs/node.exe",
+    "nodeVersion": "24.14.0"
+  },
+  "scenario": {
+    "id": "CODEX-INSTALL-ROUTING",
+    "family": "codex-install-routing",
+    "description": "Real Codex CLI local-marketplace install, cache discovery, official plugin validation, Skill routing, MCP launch, forwarded state home, and explicit project scope."
+  },
+  "fixture": {
+    "digest": "sha256:afe66801217dad8650dd8c2b8d105a638dc75ef3f1d77370f36d6f93329587d2",
+    "harnessDigest": "sha256:8e0a1a0b469be547cb5f276091febd124e79c6c27acc636d89c3de8b26ebb6d2"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:42:56.000Z",
+    "completedAt": "2026-07-20T10:43:33.292Z",
+    "actions": [
+      "build and validate official Codex plugin",
+      "install from isolated local marketplace",
+      "discover cached Skill and MCP config",
+      "route through installed Skill",
+      "call capabilities.get before task.list",
+      "resolve isolated registered project scope"
+    ],
+    "commands": [
+      "node scripts/build-agent-plugins.js --out-dir <isolated-marketplace>/build --json",
+      "codex plugin marketplace add <isolated-marketplace> --json",
+      "codex plugin add launchdeck@launchdeck-evidence --json",
+      "codex mcp list --json",
+      "codex exec -C <fixture> --sandbox read-only --ephemeral --json <routing-prompt>"
+    ]
+  },
+  "result": {
+    "code": "passed",
+    "summary": "Codex 0.144.4 installed build 2f0ae201 at user scope, loaded the cached Skill and MCP bundle, forwarded the isolated Launchdeck state home, resolved the registered fixture, and listed task inspect through ordered read-only MCP calls.",
+    "assertions": [
+      {
+        "id": "official-plugin-contract",
+        "status": "passed",
+        "evidenceRefs": [
+          "install-routing"
+        ]
+      },
+      {
+        "id": "cached-relative-launch",
+        "status": "passed",
+        "evidenceRefs": [
+          "install-routing"
+        ]
+      },
+      {
+        "id": "skill-capabilities-observation-order",
+        "status": "passed",
+        "evidenceRefs": [
+          "routing-protocol"
+        ]
+      },
+      {
+        "id": "project-scope-resolved",
+        "status": "passed",
+        "evidenceRefs": [
+          "routing-protocol"
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      {
+        "id": "install-routing",
+        "kind": "host",
+        "path": "raw/install-routing.json",
+        "sha256": "2c1c272d1d68c42b7714b0c1698aec37e60312b2f236df88c61c4808015622fa"
+      },
+      {
+        "id": "routing-protocol",
+        "kind": "protocol",
+        "path": "raw/codex-scoped-readonly.jsonl",
+        "sha256": "0c077681ff8e2b682b8bf3e0488fca9598571ff0f365599bd453e71076e4b5b9"
+      },
+      {
+        "id": "routing-fixture",
+        "kind": "artifact",
+        "path": "raw/routing-fixture.yml",
+        "sha256": "afe66801217dad8650dd8c2b8d105a638dc75ef3f1d77370f36d6f93329587d2"
+      },
+      {
+        "id": "routing-harness",
+        "kind": "command",
+        "path": "raw/routing-harness.json",
+        "sha256": "8e0a1a0b469be547cb5f276091febd124e79c6c27acc636d89c3de8b26ebb6d2"
+      },
+      {
+        "id": "platform",
+        "kind": "host",
+        "path": "raw/platform.json",
+        "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44"
+      }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:43:33.292Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {
+        "codex": "0.144.4"
+      },
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:afe66801217dad8650dd8c2b8d105a638dc75ef3f1d77370f36d6f93329587d2",
+      "harnessDigest": "sha256:8e0a1a0b469be547cb5f276091febd124e79c6c27acc636d89c3de8b26ebb6d2"
+    }
+  }
+}

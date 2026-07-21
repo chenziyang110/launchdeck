@@ -5,7 +5,7 @@ import { CONFIG_FILES, loadConfig } from '../config.js';
 import { LaunchdeckError } from '../errors.js';
 import { listProcesses, readState, stopManagedTasks, waitForDeclaredPortsFree, writeState } from '../runtime.js';
 import { appendEvent } from './events.js';
-import { withLock } from './locks.js';
+import { withMutationLocks } from './locks.js';
 import { createRunContext, observedRun, readRunIndex, startManagedRun, updateRunRecord } from './runs.js';
 import {
   assertAliasAvailable,
@@ -49,7 +49,12 @@ export function writeProjectRegistry(registry, env = process.env) {
 
 export async function addProjectToRegistry(config, options = {}) {
   const env = options.env ?? process.env;
-  return withRegistryLock(env, async () => {
+  return withMutationLocks({
+    operationId: options.operationId ?? makeActionOperationId(),
+    registryMutation: true,
+    env,
+    ownerCommand: process.argv.join(' ')
+  }, async () => {
     const registry = readRegistryState(env);
     const now = new Date().toISOString();
     const projectRoot = path.resolve(config.projectRoot);
@@ -90,8 +95,13 @@ export async function addProjectToRegistry(config, options = {}) {
 export async function removeProjectFromRegistry(target, options = {}) {
   const env = options.env ?? process.env;
   const project = resolveRegisteredProject(target, env);
-  return withRegistryLock(env, async () =>
-    withProjectLock(project.projectId, env, async () => {
+  return withMutationLocks({
+    operationId: options.operationId ?? makeActionOperationId(),
+    registryMutation: true,
+    projectId: project.projectId,
+    env,
+    ownerCommand: process.argv.join(' ')
+  }, async () => {
       const activeRuns = findActiveOwnedRuns(project, env);
       if (activeRuns.length > 0) {
         throw new LaunchdeckError(
@@ -114,8 +124,7 @@ export async function removeProjectFromRegistry(target, options = {}) {
         projects: nextProjects
       }, env);
       return project;
-    })
-  );
+  });
 }
 
 export function listRegisteredProjects(env = process.env) {
@@ -127,8 +136,13 @@ export async function stopManagedRun(target, options = {}) {
   const { projectTarget, taskName } = parseLifecycleTarget(target);
   const project = resolveRegisteredProject(projectTarget, env);
   const config = loadConfig(project.projectRoot);
-  return withProjectLock(project.projectId, env, async () =>
-    withTaskLock(project.projectId, taskName, env, async () => {
+  return withMutationLocks({
+    operationId: options.operationId ?? makeActionOperationId(),
+    projectId: project.projectId,
+    taskRef: taskName,
+    env,
+    ownerCommand: process.argv.join(' ')
+  }, async () => {
       const stopped = stopManagedTasks(config.projectRoot, taskName, {
         locks: false,
         verifyPortRelease: true
@@ -139,8 +153,7 @@ export async function stopManagedRun(target, options = {}) {
         stopped,
         failed: []
       };
-    })
-  );
+  });
 }
 
 export async function restartManagedRun(target, options = {}) {
@@ -165,51 +178,60 @@ export async function restartManagedRun(target, options = {}) {
   }
 
   const runContext = createRunContext({ project, config, taskName, env });
-  return withProjectLock(project.projectId, env, async () =>
-    withTaskLock(project.projectId, taskName, env, async () => {
-      const [stoppedRun] = await stopOwnedRunForRestart(config, taskName, env);
-      try {
-        waitForDeclaredPortsFree(task.ports ?? [], {
-          timeoutMs: options.portReleaseTimeoutMs
-        });
-      } catch (error) {
-        error.details = {
-          ...error.details,
-          projectRoot: config.projectRoot,
-          configPath: config.configPath,
-          task: taskName,
-          runId: stoppedRun?.runId,
-          next: [
-            {
-              label: 'Inspect port ownership',
-              command: `launchdeck inspect task:${project.alias}:${taskName}`,
-              reason: 'Shows listener evidence for ports that did not release.',
-              risk: 'safe'
-            }
-          ]
-        };
-        await markRestartPortReleaseTimeout(config, project, taskName, stoppedRun, error, env);
-        throw error;
-      }
-      const startedRun = await startManagedRun(taskName, task, config, {
-        project,
-        global: true,
-        env,
-        runContext,
-        locks: false
+  const restart = async () => {
+    const [stoppedRun] = await stopOwnedRunForRestart(config, taskName, env);
+    try {
+      waitForDeclaredPortsFree(task.ports ?? [], {
+        timeoutMs: options.portReleaseTimeoutMs
       });
-      return {
-        project: projectSummary(project),
+    } catch (error) {
+      error.details = {
+        ...error.details,
+        projectRoot: config.projectRoot,
+        configPath: config.configPath,
         task: taskName,
-        transactionId: runContext.transactionId,
-        stoppedRun: {
-          ...stoppedRun,
-          transactionId: runContext.transactionId
-        },
-        startedRun
+        runId: stoppedRun?.runId,
+        next: [
+          {
+            label: 'Inspect port ownership',
+            command: `launchdeck inspect task:${project.alias}:${taskName}`,
+            reason: 'Shows listener evidence for ports that did not release.',
+            risk: 'safe'
+          }
+        ]
       };
-    })
-  );
+      await markRestartPortReleaseTimeout(config, project, taskName, stoppedRun, error, env);
+      throw error;
+    }
+    const startedRun = await startManagedRun(taskName, task, config, {
+      project,
+      global: true,
+      env,
+      runContext,
+      locks: false
+    });
+    return {
+      project: projectSummary(project),
+      task: taskName,
+      transactionId: runContext.transactionId,
+      stoppedRun: {
+        ...stoppedRun,
+        transactionId: runContext.transactionId
+      },
+      startedRun
+    };
+  };
+  if (options.locks === false) {
+    return restart();
+  }
+  return withMutationLocks({
+    operationId: options.operationId ?? makeActionOperationId(),
+    projectId: project.projectId,
+    taskRef: taskName,
+    env,
+    ownerCommand: process.argv.join(' '),
+    transactionId: runContext.transactionId
+  }, restart);
 }
 
 export async function repairProjectRegistration(target, options = {}) {
@@ -228,9 +250,14 @@ export async function repairProjectRegistration(target, options = {}) {
     });
   }
 
-  const registry = await withRegistryLock(env, async () =>
-    withProjectLock(project.projectId, env, async () =>
-      updateRegistryState((current) => {
+  const registry = await withMutationLocks({
+    operationId: options.operationId ?? makeActionOperationId(),
+    registryMutation: true,
+    projectId: project.projectId,
+    env,
+    ownerCommand: process.argv.join(' ')
+  }, async () =>
+    updateRegistryState((current) => {
         const projects = current.projects.map((candidate) =>
           candidate.projectId === project.projectId ? { ...candidate } : candidate
         );
@@ -273,7 +300,6 @@ export async function repairProjectRegistration(target, options = {}) {
           projects
         };
       }, env)
-    )
   );
 
   const after = registry.projects.find((candidate) => candidate.projectId === project.projectId);
@@ -290,12 +316,21 @@ export async function reconcileManagedRuns(target = undefined, options = {}) {
   const reconcile = async () => reconcileRunsInScope(scope, env);
 
   if (scope.project && scope.taskName) {
-    return withProjectLock(scope.project.projectId, env, async () =>
-      withTaskLock(scope.project.projectId, scope.taskName, env, reconcile)
-    );
+    return withMutationLocks({
+      operationId: options.operationId ?? makeActionOperationId(),
+      projectId: scope.project.projectId,
+      taskRef: scope.taskName,
+      env,
+      ownerCommand: process.argv.join(' ')
+    }, reconcile);
   }
   if (scope.project) {
-    return withProjectLock(scope.project.projectId, env, reconcile);
+    return withMutationLocks({
+      operationId: options.operationId ?? makeActionOperationId(),
+      projectId: scope.project.projectId,
+      env,
+      ownerCommand: process.argv.join(' ')
+    }, reconcile);
   }
   return reconcile();
 }
@@ -483,30 +518,6 @@ export function findActiveOwnedRuns(project, env = process.env) {
     seen.add(key);
     return true;
   });
-}
-
-function withRegistryLock(env, callback) {
-  return withLock({
-    lockName: 'registry',
-    env,
-    ownerCommand: process.argv.join(' ')
-  }, callback);
-}
-
-function withProjectLock(projectId, env, callback) {
-  return withLock({
-    lockName: `project-${safePathToken(projectId)}`,
-    env,
-    ownerCommand: process.argv.join(' ')
-  }, callback);
-}
-
-function withTaskLock(projectId, taskName, env, callback) {
-  return withLock({
-    lockName: `task-${safePathToken(projectId)}-${safePathToken(taskName)}`,
-    env,
-    ownerCommand: process.argv.join(' ')
-  }, callback);
 }
 
 async function reconcileRunsInScope(scope, env) {
@@ -943,10 +954,6 @@ function withRegistryAction(project, action) {
   return project;
 }
 
-function safePathToken(value) {
-  const token = String(value ?? '').trim();
-  if (!token) {
-    return 'unknown';
-  }
-  return token.replace(/[^a-zA-Z0-9._-]/g, '_');
+function makeActionOperationId() {
+  return `op_${crypto.randomUUID().replaceAll('-', '')}`;
 }

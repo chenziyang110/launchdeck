@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CODEX-LIFECYCLE-MACOS-UNEXECUTED-2f0ae201",
+  "status": "not_executed_host_owned",
+  "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:0b6941163dd94ee2bc5d5d3282fd6225714c459aabb97d986429e2280eacc6f9",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "codexHostMetadata": "sha256:cc1c9a0b820f9c75c93dcc48efafb3f52dba3bffd7a7f92a37ce11207e5f07ed",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "codex_plugin",
+    "operations": [
+      "capabilities.get",
+      "task.status",
+      "task.start"
+    ]
+  },
+  "host": {
+    "kind": "codex",
+    "versions": {
+      "codex": "unobserved"
+    },
+    "scope": "user"
+  },
+  "platform": {
+    "os": "macos",
+    "version": null,
+    "build": null,
+    "architecture": null,
+    "distribution": null
+  },
+  "runtime": {
+    "nodeExecutable": null,
+    "nodeVersion": null
+  },
+  "scenario": {
+    "id": "CODEX-LIFECYCLE-TAKEOVER",
+    "family": "codex-lifecycle",
+    "description": "Native macos Codex host cell reserved for the same generated candidate; no executor/host version was observed in this task."
+  },
+  "fixture": {
+    "digest": "sha256:89ffb30776de73b37f7aa96c8fb4bbfa4c08f9b488c19037298f9e9062b5fb93",
+    "harnessDigest": "sha256:923f97ba44632a6ce55abf64de98ec202e63c1a2369af0732153c1d1b3486a9b"
+  },
+  "execution": {
+    "startedAt": null,
+    "completedAt": null,
+    "actions": [],
+    "commands": []
+  },
+  "result": {
+    "code": "native_codex_host_not_executed",
+    "summary": "No native macos Codex host execution was available; no install, routing, lifecycle, update, disable, uninstall, or takeover readiness is claimed.",
+    "assertions": [
+      {
+        "id": "native-host-cell",
+        "status": "not_executed",
+        "evidenceRefs": []
+      }
+    ]
+  },
+  "evidence": {
+    "rawRefs": []
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:50:00.000Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {
+        "codex": "unobserved"
+      },
+      "os": "macos",
+      "osVersion": null,
+      "osBuild": null,
+      "architecture": null,
+      "nodeVersion": null,
+      "fixtureDigest": "sha256:89ffb30776de73b37f7aa96c8fb4bbfa4c08f9b488c19037298f9e9062b5fb93",
+      "harnessDigest": "sha256:923f97ba44632a6ce55abf64de98ec202e63c1a2369af0732153c1d1b3486a9b"
+    }
+  }
+}

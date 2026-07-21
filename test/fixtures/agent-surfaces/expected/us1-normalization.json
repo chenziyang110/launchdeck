@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "semanticFields": [
+    "protocolVersion",
+    "operation.name",
+    "operation.inputDigest",
+    "operation.journalStatus",
+    "outcome",
+    "resource",
+    "effects",
+    "safety",
+    "error",
+    "nextActions"
+  ],
+  "allowedSurfaceDifferences": [
+    "operation.id",
+    "provenance.surface",
+    "provenance.host",
+    "provenance.runtimeKind",
+    "provenance.runtimePath",
+    "provenance.cliSchemaVersion"
+  ],
+  "requiredSharedProvenance": [
+    "buildIdentity",
+    "agentProtocolVersion",
+    "runtimeVersion",
+    "stateHome"
+  ],
+  "forbiddenPublicOperations": [
+    "adoption.apply"
+  ]
+}

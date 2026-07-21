@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "task_id": "T013",
+  "task_ref": "task-index.json#/tasks/T013",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T013 owns the failure-first shared lifecycle, reuse/concurrency, ownership, low-risk, partial restart, and forbidden-input contract; T014 owns implementation and CLI migration.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/task-operations.test.js test/kernel/task-operation-concurrency.test.js test/contracts/public-mutation-refusals.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED: all three no-effect refusal contracts pass; five lifecycle/reuse/concurrency/partial/indeterminate cases fail only because createTaskHandlers does not yet expose T014 mutation handlers."
+  },
+  "changed_paths": [
+    "test/kernel/task-operations.test.js",
+    "test/kernel/task-operation-concurrency.test.js",
+    "test/contracts/public-mutation-refusals.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T013.json"
+  ],
+  "validation": [
+    {
+      "command": "node --check test/kernel/task-operations.test.js && node --check test/kernel/task-operation-concurrency.test.js && node --check test/contracts/public-mutation-refusals.test.js",
+      "status": "passed",
+      "summary": "All three T013 contract files parse successfully."
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/kernel/task-operations.test.js test/kernel/task-operation-concurrency.test.js test/contracts/public-mutation-refusals.test.js",
+      "status": "failed-as-expected",
+      "summary": "3/8 refusal contracts pass; the remaining five failures are missing T014 task mutation handlers and therefore produce zero provider calls/spawn receipts."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 80 JavaScript files."
+    }
+  ],
+  "review": {
+    "trigger": "intentional-red-boundary",
+    "verdict": "cleared",
+    "evidence": "The RED contract freezes low-only dynamic risk, verified ownership, forbidden raw/force/approval inputs, one-spawn sequential/concurrent convergence, honest reusedExistingRun/effects semantics, one-identity partial restart, and indeterminate foreground reconciliation without broadening public inputs or retrying work."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Every positive and negative lifecycle case enters through Application Kernel with an injected existing lifecycle authority; tests define no parallel state backend."},
+    {"ref":"MP-003","status":"satisfied","evidence":"Configured medium/high/destructive task risk refuses before journal, lock, handler, spawn, or signal; only low-risk positive fixtures may reach handlers."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Repeated start is resource-idempotent rather than replay-based, and indeterminate task.run exposes only operation.reconcile for the original operation ID."},
+    {"ref":"CA-001","status":"satisfied","evidence":"The contract requires lifecycle mutations to execute only as Kernel handlers after shared project/risk/ownership/compatibility policy."},
+    {"ref":"CA-003","status":"satisfied","evidence":"Sequential and synchronized concurrent starts require one spawn receipt, one run ID, reusedExistingRun=true, and changed=false on later results."},
+    {"ref":"CA-004","status":"satisfied","evidence":"Unknown and external ownership for start/stop/restart is inspect-only with zero handler, spawn, and signal calls."},
+    {"ref":"CA-008","status":"satisfied","evidence":"Tests source current task risk from Kernel taskResolver and prove host/model annotations cannot override it."},
+    {"ref":"CA-014","status":"satisfied","evidence":"command/cwd/env/force/forceOwned/yes/confirmation/approval/shell/path/remote/url and policy override fields all fail closed as input_invalid before effects."},
+    {"ref":"CA-016","status":"satisfied","evidence":"The same Kernel risk gate covers start/stop/restart/run and refuses every medium-plus configured task."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Permissive trustedContext approval/force/annotations cannot elevate input, risk, or ownership decisions."},
+    {"ref":"CA-021","status":"satisfied","evidence":"Managed-start results are durable run identities and the lifecycle handler contract contains no adapter/MCP close or teardown coupling."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Unknown foreground completion is indeterminate with changed=null and exactly one operation.reconcile action referencing the original operation ID; the run provider is called once."},
+    {"ref":"CA-031","status":"satisfied","evidence":"Only explicit task.start reaches the start mutation port; adoption remains absent from task mutation handlers and no discovery route is chained in these contracts."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

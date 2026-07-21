@@ -1,0 +1,82 @@
+{
+  "acceptance_sha256": null,
+  "blocker": {
+    "affected_scope": [
+      "System Review preparation, validation epochs, review evidence, and Review-to-Accept handoff for 2026-07-19-launchdeck-agent-surfaces are paused.",
+      "The existing implementation and untracked/modified working-tree changes remain untouched."
+    ],
+    "attempted_recovery": [
+      {
+        "action": "Ran review intake prerequisites and inspected the authoritative workflow runtime.",
+        "result": "Exactly one feature resolved, but its legal active owner is specify rather than review; attempting review prepare would violate stage order."
+      },
+      {
+        "action": "Ran project cognition compass for the requested review intent.",
+        "result": "The advisory graph store is missing; this does not override the authoritative workflow-stage block."
+      }
+    ],
+    "blocker_id": "workflow-specify-artifact-or-state-r9",
+    "can_continue": false,
+    "category": "artifact-or-state",
+    "code": "workflow-blocked",
+    "details": "Review cannot prepare because the runtime reopened the feature at specify after a workflow contract upgrade invalidated review, acceptance, and shared validation metadata.",
+    "evidence": [
+      "workflow show: stage=specify, status=active, revision=8; summary=Workflow contract upgrade invalidated acceptance, review, and validation metadata.",
+      "workflow show last_reopen invalidates spec-contract.json, plan-contract.json, task-index.json, tasks.md, implementation/execution-state.json, and implement-tracker.md.",
+      "workflow show reports missing Human Acceptance Universe, review obligations, official entrypoints, system review scenarios, and a shared fingerprint validation ledger."
+    ],
+    "exact_next_action": "Run $sp-specify to regenerate and validate the reopened specification artifacts, then continue the legal workflow stages through plan, tasks, implement, and only then invoke $sp-review.",
+    "human_action_guide": null,
+    "human_action_required": false,
+    "owner": "agent",
+    "resume": {
+      "argv": [
+        "specify",
+        "workflow",
+        "show",
+        "--feature-dir",
+        "F:\\github\\launchdeck\\.specify\\features\\2026-07-19-launchdeck-agent-surfaces",
+        "--format",
+        "json"
+      ],
+      "command": "specify workflow show --feature-dir F:\\github\\launchdeck\\.specify\\features\\2026-07-19-launchdeck-agent-surfaces --format json",
+      "instruction": "Run the exact resume command: specify workflow show --feature-dir F:\\github\\launchdeck\\.specify\\features\\2026-07-19-launchdeck-agent-surfaces --format json"
+    },
+    "stage": "specify",
+    "summary": "Review cannot prepare because the runtime reopened the feature at specify after a workflow contract upgrade invalidated review, acceptance, and shared validation metadata.",
+    "unblock_criteria": "The workflow runtime advances from a completed, validated implement stage to review with a fresh implementation-handoff.json, Human Acceptance Universe, official entrypoints, review scenario matrix, and fingerprint-bound validation ledger.",
+    "version": 1,
+    "workflow": "sp|spx"
+  },
+  "last_blocker_resolution": null,
+  "last_reopen": {
+    "evidence": [
+      "Tasks artifact validation is critical: spec-contract lacks entrypoint_outcome_contract and acceptance_coverage, and Plan acceptance refs no longer match canonical Spec refs.",
+      "task-index lacks the mandatory Human Acceptance Universe, review obligations, official entrypoints, system review scenarios, and feature_epochs validation policy.",
+      "Execution state contains 36 legacy heavyweight validation waves but no shared fingerprint ledger; creating a blank ledger during resume would discard validation history."
+    ],
+    "invalidated_artifacts": [
+      "spec-contract.json",
+      "plan-contract.json",
+      "task-index.json",
+      "tasks.md",
+      "implementation/execution-state.json",
+      "implement-tracker.md"
+    ],
+    "reason": "Workflow contract upgrade invalidated acceptance, review, and validation metadata",
+    "source_stage": "implement",
+    "source_status": "active",
+    "target_stage": "specify"
+  },
+  "last_resolution_evidence": [
+    "reopened implement to specify: Workflow contract upgrade invalidated acceptance, review, and validation metadata",
+    "Tasks artifact validation is critical: spec-contract lacks entrypoint_outcome_contract and acceptance_coverage, and Plan acceptance refs no longer match canonical Spec refs.",
+    "task-index lacks the mandatory Human Acceptance Universe, review obligations, official entrypoints, system review scenarios, and feature_epochs validation policy.",
+    "Execution state contains 36 legacy heavyweight validation waves but no shared fingerprint ledger; creating a blank ledger during resume would discard validation history."
+  ],
+  "revision": 9,
+  "stage": "specify",
+  "status": "blocked",
+  "summary": "Review cannot prepare because the runtime reopened the feature at specify after a workflow contract upgrade invalidated review, acceptance, and shared validation metadata.",
+  "workflow_runtime_version": 1
+}

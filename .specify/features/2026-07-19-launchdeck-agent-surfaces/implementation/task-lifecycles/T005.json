@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "task_id": "T005",
+  "task_ref": "task-index.json#/tasks/T005",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T005 owns failing Kernel gate tests; T006 owns the project resolver, policy pipeline, compatibility gate, unified lock authority, and Kernel scaffold.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/application-kernel-policy.test.js test/kernel/project-context.test.js test/kernel/mutation-lock-order.test.js test/kernel/compatibility-gate.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED rerun: four files fail only because T006-owned application-kernel/project-context modules and compatibility/lock exports are missing."
+  },
+  "changed_paths": [
+    "test/kernel/application-kernel-policy.test.js",
+    "test/kernel/project-context.test.js",
+    "test/kernel/mutation-lock-order.test.js",
+    "test/kernel/compatibility-gate.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T005.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/kernel/application-kernel-policy.test.js test/kernel/project-context.test.js test/kernel/mutation-lock-order.test.js test/kernel/compatibility-gate.test.js","status":"failed-as-expected","summary":"0 passed and 4 failed at missing T006 modules/exports; the planned RED was rerun after adding the high/destructive cases."},
+    {"command":"node --check test/kernel/<four T005 files>","status":"passed","summary":"All four test files parse successfully."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 57 JavaScript files."}
+  ],
+  "review": {"trigger":"intentional-red-boundary","verdict":"cleared","evidence":"The suite is test-only, encodes all required refusal/scope/lock/revalidation cases, and fails only at T006-owned missing contracts. It introduces no adapter policy, handler, state, or effect path."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Tests require one createApplicationKernel pipeline and one mutation-lock authority shared by mutation paths."},
+    {"ref":"MP-003","status":"satisfied","evidence":"Public mutation tests allow only effective low risk and keep higher risk inspect/refuse-only."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Tests require fresh in-lock revalidation and provide no replay/fallback authorization."},
+    {"ref":"CA-001","status":"satisfied","evidence":"Handlers are reachable only through the tested Kernel pipeline after ownership and policy gates."},
+    {"ref":"CA-002","status":"satisfied","evidence":"Permissive annotations and caller-supplied risk/ownership values cannot authorize execution."},
+    {"ref":"CA-004","status":"satisfied","evidence":"Unknown and external ownership cases require refusal with zero handler calls."},
+    {"ref":"CA-007","status":"satisfied","evidence":"Component/version mismatch stays diagnostic-only and blocks task mutations."},
+    {"ref":"CA-008","status":"satisfied","evidence":"Medium, high, and destructive task risk are read dynamically and refused despite permissive hints."},
+    {"ref":"CA-009","status":"satisfied","evidence":"Five scope-failure states are distinct and Plugin installation cwd is explicitly ignored."},
+    {"ref":"CA-010","status":"satisfied","evidence":"Tests require independent axis/component assessment; equal package/path labels cannot restore writes."},
+    {"ref":"CA-014","status":"satisfied","evidence":"Kernel input tests reject caller risk, ownership, compatibility, and projectRoot in addition to the frozen raw task-field negatives."},
+    {"ref":"CA-016","status":"satisfied","evidence":"The same Kernel test boundary owns risk decisions before and under locks."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Host annotations remain hints and never replace re-read policy inputs."},
+    {"ref":"CA-020","status":"satisfied","evidence":"Trusted adapter root conflicts and unregistered roots are separate refusals; Plugin cwd cannot cross project scope."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

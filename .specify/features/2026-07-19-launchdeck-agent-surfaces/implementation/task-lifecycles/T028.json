@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "task_id": "T028",
+  "task_ref": "task-index.json#/tasks/T028",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-installer-compatibility-matrix",
+    "reason": "T027 isolates canonical digest, four-location observation, current-path preference, and divergent preservation to T028.",
+    "commands": [
+      "node --test --test-concurrency=1 test/skill/installer-compatibility.test.js test/skill/skill-content-manifest.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "1/9 passes; eight T028-owned compatibility and installer gaps remain."
+  },
+  "changed_paths": [
+    "src/agent-installer.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T028.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/skill/installer-compatibility.test.js test/skill/skill-content-manifest.test.js","status":"passed-after-recovery","summary":"9/9 pass after replacing locale-sensitive path ordering with explicit canonical string comparison and rerunning the original matrix."},
+    {"command":"node --test --test-concurrency=1 <agent installer + CLI schema v1 + compatibility + T027 tests>","status":"passed","summary":"24/24 focused compatibility and consumer regressions pass."},
+    {"command":"npm run check; git diff --check; node --test --test-concurrency=1 <final installer regressions>","status":"passed","summary":"Syntax passes for 102 files, whitespace validation is clean, and 16/16 final installer tests pass."}
+  ],
+  "review": {"trigger":"installer-write-boundary","verdict":"cleared","evidence":"Manifest hashing is deterministic and symlink rejecting; doctor is read-only; default Codex install scans current/legacy/project/Plugin observations and refuses divergent/invalid content before mkdir/copy. Explicit target force compatibility remains scoped to an explicitly selected destination."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-004","status":"satisfied","evidence":"CLI schemaVersion 1 regressions remain unchanged while installer diagnostics add fields within existing payloads."},
+    {"ref":"MP-005","status":"satisfied","evidence":"All copies are compared against one canonical Skill content manifest."},
+    {"ref":"MP-006","status":"satisfied","evidence":"Plugin copies are observation-only; diagnosis and install never mutate Plugin or shared state."},
+    {"ref":"CA-007","status":"satisfied","evidence":"Invalid/divergent component observations become write-blocking diagnostics."},
+    {"ref":"CA-012","status":"satisfied","evidence":"Each observation carries kind, host, path, digest, relation, and code without treating path as trust."},
+    {"ref":"CA-022","status":"satisfied","evidence":"Before/after snapshots prove doctor/install refusal preserve every observed tree."},
+    {"ref":"CA-023","status":"satisfied","evidence":"Current, legacy, project, and Plugin copies are grouped; identical precedence is current-first and divergence has no winner."},
+    {"ref":"CA-035","status":"satisfied","evidence":"Sorted normalized paths and per-file SHA-256 values produce one canonical content digest; symlinks are refused."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "The first implementation run exposed locale-sensitive manifest path ordering. Canonical code-point comparison replaced localeCompare, and the original matrix plus all planned focused validations passed afterward."
+}

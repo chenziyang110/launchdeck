@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "task_id": "T017",
+  "task_ref": "task-index.json#/tasks/T017",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first-real-protocol",
+    "reason": "T017 owns the official-SDK real-process MCP initialization, schema projection, call/error, framing, concurrency, output isolation, interruption/restart, and scope-refusal contract; T018 owns the server implementation.",
+    "commands": [
+      "node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED: all six official-SDK scenarios reach the real spawned Node process and fail with MCP connection closed because the T018-owned src/mcp/stdio-server.js entrypoint is absent."
+  },
+  "changed_paths": [
+    "test/mcp/stdio-protocol.test.js",
+    "test/mcp/stdio-concurrency.test.js",
+    "test/mcp/stdio-output-isolation.test.js",
+    "test/helpers/mcp-client.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T017.json"
+  ],
+  "validation": [
+    {"command":"node --check <four T017 files>","status":"passed","summary":"The official SDK helper and all three real-wire suites parse successfully."},
+    {"command":"node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js","status":"failed-as-expected","summary":"0/6 pass; every scenario fails at the official SDK connection because the real server entrypoint is absent, with no direct Kernel or handler substitute."},
+    {"command":"Test-Path src/mcp/stdio-server.js","status":"failed-as-expected","summary":"The T018-owned real stdio entrypoint is confirmed absent."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 88 JavaScript files."},
+    {"command":"git diff --check -- <T017 paths>","status":"passed","summary":"All T017 helper and protocol contract changes passed whitespace validation."}
+  ],
+  "review": {
+    "trigger": "intentional-red-real-mcp-process-boundary",
+    "verdict": "cleared",
+    "evidence": "The tests use official Client plus StdioClientTransport against a spawned Node entrypoint, capture raw stdout without replacing the SDK lifecycle, require all 18 closed schemas and normalized tool/domain errors, exercise concurrent lifecycle calls and adapter restart, assert child-output framing, and prove Plugin cwd cannot become scope."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Real-wire tests require MCP results and lifecycle state to match existing CLI-visible registry/run/journal authorities; no test-only MCP backend is permitted."},
+    {"ref":"MP-003","status":"satisfied","evidence":"The suite covers local stdio only, low-risk positive mutation, medium-risk refusal, and excludes force/risky/raw/remote inputs."},
+    {"ref":"MP-008","status":"satisfied","evidence":"Evidence is explicitly scoped to the source stdio server, current Node/OS test cell, and real official-SDK process boundary; it does not claim Plugin or other-OS readiness."},
+    {"ref":"CA-002","status":"satisfied","evidence":"All six tests start the real server entrypoint with official SDK transport and make no direct Application Kernel or handler calls."},
+    {"ref":"CA-006","status":"satisfied","evidence":"Tool listing and calls require bounded closed schemas; output-isolation tests prohibit non-JSON-RPC stdout lines."},
+    {"ref":"CA-009","status":"satisfied","evidence":"Project operations use an explicit registered alias, while the Plugin-cwd case omits projectRef and must return typed scope_not_resolved."},
+    {"ref":"CA-014","status":"satisfied","evidence":"A nested force input must return normalized input_invalid with req_ identity, no journal, and no effects."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Tool annotations are asserted as hints only; medium risk and scope/refusal behavior must still be decided by Kernel results."},
+    {"ref":"CA-021","status":"satisfied","evidence":"The adapter restart scenario requires a managed run to survive MCP close and reappear with the same run ID and one spawn receipt."},
+    {"ref":"CA-036","status":"satisfied","evidence":"Raw captured stdout must consist exclusively of parseable JSON-RPC frames; child stdout/stderr is asserted only within the structured tool response."},
+    {"ref":"CA-039","status":"satisfied","evidence":"T017 records only source-server MCP evidence and cannot fill shipped bundle, Plugin, host, update, uninstall, recovery, or other-OS cells."},
+    {"ref":"CA-041","status":"satisfied","evidence":"Real MCP lifecycle results are compared to existing CLI process state/run identity after adapter close, allowing only protocol provenance differences."},
+    {"ref":"CA-046","status":"satisfied","evidence":"The official client exercises initialized lifecycle, list/call, concurrent requests, close, and a fresh restart; tests do not treat source inspection as protocol evidence."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

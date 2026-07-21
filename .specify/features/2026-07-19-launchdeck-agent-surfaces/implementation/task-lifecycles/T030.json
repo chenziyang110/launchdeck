@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "task_id": "T030",
+  "task_ref": "task-index.json#/tasks/T030",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": {
+    "mode": "inherited-plugin-build-isolation",
+    "reason": "T029 isolates deterministic generation, bundle isolation, host policy, and real stdio to T030.",
+    "commands": [
+      "node --test --test-concurrency=1 test/packaging/plugin-generation.test.js test/packaging/bundle-isolation.test.js test/packaging/host-manifest-policy.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "10/10 cases fail only because the generator entrypoint is absent."
+  },
+  "changed_paths": [
+    "agent/compatibility-manifest.json",
+    "agent/plugins/codex/plugin.template.json",
+    "agent/plugins/codex/mcp.template.json",
+    "agent/plugins/claude/plugin.template.json",
+    "agent/plugins/claude/mcp.template.json",
+    "scripts/build-agent-plugins.js",
+    "package.json",
+    "src/mcp/stdio-server.js",
+    "src/mcp/tool-projection.js",
+    "test/helpers/mcp-client.js",
+    "test/packaging/bundle-isolation.test.js",
+    "test/repository-contract.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T030.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": [
+        "node --test --test-concurrency=1 test/packaging/plugin-generation.test.js test/packaging/bundle-isolation.test.js test/packaging/host-manifest-policy.test.js",
+        "npm run check",
+        "npm run package:check"
+      ],
+      "summary": "10/10 packaging contracts pass; deterministic double-build, archives, digests, isolated real stdio, host separation, and Node prerequisite are proven."
+    },
+    {
+      "status": "passed-with-recovered-environment-flake",
+      "commands": ["npm test", "node --test --test-concurrency=1 test/e2e/agent-surface-us1.test.js"],
+      "summary": "The final full run passed every T030 and product contract but one existing random-port fixture timed out; its complete 5-test file passed immediately on focused rerun. One POSIX-only test remains skipped on Windows."
+    }
+  ],
+  "review": {"trigger": null, "verdict": "cleared", "evidence": "US3 generation remains deterministic, identity-bound, policy-free, and separate per host."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"refs": ["CA-015", "CA-032", "CA-033", "CA-034", "CA-035", "CA-036", "CA-038", "CA-040"], "status": "passed", "evidence": "Packaging contracts and isolated official-SDK launches prove separate self-contained host artifacts with one compatibility identity and no policy-bearing host metadata."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "Added ESM createRequire and embedded package/schema metadata after real bundle startup failures; replaced a Windows non-ASCII fs.cpSync no-op in the test fixture; synchronized the npm payload contract."
+}

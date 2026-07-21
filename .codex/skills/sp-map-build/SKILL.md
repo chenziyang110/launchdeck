@@ -32,6 +32,13 @@ credentials, protected systems, human decisions/reviews, or physical access.
 Tailor steps, expected results, failure paths, evidence, and resume action to
 CI, visual review, or product decisions. Never claim completion.
 
+For a feature runtime blocker, do not invent `resume_argv` or overwrite an
+existing blocker. The CLI returns a read-only `show_argv` and structured
+`resolution_action`; `next_argv` stays empty while evidence is missing. After
+the criteria are proven, attach sanitized evidence using the action's declared
+input and execute its base argv. It restores the same owner and keeps the full
+blocker audit.
+
 ## User Input
 
 ```text
@@ -88,9 +95,13 @@ Reconstruct or refresh the query-backed project cognition runtime from a complet
 
 The CLI is the only agent-facing Learning read surface:
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
-2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json` only to filter or page.
 3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+After minimal live inspection identifies a reused operation or changed entry point, rerun targeted recall with current code, tests, and task/contract evidence, for example `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json`. Do not derive these facets from archived specifications. An exact operation-owner match may surface a cross-command candidate even when the new consumer differs; treat it as a candidate, expand one `show_argv`, verify it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist the live facets as `learning_context`, the contextual invocation as `learning_search_refs`, and returned refs as `learning_candidate_refs`. Record exactly one `applied`, `not_applicable`, or `deferred` item in `learning_dispositions` for every candidate. Do not silently ignore a candidate: applied Learning traces to requirement/consequence refs, not-applicable needs current evidence, and deferred needs an explicit deferral ref.
 
 `start`, `list`, and `show` are read-only. Current repository evidence,
 `.specify/memory/constitution.md`, and explicit user direction override stale or
@@ -98,7 +109,7 @@ candidate Learning.
 
 At closeout, corrections, retries, route changes, recovery, false leads, hidden
 dependencies, validation/tooling/state/cognition gaps, constraints, and near
-misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto`
 from owning state; manual capture includes summary, problem, action, triggers,
 success criteria, avoid items, exceptions, and evidence.
 
@@ -197,7 +208,7 @@ If those artifacts are missing, stop and route back to `/sp-map-scan`.
 
 ## Schema V5 Runtime Contract
 
-Schema v5 is current-only. `project-cognition build-from-scan --format json`
+Schema v5 is current-only. `C:\Users\11034\.specify\bin\project-cognition.exe build-from-scan --format json`
 creates schema v5 only for a missing database or consumes a complete current
 schema v5 database. The current runtime does not migrate schema v4 or older
 databases and does not archive or replace them. Remove the incompatible project-cognition.db
@@ -366,9 +377,9 @@ Before reporting completion:
 - run `C:\Users\11034\.specify\bin\project-cognition.exe build-from-scan --format json`; if it returns `status=blocked`, report its `errors`, identity reconciliation details from `identity_reconciliation`, `rejections`, `merge_records`, and `recovery_action`
 - run `C:\Users\11034\.specify\bin\project-cognition.exe validate-build --format json` after `build-from-scan`
 - report completion only after `validate-build` returns `status=ok` and `readiness=query_ready`
-- confirm that `.specify/project-cognition/project-cognition.db` was written and can be queried through `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement --query=\"$ARGUMENTS\" --format json`. Read top-level `minimal_live_reads` first, then use lane-level `first_pass_paths`, `claim_refs`, `coverage_diagnostics`, and `before_fix_claim`. Treat `route_confidence` only within `confidence_scope=route_candidate`; use top-level advanced-query `claim_signals` or `project-cognition expand --section claim_evidence` for bounded `source_path`/`span` evidence. These signals require live verification and cannot prove current repository truth. Do not infer final edit scope from first-pass reads or graph claims.
+- confirm that `.specify/project-cognition/project-cognition.db` was written and can be queried through `C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement '--query="$ARGUMENTS"' --format json`. Read top-level `minimal_live_reads` first, then use lane-level `first_pass_paths`, `claim_refs`, `coverage_diagnostics`, and `before_fix_claim`. Treat `route_confidence` only within `confidence_scope=route_candidate`; use top-level advanced-query `claim_signals` or `C:\Users\11034\.specify\bin\project-cognition.exe expand --section claim_evidence` for bounded `source_path`/`span` evidence. These signals require live verification and cannot prove current repository truth. Do not infer final edit scope from first-pass reads or graph claims.
 - confirm claim-aware routing preserves the bounded rerank contract: `match_score` alone establishes candidate eligibility; `claim_ranking.adjustment` cannot create candidates and cannot replace live verification. Fresh supported or graph-generation-verified claims add at most `+1`; stale and contradicted claims subtract `-1` and `-2`. `stale_claim_signal` and `contradicted_claim_signal` must keep the packet `usable_with_review` and route through `reconcile_claims_with_minimal_live_reads` plus lane-specific live repository reconciliation.
-- preserve the advanced `lexicon -> semantic_intake -> query` flow for explicit concept decisions or unresolved coverage. In that escalation, write `semantic_intake` from the alias catalog, select candidates by facet coverage, write `concept_decisions` with `covered_facets`, `missing_facets`, and `match_sources`, carry `lexicon_generation_id`, add `repository_search_terms`, and run `C:\Users\11034\.specify\bin\project-cognition.exe query --intent implement --query-plan \"<query_plan_json>\" --format json`. Agent-owned semantic normalization is mandatory: raw lexicon ranking and `agent_normalization` are only bootstrap signals, not route decisions. If `agent_normalization.required=true`, every raw candidate is `score=0`, or the prompt is localized, mixed-language, CJK, colloquial, symptom-first, or mixed-language or CJK text, extract embedded project terms and write `semantic_intake` from the alias catalog before selecting or rejecting concepts. If `agent_normalization` is omitted, treat it as `required=false`; CJK or mixed CJK/ASCII input still requires agent normalization even when positive raw lexical matches exist because embedded project tokens do not translate the surrounding user language. The agent still owns translation; `agent_normalization` is advisory guidance, not a route decision. (raw lexicon ranking is only a bootstrap; action: write_semantic_intake_from_alias_catalog) Derive project-language search terms from the alias catalog before source search. Do not search only the raw user words; include component names, state names, file names, command names, UI labels, and route names from candidates, aliases, matched_terms, colloquial_matches, returned paths, `normalized_query`, and `expanded_queries`. Use these project-language search terms before broad repository search
+- preserve the advanced `lexicon -> semantic_intake -> query` flow for explicit concept decisions or unresolved coverage. In that escalation, write `semantic_intake` from the alias catalog, select candidates by facet coverage, write `concept_decisions` with `covered_facets`, `missing_facets`, and `match_sources`, carry `lexicon_generation_id`, add `repository_search_terms`, and run `C:\Users\11034\.specify\bin\project-cognition.exe query --intent implement --query-plan '"<query_plan_json>"' --format json`. Agent-owned semantic normalization is mandatory: raw lexicon ranking and `agent_normalization` are only bootstrap signals, not route decisions. If `agent_normalization.required=true`, every raw candidate is `score=0`, or the prompt is localized, mixed-language, CJK, colloquial, symptom-first, or mixed-language or CJK text, extract embedded project terms and write `semantic_intake` from the alias catalog before selecting or rejecting concepts. If `agent_normalization` is omitted, treat it as `required=false`; CJK or mixed CJK/ASCII input still requires agent normalization even when positive raw lexical matches exist because embedded project tokens do not translate the surrounding user language. The agent still owns translation; `agent_normalization` is advisory guidance, not a route decision. (raw lexicon ranking is only a bootstrap; action: write_semantic_intake_from_alias_catalog) Derive project-language search terms from the alias catalog before source search. Do not search only the raw user words; include component names, state names, file names, command names, UI labels, and route names from candidates, aliases, matched_terms, colloquial_matches, returned paths, `normalized_query`, and `expanded_queries`. Use these project-language search terms before broad repository search
 - if `validate-build` returns `status=blocked`, report the specific DB, schema, active generation, status, or smoke-query error and do not mark the baseline fresh
 - confirm that `status.json` reflects a query-ready baseline
 - confirm that the runtime remains query-backed and does not advertise raw graph JSON or handbook-first outputs as runtime truth

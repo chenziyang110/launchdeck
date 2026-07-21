@@ -6,6 +6,8 @@ npm-debug.log*
 *.tgz
 coverage/
 dist/
+.specify/runtime/
+.specify/**/.workflow-state.lock
 .env
 .env.*
 !.env.example

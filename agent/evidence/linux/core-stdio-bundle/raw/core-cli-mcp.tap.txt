@@ -1,0 +1,18 @@
+command: docker run node:20-bookworm-slim node --test --test-concurrency=1 test/e2e/agent-surface-us1.test.js
+initialEnvironment: node:20-bookworm-slim without lsof, ss, or netstat
+initialExitCode: 1
+initialResult: 4 passed, 1 failed
+initialFailure: external ownership fixture reached a real port conflict without a Linux listener-observation utility; expected Agent refusal envelope was absent
+recovery: install iproute2=6.1.0-3 in the temporary container, then rerun the original cell
+recoveryCommand: docker exec launchdeck-linux-evidence node --test --test-concurrency=1 test/e2e/agent-surface-us1.test.js
+finalExitCode: 0
+stderr: empty
+ok 1 - CLI then MCP and MCP then CLI reuse the exact managed run without a second spawn (3436.329321ms)
+ok 2 - synchronized real MCP starts converge on one run and one append-only spawn receipt (1543.149ms)
+ok 3 - external and unknown ownership refuse across real CLI and MCP before spawn or signal effects (2739.178445ms)
+ok 4 - stale safe-clean digest refuses under locks before deleting any current target (1057.324868ms)
+ok 5 - CLI and MCP adoption inspection preserve byte inventory, process state, ports, and public surface (1295.676784ms)
+tests: 5
+pass: 5
+fail: 0
+durationMs: 10438.604313

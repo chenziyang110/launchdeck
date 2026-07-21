@@ -1,0 +1,18 @@
+{
+  "version": 3,
+  "status": "ready",
+  "entry_source": "sp-discussion",
+  "discussion_slug": "agent-surfaces-skill-mcp-plugin",
+  "source_contract": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json",
+  "review_digest": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "semantic_delta": [],
+  "required_refs": [
+    {
+      "ref": "../spec-contract.json",
+      "purpose": "Canonical planning-ready specification contract"
+    }
+  ],
+  "blockers": [],
+  "next_action": "/sp.plan",
+  "recovery": null
+}

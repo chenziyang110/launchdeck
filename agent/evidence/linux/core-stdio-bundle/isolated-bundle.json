@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "cellId": "ISOLATED-BUNDLE-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": { "kind": "isolated_bundle", "operations": ["capabilities.get", "task.status"] },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "linux", "version": "12", "build": "6.6.87.2-microsoft-standard-WSL2", "architecture": "x64", "distribution": "Debian GNU/Linux" },
+  "runtime": { "nodeExecutable": "/usr/local/bin/node", "nodeVersion": "20.20.2" },
+  "scenario": { "id": "ISOLATED-BUNDLE-REAL-WIRE", "family": "core-stdio-bundle", "description": "Linux relocated single-file bundles launch over real stdio without Plugin-local node_modules." },
+  "fixture": { "digest": "sha256:02b51006ad645d7c62ee6ba98818aa03f9dbcfdc1f19aeb249144e3ee77cbdd7", "harnessDigest": "sha256:af734a116dce1a617ce83ea3d5e1fcdba7757f83139baf5d7d8990da4b43050a" },
+  "execution": { "startedAt": "2026-07-20T10:18:00.000Z", "completedAt": "2026-07-20T10:23:53.026Z", "actions": ["build one ESM file", "relocate artifacts", "launch each over stdio", "refuse old Node build"], "commands": ["docker run node:20-bookworm-slim node --test --test-concurrency=1 test/packaging/bundle-isolation.test.js"] },
+  "result": { "code": "passed", "summary": "All three exact isolated-bundle scenarios passed in the Linux candidate environment.", "assertions": [
+    { "id": "single-file-no-external-npm", "status": "passed", "evidenceRefs": ["bundle-artifact"] },
+    { "id": "relocated-real-stdio", "status": "passed", "evidenceRefs": ["bundle-artifact"] },
+    { "id": "node-prerequisite", "status": "passed", "evidenceRefs": ["bundle-artifact"] }
+  ] },
+  "evidence": { "rawRefs": [
+    { "id": "bundle-artifact", "kind": "artifact", "path": "raw/isolated-bundle.tap.txt", "sha256": "9e10ef1aae6e6c1d73eb367c673468837386c600d30437db88c9ccbcbd034bcb" },
+    { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "cc8cb2199f8217d76663c420a1f3f4c2bc870c4e2c0590a583e864127a9fcb08" }
+  ] },
+  "invalidation": { "state": "current", "checkedAt": "2026-07-20T10:23:53.026Z", "invalidatedAt": null, "reasons": [], "keys": { "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d", "evidenceSchemaVersion": 1, "hostVersions": {}, "os": "linux", "osVersion": "12", "osBuild": "6.6.87.2-microsoft-standard-WSL2", "architecture": "x64", "nodeVersion": "20.20.2", "fixtureDigest": "sha256:02b51006ad645d7c62ee6ba98818aa03f9dbcfdc1f19aeb249144e3ee77cbdd7", "harnessDigest": "sha256:af734a116dce1a617ce83ea3d5e1fcdba7757f83139baf5d7d8990da4b43050a" } }
+}

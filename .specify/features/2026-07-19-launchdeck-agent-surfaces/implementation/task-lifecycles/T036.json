@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "task_id": "T036",
+  "task_ref": "task-index.json#/tasks/T036",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": {
+    "status": "failed-as-expected",
+    "summary": "Claude Code 2.1.211 accepted the former manifest only with seven warnings: unsupported schemaVersion, id, buildIdentity, node, and components fields, non-kebab-case name, and missing author metadata."
+  },
+  "changed_paths": [
+    "agent/plugins/claude/plugin.template.json",
+    "agent/compatibility-manifest.json",
+    "test/packaging/host-manifest-policy.test.js",
+    "agent/evidence/claude/",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T036.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": ["claude plugin validate <generated Claude artifact>", "two focused packaging suites", "npm run check"],
+      "summary": "Claude Code 2.1.211 validates the official Claude manifest without warnings; 8 focused generation/host-policy cases and syntax checking pass."
+    },
+    {
+      "status": "passed",
+      "commands": ["isolated claude plugin marketplace add/install/list/details"],
+      "summary": "Claude Code installed build 48cc9c90 at isolated user scope, cached the artifact, discovered one Skill and one MCP, and retained the documented CLAUDE_PLUGIN_ROOT runtime argument."
+    },
+    {
+      "status": "failed-as-recorded",
+      "commands": ["Claude print session from isolated cached artifact with only capabilities.get and task.list allowed"],
+      "summary": "The exact fixture session was blocked before MCP dispatch by the inherited UserPromptSubmit hook because .specify/bin/specify-hook.py is missing. Alternate project-only settings removed the hook but also removed OAuth authentication; no lifecycle mutation was attempted."
+    },
+    {
+      "status": "passed",
+      "commands": ["node scripts/run-agent-evidence.js --validate agent/evidence/claude"],
+      "summary": "Six Claude cells validate with immutable raw receipts: Windows install/routing is failed-visible, Windows lifecycle is not executed, and macOS/Linux routing and lifecycle are not executed."
+    }
+  ],
+  "review": {
+    "trigger": "task-level host evidence closeout",
+    "verdict": "cleared-with-withheld-claims",
+    "evidence": "Official Claude manifest and isolated installation are real-host proven. The inherited hook prevents the project-scoped tool trace, so no lifecycle, update, reload, disable, uninstall, incompatibility, takeover, or cross-host readiness is inferred."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "refs": ["CA-012", "CA-032", "CA-033", "CA-034", "CA-035", "CA-040", "CA-049", "CA-050"],
+      "status": "passed-or-claim-bounded",
+      "evidence": "The Windows install/routing cell proves official metadata validation, isolated install/cache discovery, bundled MCP connection, root substitution, and exact host provenance without rolling up readiness."
+    },
+    {
+      "refs": ["CA-015", "CA-020", "CA-021", "CA-022", "CA-023", "CA-037", "CA-045", "CA-047", "CA-048"],
+      "status": "failed-visible-or-not-executed",
+      "evidence": "Fixture routing was blocked before MCP dispatch by the user-level Claude hook; no write, start, update, reload, disable, uninstall, or takeover was attempted, and all dependent claims remain non-ready."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "The official manifest repair is retained. To rerun project-scoped Claude routing, restore the local Spec Kit hook dependency or provide an isolated authenticated Claude configuration that does not inherit the broken UserPromptSubmit hook; then rerun the original ordered route before any lifecycle stage."
+}

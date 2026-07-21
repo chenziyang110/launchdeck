@@ -1,0 +1,742 @@
+{
+  "version": "1.0.0",
+  "lane_id": "research-host-runtime",
+  "status": "accepted",
+  "researched_at": "2026-07-20",
+  "summary": "The host/runtime architecture is feasible as a Node.js 20+ prebuilt ESM bundle, but host readiness remains deliberately unproven until the explicit Codex, Claude Code, bundle-isolation, and lifecycle verification cells below pass. SU-002 is therefore converted from an open architectural question into owned verification work, not treated as resolved evidence.",
+  "source_refs": [
+    {
+      "id": "SRC-SPEC-CONTRACT",
+      "kind": "repository",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/spec-contract.json",
+      "confidence": "high",
+      "supports": "Feature decisions, CA acceptance criteria, MP product constraints, SU-002, and readiness boundaries."
+    },
+    {
+      "id": "SRC-FEATURE-CONTEXT",
+      "kind": "repository",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/context.md",
+      "confidence": "high",
+      "supports": "One-kernel architecture, durable state boundary, host artifact separation, and evidence scoping."
+    },
+    {
+      "id": "SRC-PACKAGE",
+      "kind": "repository",
+      "path": "package.json",
+      "confidence": "high",
+      "supports": "Current Node.js >=20 requirement, ESM package shape, dependency surface, and existing verification commands."
+    },
+    {
+      "id": "SRC-PACKAGE-LOCK",
+      "kind": "repository",
+      "path": "package-lock.json",
+      "confidence": "high",
+      "supports": "Current exact dependency graph and the future lockfile authority for build inputs."
+    },
+    {
+      "id": "SRC-INSTALLER",
+      "kind": "repository",
+      "path": "src/agent-installer.js",
+      "confidence": "high",
+      "supports": "Existing Skill destinations, conservative directory comparison, force behavior, and symlink restrictions."
+    },
+    {
+      "id": "SRC-CANONICAL-SKILL",
+      "kind": "repository",
+      "path": ".agents/skills/launchdeck-agent/SKILL.md",
+      "confidence": "high",
+      "supports": "Current canonical intent-router contract and lifecycle safety language."
+    },
+    {
+      "id": "SRC-SCHEMA",
+      "kind": "repository",
+      "path": "schema/launchdeck.schema.json",
+      "confidence": "high",
+      "supports": "Current configuration schema version and JSON Schema 2020-12 baseline."
+    },
+    {
+      "id": "SRC-SMOKE",
+      "kind": "repository",
+      "path": "scripts/smoke-lifecycle.js",
+      "confidence": "high",
+      "supports": "Current CLI smoke boundary and its explicit lack of cross-platform/host proof."
+    },
+    {
+      "id": "SRC-MCP-TRANSPORT",
+      "kind": "official_web",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+      "confidence": "high",
+      "supports": "stdio subprocess ownership, newline-delimited JSON-RPC framing, stderr logging allowance, and stdout protocol purity."
+    },
+    {
+      "id": "SRC-MCP-LIFECYCLE",
+      "kind": "official_web",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle",
+      "confidence": "high",
+      "supports": "Initialization ordering, capability negotiation, initialized notification, timeouts, and stdio shutdown behavior."
+    },
+    {
+      "id": "SRC-MCP-TOOLS",
+      "kind": "official_web",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "confidence": "high",
+      "supports": "Tool schemas, structured content compatibility, annotation trust limits, input validation, and tool/protocol error separation."
+    },
+    {
+      "id": "SRC-MCP-SDK",
+      "kind": "official_web",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk/tree/v1.x",
+      "confidence": "high",
+      "supports": "The production recommendation to use SDK v1.x while v2 is pre-alpha, the v1.29.0 release evidence, Node stdio server APIs, and Zod peer requirements."
+    },
+    {
+      "id": "SRC-MCP-QUICKSTART",
+      "kind": "official_web",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server-quickstart.md",
+      "confidence": "high",
+      "supports": "Node.js 20+ examples, StdioServerTransport use, and the prohibition on console.log/stdout diagnostics."
+    },
+    {
+      "id": "SRC-CODEX-PLUGIN",
+      "kind": "official_web",
+      "url": "https://learn.chatgpt.com/docs/build-plugins",
+      "confidence": "high",
+      "supports": "Codex plugin manifest/layout, skills and MCP locations, relative plugin paths, cached installation copies, and enablement configuration."
+    },
+    {
+      "id": "SRC-CODEX-SKILL",
+      "kind": "official_web",
+      "url": "https://learn.chatgpt.com/docs/build-skills",
+      "confidence": "high",
+      "supports": "Current Codex Skill layout and discovery paths, plugin distribution guidance, and duplicate-name behavior."
+    },
+    {
+      "id": "SRC-CODEX-MCP-IMPL",
+      "kind": "official_source",
+      "url": "https://github.com/openai/codex/blob/main/codex-rs/codex-mcp/src/plugin_config.rs",
+      "confidence": "medium-high",
+      "supports": "Current Codex implementation behavior for direct/wrapped MCP maps and rebasing a relative MCP cwd to the plugin root; this remains subject to real-host verification."
+    },
+    {
+      "id": "SRC-CODEX-PLUGINS-REPO",
+      "kind": "official_source",
+      "url": "https://github.com/openai/plugins",
+      "confidence": "high",
+      "supports": "Concrete current examples of Codex plugin package structure."
+    },
+    {
+      "id": "SRC-CLAUDE-PLUGIN",
+      "kind": "official_web",
+      "url": "https://code.claude.com/docs/en/plugins-reference",
+      "confidence": "high",
+      "supports": "Claude plugin layout, root variables, cache/update behavior, scopes, validation, and uninstall/data semantics."
+    },
+    {
+      "id": "SRC-CLAUDE-MCP",
+      "kind": "official_web",
+      "url": "https://code.claude.com/docs/en/mcp",
+      "confidence": "high",
+      "supports": "Claude Code MCP configuration and local stdio server integration."
+    },
+    {
+      "id": "SRC-ESBUILD",
+      "kind": "official_web",
+      "url": "https://esbuild.github.io/api/",
+      "confidence": "high",
+      "supports": "Node-platform ESM bundling, dependency inlining, splitting/external behavior, and metafile inspection."
+    },
+    {
+      "id": "SRC-NODE-CRYPTO",
+      "kind": "official_web",
+      "url": "https://nodejs.org/docs/latest-v20.x/api/crypto.html#cryptocreatehashalgorithm-options",
+      "confidence": "high",
+      "supports": "Built-in SHA-256 hashing through node:crypto on the supported runtime baseline."
+    },
+    {
+      "id": "SRC-NODE-SEMVER",
+      "kind": "official_source",
+      "url": "https://github.com/npm/node-semver",
+      "confidence": "high",
+      "supports": "npm's established SemVer parser and range evaluator."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "HR-001",
+      "recommendation": "Implement MCP as a thin stdio adapter over the same Launchdeck application kernel used by CLI and Skill flows; the adapter must not create a second lifecycle or persistence authority.",
+      "rationale": "This preserves the one-control-plane contract while allowing MCP-specific negotiation, schema validation, and error translation at the boundary.",
+      "alternatives": [
+        "A separate MCP daemon or independent task registry was rejected because it would split lifecycle and state authority.",
+        "Shelling out to the Launchdeck CLI for every tool call was rejected as the primary architecture because it weakens typed errors, cancellation, structured output, and transaction ownership."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT", "SRC-MCP-LIFECYCLE", "SRC-MCP-TOOLS"]
+    },
+    {
+      "id": "HR-002",
+      "recommendation": "Use the stable MCP TypeScript SDK v1.x line for this feature, initially pinning @modelcontextprotocol/sdk to the evidenced v1.29.0 release and pinning an exact compatible Zod version in package-lock.json; add an explicit post-feature review before moving to the v2 package split.",
+      "rationale": "The official SDK repository still recommends v1.x for production while v2 is pre-alpha. Exact lockfile resolution prevents an unreviewed SDK or schema-validator change from altering the bundle or wire behavior.",
+      "alternatives": [
+        "Adopting the current main-branch v2 split packages was rejected for this feature because the official repository does not yet recommend them for production.",
+        "Hand-written JSON-RPC framing was rejected because the standard SDK already owns initialization, framing, request dispatch, and protocol error behavior."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-MCP-SDK", "SRC-MCP-QUICKSTART", "SRC-PACKAGE-LOCK"]
+    },
+    {
+      "id": "HR-003",
+      "recommendation": "Build one precompiled ESM runtime entry with esbuild using bundle=true, platform=node, format=esm, target=node20, splitting=false, and no external npm packages; allow only Node built-ins to remain external and reject the build if the esbuild metafile reports any external package import.",
+      "rationale": "This is the narrowest plausible artifact that can launch with only Node.js 20+ on PATH, without node_modules, a global Launchdeck CLI, npx, or install-time scripts. Metafile inspection catches dependencies that static bundling could not inline.",
+      "alternatives": [
+        "Shipping node_modules inside each plugin was rejected because it expands package size and installation variance.",
+        "Using npx or a global launchdeck executable was rejected because host launch would then depend on mutable external installation state.",
+        "Using packages=external was rejected because it would leave runtime package dependencies unresolved in an isolated plugin cache."
+      ],
+      "confidence": "medium",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-PACKAGE", "SRC-ESBUILD", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "id": "HR-004",
+      "recommendation": "Generate separate Codex and Claude Code plugin directories from one versioned compatibility model and one build identity; copy the canonical Skill and identical runtime bundle into each artifact, but render host manifests and MCP launch paths independently.",
+      "rationale": "Both hosts support skills and local MCP servers, but their manifest directories, cache behavior, and runtime path substitution rules differ. Separate rendered artifacts avoid leaking one host's conventions into the other while retaining one functional contract.",
+      "alternatives": [
+        "A single byte-identical plugin directory for both hosts was rejected because .codex-plugin and .claude-plugin metadata and launch-path rules are host-specific.",
+        "Maintaining two independent Skill implementations was rejected because it would create behavioral drift."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-CODEX-PLUGIN", "SRC-CODEX-SKILL", "SRC-CLAUDE-PLUGIN", "SRC-CANONICAL-SKILL"]
+    },
+    {
+      "id": "HR-005",
+      "recommendation": "Render Codex MCP launch configuration with command=node, an artifact-relative runtime argument, and cwd='.' so Codex can rebase the working directory to the plugin root; do not use CLAUDE_PLUGIN_ROOT in Codex artifacts. Treat this as a candidate contract until Codex host verification passes.",
+      "rationale": "Current Codex documentation permits relative plugin paths, and current Codex source rebases relative MCP cwd to the plugin root. The host cache path is installation-specific and cannot be embedded at build time.",
+      "alternatives": [
+        "An absolute build-machine path was rejected because cached installations relocate artifacts.",
+        "Using the Claude-specific root variable was rejected because no Codex MCP contract was found for that variable."
+      ],
+      "confidence": "medium-high",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-MCP-IMPL", "SRC-CODEX-PLUGINS-REPO"]
+    },
+    {
+      "id": "HR-006",
+      "recommendation": "Render Claude Code MCP launch configuration with command=node and an argument rooted at ${CLAUDE_PLUGIN_ROOT}/runtime/launchdeck-mcp.mjs; do not store shared Launchdeck state in the plugin root or CLAUDE_PLUGIN_DATA.",
+      "rationale": "Claude explicitly documents CLAUDE_PLUGIN_ROOT for plugin component paths, while plugin roots are cached/ephemeral and may change on update. CLAUDE_PLUGIN_DATA is also deleted on last-scope uninstall unless retained, which conflicts with independent service/state lifetime.",
+      "alternatives": [
+        "Using cwd-relative runtime paths without the documented root variable was rejected because host launch cwd is not the project contract.",
+        "Storing registry, journal, or logs in plugin data was rejected because plugin uninstall must not own managed service state."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-CLAUDE-MCP", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "id": "HR-007",
+      "recommendation": "Reserve stdout exclusively for MCP frames. Route adapter diagnostics to stderr and route managed-task output through Launchdeck's existing logs/events contract. Audit imported initialization code for banners or console.log calls.",
+      "rationale": "The MCP stdio specification requires stdout to contain only valid protocol messages; one incidental log line can make an otherwise correct runtime undiscoverable by the host.",
+      "alternatives": [
+        "Prefixing human logs on stdout was rejected because the transport does not define an out-of-band stdout channel.",
+        "Suppressing all diagnostics was rejected because stderr is explicitly available for logging."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-MCP-TRANSPORT", "SRC-MCP-QUICKSTART", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "id": "HR-008",
+      "recommendation": "Represent build identity as SHA-256 over a versioned canonical identity payload containing sorted source/component digests, the dependency-lock digest, and explicit compatibility axes. Ship per-artifact integrity sidecars that hash every shipped file except the sidecar itself, avoiding self-referential digests.",
+      "rationale": "The design supplies deterministic drift detection without circular hashing. Separating package version, runtime protocol versions, state-schema versions, and tool-schema versions prevents a single marketing version from being mistaken for compatibility evidence.",
+      "alternatives": [
+        "Hashing an artifact-integrity file into itself was rejected as circular.",
+        "Using only package.json version was rejected because it cannot express independent wire, state, schema, and Skill contract compatibility.",
+        "Custom cryptographic signing was rejected; checksums provide drift detection, not publisher authenticity. Standard provenance/signing can be added separately if required."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-NODE-CRYPTO", "SRC-NODE-SEMVER", "SRC-PACKAGE-LOCK"]
+    },
+    {
+      "id": "HR-009",
+      "recommendation": "Expose build identity, exact version axes, runtime path, resolved process.execPath/process.version, state-home identity, and host identity through capabilities/diagnostics; use standard SemVer range evaluation and fail closed for incompatible writes while still permitting safe diagnostics.",
+      "rationale": "Operators and host tests need to distinguish packaging drift, runtime selection, and state incompatibility. Readiness cannot be inferred from a successful process spawn alone.",
+      "alternatives": [
+        "Returning only a package version was rejected because it obscures schema/protocol mismatches.",
+        "Silently attempting writes against unknown state versions was rejected because it risks state corruption."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT", "SRC-NODE-SEMVER", "SRC-MCP-TOOLS"]
+    },
+    {
+      "id": "HR-010",
+      "recommendation": "Treat plugin installation scope and executable project scope as separate inputs. Resolve projects through explicit projectRef/projectRoot and Launchdeck's registry/config semantics, never from the plugin cache cwd.",
+      "rationale": "Both hosts relocate plugin files into caches. A cache directory describes code location, not the project whose tasks may be observed or mutated.",
+      "alternatives": [
+        "Treating process.cwd() as the managed project was rejected because host launch cwd can be the plugin cache root.",
+        "Embedding an installation-time project path in the package was rejected because the same plugin can serve multiple projects/scopes."
+      ],
+      "confidence": "high",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN"]
+    }
+  ],
+  "standard_stack": [
+    {
+      "concern": "MCP protocol and stdio transport",
+      "selection": "@modelcontextprotocol/sdk v1.x, initially pinned to 1.29.0",
+      "role": "Initialization, capability negotiation, framing, dispatch, cancellation-compatible protocol behavior, and protocol errors.",
+      "source_refs": ["SRC-MCP-SDK", "SRC-MCP-TRANSPORT", "SRC-MCP-LIFECYCLE"]
+    },
+    {
+      "concern": "MCP boundary schemas",
+      "selection": "Zod at an exact SDK-compatible version recorded in package-lock.json",
+      "role": "Tool input validation and SDK schema integration. The implementation plan must select and lock the exact version rather than use a floating range.",
+      "source_refs": ["SRC-MCP-SDK", "SRC-PACKAGE-LOCK"]
+    },
+    {
+      "concern": "Single-file Node ESM bundle",
+      "selection": "esbuild as a build-only dependency",
+      "role": "Bundle application and MCP code, target Node 20, emit metafile evidence, and reject unresolved npm imports.",
+      "source_refs": ["SRC-ESBUILD", "SRC-PACKAGE"]
+    },
+    {
+      "concern": "Digest computation",
+      "selection": "node:crypto SHA-256",
+      "role": "Build identity and per-component integrity digests.",
+      "source_refs": ["SRC-NODE-CRYPTO"]
+    },
+    {
+      "concern": "Compatibility ranges",
+      "selection": "node-semver, pinned exactly and bundled if runtime evaluation is required",
+      "role": "Parse and evaluate supported package/protocol/schema ranges.",
+      "source_refs": ["SRC-NODE-SEMVER"]
+    },
+    {
+      "concern": "Configuration and compatibility document syntax",
+      "selection": "JSON Schema 2020-12 artifacts plus build/test validation",
+      "role": "Versioned schemas for generated manifests, capabilities, and compatibility metadata without inventing an ad hoc schema dialect.",
+      "source_refs": ["SRC-SCHEMA", "SRC-MCP-TOOLS"]
+    }
+  ],
+  "dont_hand_roll": [
+    {
+      "item": "JSON-RPC/MCP stdio framing, initialization, and protocol error envelopes",
+      "use": "@modelcontextprotocol/sdk v1.x",
+      "source_refs": ["SRC-MCP-SDK", "SRC-MCP-TRANSPORT", "SRC-MCP-LIFECYCLE"]
+    },
+    {
+      "item": "SemVer parsing or range intersection",
+      "use": "node-semver",
+      "source_refs": ["SRC-NODE-SEMVER"]
+    },
+    {
+      "item": "Hash implementation",
+      "use": "node:crypto SHA-256",
+      "source_refs": ["SRC-NODE-CRYPTO"]
+    },
+    {
+      "item": "Host path-variable emulation",
+      "use": "Each host's documented plugin-root mechanism and real-host tests",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-MCP-IMPL", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "item": "A custom bundle graph walker",
+      "use": "esbuild bundling plus metafile inspection and isolated execution tests",
+      "source_refs": ["SRC-ESBUILD"]
+    },
+    {
+      "item": "Custom publisher-authenticity signatures",
+      "use": "Treat SHA-256 as integrity/drift evidence only; adopt an established provenance/signing system in a separately specified release-security feature if authenticity becomes required.",
+      "source_refs": ["SRC-NODE-CRYPTO", "SRC-SPEC-CONTRACT"]
+    }
+  ],
+  "proposed_artifact_layout": {
+    "note": "Exact repository destinations remain owned by the consolidated architecture plan; these are required logical package shapes.",
+    "codex": [
+      "<codex-artifact-root>/.codex-plugin/plugin.json",
+      "<codex-artifact-root>/.mcp.json",
+      "<codex-artifact-root>/skills/launchdeck-agent/SKILL.md",
+      "<codex-artifact-root>/skills/launchdeck-agent/references/...",
+      "<codex-artifact-root>/runtime/launchdeck-mcp.mjs",
+      "<codex-artifact-root>/compatibility.json",
+      "<codex-artifact-root>/artifact-integrity.json"
+    ],
+    "claude": [
+      "<claude-artifact-root>/.claude-plugin/plugin.json",
+      "<claude-artifact-root>/.mcp.json",
+      "<claude-artifact-root>/skills/launchdeck-agent/SKILL.md",
+      "<claude-artifact-root>/skills/launchdeck-agent/references/...",
+      "<claude-artifact-root>/runtime/launchdeck-mcp.mjs",
+      "<claude-artifact-root>/compatibility.json",
+      "<claude-artifact-root>/artifact-integrity.json"
+    ],
+    "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-SKILL", "SRC-CLAUDE-PLUGIN", "SRC-SPEC-CONTRACT"]
+  },
+  "build_identity_contract": {
+    "algorithm": "sha256",
+    "identity_payload_fields": [
+      "identitySchemaVersion",
+      "packageVersion",
+      "runtimeVersion",
+      "mcpSdkVersion",
+      "agentProtocolVersion",
+      "cliSchemaVersion",
+      "configSchemaVersion",
+      "registrySchemaVersion",
+      "runIndexSchemaVersion",
+      "journalSchemaVersion",
+      "toolSchemaVersion",
+      "skillContractVersion",
+      "sorted canonical source/component digests",
+      "package-lock.json digest"
+    ],
+    "integrity_rule": "Each host package ships an artifact-integrity.json containing buildIdentity and sorted SHA-256 entries for every shipped file except artifact-integrity.json itself. compatibility.json does not hash itself. Host manifests may repeat buildIdentity only as inert metadata.",
+    "compatibility_rule": "Declare compatibility by independent version axis and evaluate ranges with node-semver. A mismatch blocks mutations but must leave capabilities and diagnostics available when safe.",
+    "authenticity_boundary": "SHA-256 proves byte identity/drift only; it does not establish publisher authenticity.",
+    "source_refs": ["SRC-SPEC-CONTRACT", "SRC-NODE-CRYPTO", "SRC-NODE-SEMVER", "SRC-PACKAGE-LOCK"]
+  },
+  "pitfalls": [
+    {
+      "risk": "Any banner, console.log, dependency warning, or task output on stdout corrupts the MCP stream.",
+      "mitigation": "Static scan plus subprocess tests that parse every stdout line as an MCP frame while diagnostics are asserted on stderr/log channels.",
+      "source_refs": ["SRC-MCP-TRANSPORT", "SRC-MCP-QUICKSTART"]
+    },
+    {
+      "risk": "Plugin cache cwd is mistaken for the managed project root.",
+      "mitigation": "Require explicit project identity and test launch from unrelated cache/current directories.",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "risk": "Claude path placeholders leak into Codex configuration or vice versa.",
+      "mitigation": "Use separate renderers and golden manifest tests, then verify each package in its real host.",
+      "source_refs": ["SRC-CODEX-MCP-IMPL", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "risk": "Registry, journal, logs, or process ownership are stored beneath an ephemeral plugin root or CLAUDE_PLUGIN_DATA.",
+      "mitigation": "Keep shared durable state under the existing Launchdeck home contract and test state/service survival across plugin update and uninstall.",
+      "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-CODEX-PLUGIN", "SRC-FEATURE-CONTEXT"]
+    },
+    {
+      "risk": "Dynamic imports, optional dependencies, native modules, or data assets remain outside the claimed single-file bundle.",
+      "mitigation": "Reject external package imports in the esbuild metafile, inspect archive inventory, and run in a directory without node_modules.",
+      "source_refs": ["SRC-ESBUILD"]
+    },
+    {
+      "risk": "One successful local host launch is generalized to all hosts, scopes, operating systems, and path forms.",
+      "mitigation": "Publish readiness only for exact passing matrix cells and retain SU-002 for every untested cell.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-SMOKE"]
+    },
+    {
+      "risk": "Claude continues running the previous MCP process during a mid-session plugin update.",
+      "mitigation": "Test reload/restart semantics and compatible old/new runtime access to the same state before advertising live-update readiness.",
+      "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "risk": "Canonical and generated Skill copies are both discoverable, causing duplicate names or stale routing instructions.",
+      "mitigation": "Keep generation deterministic, compare digests, scan current and legacy destinations non-destructively, and verify discovery per installation mode.",
+      "source_refs": ["SRC-CODEX-SKILL", "SRC-INSTALLER", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "risk": "A self-referential digest or package version is treated as a complete compatibility/security proof.",
+      "mitigation": "Use the layered non-self-hashing identity contract and explicitly separate integrity, compatibility, and authenticity claims.",
+      "source_refs": ["SRC-NODE-CRYPTO", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "risk": "Examples from the SDK main branch silently introduce v2 pre-alpha packages into the feature.",
+      "mitigation": "Pin the v1.x SDK and review any v2 migration as an explicit dependency/contract change.",
+      "source_refs": ["SRC-MCP-SDK", "SRC-MCP-QUICKSTART"]
+    },
+    {
+      "risk": "MCP annotations or host approval settings are mistaken for Launchdeck mutation authorization.",
+      "mitigation": "Treat annotations as hints and keep authorization, project identity, risk policy, and expected-state checks inside the shared kernel.",
+      "source_refs": ["SRC-MCP-TOOLS", "SRC-SPEC-CONTRACT", "SRC-CODEX-PLUGIN"]
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "A-HR-001",
+      "statement": "A supported Codex release launches a plugin MCP server whose relative cwd is rebased to the cached plugin root and accepts the proposed wrapped mcpServers document.",
+      "owner": "host verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks Codex host readiness, not architecture planning.",
+      "verification": "HV-CODEX-* real-host cells",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-MCP-IMPL"]
+    },
+    {
+      "id": "A-HR-002",
+      "statement": "A supported Claude Code release expands CLAUDE_PLUGIN_ROOT correctly for an MCP command argument on all claimed operating systems, including paths with spaces and non-ASCII characters.",
+      "owner": "host verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks Claude host/OS readiness.",
+      "verification": "HV-CLAUDE-* real-host cells",
+      "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-CLAUDE-MCP"]
+    },
+    {
+      "id": "A-HR-003",
+      "statement": "The final application/kernel dependency graph can be reduced to one ESM runtime file without unresolved npm imports or required external runtime assets.",
+      "owner": "build and bundle verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks prebuilt/self-contained runtime readiness.",
+      "verification": "HV-BUNDLE-* cells and metafile/archive gates",
+      "source_refs": ["SRC-ESBUILD", "SRC-PACKAGE"]
+    },
+    {
+      "id": "A-HR-004",
+      "statement": "The host process environment exposes a compatible node executable on PATH even when Launchdeck and npx are absent.",
+      "owner": "host verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks readiness for the affected host/environment cell.",
+      "verification": "Record command resolution, process.execPath, and process.version in every host launch cell.",
+      "source_refs": ["SRC-PACKAGE", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "id": "A-HR-005",
+      "statement": "Plugin disable/update/uninstall does not terminate or corrupt already managed tasks and shared state, and a compatible CLI can take over observation/control.",
+      "owner": "lifecycle and host verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks lifecycle independence and uninstall readiness.",
+      "verification": "HV-LIFECYCLE host matrix with long-running task, host exit, update, disable, uninstall, and CLI takeover.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT", "SRC-CLAUDE-PLUGIN", "SRC-CODEX-PLUGIN"]
+    },
+    {
+      "id": "A-HR-006",
+      "statement": "Old and new compatible runtime versions can coexist briefly against one Launchdeck home during host update, while incompatible writes fail closed.",
+      "owner": "compatibility verification",
+      "status": "open_non_blocking_for_plan",
+      "claim_gate": "Blocks cross-version update readiness.",
+      "verification": "Two-runtime compatibility tests using the declared version axes and real Claude mid-session update behavior.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-CLAUDE-PLUGIN", "SRC-NODE-SEMVER"]
+    }
+  ],
+  "validation_notes": {
+    "readiness_rule": "No host, operating system, scope, update, uninstall, or self-contained-runtime claim may be published beyond the exact passing verification cell. Existing CLI smoke evidence is not host evidence.",
+    "su_002_resolution": "SU-002 remains open for readiness but is no longer an undefined planning gap. It is owned by the following mandatory verification work, which must be represented as implementation-plan tasks and acceptance evidence.",
+    "required_work": [
+      {
+        "id": "HV-BUNDLE-WINDOWS",
+        "scope": "Windows isolated artifact proof",
+        "steps": [
+          "Build the exact release artifact with a clean dependency lock.",
+          "Assert esbuild metafile has no external npm-package imports; Node built-ins are permitted.",
+          "Copy only the shipped plugin files to a temporary path containing spaces and non-ASCII characters.",
+          "Remove node_modules and make launchdeck/npx unavailable; retain only a supported Node 20+ executable.",
+          "Launch runtime with node and execute initialize, initialized, tools/list, representative tools/call, invalid-input, output-schema, cancellation/timeout, disconnect, restart, and concurrent-client scenarios.",
+          "Parse every stdout frame as MCP and assert all diagnostics appear only on stderr or Launchdeck log/event channels.",
+          "Verify archive inventory, build identity, all component digests, and negative tamper detection."
+        ],
+        "claim_unlocked": "Windows bundle-isolation readiness only",
+        "source_refs": ["SRC-MCP-TRANSPORT", "SRC-MCP-LIFECYCLE", "SRC-MCP-TOOLS", "SRC-ESBUILD", "SRC-SPEC-CONTRACT"]
+      },
+      {
+        "id": "HV-BUNDLE-MACOS",
+        "scope": "macOS isolated artifact proof",
+        "steps": ["Repeat the complete HV-BUNDLE-WINDOWS protocol on a supported macOS runner and record runtime/architecture/path evidence."],
+        "claim_unlocked": "macOS bundle-isolation readiness only",
+        "source_refs": ["SRC-SPEC-CONTRACT", "SRC-ESBUILD"]
+      },
+      {
+        "id": "HV-BUNDLE-LINUX",
+        "scope": "Linux isolated artifact proof",
+        "steps": ["Repeat the complete HV-BUNDLE-WINDOWS protocol on a supported Linux runner and record runtime/architecture/path evidence."],
+        "claim_unlocked": "Linux bundle-isolation readiness only",
+        "source_refs": ["SRC-SPEC-CONTRACT", "SRC-ESBUILD"]
+      },
+      {
+        "id": "HV-CODEX-WINDOWS-MACOS-LINUX",
+        "scope": "One real Codex cell per claimed operating system and supported installation scope",
+        "steps": [
+          "Install the generated Codex plugin through the supported plugin flow so the host runs its cached copy, not the source tree.",
+          "Confirm manifest parsing, Skill discovery without stale duplicates, MCP discovery, relative cwd rebasing, and runtime launch without global Launchdeck, npx, install hooks, or plugin-local node_modules.",
+          "Confirm explicit project selection remains correct when host cwd and plugin cache cwd are unrelated to the project.",
+          "Exercise capabilities plus representative read and mutate tools, expected-state conflict, authorization denial, stdout purity, interruption, and restart.",
+          "Record plugin/runtime/build identities and node executable/version.",
+          "Exercise enable/disable, update, and uninstall, then verify managed-task continuity, shared-state preservation, and CLI takeover."
+        ],
+        "claim_unlocked": "Only the exact Codex host/version/OS/scope cells that pass",
+        "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-SKILL", "SRC-CODEX-MCP-IMPL", "SRC-SPEC-CONTRACT"]
+      },
+      {
+        "id": "HV-CLAUDE-WINDOWS-MACOS-LINUX",
+        "scope": "One real Claude Code cell per claimed operating system and supported installation scope",
+        "steps": [
+          "Run claude plugin validate and install the generated plugin through the supported host flow.",
+          "Confirm CLAUDE_PLUGIN_ROOT substitution from a cached path containing spaces and non-ASCII characters, Skill/MCP discovery, and runtime launch without global Launchdeck, npx, install hooks, or plugin-local node_modules.",
+          "Confirm explicit project selection remains correct when host cwd and plugin root are unrelated to the project.",
+          "Exercise capabilities plus representative read and mutate tools, expected-state conflict, authorization denial, stdout purity, interruption, and restart.",
+          "Update while a session exists, verify documented old-process behavior, reload/restart, and test compatible old/new runtime access to shared state.",
+          "Exercise disable and uninstall with and without keep-data semantics while proving Launchdeck home and managed tasks remain independent, followed by CLI takeover."
+        ],
+        "claim_unlocked": "Only the exact Claude Code host/version/OS/scope cells that pass",
+        "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-CLAUDE-MCP", "SRC-SPEC-CONTRACT"]
+      },
+      {
+        "id": "HV-RUNTIME-NEGATIVE",
+        "scope": "Prerequisite and corruption failures",
+        "steps": [
+          "Attempt launch with Node absent and with Node 19; require a clear host-visible diagnostic where the host permits one and withhold readiness.",
+          "Tamper with runtime, Skill, schema, and manifest files independently; require digest mismatch diagnostics and fail-closed mutations.",
+          "Present incompatible state/tool/agent protocol versions; require capabilities/diagnostics where safe but no mutation.",
+          "Inject stdout logging from an imported module and prove the purity gate fails."
+        ],
+        "claim_unlocked": "Failure-mode evidence only; never a positive host-readiness claim by itself",
+        "source_refs": ["SRC-PACKAGE", "SRC-MCP-TRANSPORT", "SRC-SPEC-CONTRACT", "SRC-NODE-CRYPTO"]
+      }
+    ],
+    "generation_verification_separation": [
+      "Generation tests compare deterministic Codex and Claude artifact trees, schemas, manifests, copied canonical Skill digests, build identity, and archive inventory.",
+      "Bundle tests prove isolated Node execution and real MCP wire behavior without involving a host.",
+      "Host tests install the already-generated release candidate and prove discovery, path resolution, lifecycle, and uninstall/update behavior in each real host.",
+      "No generator snapshot, handler-only unit test, or existing CLI smoke substitutes for bundle or host verification."
+    ],
+    "source_refs": ["SRC-SPEC-CONTRACT", "SRC-SMOKE", "SRC-MCP-TRANSPORT", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-ESBUILD"]
+  },
+  "environment_notes": [
+    {
+      "note": "Repository evidence was inspected from a Windows workspace only; no real Codex/Claude host or cross-platform artifact smoke was executed in this research lane.",
+      "source_refs": ["SRC-SMOKE", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "note": "The runtime prerequisite is Node.js >=20, not a zero-runtime-dependency executable. Readiness requires proving that each supported host environment can resolve a compatible node executable.",
+      "source_refs": ["SRC-PACKAGE", "SRC-MCP-QUICKSTART"]
+    },
+    {
+      "note": "The current repository has no MCP SDK, Zod, semver, bundler, plugin generator, or plugin manifest dependencies/artifacts; these must be added deliberately and exactly locked by implementation tasks.",
+      "source_refs": ["SRC-PACKAGE", "SRC-PACKAGE-LOCK"]
+    },
+    {
+      "note": "Codex current official Skill discovery documents .agents/skills and $HOME/.agents/skills, while the existing installer still contains a legacy user .codex/skills destination. Migration/duplicate scanning must remain non-destructive and independently verified.",
+      "source_refs": ["SRC-CODEX-SKILL", "SRC-INSTALLER"]
+    },
+    {
+      "note": "Plugin cache location is executable-code location only. Launchdeck state remains under the established Launchdeck home contract, and project identity remains explicit.",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-FEATURE-CONTEXT"]
+    }
+  ],
+  "architecture_impacts": [
+    {
+      "impact": "Introduce a host-neutral application kernel boundary that CLI and MCP adapters both call; registry, journal, locks, authorization, expected-state checks, lifecycle semantics, and event/log ownership remain behind it.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT"]
+    },
+    {
+      "impact": "Treat generated plugin roots as immutable, relocatable release artifacts and never as durable state homes or project roots.",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "impact": "Add one canonical artifact model with two host renderers, one bundle build, one compatibility model, and deterministic tree/digest generation.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-ESBUILD"]
+    },
+    {
+      "impact": "Keep process lifetime independent of MCP transport lifetime: host disconnect shuts down the adapter process but must not imply termination of managed tasks.",
+      "source_refs": ["SRC-MCP-LIFECYCLE", "SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT"]
+    },
+    {
+      "impact": "Make evidence dimensional: host, host version, OS, installation scope, Node version, build identity, and workflow must be recorded for each readiness claim.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-SMOKE"]
+    }
+  ],
+  "interface_impacts": [
+    {
+      "interface": "MCP stdio",
+      "impact": "Newline-delimited JSON-RPC only on stdout; UTF-8 diagnostics on stderr; initialize precedes tool traffic; shutdown follows MCP stdio lifecycle.",
+      "source_refs": ["SRC-MCP-TRANSPORT", "SRC-MCP-LIFECYCLE"]
+    },
+    {
+      "interface": "MCP tools",
+      "impact": "Declare JSON Schema 2020-12-compatible input/output contracts, return structuredContent with a JSON TextContent compatibility copy where applicable, separate protocol failures from tool execution errors, and do not treat annotations as authorization.",
+      "source_refs": ["SRC-MCP-TOOLS", "SRC-SCHEMA", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "interface": "capabilities/diagnostics",
+      "impact": "Expose build identity, independent compatibility axes, component digests, host/runtime identity, resolved Node executable/version, Launchdeck home identity, supported tools/modes, and readiness evidence scope without exposing secrets or raw internal process identifiers.",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-NODE-CRYPTO"]
+    },
+    {
+      "interface": "Codex package",
+      "impact": "Generated .codex-plugin/plugin.json, .mcp.json, skills tree, runtime, compatibility manifest, and integrity sidecar; candidate MCP launch uses node plus artifact-relative runtime path and relative cwd.",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-SKILL", "SRC-CODEX-MCP-IMPL"]
+    },
+    {
+      "interface": "Claude Code package",
+      "impact": "Generated .claude-plugin/plugin.json, .mcp.json, skills tree, runtime, compatibility manifest, and integrity sidecar; MCP launch uses node plus CLAUDE_PLUGIN_ROOT-rooted runtime path.",
+      "source_refs": ["SRC-CLAUDE-PLUGIN", "SRC-CLAUDE-MCP"]
+    },
+    {
+      "interface": "installer/update/uninstall",
+      "impact": "Scan canonical, current-host, and legacy Skill/plugin destinations; default to non-destructive conflict reporting; keep generation, installation, host verification, update, and uninstall as separate operations; never delete shared Launchdeck state merely because a plugin scope is removed.",
+      "source_refs": ["SRC-INSTALLER", "SRC-CODEX-SKILL", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-SPEC-CONTRACT"]
+    }
+  ],
+  "CA_refs": [
+    "CA-001",
+    "CA-002",
+    "CA-006",
+    "CA-007",
+    "CA-008",
+    "CA-009",
+    "CA-010",
+    "CA-012",
+    "CA-014",
+    "CA-015",
+    "CA-016",
+    "CA-017",
+    "CA-020",
+    "CA-021",
+    "CA-022",
+    "CA-023",
+    "CA-025",
+    "CA-032",
+    "CA-033",
+    "CA-034",
+    "CA-035",
+    "CA-036",
+    "CA-037",
+    "CA-038",
+    "CA-039",
+    "CA-040",
+    "CA-046",
+    "CA-047",
+    "CA-048",
+    "CA-049",
+    "CA-050"
+  ],
+  "MP_refs": ["MP-001", "MP-002", "MP-003", "MP-004", "MP-005", "MP-006", "MP-007", "MP-008"],
+  "blockers": [],
+  "integration_targets": [
+    {
+      "target": "shared application kernel boundary",
+      "required_integration": "MCP tool handlers call the same observe/mutate/lifecycle/state operations as CLI; transport and host metadata remain adapters.",
+      "owner": "architecture and implementation plan",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-FEATURE-CONTEXT"]
+    },
+    {
+      "target": "package.json and package-lock.json",
+      "required_integration": "Exactly pin the chosen MCP SDK, Zod, esbuild, and node-semver releases; expose deterministic artifact-generation and verification commands.",
+      "owner": "build implementation",
+      "source_refs": ["SRC-PACKAGE", "SRC-PACKAGE-LOCK", "SRC-MCP-SDK", "SRC-ESBUILD", "SRC-NODE-SEMVER"]
+    },
+    {
+      "target": "MCP stdio entry and tool schemas",
+      "required_integration": "Use SDK StdioServerTransport, stdout purity, initialization/lifecycle semantics, schema validation, structured results, and shared-kernel error mapping.",
+      "owner": "MCP implementation",
+      "source_refs": ["SRC-MCP-TRANSPORT", "SRC-MCP-LIFECYCLE", "SRC-MCP-TOOLS", "SRC-MCP-SDK"]
+    },
+    {
+      "target": "canonical Skill source",
+      "required_integration": "Generate host package Skill copies from .agents/skills/launchdeck-agent and verify their tree digest; do not create independently maintained host variants.",
+      "owner": "Skill/package implementation",
+      "source_refs": ["SRC-CANONICAL-SKILL", "SRC-CODEX-SKILL", "SRC-CLAUDE-PLUGIN"]
+    },
+    {
+      "target": "Codex and Claude artifact generators",
+      "required_integration": "Render separate host manifests/MCP paths from one canonical compatibility model, copy the prebuilt runtime and Skill, emit integrity sidecars, and produce deterministic archives.",
+      "owner": "packaging implementation",
+      "source_refs": ["SRC-CODEX-PLUGIN", "SRC-CODEX-MCP-IMPL", "SRC-CLAUDE-PLUGIN", "SRC-ESBUILD"]
+    },
+    {
+      "target": "agent installer and migration reporting",
+      "required_integration": "Extend current conservative scanning to canonical/current/legacy Skill and plugin locations with explicit install/update/uninstall plans and no shared-state deletion.",
+      "owner": "installer implementation",
+      "source_refs": ["SRC-INSTALLER", "SRC-CODEX-SKILL", "SRC-CLAUDE-PLUGIN", "SRC-SPEC-CONTRACT"]
+    },
+    {
+      "target": "verification pipeline and evidence records",
+      "required_integration": "Implement all HV-BUNDLE, HV-CODEX, HV-CLAUDE, HV-LIFECYCLE, and negative cells; bind evidence to host/version/OS/scope/Node/build identity and gate readiness claims accordingly.",
+      "owner": "host verification",
+      "source_refs": ["SRC-SPEC-CONTRACT", "SRC-SMOKE", "SRC-CODEX-PLUGIN", "SRC-CLAUDE-PLUGIN", "SRC-MCP-TRANSPORT"]
+    }
+  ]
+}

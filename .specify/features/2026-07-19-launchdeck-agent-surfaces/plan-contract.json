@@ -1,0 +1,2645 @@
+{
+  "version": 2,
+  "status": "planning-ready",
+  "source_contract": "spec-contract.json",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "semantic_delta": [],
+  "intent": "Deliver one shared Launchdeck Application Kernel and Operation Registry behind a backward-compatible CLI, a typed local stdio MCP server, one canonical MCP-first Skill, and separately generated Codex and Claude Plugins with durable recovery and exact readiness evidence.",
+  "complexity_level": "heavy",
+  "execution_model": "adaptive",
+  "execution_mode": "heavy",
+  "confirmed_delivery_scope": [
+    "CAP-001",
+    "CAP-002",
+    "CAP-003",
+    "CAP-004",
+    "CAP-005",
+    "CAP-006",
+    "CAP-007",
+    "CAP-008",
+    "CAP-009",
+    "CAP-010",
+    "CAP-011",
+    "CAP-012",
+    "CAP-013"
+  ],
+  "complete_first_scope_preservation": {
+    "default": "plan_and_task_complete_confirmed_scope",
+    "scope_reduction_allowed": false,
+    "complexity_response": "decompose_order_validate_refine_without_shrinking",
+    "phase_policy": "execution_order_not_delivery_deferral",
+    "priority_label_policy": "P1/P2/P3 labels order work; they do not defer delivery scope.",
+    "preserved_capability_count": 13,
+    "preserved_acceptance_count": 16
+  },
+  "user_confirmed_deferrals": [
+    {
+      "capability_ref": "CAP-014",
+      "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "exact_excluded_behavior": "First-release adoption.apply and every automatic project/user configuration write, registry mutation, or implicit task start.",
+      "residual_risk": "Users receive inspection and a proposed plan only; adopting a project remains manual until a separately reviewed digest/confirmation contract exists.",
+      "reopen_or_stop_condition": "Stop and reopen specification if adoption writes or apply become a required delivery outcome.",
+      "downstream_artifact": "tasks.md must contain only adoption.inspect implementation and negative zero-write acceptance for this feature."
+    },
+    {
+      "capability_ref": "CAP-015",
+      "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "exact_excluded_behavior": "First-release public MCP execution for medium-risk tasks.",
+      "residual_risk": "Medium-risk configured tasks remain available only through existing CLI policy and are not an Agent fallback target.",
+      "reopen_or_stop_condition": "Stop and reopen specification when a target host proves a portable human-elicitation contract and medium-risk Agent execution is requested.",
+      "downstream_artifact": "tasks.md must implement and prove low-risk-only public MCP refusal, retaining the future digest-bound confirmation model as documentation only."
+    },
+    {
+      "capability_ref": "CAP-016",
+      "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "exact_excluded_behavior": "Remote MCP/OAuth, hooks, MCP UI, GUI/TUI, native executable packaging, enterprise managed policy, and production/remote service control.",
+      "residual_risk": "First-release use requires local Node 20+ and stdio host integration; no remote or visual management surface exists.",
+      "reopen_or_stop_condition": "Stop and create a new specification if any deferred surface becomes a required delivery outcome or readiness claim.",
+      "downstream_artifact": "tasks.md and release evidence must contain no implementation or readiness roll-up for these surfaces."
+    }
+  ],
+  "deferral_contract_required_fields": [
+    "confirmation_source",
+    "exact_excluded_behavior",
+    "residual_risk",
+    "reopen_or_stop_condition",
+    "downstream_artifact"
+  ],
+  "architecture_decisions": [
+    {
+      "id": "AD-001",
+      "decision": "Create `src/kernel/operation-registry.js` and `src/kernel/application-kernel.js` as the only shared execution and safety authority.",
+      "rationale": "CLI and MCP must share semantics while existing control-plane modules remain resource truth.",
+      "source_refs": [
+        "D-001",
+        "MP-001",
+        "CA-001"
+      ],
+      "target_paths": [
+        "src/kernel/",
+        "src/control-plane/"
+      ]
+    },
+    {
+      "id": "AD-002",
+      "decision": "Declare exactly 18 first-release public Agent operations and generate/validate CLI mapping, MCP tools, Skill routing, capabilities, and contract cases from the catalog.",
+      "rationale": "One declaration prevents surface and policy drift.",
+      "source_refs": [
+        "public_operation_contract",
+        "CAP-001",
+        "CAP-006"
+      ],
+      "target_paths": [
+        "src/kernel/operation-registry.js",
+        "schema/agent-operations.schema.json"
+      ]
+    },
+    {
+      "id": "AD-003",
+      "decision": "Add a versioned operation journal at `<LAUNCHDECK_HOME>/runtime/operations/v1` with per-record atomic JSON, rebuildable creation indexes, existing lock semantics, and 30-day terminal retention.",
+      "rationale": "Prepared-before-effects, same-ID recovery, and cross-surface reconciliation require durable shared evidence.",
+      "source_refs": [
+        "D-007",
+        "CAP-004",
+        "data-model.md"
+      ],
+      "target_paths": [
+        "src/control-plane/operation-journal.js",
+        "src/control-plane/state.js"
+      ]
+    },
+    {
+      "id": "AD-004",
+      "decision": "Reduce `src/cli.js` to parsing/routing/presentation over Kernel operations while preserving CLI schemaVersion 1, text, compact projection, fields, statuses, exit codes, and CLI-only routes.",
+      "rationale": "Agent protocol and CLI compatibility evolve independently.",
+      "source_refs": [
+        "D-002",
+        "CAP-005",
+        "CA-025"
+      ],
+      "target_paths": [
+        "src/adapters/cli-operation-map.js",
+        "src/cli.js",
+        "src/output.js"
+      ]
+    },
+    {
+      "id": "AD-005",
+      "decision": "Implement MCP with pinned SDK v1.x, exact Zod, and `StdioServerTransport`; stdout is protocol-only and task output remains in bounded Launchdeck observations.",
+      "rationale": "Use the standard protocol owner and protect host framing.",
+      "source_refs": [
+        "research.md",
+        "CA-036",
+        "CA-046"
+      ],
+      "target_paths": [
+        "src/mcp/stdio-server.js",
+        "package.json",
+        "package-lock.json"
+      ]
+    },
+    {
+      "id": "AD-006",
+      "decision": "Validate the exact closed nine-field AgentOperationResult and keep `outcome.kind` separate from `resource.status`.",
+      "rationale": "All surfaces need stable semantic equivalence and explicit effects certainty.",
+      "source_refs": [
+        "D-006",
+        "contracts/agent-operation-result.schema.json",
+        "CA-024"
+      ],
+      "target_paths": [
+        "src/kernel/agent-result.js",
+        "schema/agent-operation-result.schema.json"
+      ]
+    },
+    {
+      "id": "AD-007",
+      "decision": "Resolve one configured project and re-evaluate current risk, ownership, compatibility, locks, and optional plan digest inside the Kernel immediately before mutation.",
+      "rationale": "Host hints and MCP annotations are not authorization.",
+      "source_refs": [
+        "CAP-002",
+        "CAP-003",
+        "CA-002",
+        "CA-008",
+        "CA-009"
+      ],
+      "target_paths": [
+        "src/kernel/project-context.js",
+        "src/kernel/policy.js"
+      ]
+    },
+    {
+      "id": "AD-008",
+      "decision": "Add a bounded observation service with opaque query-bound high-water cursors; public operation correlation remains <=15 minutes and <=20 results.",
+      "rationale": "Logs/events/recovery must not become arbitrary file reads, permanent follow, or retry authority.",
+      "source_refs": [
+        "CAP-007",
+        "CA-006",
+        "data-model.md"
+      ],
+      "target_paths": [
+        "src/kernel/observations.js",
+        "src/control-plane/events.js"
+      ]
+    },
+    {
+      "id": "AD-009",
+      "decision": "Keep `.agents/skills/launchdeck-agent` canonical; route MCP-first only after capabilities/observation and allow CLI fallback only before mutation dispatch when transport/operation is unavailable.",
+      "rationale": "Business refusal or uncertain work must never trigger another surface.",
+      "source_refs": [
+        "D-004",
+        "D-008",
+        "CA-011",
+        "CA-023",
+        "CA-045"
+      ],
+      "target_paths": [
+        ".agents/skills/launchdeck-agent/",
+        "src/agent-installer.js"
+      ]
+    },
+    {
+      "id": "AD-010",
+      "decision": "Build one Node 20 ESM stdio runtime with esbuild and no external npm packages, then render separate policy-free Codex and Claude Plugin artifacts.",
+      "rationale": "Hosts relocate artifacts and have different path/manifest rules while functional identity stays shared.",
+      "source_refs": [
+        "D-005",
+        "research.md",
+        "CA-032",
+        "CA-033"
+      ],
+      "target_paths": [
+        "scripts/build-agent-plugins.js",
+        "agent/plugins/"
+      ]
+    },
+    {
+      "id": "AD-011",
+      "decision": "Use one compatibility manifest with independent version axes, SemVer ranges, canonical component digests, and a non-self-referential SHA-256 build identity.",
+      "rationale": "Package version or path alone cannot prove write compatibility.",
+      "source_refs": [
+        "CA-010",
+        "CA-025",
+        "CA-035",
+        "contracts/compatibility-manifest.schema.json"
+      ],
+      "target_paths": [
+        "agent/compatibility-manifest.json",
+        "schema/compatibility-manifest.schema.json"
+      ]
+    },
+    {
+      "id": "AD-012",
+      "decision": "Keep Plugin and MCP lifetime independent from managed services and all shared state; update/disable/uninstall never stop tasks, migrate/delete state, or prune recovery evidence.",
+      "rationale": "Compatible newer Plugins and CLI must take over older runs safely.",
+      "source_refs": [
+        "MP-006",
+        "CA-021",
+        "CA-037",
+        "CA-047",
+        "CA-048"
+      ],
+      "target_paths": [
+        "agent/plugins/",
+        "src/control-plane/"
+      ]
+    },
+    {
+      "id": "AD-013",
+      "decision": "Represent readiness as exact build/surface/operation/host/version/OS/scope/scenario evidence cells.",
+      "rationale": "CLI or generator tests cannot prove MCP, host, update, uninstall, recovery, or platform readiness.",
+      "source_refs": [
+        "D-010",
+        "MP-008",
+        "research.md"
+      ],
+      "target_paths": [
+        "test/",
+        "scripts/",
+        "agent/evidence/"
+      ]
+    },
+    {
+      "id": "AD-014",
+      "decision": "Implement `adoption.inspect` as a bounded zero-write query and expose no `adoption.apply` transition.",
+      "rationale": "Inspection must not write configuration, register a project, start a task, or authorize later apply.",
+      "source_refs": [
+        "CAP-010",
+        "CAP-014",
+        "AC-016"
+      ],
+      "target_paths": [
+        "src/kernel/operations/adoption.js"
+      ]
+    }
+  ],
+  "implementation_sequence": [
+    {
+      "phase": "1-contract-foundation",
+      "purpose": "Land catalog/result/compatibility schemas, canonical digest fixtures, Kernel interfaces, and contract validation before moving behavior.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "2-kernel-state",
+      "purpose": "Implement project/policy/compatibility pipeline, journal/recovery, observations, task/clean/adoption handlers, and converge lock ownership.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "3-cli-cutover",
+      "purpose": "Route existing CLI through Kernel incrementally while keeping schemaVersion 1 compatibility and CLI-only routes.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "4-mcp-surface",
+      "purpose": "Project the 18 tools over real stdio and prove schema/error/output/concurrency/recovery behavior.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "5-skill-installer",
+      "purpose": "Update canonical Skill routing and non-destructive current/legacy/Plugin digest diagnosis.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "6-plugin-builds",
+      "purpose": "Generate isolated Codex/Claude artifacts, compatibility/build identity, integrity sidecars, and lifecycle-safe installers.",
+      "delivery_deferral": false
+    },
+    {
+      "phase": "7-evidence",
+      "purpose": "Run operation, CLI/MCP equivalence, fault, Skill trace, bundle, host/update/uninstall/takeover, and exact OS readiness gates.",
+      "delivery_deferral": false
+    }
+  ],
+  "interface_map": [
+    {
+      "interface": "Operation Registry",
+      "owner": "src/kernel/operation-registry.js",
+      "consumers": [
+        "Application Kernel",
+        "CLI mapping validator",
+        "MCP tool projection",
+        "capabilities",
+        "Skill/package validators"
+      ],
+      "boundary": "Declaration only; no state reads, effects, transport, or rendering."
+    },
+    {
+      "interface": "Application Kernel",
+      "owner": "src/kernel/application-kernel.js",
+      "consumers": [
+        "CLI adapter",
+        "MCP adapter"
+      ],
+      "boundary": "Only query/execute/recover authority; adapters cannot mutate or decide safety."
+    },
+    {
+      "interface": "Operation Journal",
+      "owner": "src/control-plane/operation-journal.js",
+      "consumers": [
+        "Kernel",
+        "operation.get/list/reconcile",
+        "diagnosis"
+      ],
+      "boundary": "Operation progress/effects evidence only; existing run/resource stores remain truth."
+    },
+    {
+      "interface": "CLI adapter",
+      "owner": "src/adapters/cli-operation-map.js and src/output.js",
+      "consumers": [
+        "existing CLI users/automation"
+      ],
+      "boundary": "Argument mapping, schemaVersion 1 projection, rendering, exit codes; broader legacy routes remain CLI-only."
+    },
+    {
+      "interface": "MCP stdio",
+      "owner": "src/mcp/stdio-server.js",
+      "consumers": [
+        "Codex",
+        "Claude",
+        "other local MCP clients"
+      ],
+      "boundary": "Protocol/schema adapter over exactly 18 public operations; no policy or Plugin-cwd targeting."
+    },
+    {
+      "interface": "Canonical Skill",
+      "owner": ".agents/skills/launchdeck-agent",
+      "consumers": [
+        "standalone installs",
+        "Codex Plugin",
+        "Claude Plugin"
+      ],
+      "boundary": "Intent/routing state machine; no raw controls, model approvals, policy, or retry invention."
+    },
+    {
+      "interface": "Compatibility/build",
+      "owner": "agent/compatibility-manifest.json and scripts/build-agent-plugins.js",
+      "consumers": [
+        "Kernel capabilities",
+        "Plugin generators",
+        "release evidence"
+      ],
+      "boundary": "Identity, ranges, digests, host paths; no duplicate lifecycle policy."
+    },
+    {
+      "interface": "Readiness evidence",
+      "owner": "verification pipeline",
+      "consumers": [
+        "release claims",
+        "capabilities/diagnosis"
+      ],
+      "boundary": "Exact cells only; no unsupported roll-up."
+    }
+  ],
+  "global_constraints": [
+    "F:/github/launchdeck is the locked implementation target and current behavior authority.",
+    "The existing daemonless user-scoped Launchdeck control plane remains authoritative.",
+    "CLI, MCP, Skill, and Plugin runtimes share LAUNCHDECK_HOME, registry, run index, locks, logs, events, and operation journal.",
+    "Application Kernel policy is the only mutation authority; MCP annotations and host approvals are defense in depth only.",
+    "CLI schemaVersion 1 remains backward compatible while Agent protocol versions independently.",
+    "First-release MCP is local stdio, operates only on configured projects, and executes only operations whose current Kernel-evaluated risk is low.",
+    "Public Agent tools do not accept arbitrary command, env, cwd, force, risky cleanup, reset, or model-authored confirmation fields.",
+    "Node.js 20+ is a declared prerequisite; Plugins do not require a global CLI, npx, or install scripts.",
+    "Codex and Claude Plugins are separate generated artifacts from one compatibility manifest and build identity.",
+    "MCP-server and Plugin-host lifetime never owns managed-task lifetime.",
+    "Unknown or external process ownership is inspect-only.",
+    "No readiness claim may exceed its exact surface, host, operating-system, update, uninstall, and recovery evidence.",
+    "Pin MCP SDK v1.x, an SDK-compatible Zod, esbuild, and node-semver exactly in package-lock.json.",
+    "The bundled stdio artifact must contain no external npm-package import and must launch from a relocatable isolated directory with only Node 20+.",
+    "Operation Registry schemas and result/compatibility JSON Schemas use draft 2020-12.",
+    "The existing registry, run index, runtime state, ownership, events, logs, and process/port adapters remain resource truth."
+  ],
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-007",
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012",
+    "AC-013",
+    "AC-014",
+    "AC-015",
+    "AC-016"
+  ],
+  "acceptance_contracts": [
+    "AC-001: For every shared operation contract case, CLI and MCP produce semantically equivalent operation, outcome, resource, effects, safety, error, next-action, and provenance data while preserving the existing CLI envelope.",
+    "AC-002: A Plugin-started service survives host and MCP exit, remains visible from standalone CLI, and can be safely stopped from that CLI when ownership and compatibility checks pass.",
+    "AC-003: Repeating start for the same configured project/task returns the existing run with reusedExistingRun=true and does not create a second process.",
+    "AC-004: A port or PID with unknown or external ownership can be inspected but every mutation is refused without Launchdeck ownership proof.",
+    "AC-005: Public MCP refuses medium, high, destructive, arbitrary-shell, external-process, and model-authored-confirmation execution even when a host annotation or approval suggests otherwise.",
+    "AC-006: Every mutation has an operation ID persisted before side effects; after a transport failure the caller can retrieve/reconcile by a known ID or use bounded operation.list correlation when the response carrying the ID was lost, and an indeterminate operation is never automatically retried or replayed through another surface.",
+    "AC-007: Reuse of an existing operation ID with the same input digest returns or reconciles the original result; a mismatched digest or expired/missing recovery record is refused without new execution.",
+    "AC-008: Safe clean executes only after the Kernel recomputes the target set and matches a current plan digest; preview drift is refused.",
+    "AC-009: Every MCP operation resolves project context explicitly and returns a missing, ambiguous, or scope-violation error rather than defaulting to a Plugin installation directory.",
+    "AC-010: Plugin update, disable, and uninstall leave managed services, registry, journal, logs, events, and shared configuration intact; a compatible newer Plugin and standalone CLI observe the same run ID, PID, port, and state home and can safely stop the older run without duplication.",
+    "AC-011: Capabilities reports actual runtime, protocol, state, schema, component digests, supported operations, risk limits, host, and project scope; component mismatch fails writes closed.",
+    "AC-012: The canonical Skill selects MCP first only for supported safe operations, uses CLI fallback only for unavailable or unsupported safe transport, and never falls back after a business refusal or uncertain mutation.",
+    "AC-013: Codex Skill installation checks both legacy ~/.codex/skills and current $HOME/.agents/skills locations, reports identical duplicates or divergence, and never overwrites or deletes divergent user content automatically.",
+    "AC-014: A real stdio protocol client verifies initialize, tools/list, tools/call, structured output, schema errors, stdout purity, stderr diagnostics, interruption, restart, and concurrency.",
+    "AC-015: Separate real Codex and Claude host smokes verify installation, routing, project scope, MCP launch, update, disable/uninstall, cross-version run identity, and shared-state behavior on every platform claimed ready.",
+    "AC-016: adoption.inspect returns a bounded proposed configuration plan without writing project or user configuration, registering a project, starting a task, or authorizing a later adoption.apply operation."
+  ],
+  "capability_operations": [
+    {
+      "id": "CAP-001",
+      "signal": "Kernel operation registry and normalized result contract",
+      "source_ref": "agent_requirement_contract.scope.in[0]",
+      "disposition": "in_scope",
+      "operation": "Execute declared Launchdeck operations through one Kernel-owned registry and normalized result contract.",
+      "acceptance_refs": [
+        "AC-001",
+        "AC-011"
+      ]
+    },
+    {
+      "id": "CAP-002",
+      "signal": "Project context and scope resolution",
+      "source_ref": "downstream_instructions.capability_map[1]",
+      "disposition": "in_scope",
+      "operation": "Resolve projectRef, explicit projectRoot, host-provided project root, and registered user-scope projects with deterministic precedence and scope errors.",
+      "acceptance_refs": [
+        "AC-009"
+      ]
+    },
+    {
+      "id": "CAP-003",
+      "signal": "Risk, ownership, and compatibility policy",
+      "source_ref": "downstream_instructions.capability_map[2]",
+      "disposition": "in_scope",
+      "operation": "Evaluate current configured risk, ownership proof, project scope, and version compatibility before every mutation.",
+      "acceptance_refs": [
+        "AC-004",
+        "AC-005",
+        "AC-011"
+      ]
+    },
+    {
+      "id": "CAP-004",
+      "signal": "Operation journal and recovery",
+      "source_ref": "downstream_instructions.capability_map[3]",
+      "disposition": "in_scope",
+      "operation": "Journal each mutation by Kernel-issued operation ID and input digest, recover known work, and reconcile uncertain effects without blind replay.",
+      "acceptance_refs": [
+        "AC-006",
+        "AC-007"
+      ]
+    },
+    {
+      "id": "CAP-005",
+      "signal": "CLI compatibility adapter",
+      "source_ref": "downstream_instructions.capability_map[4]",
+      "disposition": "in_scope",
+      "operation": "Route current CLI commands through the Kernel while preserving schemaVersion 1 and independently exposing capabilities.",
+      "acceptance_refs": [
+        "AC-001",
+        "AC-011"
+      ]
+    },
+    {
+      "id": "CAP-006",
+      "signal": "Typed stdio MCP adapter",
+      "source_ref": "downstream_instructions.capability_map[5]",
+      "disposition": "in_scope",
+      "operation": "Expose typed Agent tools generated or validated from declared operations over stdout-pure local stdio MCP.",
+      "acceptance_refs": [
+        "AC-001",
+        "AC-014"
+      ]
+    },
+    {
+      "id": "CAP-007",
+      "signal": "Diagnosis and bounded observation",
+      "source_ref": "agent_requirement_contract.scope.in[2]",
+      "disposition": "in_scope",
+      "operation": "Expose capabilities, diagnosis, project/task inspection, status, and cursor/limit-bounded logs and events without arbitrary paths or permanent follow calls.",
+      "acceptance_refs": [
+        "AC-009",
+        "AC-011",
+        "AC-014"
+      ]
+    },
+    {
+      "id": "CAP-008",
+      "signal": "Low-risk lifecycle mutation",
+      "source_ref": "agent_requirement_contract.scope.in[2]",
+      "disposition": "in_scope",
+      "operation": "Start, stop, restart, and run only declared configured tasks whose current Kernel policy is low risk and whose ownership/scope checks pass.",
+      "acceptance_refs": [
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "CAP-009",
+      "signal": "Reconcile and digest-bound safe clean",
+      "source_ref": "agent_requirement_contract.scope.in[2]",
+      "disposition": "in_scope",
+      "operation": "Inspect/reconcile known operation IDs and execute safe clean only from a freshly revalidated Kernel plan digest.",
+      "acceptance_refs": [
+        "AC-006",
+        "AC-007",
+        "AC-008"
+      ]
+    },
+    {
+      "id": "CAP-010",
+      "signal": "Read-only adoption inspection",
+      "source_ref": "agent_requirement_contract.scope.in[3]",
+      "disposition": "in_scope",
+      "operation": "Inspect candidate adoption configuration and return a plan without writing configuration, registering a project, authorizing apply, or starting a task.",
+      "acceptance_refs": [
+        "AC-016"
+      ]
+    },
+    {
+      "id": "CAP-011",
+      "signal": "Canonical Skill routing and safe fallback",
+      "source_ref": "downstream_instructions.capability_map[6]",
+      "disposition": "in_scope",
+      "operation": "Map lifecycle intent to declared operations, observe before mutation, refuse unsafe raw control, and apply the supported MCP-to-CLI fallback state machine.",
+      "acceptance_refs": [
+        "AC-012",
+        "AC-013"
+      ]
+    },
+    {
+      "id": "CAP-012",
+      "signal": "Compatibility manifest and dual host packaging",
+      "source_ref": "downstream_instructions.capability_map[7]",
+      "disposition": "in_scope",
+      "operation": "Generate separately installable Codex and Claude artifacts with bundled runtime, canonical Skill, host metadata, and shared component digests.",
+      "acceptance_refs": [
+        "AC-010",
+        "AC-011",
+        "AC-015"
+      ]
+    },
+    {
+      "id": "CAP-013",
+      "signal": "Protocol, fault, Skill-eval, host, update, uninstall, and platform verification",
+      "source_ref": "downstream_instructions.capability_map[8]",
+      "disposition": "in_scope",
+      "operation": "Produce surface-specific automated and real-host evidence without unsupported readiness roll-up.",
+      "acceptance_refs": [
+        "AC-014",
+        "AC-015"
+      ]
+    },
+    {
+      "id": "CAP-014",
+      "signal": "Automatic adoption/configuration writes",
+      "source_ref": "agent_requirement_contract.scope.deferred[0]",
+      "disposition": "deferred",
+      "operation": "Future adoption.apply must consume a separately reviewed Kernel plan digest, revalidate it, and return before any task start.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "The user requires adoption writes in the first release."
+    },
+    {
+      "id": "CAP-015",
+      "signal": "Medium-risk MCP execution",
+      "source_ref": "agent_requirement_contract.scope.deferred[1]",
+      "disposition": "deferred",
+      "operation": "Future medium-risk execution requires declared client elicitation, human-response evidence, digest binding, and execution-time revalidation.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "A target host proves a reliable portable human elicitation contract and first-release scope changes."
+    },
+    {
+      "id": "CAP-016",
+      "signal": "Remote MCP, OAuth, hooks, MCP UI, GUI/TUI, native packaging, and enterprise policy",
+      "source_ref": "agent_requirement_contract.scope.deferred[2]; downstream_instructions.deferred_scope[4..5]",
+      "disposition": "deferred",
+      "operation": "No first-release implementation or readiness claim; each surface requires a later specification and evidence boundary.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "Any listed surface becomes a required delivery outcome."
+    },
+    {
+      "id": "CAP-017",
+      "signal": "High/destructive public MCP, force-stop, project removal, risky clean, reset, arbitrary shell/env/cwd/force, and permanent follow",
+      "source_ref": "agent_requirement_contract.scope.out[1..2]",
+      "disposition": "dropped",
+      "operation": "The public Agent surface must not expose these operations or inputs.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "A new reviewed safety contract explicitly adds one of these capabilities."
+    },
+    {
+      "id": "CAP-018",
+      "signal": "External-process termination",
+      "source_ref": "agent_requirement_contract.scope.out[3]",
+      "disposition": "dropped",
+      "operation": "Unknown or external-owned processes remain inspect-only.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "Ownership semantics are explicitly redefined in a new discussion."
+    },
+    {
+      "id": "CAP-019",
+      "signal": "Absolute exactly-once guarantees",
+      "source_ref": "agent_requirement_contract.scope.out[6]",
+      "disposition": "dropped",
+      "operation": "Use resource-aware idempotency, journal recovery, and explicit indeterminate outcomes instead.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "A restricted operation class can prove stronger semantics without changing the general promise."
+    },
+    {
+      "id": "CAP-020",
+      "signal": "Production or remote service management",
+      "source_ref": "agent_requirement_contract.scope.out[4]",
+      "disposition": "dropped",
+      "operation": "The first-release local control plane must not target production or remote managed services.",
+      "confirmation_ref": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+      "reopen_trigger": "The user requires production or remote service management under a new trust, authentication, policy, and evidence contract."
+    }
+  ],
+  "capability_preservation": {
+    "surface_minimization_policy": "Remap preserved operations to an executable entry point or reference a user-confirmed deferral; do not delete capability.",
+    "entries": [
+      {
+        "capability_id": "CAP-001",
+        "disposition": "in_scope",
+        "selected_entry_point": "shared Kernel",
+        "owning_paths": [
+          "src/kernel/operation-registry.js",
+          "src/kernel/application-kernel.js"
+        ],
+        "required_implementation": "Execute declared Launchdeck operations through one Kernel-owned registry and normalized result contract.",
+        "acceptance_proof": [
+          "AC-001",
+          "AC-011"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-002",
+        "disposition": "in_scope",
+        "selected_entry_point": "shared Kernel",
+        "owning_paths": [
+          "src/kernel/project-context.js"
+        ],
+        "required_implementation": "Resolve projectRef, explicit projectRoot, host-provided project root, and registered user-scope projects with deterministic precedence and scope errors.",
+        "acceptance_proof": [
+          "AC-009"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-003",
+        "disposition": "in_scope",
+        "selected_entry_point": "shared Kernel",
+        "owning_paths": [
+          "src/kernel/policy.js",
+          "src/control-plane/ownership.js"
+        ],
+        "required_implementation": "Evaluate current configured risk, ownership proof, project scope, and version compatibility before every mutation.",
+        "acceptance_proof": [
+          "AC-004",
+          "AC-005",
+          "AC-011"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-004",
+        "disposition": "in_scope",
+        "selected_entry_point": "shared Kernel",
+        "owning_paths": [
+          "src/control-plane/operation-journal.js",
+          "src/kernel/application-kernel.js"
+        ],
+        "required_implementation": "Journal each mutation by Kernel-issued operation ID and input digest, recover known work, and reconcile uncertain effects without blind replay.",
+        "acceptance_proof": [
+          "AC-006",
+          "AC-007"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-005",
+        "disposition": "in_scope",
+        "selected_entry_point": "public CLI and shared Kernel",
+        "owning_paths": [
+          "src/adapters/cli-operation-map.js",
+          "src/cli.js",
+          "src/output.js"
+        ],
+        "required_implementation": "Route current CLI commands through the Kernel while preserving schemaVersion 1 and independently exposing capabilities.",
+        "acceptance_proof": [
+          "AC-001",
+          "AC-011"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-006",
+        "disposition": "in_scope",
+        "selected_entry_point": "public MCP operation projection and shared Kernel",
+        "owning_paths": [
+          "src/mcp/stdio-server.js",
+          "schema/agent-operations.schema.json"
+        ],
+        "required_implementation": "Expose typed Agent tools generated or validated from declared operations over stdout-pure local stdio MCP.",
+        "acceptance_proof": [
+          "AC-001",
+          "AC-014"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-007",
+        "disposition": "in_scope",
+        "selected_entry_point": "public MCP operation projection and shared Kernel",
+        "owning_paths": [
+          "src/kernel/observations.js",
+          "src/control-plane/events.js"
+        ],
+        "required_implementation": "Expose capabilities, diagnosis, project/task inspection, status, and cursor/limit-bounded logs and events without arbitrary paths or permanent follow calls.",
+        "acceptance_proof": [
+          "AC-009",
+          "AC-011",
+          "AC-014"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-008",
+        "disposition": "in_scope",
+        "selected_entry_point": "public MCP operation projection and shared Kernel",
+        "owning_paths": [
+          "src/kernel/operations/task.js",
+          "src/control-plane/runs.js",
+          "src/runtime.js"
+        ],
+        "required_implementation": "Start, stop, restart, and run only declared configured tasks whose current Kernel policy is low risk and whose ownership/scope checks pass.",
+        "acceptance_proof": [
+          "AC-002",
+          "AC-003",
+          "AC-004",
+          "AC-005"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-009",
+        "disposition": "in_scope",
+        "selected_entry_point": "public MCP operation projection and shared Kernel",
+        "owning_paths": [
+          "src/kernel/operations/operation.js",
+          "src/kernel/operations/clean.js"
+        ],
+        "required_implementation": "Inspect/reconcile known operation IDs and execute safe clean only from a freshly revalidated Kernel plan digest.",
+        "acceptance_proof": [
+          "AC-006",
+          "AC-007",
+          "AC-008"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-010",
+        "disposition": "in_scope",
+        "selected_entry_point": "public MCP operation projection and shared Kernel",
+        "owning_paths": [
+          "src/kernel/operations/adoption.js"
+        ],
+        "required_implementation": "Inspect candidate adoption configuration and return a plan without writing configuration, registering a project, authorizing apply, or starting a task.",
+        "acceptance_proof": [
+          "AC-016"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-011",
+        "disposition": "in_scope",
+        "selected_entry_point": "canonical Skill",
+        "owning_paths": [
+          ".agents/skills/launchdeck-agent/",
+          "src/agent-installer.js"
+        ],
+        "required_implementation": "Map lifecycle intent to declared operations, observe before mutation, refuse unsafe raw control, and apply the supported MCP-to-CLI fallback state machine.",
+        "acceptance_proof": [
+          "AC-012",
+          "AC-013"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-012",
+        "disposition": "in_scope",
+        "selected_entry_point": "generated host artifacts",
+        "owning_paths": [
+          "agent/compatibility-manifest.json",
+          "scripts/build-agent-plugins.js",
+          "agent/plugins/"
+        ],
+        "required_implementation": "Generate separately installable Codex and Claude artifacts with bundled runtime, canonical Skill, host metadata, and shared component digests.",
+        "acceptance_proof": [
+          "AC-010",
+          "AC-011",
+          "AC-015"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-013",
+        "disposition": "in_scope",
+        "selected_entry_point": "verification pipeline",
+        "owning_paths": [
+          "test/",
+          "scripts/",
+          "agent/evidence/"
+        ],
+        "required_implementation": "Produce surface-specific automated and real-host evidence without unsupported readiness roll-up.",
+        "acceptance_proof": [
+          "AC-014",
+          "AC-015"
+        ],
+        "reopen_or_conflict_condition": null
+      },
+      {
+        "capability_id": "CAP-014",
+        "disposition": "deferred",
+        "selected_entry_point": "user-confirmed deferral",
+        "owning_paths": [],
+        "required_implementation": "Future adoption.apply must consume a separately reviewed Kernel plan digest, revalidate it, and return before any task start.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "The user requires adoption writes in the first release."
+      },
+      {
+        "capability_id": "CAP-015",
+        "disposition": "deferred",
+        "selected_entry_point": "user-confirmed deferral",
+        "owning_paths": [],
+        "required_implementation": "Future medium-risk execution requires declared client elicitation, human-response evidence, digest binding, and execution-time revalidation.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "A target host proves a reliable portable human elicitation contract and first-release scope changes."
+      },
+      {
+        "capability_id": "CAP-016",
+        "disposition": "deferred",
+        "selected_entry_point": "user-confirmed deferral",
+        "owning_paths": [],
+        "required_implementation": "No first-release implementation or readiness claim; each surface requires a later specification and evidence boundary.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "Any listed surface becomes a required delivery outcome."
+      },
+      {
+        "capability_id": "CAP-017",
+        "disposition": "dropped",
+        "selected_entry_point": "explicit public-surface exclusion",
+        "owning_paths": [],
+        "required_implementation": "The public Agent surface must not expose these operations or inputs.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "A new reviewed safety contract explicitly adds one of these capabilities."
+      },
+      {
+        "capability_id": "CAP-018",
+        "disposition": "dropped",
+        "selected_entry_point": "explicit public-surface exclusion",
+        "owning_paths": [],
+        "required_implementation": "Unknown or external-owned processes remain inspect-only.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "Ownership semantics are explicitly redefined in a new discussion."
+      },
+      {
+        "capability_id": "CAP-019",
+        "disposition": "dropped",
+        "selected_entry_point": "explicit public-surface exclusion",
+        "owning_paths": [],
+        "required_implementation": "Use resource-aware idempotency, journal recovery, and explicit indeterminate outcomes instead.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "A restricted operation class can prove stronger semantics without changing the general promise."
+      },
+      {
+        "capability_id": "CAP-020",
+        "disposition": "dropped",
+        "selected_entry_point": "explicit public-surface exclusion",
+        "owning_paths": [],
+        "required_implementation": "The first-release local control plane must not target production or remote managed services.",
+        "acceptance_proof": [
+          "contracts/agent-operations.schema.json",
+          "quickstart.md"
+        ],
+        "reopen_or_conflict_condition": "The user requires production or remote service management under a new trust, authentication, policy, and evidence contract."
+      }
+    ]
+  },
+  "must_preserve_refs": [
+    "MP-001@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-002@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-003@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-004@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-005@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-006@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-007@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve",
+    "MP-008@.specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#must_preserve"
+  ],
+  "must_preserve": [
+    {
+      "id": "MP-001",
+      "claim": "Launchdeck remains one authoritative local lifecycle control plane across CLI, Skill, MCP, and Plugins.",
+      "source": "requirements.md",
+      "downstream_requirement": "The specification must not create a second backend, state namespace, or safety authority.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Any surface becomes an independent lifecycle authority.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-002",
+      "claim": "F:/github/launchdeck is the implementation target and current behavior authority.",
+      "source": "project-context.md",
+      "downstream_requirement": "All implementation and verification paths remain bound to the current repository.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Implementation moves to another repository or package boundary.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-003",
+      "claim": "First release is configured-project, low-risk, local stdio MCP with one canonical Skill and dual generated host Plugins.",
+      "source": "requirements.md",
+      "downstream_requirement": "Scope and acceptance criteria preserve this release boundary.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A deferred risk, adoption, remote, UI, native, or enterprise surface becomes mandatory.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-004",
+      "claim": "CLI compatibility and Agent protocol are separate versioned contracts.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Specification preserves CLI schemaVersion 1 while defining a normalized Agent Operation Result.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Agent semantics require breaking existing CLI consumers.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-005",
+      "claim": "One canonical launchdeck-agent Skill remains intent-driven, reference-based, MCP-first, and safety-preserving.",
+      "source": ".agents/skills/launchdeck-agent/SKILL.md",
+      "downstream_requirement": "Do not split first release into competing public lifecycle Skills or allow blind fallback.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Users must select low-level tools or duplicate Skill copies drift.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-006",
+      "claim": "Plugin installation, update, disable, and uninstall are independent from managed-service and shared-state lifetime.",
+      "source": "requirements.md",
+      "downstream_requirement": "Acceptance criteria prove services and state survive host and Plugin lifecycle changes.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Plugin lifecycle can implicitly stop services or remove state.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-007",
+      "claim": "Mutation recovery is journaled and evidence-based; indeterminate work is not automatically retried.",
+      "source": "technical-options.md",
+      "downstream_requirement": "Specification includes operation IDs, journal state, retry semantics, and fault-injection acceptance.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A transport failure can replay mutation through MCP or CLI.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    },
+    {
+      "id": "MP-008",
+      "claim": "Release readiness is scoped by surface, host, OS, update, uninstall, and recovery evidence.",
+      "source": "requirements.md",
+      "downstream_requirement": "The spec defines separate readiness claims and prevents CLI evidence from proving Plugin readiness.",
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A broad ready claim lacks exact supporting evidence.",
+      "type": "requirement",
+      "blocking_level": "hard"
+    }
+  ],
+  "consequence_obligation_refs": [
+    "CA-001",
+    "CA-002",
+    "CA-003",
+    "CA-004",
+    "CA-005",
+    "CA-006",
+    "CA-007",
+    "CA-008",
+    "CA-009",
+    "CA-010",
+    "CA-011",
+    "CA-012",
+    "CA-013",
+    "CA-014",
+    "CA-015",
+    "CA-016",
+    "CA-017",
+    "CA-018",
+    "CA-019",
+    "CA-020",
+    "CA-021",
+    "CA-022",
+    "CA-023",
+    "CA-024",
+    "CA-025",
+    "CA-026",
+    "CA-027",
+    "CA-028",
+    "CA-029",
+    "CA-030",
+    "CA-031",
+    "CA-032",
+    "CA-033",
+    "CA-034",
+    "CA-035",
+    "CA-036",
+    "CA-037",
+    "CA-038",
+    "CA-039",
+    "CA-040",
+    "CA-041",
+    "CA-042",
+    "CA-043",
+    "CA-044",
+    "CA-045",
+    "CA-046",
+    "CA-047",
+    "CA-048",
+    "CA-049",
+    "CA-050"
+  ],
+  "ui_design_contract": {
+    "ui_applicable": false,
+    "ui_work_type": "none",
+    "surface_type": "CLI, Skill, MCP protocol, and Plugin packaging behavior",
+    "platforms": [
+      "Windows",
+      "macOS",
+      "Linux",
+      "Codex",
+      "Claude Code"
+    ],
+    "subject": "Local project lifecycle control",
+    "audience": "Coding agents and developers",
+    "single_job": "Express a lifecycle intent and receive a safe, observable, recoverable Launchdeck result without choosing unsafe low-level process controls.",
+    "visual_thesis": null,
+    "content_thesis": "Reports name the project, task, executing surface/runtime, outcome, resource status, effects certainty, evidence, refusal reason, and safe next action.",
+    "interaction_thesis": "Observe before mutate; reuse matching runs; stop on refusal or uncertainty; reconcile before any retry.",
+    "signature_element": null,
+    "approved_visual_ref": null,
+    "ui_brief_ref": null,
+    "experience_requirements": [
+      "Users express lifecycle intent without naming low-level Launchdeck tools.",
+      "Agents observe before mutation and report an existing run instead of duplicating it.",
+      "Failures identify project, task, runtime/surface, evidence, refusal reason, and a safe next action.",
+      "Plugin and host lifecycle never unexpectedly stops a managed local service or deletes recovery evidence."
+    ],
+    "design_source_refs": [
+      ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/discussion_decision_digest/experience_commitments"
+    ],
+    "design_system_requirements": [],
+    "design_system_status": "not-applicable",
+    "design_risk_level": "none",
+    "fidelity_refs": [],
+    "fidelity_mode": "none",
+    "original_reference_refs": [],
+    "reference_intents": [],
+    "real_content_plan": [],
+    "image_plan": [],
+    "entry_points": [
+      "launchdeck CLI",
+      "launchdeck-agent Skill",
+      "local stdio MCP tools",
+      "Codex Plugin",
+      "Claude Plugin"
+    ],
+    "must_preserve": [
+      "Existing CLI presentation compatibility",
+      "Structured error and safe next-action semantics"
+    ],
+    "may_adapt": [
+      "MCP host-specific tool presentation and manifest metadata"
+    ],
+    "must_not": [
+      "Imply deferred UI/TUI or remote control surfaces",
+      "Expose raw process-control inputs"
+    ],
+    "required_states": [],
+    "validation_refs": [
+      "AC-001",
+      "AC-012",
+      "AC-014",
+      "AC-015"
+    ],
+    "visual_acceptance": [],
+    "required_evidence": [],
+    "design_readiness": "not-applicable",
+    "source_refs": [
+      ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/discussion_decision_digest/experience_commitments"
+    ],
+    "human_review_conditions": []
+  },
+  "implementation_target_ref": "F:/github/launchdeck",
+  "context_capsule": {
+    "required_refs": [
+      "spec-contract.json",
+      "spec.md",
+      "alignment.md",
+      "context.md",
+      "research.md",
+      "data-model.md",
+      "contracts/agent-operation-result.schema.json",
+      "contracts/agent-operations.schema.json",
+      "contracts/compatibility-manifest.schema.json",
+      "contracts/mcp-stdio.md",
+      "contracts/plugin-generation.md",
+      "quickstart.md",
+      "planning/lane-manifest.json",
+      "planning/handoffs/research-host-runtime.json",
+      "planning/handoffs/data-model-state.json",
+      "planning/handoffs/contracts-agent-surfaces.json",
+      "planning/handoffs/quickstart-validation.json",
+      ".specify/memory/constitution.md"
+    ],
+    "minimal_live_reads": [
+      "package.json and package-lock.json for Node/ESM/dependency/package boundaries",
+      "src/cli.js and src/output.js for current orchestration and schemaVersion 1",
+      "src/config.js and schema/launchdeck.schema.json for task risk/config schema",
+      "src/global-runtime.js, src/runtime.js, and src/control-plane/ for registry/run/locks/ownership/events/resource truth",
+      "src/agent-installer.js and .agents/skills/launchdeck-agent/ for canonical Skill/install behavior",
+      "existing targeted contract/lifecycle/ownership/clean/installer tests"
+    ],
+    "validation_routes": [
+      "npm run check && npm test",
+      "operation-registry/result/schema contract suites",
+      "CLI schemaVersion 1 fixtures and CLI/MCP semantic-equivalence suites",
+      "journal crash-point, retention, recovery, correlation, and no-replay suites",
+      "real stdio initialize/tools/list/tools/call/error/purity/interruption/restart/concurrency suite",
+      "Skill tool-sequence and forbidden-call evaluation",
+      "isolated bundle tests on Windows/macOS/Linux",
+      "separate real Codex and Claude install/update/disable/uninstall/cross-version takeover smokes"
+    ],
+    "stale_if": [
+      "The source discussion review digest changes",
+      "Any retained live evidence path changes before planning",
+      "The implementation target moves outside F:/github/launchdeck",
+      "A target host cannot launch the bundled runtime under Node.js 20+ and the generated manifest model",
+      "CLI compatibility prevents outcome/resource separation",
+      "A deferred surface becomes first-release scope",
+      "Official MCP SDK production recommendation or host Plugin path/manifest contract changes.",
+      "Any retained live evidence path changes before task compilation.",
+      "A new external npm/runtime asset remains in the isolated bundle.",
+      "Project cognition is rebuilt and contradicts a live-evidence planning claim."
+    ],
+    "cognition_status": {
+      "readiness": "needs_rebuild",
+      "compass_state": "blocked",
+      "reason": "project-cognition.db is missing; live repository evidence was used as authority.",
+      "planning_effect": "non-blocking advisory; no graph-only implementation claim is accepted."
+    }
+  },
+  "conditional_artifacts": {
+    "research": "research.md",
+    "data_model": "data-model.md",
+    "contracts": [
+      "contracts/agent-operation-result.schema.json",
+      "contracts/agent-operations.schema.json",
+      "contracts/compatibility-manifest.schema.json",
+      "contracts/mcp-stdio.md",
+      "contracts/plugin-generation.md"
+    ],
+    "quickstart": "quickstart.md"
+  },
+  "lane_manifest_ref": "planning/lane-manifest.json",
+  "lane_results": [
+    {
+      "lane_id": "research-host-runtime",
+      "result_ref": "planning/handoffs/research-host-runtime.json",
+      "status": "accepted"
+    },
+    {
+      "lane_id": "data-model-state",
+      "result_ref": "planning/handoffs/data-model-state.json",
+      "status": "accepted"
+    },
+    {
+      "lane_id": "contracts-agent-surfaces",
+      "result_ref": "planning/handoffs/contracts-agent-surfaces.json",
+      "status": "accepted"
+    },
+    {
+      "lane_id": "quickstart-validation",
+      "result_ref": "planning/handoffs/quickstart-validation.json",
+      "status": "accepted"
+    }
+  ],
+  "research_status": "completed",
+  "consequence_gate": {
+    "triggered": true,
+    "level": "senior",
+    "reasons": [
+      "Shared durable state and migrations",
+      "Concurrent cross-surface mutations",
+      "Process ownership and destructive clean boundaries",
+      "Transport failure and indeterminate effects",
+      "Cross-version Plugin lifecycle and takeover",
+      "Readiness claims across hosts and operating systems"
+    ]
+  },
+  "consequence_analysis": {
+    "affected_object_map": [
+      {
+        "objects": [
+          "Application Kernel",
+          "Operation Registry",
+          "CLI adapter",
+          "MCP adapter"
+        ],
+        "states": [
+          "requested",
+          "authorized",
+          "refused",
+          "running",
+          "succeeded",
+          "failed",
+          "indeterminate",
+          "reconciled"
+        ],
+        "consumers": [
+          "CLI users",
+          "Agent Skill",
+          "Codex Plugin",
+          "Claude Plugin"
+        ],
+        "obligation_refs": [
+          "CA-001",
+          "CA-002",
+          "CA-007",
+          "CA-008",
+          "CA-010",
+          "CA-016",
+          "CA-017",
+          "CA-024",
+          "CA-025",
+          "CA-041"
+        ]
+      },
+      {
+        "objects": [
+          "configured project",
+          "task",
+          "run",
+          "PID",
+          "port",
+          "ownership record"
+        ],
+        "states": [
+          "missing",
+          "configured",
+          "stopped",
+          "starting",
+          "running",
+          "failed",
+          "completed",
+          "unknown-owner",
+          "external-owner",
+          "stale"
+        ],
+        "consumers": [
+          "Kernel policy",
+          "CLI",
+          "MCP observation and lifecycle operations"
+        ],
+        "obligation_refs": [
+          "CA-003",
+          "CA-004",
+          "CA-009",
+          "CA-014",
+          "CA-020",
+          "CA-021",
+          "CA-031"
+        ]
+      },
+      {
+        "objects": [
+          "operation journal",
+          "operation ID",
+          "input digest",
+          "clean plan digest",
+          "result evidence"
+        ],
+        "states": [
+          "prepared",
+          "running",
+          "succeeded",
+          "failed",
+          "refused",
+          "indeterminate",
+          "reconciled",
+          "expired"
+        ],
+        "consumers": [
+          "retry recovery",
+          "cross-surface inspection",
+          "fault diagnosis",
+          "safe clean"
+        ],
+        "obligation_refs": [
+          "CA-005",
+          "CA-011",
+          "CA-013",
+          "CA-026",
+          "CA-027",
+          "CA-028",
+          "CA-029",
+          "CA-042",
+          "CA-043",
+          "CA-044"
+        ]
+      },
+      {
+        "objects": [
+          "canonical Skill",
+          "legacy Skill",
+          "Plugin-bundled Skill",
+          "compatibility manifest",
+          "runtime bundle",
+          "host manifests"
+        ],
+        "states": [
+          "absent",
+          "installed",
+          "duplicate-identical",
+          "duplicate-divergent",
+          "compatible",
+          "incompatible",
+          "updated",
+          "disabled",
+          "uninstalled"
+        ],
+        "consumers": [
+          "Codex",
+          "Claude Code",
+          "standalone CLI"
+        ],
+        "obligation_refs": [
+          "CA-012",
+          "CA-015",
+          "CA-022",
+          "CA-023",
+          "CA-032",
+          "CA-033",
+          "CA-034",
+          "CA-035",
+          "CA-037",
+          "CA-038",
+          "CA-047",
+          "CA-048"
+        ]
+      },
+      {
+        "objects": [
+          "stdio frames",
+          "bounded logs/events",
+          "Skill evaluation traces",
+          "host smoke evidence",
+          "platform readiness labels"
+        ],
+        "states": [
+          "valid",
+          "invalid",
+          "passed",
+          "failed",
+          "blocked",
+          "unsupported"
+        ],
+        "consumers": [
+          "release process",
+          "maintainers",
+          "users"
+        ],
+        "obligation_refs": [
+          "CA-006",
+          "CA-036",
+          "CA-039",
+          "CA-040",
+          "CA-045",
+          "CA-046",
+          "CA-049",
+          "CA-050"
+        ]
+      },
+      {
+        "objects": [
+          "future medium-risk confirmation",
+          "future adoption plan"
+        ],
+        "states": [
+          "deferred",
+          "prepared",
+          "confirmed",
+          "stale",
+          "revalidated"
+        ],
+        "consumers": [
+          "future MCP clients"
+        ],
+        "obligation_refs": [
+          "CA-018",
+          "CA-019",
+          "CA-030"
+        ]
+      }
+    ],
+    "state_behavior_matrix": [
+      {
+        "surface": "task/run",
+        "state": "already running with matching ownership",
+        "behavior": "Return the existing run with reusedExistingRun=true; do not spawn."
+      },
+      {
+        "surface": "task/run",
+        "state": "unknown or external owner",
+        "behavior": "Permit inspection only and refuse mutation."
+      },
+      {
+        "surface": "operation",
+        "state": "indeterminate",
+        "behavior": "Return possible or unknown effects certainty and require operation.get or operation.reconcile; never retry automatically."
+      },
+      {
+        "surface": "operation",
+        "state": "response lost before the caller observes the Kernel-issued ID",
+        "behavior": "Use bounded operation.list correlation by project/task/name/time/state; reconcile only one unique candidate and stop on zero or ambiguous matches."
+      },
+      {
+        "surface": "operation",
+        "state": "same ID, same digest",
+        "behavior": "Return or recover the original operation without re-execution."
+      },
+      {
+        "surface": "operation",
+        "state": "same ID, different digest or missing retained record",
+        "behavior": "Refuse without starting new work."
+      },
+      {
+        "surface": "clean plan",
+        "state": "digest stale after revalidation",
+        "behavior": "Refuse execution and return a new plan requirement."
+      },
+      {
+        "surface": "Plugin/host",
+        "state": "exited, disabled, updated, or uninstalled",
+        "behavior": "Managed services and shared state remain; compatible standalone CLI can inspect and control them."
+      },
+      {
+        "surface": "Skill installation",
+        "state": "duplicate divergent content",
+        "behavior": "Preserve all content, report both digests, and require explicit user-selected migration."
+      },
+      {
+        "surface": "runtime components",
+        "state": "schema or digest incompatible",
+        "behavior": "Allow safe diagnosis/inspection where possible and fail writes closed."
+      }
+    ],
+    "dependency_impact": [
+      {
+        "dependency": "Registry, run index, locks, ownership, events, logs, runtime state, process and port adapters",
+        "impact": "Kernel extraction must reuse their truth and preserve daemonless lifecycle semantics.",
+        "validation": "Existing and new control-plane contract tests plus adapter-equivalence cases."
+      },
+      {
+        "dependency": "CLI schemaVersion 1 consumers",
+        "impact": "Kernel and normalized Agent results cannot break existing JSON automation.",
+        "validation": "Backward-compatibility fixtures and semantic mapping tests."
+      },
+      {
+        "dependency": "MCP stdio framing and structured results",
+        "impact": "Non-protocol stdout, unbounded calls, or schema drift breaks every host.",
+        "validation": "Real stdio initialize/list/call/error/interruption/restart/concurrency suite."
+      },
+      {
+        "dependency": "Codex and Claude host path resolution",
+        "impact": "One host manifest or path assumption cannot prove the other host works.",
+        "validation": "Separate real-host install, routing, update, disable/uninstall, and shared-state smokes."
+      },
+      {
+        "dependency": "Compatibility manifest and component digests",
+        "impact": "Skill/runtime/schema drift can issue unsupported or unsafe operations.",
+        "validation": "Capabilities and write-fail-closed mismatch tests."
+      }
+    ],
+    "recovery_and_validation": [
+      "Locks and operation IDs make safe retries resource-aware and idempotent; they do not imply universal exactly-once execution.",
+      "Transport failure returns a recoverable known result or an explicit indeterminate result backed by journal and live evidence.",
+      "Rollback never terminates unknown/external processes or deletes shared state as a side effect of Plugin lifecycle.",
+      "Journal, compatibility, and manifest migrations must be versioned, fail writes closed on incompatibility, and retain diagnosis paths.",
+      "Acceptance evidence must include positive behavior, refusal behavior, interruption/restart, concurrency, update/uninstall, and takeover/recovery."
+    ],
+    "coverage_gaps": [
+      "Project cognition graph store is missing; architecture ownership claims must be rechecked against live files during task compilation and implementation.",
+      "No journal, canonical input digest, stable observation cursor, compatibility/readiness evidence store, or component manifest implementation exists yet.",
+      "Current synchronous and asynchronous lifecycle lock paths must converge before Kernel mutation cutover.",
+      "Current installer force behavior does not satisfy automatic non-destructive divergent-copy handling.",
+      "Codex relative path behavior, Claude root substitution, isolated bundling, Node resolution, lifecycle independence, and cross-version coexistence remain claim-gated by real evidence.",
+      "The safe-clean drift outcome code is consolidated as plan_digest_mismatch before fixture freeze."
+    ]
+  },
+  "consequence_obligations": [
+    {
+      "obligation_id": "CA-001",
+      "claim": "CLI and MCP share the same safety Kernel; MCP cannot bypass ownership proof.",
+      "affected_objects": [
+        "Kernel",
+        "CLI adapter",
+        "MCP adapter",
+        "ownership proof"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Any MCP handler mutates state outside Kernel.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Map every mutation adapter to the same Kernel policy and ownership checks."
+    },
+    {
+      "obligation_id": "CA-002",
+      "claim": "MCP annotations are hints; deterministic Kernel controls provide real authorization.",
+      "affected_objects": [
+        "MCP tool descriptors",
+        "Kernel policy"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Tool annotations authorize mutation.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Annotations never replace policy, ownership, risk, or confirmation checks."
+    },
+    {
+      "obligation_id": "CA-003",
+      "claim": "Starting an already matching task returns its existing run instead of duplicating it.",
+      "affected_objects": [
+        "task.start",
+        "run index",
+        "ports",
+        "operation journal"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Repeated start can spawn a second service.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Specify duplicate detection and reusedExistingRun semantics."
+    },
+    {
+      "obligation_id": "CA-004",
+      "claim": "External and unknown process owners remain inspect-only.",
+      "affected_objects": [
+        "inspect",
+        "stop",
+        "restart",
+        "ports",
+        "ownership"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Port or PID alone authorizes mutation.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "All mutation tools refuse without Launchdeck ownership proof."
+    },
+    {
+      "obligation_id": "CA-005",
+      "claim": "Risky cleanup requires a plan/digest/confirmation boundary and is not exposed as a model-authored yes flag.",
+      "affected_objects": [
+        "clean plan",
+        "clean execute",
+        "filesystem"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "MCP can trigger risky deletion with a boolean input.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "First release exposes only digest-bound safe clean and defers risky clean."
+    },
+    {
+      "obligation_id": "CA-006",
+      "claim": "MCP logs/events are bounded reads or polling, never permanent follow calls.",
+      "affected_objects": [
+        "logs.read",
+        "events.read",
+        "MCP tool timeout"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A tool call can remain open indefinitely.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Schemas include bounds/cursors and exclude arbitrary paths or unbounded streams."
+    },
+    {
+      "obligation_id": "CA-007",
+      "claim": "Plugin runtime and standalone CLI verify state/schema compatibility and fail closed for unsafe writes.",
+      "affected_objects": [
+        "capabilities",
+        "state schemas",
+        "Plugin runtime",
+        "standalone CLI"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "An older runtime writes newer shared state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Capabilities report actual runtime and compatibility before mutation."
+    },
+    {
+      "obligation_id": "CA-008",
+      "claim": "Task risk is dynamically enforced by Kernel, not inferred only from static MCP annotation.",
+      "affected_objects": [
+        "task config",
+        "risk engine",
+        "CLI",
+        "MCP"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Configured risk remains display-only.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Every operation resolves current configured risk before execution."
+    },
+    {
+      "obligation_id": "CA-009",
+      "claim": "Every MCP operation explicitly resolves project context and never defaults to Plugin installation directory.",
+      "affected_objects": [
+        "project resolver",
+        "MCP process cwd",
+        "Plugin root"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "An operation can target the wrong directory implicitly.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define projectRef/projectRoot/host-root precedence and missing/ambiguous errors."
+    },
+    {
+      "obligation_id": "CA-010",
+      "claim": "Plugin runtime, standalone CLI, registry, and run state use explicit compatibility checks and incompatible writes fail closed.",
+      "affected_objects": [
+        "compatibility manifest",
+        "registry",
+        "run index",
+        "journal"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Package version alone decides write safety.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Separate package, Agent protocol, output, config, registry, and journal version axes."
+    },
+    {
+      "obligation_id": "CA-011",
+      "claim": "An uncertain MCP mutation result cannot automatically fall back to CLI retry.",
+      "affected_objects": [
+        "Skill routing",
+        "MCP adapter",
+        "CLI fallback",
+        "journal"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Transport failure can replay mutation.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Fallback state machine inspects/reconciles uncertain work before any new operation."
+    },
+    {
+      "obligation_id": "CA-012",
+      "claim": "All operation results carry execution provenance.",
+      "affected_objects": [
+        "normalized result",
+        "CLI output",
+        "MCP structuredContent"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Users cannot identify which runtime executed an action.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Results identify surface, host, runtime kind/version/path, state home, and protocol version as applicable."
+    },
+    {
+      "obligation_id": "CA-013",
+      "claim": "Safe clean is bound to a revalidated plan digest.",
+      "affected_objects": [
+        "clean plan",
+        "clean safe",
+        "filesystem"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Changed targets can be deleted under an old preview.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Kernel recomputes the plan and rejects preview/execute drift."
+    },
+    {
+      "obligation_id": "CA-014",
+      "claim": "Agent task tools never accept arbitrary command, cwd, env, or force parameters.",
+      "affected_objects": [
+        "task.run",
+        "task.start",
+        "tool schemas"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "MCP becomes a general shell wrapper.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Tool schemas select only declared projects/tasks and bounded options."
+    },
+    {
+      "obligation_id": "CA-015",
+      "claim": "Plugin update and uninstall never migrate or delete shared control-plane state implicitly.",
+      "affected_objects": [
+        "Plugin installer",
+        "LAUNCHDECK_HOME",
+        "registry",
+        "logs",
+        "events"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Plugin lifecycle mutates shared state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "State changes require explicit Launchdeck lifecycle/state operations."
+    },
+    {
+      "obligation_id": "CA-016",
+      "claim": "Task risk becomes a Kernel execution gate shared by CLI, MCP, and Plugins.",
+      "affected_objects": [
+        "risk engine",
+        "CLI",
+        "MCP",
+        "task config"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Any surface bypasses task risk policy.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Current display-only risk gap is closed at the application boundary."
+    },
+    {
+      "obligation_id": "CA-017",
+      "claim": "Host approval and MCP annotations do not replace Kernel risk decisions.",
+      "affected_objects": [
+        "host approval",
+        "MCP annotations",
+        "Kernel policy"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Host configuration elevates Kernel permissions.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Policy remains deterministic even when hosts auto-approve tools."
+    },
+    {
+      "obligation_id": "CA-018",
+      "claim": "Medium risk requires declared client elicitation and an accepted response; first release defers this capability.",
+      "affected_objects": [
+        "risk engine",
+        "MCP client capabilities",
+        "elicitation"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "before deferred capability activation",
+      "status": "deferred-user-confirmed",
+      "stop_and_reopen_condition": "Medium-risk execution becomes first-release scope.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Public MCP v1 rejects medium risk while preserving a future capability-negotiated contract."
+    },
+    {
+      "obligation_id": "CA-019",
+      "claim": "Future confirmation binds to an operation digest and execution revalidates target, lock, port, and ownership.",
+      "affected_objects": [
+        "confirmation proof",
+        "operation digest",
+        "locks",
+        "ownership"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "before deferred capability activation",
+      "status": "deferred-user-confirmed",
+      "stop_and_reopen_condition": "A confirmed operation can execute changed inputs or state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Preserve prepare/confirm/revalidate semantics even though medium risk is deferred."
+    },
+    {
+      "obligation_id": "CA-020",
+      "claim": "Plugin installation scope and executable project scope are distinct; project Plugins cannot cross project roots.",
+      "affected_objects": [
+        "Plugin scope",
+        "project resolver",
+        "allowed roots"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Project Plugin can target unrelated projects.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define project-scope violations and registered-project rules for user scope."
+    },
+    {
+      "obligation_id": "CA-021",
+      "claim": "MCP server lifetime does not control managed-task lifetime.",
+      "affected_objects": [
+        "MCP process",
+        "managed task",
+        "run index"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Closing the host implicitly stops a managed service.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Host/MCP exit leaves Launchdeck-owned services running and observable."
+    },
+    {
+      "obligation_id": "CA-022",
+      "claim": "Plugin disable, update, or uninstall preserves shared control-plane state.",
+      "affected_objects": [
+        "Plugin lifecycle",
+        "LAUNCHDECK_HOME",
+        "project config"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Plugin removal destroys recovery evidence.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Host lifecycle tests verify registry, journal, logs, events, config, and services remain."
+    },
+    {
+      "obligation_id": "CA-023",
+      "claim": "Standalone and Plugin Skills detect duplicate installation and content drift.",
+      "affected_objects": [
+        "Skill installer",
+        "Plugin Skill",
+        "standalone Skill"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Two Skills issue conflicting routing or safety guidance.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Installer doctor compares canonical content digests without overwriting divergent user files."
+    },
+    {
+      "obligation_id": "CA-024",
+      "claim": "Normalized results separate operation outcome from resource lifecycle status.",
+      "affected_objects": [
+        "Agent Operation Result",
+        "CLI mapping",
+        "MCP output"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "One status field ambiguously means protocol and lifecycle state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define unambiguous outcome.kind and resource.status fields."
+    },
+    {
+      "obligation_id": "CA-025",
+      "claim": "CLI envelope and Agent protocol are independently versioned.",
+      "affected_objects": [
+        "CLI schema",
+        "Agent protocol",
+        "compatibility manifest"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A protocol change silently breaks CLI automation.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Compatibility checks do not conflate package, CLI, Agent, config, registry, or journal versions."
+    },
+    {
+      "obligation_id": "CA-026",
+      "claim": "A plan digest is integrity evidence, not a user-confirmation proof.",
+      "affected_objects": [
+        "plan digest",
+        "confirmation proof"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Possessing a digest authorizes mutation.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Specification separates plan validation from human interaction evidence."
+    },
+    {
+      "obligation_id": "CA-027",
+      "claim": "MCP inputs cannot contain model-forgeable confirmation fields.",
+      "affected_objects": [
+        "MCP schemas",
+        "confirmation adapter"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "The model can self-assert human approval.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Exclude confirmed/yes/approval token fields from public tool schemas."
+    },
+    {
+      "obligation_id": "CA-028",
+      "claim": "Every mutation is operation-journaled for retry and recovery safety.",
+      "affected_objects": [
+        "operation journal",
+        "locks",
+        "mutations"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A Server restart loses mutation certainty.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define journal states, operation IDs, input digest, result references, and retention."
+    },
+    {
+      "obligation_id": "CA-029",
+      "claim": "Indeterminate foreground task execution is never automatically rerun.",
+      "affected_objects": [
+        "task.run",
+        "journal",
+        "Skill fallback"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A possibly side-effecting task runs twice.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "task.run recovery distinguishes unknown completion from safe retry."
+    },
+    {
+      "obligation_id": "CA-030",
+      "claim": "Future adoption writes can only apply a Kernel-generated and revalidated adoption plan.",
+      "affected_objects": [
+        "adoption.inspect",
+        "future adoption.apply",
+        ".launchdeck.yml"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "before deferred capability activation",
+      "status": "deferred-user-confirmed",
+      "stop_and_reopen_condition": "Automatic adoption writes enter first-release scope.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "First release keeps adoption inspect-only and preserves safe deferred semantics."
+    },
+    {
+      "obligation_id": "CA-031",
+      "claim": "Adoption and task start are distinct mutations and cannot be implicitly chained.",
+      "affected_objects": [
+        "adoption",
+        "doctor",
+        "task.start"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Configuration acceptance automatically launches a task.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Read-only discovery never starts a server; future apply returns before start."
+    },
+    {
+      "obligation_id": "CA-032",
+      "claim": "npm runtime and host Plugins are different artifacts generated from one compatibility manifest.",
+      "affected_objects": [
+        "npm package",
+        "Codex Plugin",
+        "Claude Plugin",
+        "compatibility manifest"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Artifact metadata or behavior drifts between builds.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define one build identity and artifact-specific packaging contracts."
+    },
+    {
+      "obligation_id": "CA-033",
+      "claim": "Plugins carry a prebuilt MCP runtime and do not depend on global CLI, npx, or install-time scripts.",
+      "affected_objects": [
+        "Plugin package",
+        "MCP bundle",
+        "runtime dependencies"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Plugin installation requires arbitrary code execution or PATH resolution.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Plugin startup command points to bundled runtime with bundled dependencies."
+    },
+    {
+      "obligation_id": "CA-034",
+      "claim": "First-release installability explicitly requires Node.js 20+.",
+      "affected_objects": [
+        "package metadata",
+        "Plugin prerequisites",
+        "capabilities"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Product claims zero-runtime-dependency installability without native binaries.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Plugin prerequisites and diagnostics report Node compatibility clearly."
+    },
+    {
+      "obligation_id": "CA-035",
+      "claim": "Skill, runtime, schemas, compatibility manifest, and Plugin manifest share one build identity and digests.",
+      "affected_objects": [
+        "Skill",
+        "MCP runtime",
+        "schemas",
+        "manifests"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "New instructions drive an old runtime or schema.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Capabilities fail writes on component digest mismatch."
+    },
+    {
+      "obligation_id": "CA-036",
+      "claim": "MCP stdio stdout contains only valid protocol messages.",
+      "affected_objects": [
+        "MCP stdio",
+        "task output",
+        "logging"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Any non-protocol text contaminates stdout framing.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "All banners, diagnostics, and task output go to stderr or bounded state/log channels."
+    },
+    {
+      "obligation_id": "CA-037",
+      "claim": "Plugin update, disable, and uninstall do not affect managed services or shared state.",
+      "affected_objects": [
+        "Plugin lifecycle",
+        "managed tasks",
+        "LAUNCHDECK_HOME"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Host package lifecycle changes product runtime state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Update/uninstall acceptance tests prove lifetime separation."
+    },
+    {
+      "obligation_id": "CA-038",
+      "claim": "Host manifests do not duplicate risk, safety, state, or operation semantics.",
+      "affected_objects": [
+        "Codex manifest",
+        "Claude manifest",
+        "Kernel",
+        "Skill"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A host manifest becomes a conflicting policy source.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Manifests contain identity, component paths, metadata, prerequisites, and presentation only."
+    },
+    {
+      "obligation_id": "CA-039",
+      "claim": "CLI cross-platform smoke does not prove MCP or Plugin cross-platform compatibility.",
+      "affected_objects": [
+        "release claims",
+        "CLI smoke",
+        "MCP tests",
+        "Plugin tests"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A Plugin claim relies only on CLI smoke.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define separate surface/host/platform evidence matrices."
+    },
+    {
+      "obligation_id": "CA-040",
+      "claim": "Codex and Claude Plugins are independently verified before cross-host readiness.",
+      "affected_objects": [
+        "Codex Plugin",
+        "Claude Plugin",
+        "release claims"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "One host's smoke is generalized to another.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Each host has installation, routing, MCP, scope, update, and uninstall evidence."
+    },
+    {
+      "obligation_id": "CA-041",
+      "claim": "Adapter equivalence compares normalized semantics rather than raw host formatting.",
+      "affected_objects": [
+        "Kernel tests",
+        "CLI adapter tests",
+        "MCP adapter tests"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Brittle snapshots replace semantic contract proof.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Shared contract cases compare operation, outcome, resource, effects, safety, errors, next actions, and provenance."
+    },
+    {
+      "obligation_id": "CA-042",
+      "claim": "Launchdeck does not claim universal exactly-once mutation semantics.",
+      "affected_objects": [
+        "product claims",
+        "operation journal",
+        "task.run"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Specification promises impossible exactly-once behavior.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Product language distinguishes recoverable idempotency from indeterminate side effects."
+    },
+    {
+      "obligation_id": "CA-043",
+      "claim": "Retrying the same operation ID returns or recovers the original operation without re-execution.",
+      "affected_objects": [
+        "operation ID",
+        "journal",
+        "mutation handlers"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Same-ID retry can repeat side effects.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Journal state and recovery logic are keyed by operation ID and input digest."
+    },
+    {
+      "obligation_id": "CA-044",
+      "claim": "Indeterminate mutation cannot be automatically retried or replayed across surfaces.",
+      "affected_objects": [
+        "indeterminate outcome",
+        "Skill fallback",
+        "CLI",
+        "MCP"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Uncertain work is silently attempted again.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Skill, CLI, and MCP all stop and inspect/reconcile when certainty is unavailable."
+    },
+    {
+      "obligation_id": "CA-045",
+      "claim": "Skill evaluation verifies actual tool-call sequences and forbidden calls, not only final prose.",
+      "affected_objects": [
+        "Skill evals",
+        "tool traces",
+        "routing"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A plausible answer hides unsafe calls.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Eval cases assert MCP-first selection, safe fallback, refusal handling, and no raw process control."
+    },
+    {
+      "obligation_id": "CA-046",
+      "claim": "MCP release verification uses real stdio framing.",
+      "affected_objects": [
+        "MCP server",
+        "stdio tests",
+        "protocol client"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Only direct handler tests support an MCP-ready claim.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Automated protocol clients cover initialize, tools/list, tools/call, schema, output, stderr/stdout, interruption, restart, and concurrency."
+    },
+    {
+      "obligation_id": "CA-047",
+      "claim": "A new Plugin version observes and safely manages services started by an older compatible version.",
+      "affected_objects": [
+        "Plugin update",
+        "run index",
+        "compatibility"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Update duplicates or loses an existing run.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Update acceptance binds run ID, PID, port, state home, and compatible stop behavior across versions."
+    },
+    {
+      "obligation_id": "CA-048",
+      "claim": "Plugin uninstall preserves services and shared state and standalone CLI can take over.",
+      "affected_objects": [
+        "Plugin uninstall",
+        "CLI takeover",
+        "shared state"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Uninstall strands or deletes managed state.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Uninstall acceptance covers service liveness, state/log/event presence, CLI inspect/log/stop, and reinstall recovery."
+    },
+    {
+      "obligation_id": "CA-049",
+      "claim": "Codex and Claude each require real host acceptance rather than manifest-only mocks.",
+      "affected_objects": [
+        "Codex host",
+        "Claude host",
+        "Plugin packages"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "A host-ready claim lacks a real installation/use trace.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Host-specific smoke is a named release gate."
+    },
+    {
+      "obligation_id": "CA-050",
+      "claim": "Release claims bind to exact surface, host, OS, and verification evidence.",
+      "affected_objects": [
+        "release evidence",
+        "documentation",
+        "CI"
+      ],
+      "owner": "sp-tasks/sp-implement",
+      "latest_resolve_phase": "implementation and acceptance",
+      "status": "planned",
+      "stop_and_reopen_condition": "Marketing or docs claim broader readiness than verified.",
+      "source": "discussion consequence analysis",
+      "downstream_requirement": "Define layered readiness labels and prohibit unsupported roll-up claims."
+    }
+  ],
+  "operational_consequence_decisions": [
+    {
+      "decision_id": "OCD-001",
+      "consequence_obligation_ids": [
+        "CA-001",
+        "CA-002",
+        "CA-007",
+        "CA-008",
+        "CA-010",
+        "CA-016",
+        "CA-017",
+        "CA-024",
+        "CA-025",
+        "CA-041"
+      ],
+      "affected_boundary": "Kernel, registry, CLI/MCP adapters, normalized result, compatibility",
+      "state_machine_ordering": "Resolve the declared operation and trusted context, validate compatibility/scope, journal mutations, acquire locks, revalidate policy, execute once, normalize one result, then adapt presentation.",
+      "concurrency_idempotency": "Adapters cannot own mutation paths; Kernel locks and the operation ID/digest contract serialize shared effects.",
+      "recovery_path": "Fail writes closed on incompatible or uncertain state; return bounded diagnosis or journal reconciliation without replay.",
+      "validation_evidence": [
+        "VC-REG-001",
+        "VC-RES-001",
+        "VC-CLI-001",
+        "VC-CLI-002",
+        "VC-RISK-001",
+        "VC-COMP-001"
+      ]
+    },
+    {
+      "decision_id": "OCD-002",
+      "consequence_obligation_ids": [
+        "CA-003",
+        "CA-004",
+        "CA-009",
+        "CA-014",
+        "CA-020",
+        "CA-021",
+        "CA-031"
+      ],
+      "affected_boundary": "Configured project, task, run, PID, port, ownership and host/project scope",
+      "state_machine_ordering": "Resolve exactly one configured project, load current task/run evidence, acquire project/task locks, re-read ownership and ports, then reuse or mutate.",
+      "concurrency_idempotency": "Matching starts reuse one verified run; PID/port alone never authorizes mutation; host/Plugin lifetime never owns task lifetime.",
+      "recovery_path": "Unknown/external/conflicting targets remain inspect-only; stale or partial states go to explicit reconcile.",
+      "validation_evidence": [
+        "VC-SCOPE-001",
+        "VC-OWN-001",
+        "VC-START-001",
+        "VC-PLG-002"
+      ]
+    },
+    {
+      "decision_id": "OCD-003",
+      "consequence_obligation_ids": [
+        "CA-005",
+        "CA-011",
+        "CA-013",
+        "CA-026",
+        "CA-027",
+        "CA-028",
+        "CA-029",
+        "CA-042",
+        "CA-043",
+        "CA-044"
+      ],
+      "affected_boundary": "Operation journal, operation/input IDs, effects certainty, safe-clean plan",
+      "state_machine_ordering": "Persist prepared before effects, enter running under locks after revalidation, then terminate or become indeterminate; reconcile never invokes the original handler.",
+      "concurrency_idempotency": "Same ID/same digest recovers original; digest mismatch or missing record refuses; clean apply recomputes under lock and returns plan_digest_mismatch for drift.",
+      "recovery_path": "Known ID uses get/reconcile; a lost ID uses one bounded correlation query; zero/multiple candidates stop and no surface retries uncertain work.",
+      "validation_evidence": [
+        "VC-JRN-001",
+        "VC-JRN-002",
+        "VC-JRN-003",
+        "VC-CLEAN-001"
+      ]
+    },
+    {
+      "decision_id": "OCD-004",
+      "consequence_obligation_ids": [
+        "CA-012",
+        "CA-015",
+        "CA-022",
+        "CA-023",
+        "CA-032",
+        "CA-033",
+        "CA-034",
+        "CA-035",
+        "CA-037",
+        "CA-038",
+        "CA-047",
+        "CA-048"
+      ],
+      "affected_boundary": "Canonical Skill, compatibility/build identity, Codex/Claude artifacts, lifecycle separation",
+      "state_machine_ordering": "Build one runtime and Skill identity, render two policy-free host packages, install non-destructively, and diagnose every observed component before mutation.",
+      "concurrency_idempotency": "Compatible old/new runtimes share LAUNCHDECK_HOME; Plugin lifecycle changes component presence only and never mutates managed tasks/state.",
+      "recovery_path": "Digest/version mismatch is diagnosis-only; divergent Skill copies are preserved until explicit user migration; compatible CLI takes over after uninstall.",
+      "validation_evidence": [
+        "VC-SKL-003",
+        "VC-COMP-001",
+        "VC-PLG-001",
+        "VC-PLG-002"
+      ]
+    },
+    {
+      "decision_id": "OCD-005",
+      "consequence_obligation_ids": [
+        "CA-006",
+        "CA-036",
+        "CA-039",
+        "CA-040",
+        "CA-045",
+        "CA-046",
+        "CA-049",
+        "CA-050"
+      ],
+      "affected_boundary": "Bounded observations, stdio protocol, Skill traces, host/OS readiness evidence",
+      "state_machine_ordering": "Initialize MCP, list projected tools, execute bounded calls, record exact build/host/OS evidence, and publish only passing cells.",
+      "concurrency_idempotency": "A single stdout writer preserves framing; cursors bind high-water snapshots; host cells never roll up across untested dimensions.",
+      "recovery_path": "Interruption/restart is tested over the real wire; failures withhold only the exact claim and expose evidence.",
+      "validation_evidence": [
+        "VC-MCP-001",
+        "VC-MCP-002",
+        "VC-SKL-001",
+        "VC-SKL-002",
+        "VC-RDY-001"
+      ]
+    },
+    {
+      "decision_id": "OCD-006",
+      "consequence_obligation_ids": [
+        "CA-018",
+        "CA-019",
+        "CA-030"
+      ],
+      "affected_boundary": "Deferred medium-risk confirmation and adoption.apply",
+      "state_machine_ordering": "No first-release execute transition exists; adoption.inspect ends after a bounded read-only plan.",
+      "concurrency_idempotency": "Future confirmation must bind a Kernel plan/operation digest and revalidate target, lock, port, ownership, and current policy.",
+      "recovery_path": "Any demand to activate these transitions stops and reopens specification before implementation.",
+      "validation_evidence": [
+        "VC-ADOPT-001",
+        "CAP-014/CAP-015 deferral contract"
+      ]
+    }
+  ],
+  "review_risk_notes": [
+    {
+      "risk": "Semantic drift during CLI extraction",
+      "containment": "Cut over by operation with schemaVersion 1 fixtures and normalized adapter-equivalence tests; do not delete CLI-only compatibility routes."
+    },
+    {
+      "risk": "Journal becomes a second run truth",
+      "containment": "Persist references and effects evidence only; resource lifecycle remains in existing run/ownership/event/log authorities."
+    },
+    {
+      "risk": "Transport failure causes duplicate effects",
+      "containment": "Prepared-before-effects, ID/digest recovery, explicit indeterminate outcomes, bounded correlation, and no cross-surface retry."
+    },
+    {
+      "risk": "Host packaging duplicates policy or state",
+      "containment": "Policy-free templates, one build identity, isolated archive inspection, and real-host lifecycle tests."
+    },
+    {
+      "risk": "Readiness overclaim",
+      "containment": "Exact evidence cells bound to build/host/version/OS/scope/scenario; missing cells withhold only that claim."
+    }
+  ],
+  "stop_and_reopen_conditions": [
+    "Any adapter or host package requires an independent lifecycle backend, state namespace, policy authority, or Plugin-owned task lifetime.",
+    "CLI schemaVersion 1 cannot preserve existing public field/status/compact/exit-code semantics while mapping Kernel results.",
+    "Any first-release public Agent tool requires medium/high/destructive execution, arbitrary shell/env/cwd/force, risky clean, external-process mutation, permanent follow, or remote/production control.",
+    "Adoption configuration writes or automatic task start become required.",
+    "A host cannot launch the isolated prebuilt runtime under the Node 20+ prerequisite without a global CLI, npx, install script, or Plugin-local node_modules.",
+    "Journal/lock design cannot persist prepared before effects or avoid automatic replay of indeterminate work.",
+    "Live repository evidence contradicts the retained ownership/state authority map."
+  ],
+  "validation": [
+    {
+      "gate": "repository baseline",
+      "evidence": [
+        "npm run check",
+        "npm test"
+      ],
+      "claim": "Existing CLI/control-plane behavior remains intact."
+    },
+    {
+      "gate": "contract",
+      "evidence": [
+        "JSON Schema/catalog validation",
+        "operation contract cases VC-REG/IN/RES"
+      ],
+      "claim": "One closed semantic operation/result contract."
+    },
+    {
+      "gate": "state and fault",
+      "evidence": [
+        "crash points",
+        "same-ID/digest",
+        "correlation",
+        "retention/index rebuild",
+        "clean drift"
+      ],
+      "claim": "Recoverable idempotency without exactly-once overclaim."
+    },
+    {
+      "gate": "adapter equivalence",
+      "evidence": [
+        "CLI schemaVersion 1 fixtures",
+        "CLI/MCP normalized comparison"
+      ],
+      "claim": "Same Kernel semantics with presentation-specific envelopes."
+    },
+    {
+      "gate": "stdio",
+      "evidence": [
+        "real protocol client initialize/list/call/errors/purity/interruption/restart/concurrency"
+      ],
+      "claim": "MCP wire behavior for the tested build/OS only."
+    },
+    {
+      "gate": "Skill",
+      "evidence": [
+        "tool sequence traces",
+        "forbidden calls",
+        "duplicate Skill matrix"
+      ],
+      "claim": "MCP-first safe routing and non-destructive migration."
+    },
+    {
+      "gate": "bundle and hosts",
+      "evidence": [
+        "isolated Windows/macOS/Linux bundle cells",
+        "real Codex cells",
+        "real Claude cells"
+      ],
+      "claim": "Only exact passing host/OS/scope cells."
+    },
+    {
+      "gate": "lifecycle and compatibility",
+      "evidence": [
+        "host exit/update/disable/uninstall",
+        "old/new coexistence",
+        "CLI takeover",
+        "tamper/incompatible negatives"
+      ],
+      "claim": "Independent service/state lifetime and compatible takeover."
+    }
+  ],
+  "constitution_check": {
+    "status": "pass",
+    "violations": [],
+    "notes": [
+      "Spec-first: planning consumes a planning-ready spec package with empty semantic_delta.",
+      "Reuse/simplicity: one Kernel extends existing resource/state owners; no second backend.",
+      "Test-backed: contract, fault, adapter, real stdio, Skill, bundle, host, and readiness evidence are mandatory.",
+      "Security: strict tool inputs, configured low-risk-only mutation, ownership proof, digest-bound clean, stdout purity, and fail-closed compatibility.",
+      "Reviewability/reversibility: incremental CLI cutover, versioned journal, deterministic artifacts, non-destructive Skill handling, and scoped readiness."
+    ]
+  },
+  "transition": {
+    "version": 1,
+    "status": "ready",
+    "source_ref": "plan-contract.json",
+    "semantic_delta": [],
+    "required_refs": [
+      {
+        "ref": "plan.md",
+        "purpose": "Human-readable implementation architecture and sequencing"
+      },
+      {
+        "ref": "research.md",
+        "purpose": "Official host/runtime/dependency decisions and claim gates"
+      },
+      {
+        "ref": "data-model.md",
+        "purpose": "State, journal, concurrency, retention, and recovery design"
+      },
+      {
+        "ref": "contracts/",
+        "purpose": "Agent result, operation, MCP, compatibility, and Plugin generation boundaries"
+      },
+      {
+        "ref": "quickstart.md",
+        "purpose": "Representative end-to-end validation and readiness matrix"
+      },
+      {
+        "ref": "planning/lane-manifest.json",
+        "purpose": "Accepted adaptive heavy planning evidence"
+      }
+    ],
+    "blockers": [],
+    "next_action": "/sp.tasks",
+    "recovery": null
+  }
+}

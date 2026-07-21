@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "task_id": "T024",
+  "task_ref": "task-index.json#/tasks/T024",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-real-runtime-takeover",
+    "reason": "T023 proves shared lifetime/takeover and isolates incompatible runtime authorization to MCP compatibility propagation.",
+    "commands": [
+      "node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js test/e2e/cross-runtime-takeover.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "2/3 pass; incompatible observed component identity still reports canWrite=true."
+  },
+  "changed_paths": [
+    "src/kernel/operations/capabilities.js",
+    "src/mcp/stdio-server.js",
+    "test/e2e/cross-runtime-takeover.test.js",
+    "test/helpers/deterministic-fault-injector.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T024.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js test/e2e/cross-runtime-takeover.test.js","status":"passed","summary":"3/3 real adapter-exit, compatible takeover, and incompatible diagnosis/write-refusal journeys pass."},
+    {"command":"node --test --test-concurrency=1 <compatibility/recovery/lifecycle regression set>","status":"passed","summary":"69/69 focused compatibility, recovery, ownership, lifecycle, CLI control-plane, and real stdio tests pass."},
+    {"command":"npm run check; git diff --check","status":"passed","summary":"Syntax check passes for 98 JavaScript files; whitespace validation reports no errors."},
+    {"command":"npm test","status":"passed-after-recovery","summary":"264 total, 263 passed, 1 existing POSIX skip, 0 failures; the first run exposed only test discovery of the proxy helper, and the original affected validations passed before the unchanged full command was rerun."}
+  ],
+  "review": {"trigger":"phase-boundary-and-recovery-gate","verdict":"cleared","evidence":"One assessed compatibility value feeds capabilities, diagnostics, provenance, and Kernel policy; incompatible writes stop before effects, compatible adapters retain one shared state/run authority, and no Plugin-owned process or migration path was added."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"CLI and MCP continue to manage one shared Kernel/control-plane authority."},
+    {"ref":"MP-006","status":"satisfied","evidence":"Independent version axes and component digests produce the write decision."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Adapter exit and replacement leave managed resources and LAUNCHDECK_HOME intact."},
+    {"ref":"CA-007","status":"satisfied","evidence":"Observed component mismatch is exposed in capabilities/diagnosis and task.stop returns compatibility_mismatch."},
+    {"ref":"CA-010","status":"satisfied","evidence":"Compatibility remains digest/axis-based rather than package-version/path-based."},
+    {"ref":"CA-015","status":"satisfied","evidence":"Replacement performs no migration, pruning, or package-lifecycle state mutation."},
+    {"ref":"CA-021","status":"satisfied","evidence":"Closing MCP leaves the same task live and observable."},
+    {"ref":"CA-022","status":"satisfied","evidence":"Shared registry, state, logs, and spawn evidence survive replacement."},
+    {"ref":"CA-037","status":"satisfied","evidence":"MCP shutdown never signals the managed service."},
+    {"ref":"CA-047","status":"satisfied","evidence":"Compatible Codex/Claude identities reuse one run/PID without respawn."},
+    {"ref":"CA-048","status":"satisfied","evidence":"Standalone CLI observes and safely stops the surviving run."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "The first full suite discovered the response-loss proxy helper as a test and failed on its missing proxy-only environment. The main guard now activates only for explicit fault-proxy launches; helper, response-loss, original takeover, and unchanged full-suite commands all passed afterward."
+}

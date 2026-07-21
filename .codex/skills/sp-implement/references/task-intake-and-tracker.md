@@ -25,7 +25,7 @@ If the current task's required refs are stale, missing, or contradicted by live 
 Run or emulate:
 
 ```text
-C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement --query=\"$ARGUMENTS\" --format json
+C:\Users\11034\.specify\bin\project-cognition.exe compass --intent implement '--query="$ARGUMENTS"' --format json
 ```
 
 Use `compass_state`, `minimal_live_reads`, `first_pass_paths`, `coverage_diagnostics`, and `expansion_ref` only to repair the current task context; they do not replace live proof or authorize a broader implementation scope.
@@ -38,6 +38,6 @@ Keep compact agent state with status, current batch/task, next action, completed
 
 ## Resume Audit
 
-On uncertain or terminal-looking resume, treat checked tasks as claims. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify implement resume-audit --feature-dir \"$FEATURE_DIR\" --format json` when available and validate result, required consumer evidence, validation, obligations, open gaps, and worker handoff freshness.
+On uncertain or terminal-looking resume, treat checked tasks as claims. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify implement resume-audit --feature-dir '"$FEATURE_DIR"' --format json` when available and validate result, required consumer evidence, validation, obligations, open gaps, and worker handoff freshness.
 
 If audit fails, move to recovery/validation and continue from the smallest executable repair. Do not preserve resolved status from appearance alone.

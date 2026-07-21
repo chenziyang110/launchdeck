@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "cellId": "REAL-STDIO-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": { "kind": "mcp", "operations": ["capabilities.get", "task.status", "task.run", "task.start"] },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "linux", "version": "12", "build": "6.6.87.2-microsoft-standard-WSL2", "architecture": "x64", "distribution": "Debian GNU/Linux" },
+  "runtime": { "nodeExecutable": "/usr/local/bin/node", "nodeVersion": "20.20.2" },
+  "scenario": { "id": "REAL-STDIO-PROTOCOL", "family": "core-stdio-bundle", "description": "Linux official-SDK initialize, tools, concurrency, restart, scope, and output isolation." },
+  "fixture": { "digest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305", "harnessDigest": "sha256:5d0d4b6cf4cf47d9495c3c8b669411a1375821eec2067f35ac3d7e0ac3863243" },
+  "execution": { "startedAt": "2026-07-20T10:18:00.000Z", "completedAt": "2026-07-20T10:23:53.026Z", "actions": ["initialize", "list and call tools", "run concurrent starts", "restart adapter", "verify stdout isolation"], "commands": ["docker run node:20-bookworm-slim node --test --test-concurrency=1 test/mcp/stdio-protocol.test.js test/mcp/stdio-concurrency.test.js test/mcp/stdio-output-isolation.test.js"] },
+  "result": { "code": "passed", "summary": "All six exact real-stdio scenarios passed in the Linux candidate environment.", "assertions": [
+    { "id": "official-sdk-wire", "status": "passed", "evidenceRefs": ["stdio-protocol"] },
+    { "id": "protocol-pure-stdout", "status": "passed", "evidenceRefs": ["stdio-stdout", "stdio-stderr"] },
+    { "id": "restart-no-replay", "status": "passed", "evidenceRefs": ["stdio-protocol"] }
+  ] },
+  "evidence": { "rawRefs": [
+    { "id": "stdio-protocol", "kind": "protocol", "path": "raw/real-stdio.tap.txt", "sha256": "2b97f64fedc3f7a68098e3c392123f34e6e55be523d19ce02e53b00dad9b5a68" },
+    { "id": "stdio-stdout", "kind": "stdout", "path": "raw/real-stdio.tap.txt", "sha256": "2b97f64fedc3f7a68098e3c392123f34e6e55be523d19ce02e53b00dad9b5a68" },
+    { "id": "stdio-stderr", "kind": "stderr", "path": "raw/real-stdio.tap.txt", "sha256": "2b97f64fedc3f7a68098e3c392123f34e6e55be523d19ce02e53b00dad9b5a68" },
+    { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "cc8cb2199f8217d76663c420a1f3f4c2bc870c4e2c0590a583e864127a9fcb08" }
+  ] },
+  "invalidation": { "state": "current", "checkedAt": "2026-07-20T10:23:53.026Z", "invalidatedAt": null, "reasons": [], "keys": { "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d", "evidenceSchemaVersion": 1, "hostVersions": {}, "os": "linux", "osVersion": "12", "osBuild": "6.6.87.2-microsoft-standard-WSL2", "architecture": "x64", "nodeVersion": "20.20.2", "fixtureDigest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305", "harnessDigest": "sha256:5d0d4b6cf4cf47d9495c3c8b669411a1375821eec2067f35ac3d7e0ac3863243" } }
+}

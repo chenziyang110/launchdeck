@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "task_id": "T003",
+  "task_ref": "task-index.json#/tasks/T003",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T003 owns the intentional failing contract suite; production registry, result, compatibility primitives, schemas, and manifest are assigned to T004.",
+    "commands": [
+      "node --test --test-concurrency=1 test/contracts/operation-registry.test.js test/contracts/agent-result-schema.test.js test/contracts/agent-operation-inputs.test.js test/contracts/compatibility-manifest.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "All four contract files fail only at module resolution because T004-owned registry, result, and compatibility modules do not exist; 0 passed and 4 failed as the intentional RED."
+  },
+  "changed_paths": [
+    "test/contracts/operation-registry.test.js",
+    "test/contracts/agent-result-schema.test.js",
+    "test/contracts/agent-operation-inputs.test.js",
+    "test/contracts/compatibility-manifest.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T003.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {
+      "command": "node --test --test-concurrency=1 test/contracts/operation-registry.test.js test/contracts/agent-result-schema.test.js test/contracts/agent-operation-inputs.test.js test/contracts/compatibility-manifest.test.js",
+      "status": "failed-as-expected",
+      "summary": "Intentional RED rerun after the final test edit: four files fail at missing T004 modules, with no alternate failure."
+    },
+    {
+      "command": "node --check test/contracts/<four T003 files>",
+      "status": "passed",
+      "summary": "All four test files parse successfully."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 50 JavaScript files."
+    }
+  ],
+  "review": {
+    "trigger": "intentional-red-boundary",
+    "verdict": "cleared",
+    "evidence": "The suite encodes the approved contracts and fails solely on T004-owned missing modules. It does not implement handlers, state, policy, transport, host metadata, or deferred operations."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Tests require one declarative registry and contain no alternate execution or lifecycle authority."},
+    {"ref":"MP-003","status":"satisfied","evidence":"The exact catalog is limited to configured-project, low-risk, local Agent operations; deferred/remote/raw surfaces are negative cases."},
+    {"ref":"MP-004","status":"satisfied","evidence":"Result tests assert Agent protocol semver separately from nullable CLI schemaVersion 1 provenance."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Only operation.get/reconcile recovery inputs exist; arbitrary retry and exactly-once language are absent."},
+    {"ref":"CA-002","status":"satisfied","evidence":"Registry entries are declarations only; tests forbid state, effect, and transport imports and grant no annotation authority."},
+    {"ref":"CA-005","status":"satisfied","evidence":"Only clean.plan and digest-bound clean.applySafe are present; applyAll/reset/confirmation fields are rejected."},
+    {"ref":"CA-014","status":"satisfied","evidence":"Recursive negatives cover command, shell, cwd, env, force, and arbitrary path fields."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Approval and risk input fields are rejected rather than treated as authorization."},
+    {"ref":"CA-018","status":"satisfied","evidence":"No medium-risk operation or elicitation transition is included in the exact public set."},
+    {"ref":"CA-019","status":"satisfied","evidence":"No confirmation execution route is introduced; recovery is ID-bound and clean apply is digest-bound."},
+    {"ref":"CA-024","status":"satisfied","evidence":"A positive test requires outcome.kind and resource.status to remain independent."},
+    {"ref":"CA-025","status":"satisfied","evidence":"Agent protocol and CLI schema version axes are asserted separately in results and compatibility metadata."},
+    {"ref":"CA-026","status":"satisfied","evidence":"planDigest appears only as clean-plan integrity input and cannot be paired with confirmation fields."},
+    {"ref":"CA-027","status":"satisfied","evidence":"confirmed, confirmation, yes, and approvalToken are recursive rejection cases."},
+    {"ref":"CA-030","status":"satisfied","evidence":"adoption.inspect is present and adoption.apply is explicitly absent."},
+    {"ref":"CA-038","status":"satisfied","evidence":"Compatibility tests recursively reject policy/risk/ownership/state/journal/retry/fallback/authorization/operation rules from host metadata."},
+    {"ref":"CA-042","status":"satisfied","evidence":"The catalog exposes evidence-based get/reconcile and no automatic retry or exactly-once claim."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

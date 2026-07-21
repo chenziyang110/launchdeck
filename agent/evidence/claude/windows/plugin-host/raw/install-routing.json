@@ -1,0 +1,51 @@
+{
+  "host": {
+    "claudeVersion": "2.1.211 (Claude Code)",
+    "configDir": "C:\\Users\\11034\\AppData\\Local\\launchdeck-claude-evidence\\claude-config",
+    "scope": "user"
+  },
+  "installed": {
+    "id": "launchdeck@launchdeck-evidence",
+    "version": "0.1.0",
+    "scope": "user",
+    "enabled": true,
+    "installPath": "C:\\Users\\11034\\AppData\\Local\\launchdeck-claude-evidence\\claude-config\\plugins\\cache\\launchdeck-evidence\\launchdeck\\0.1.0",
+    "installedAt": "2026-07-20T11:07:32.509Z",
+    "lastUpdated": "2026-07-20T11:07:32.509Z",
+    "mcpServers": {
+      "launchdeck": {
+        "command": "node",
+        "args": [
+          "${CLAUDE_PLUGIN_ROOT}/runtime/launchdeck-mcp.mjs"
+        ]
+      }
+    }
+  },
+  "details": [
+    "Launchdeck (launchdeck) 0.1.0",
+    "  Safe local project lifecycle control through one shared Launchdeck Kernel.",
+    "  Source: launchdeck@launchdeck-evidence",
+    "",
+    "Component inventory",
+    "  Skills (1)  launchdeck-agent",
+    "  Agents (0)",
+    "  Hooks (0)",
+    "  MCP servers (1)  launchdeck  (tool schemas resolved at runtime; not counted)",
+    "  LSP servers (0)",
+    "",
+    "Projected token cost",
+    "  Always-on:   ~140 tok   added to every session",
+    "",
+    "Per-component (rounded)",
+    "  component         always-on  on-invoke",
+    "  launchdeck-agent       ~140       ~640",
+    "",
+    "  On-invoke cost is paid each time a skill or agent fires.",
+    "  Token counts are estimates and may differ from actual usage."
+  ],
+  "validator": [
+    "Validating plugin manifest: C:\\Users\\11034\\AppData\\Local\\launchdeck-claude-evidence\\claude-config\\plugins\\cache\\launchdeck-evidence\\launchdeck\\0.1.0\\.claude-plugin\\plugin.json",
+    "",
+    "√ Validation passed"
+  ]
+}
