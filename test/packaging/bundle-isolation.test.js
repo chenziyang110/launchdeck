@@ -47,7 +47,7 @@ test('relocated Codex and Claude bundles initialize, list, and call over real st
     const mcp = await connectLaunchdeckMcp({
       entrypoint,
       cwd: unrelatedCwd,
-      env: { LAUNCHDECK_HOME: homeDir, PATH: '', LAUNCHDECK_MCP_HOST: host },
+      env: { ...process.env, LAUNCHDECK_HOME: homeDir, LAUNCHDECK_MCP_HOST: host },
       timeout: 15_000,
       callTimeout: 20_000
     });
