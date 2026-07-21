@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+  "buildIdentity": "sha256:2e81601051642d02a348e8440567212206a38265c722fbc31df8ad2a302b1a0a",
   "packageVersion": "0.1.0",
   "nodeRange": ">=20",
   "versions": {
@@ -20,7 +20,7 @@
     "claudeHostManifest": { "current": 1, "readRange": "1", "writeRange": "1" }
   },
   "componentDigests": {
-    "runtimeBundle": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "runtimeBundle": "sha256:d8c57595b3e88566ef09315a9c3e17ac600ce87b38423188ed3df1b4a5222556",
     "operationRegistry": "sha256:2d8c075a4f7b256b60b25fd25a16c298d8fe6a32a6692197bb01d79e47efbe8b",
     "operationSchemas": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
     "agentResultSchema": "sha256:3e89f63695ed8c96ea0c4f9db85067d4abd2a45322ac9d5b853553b30d541207",

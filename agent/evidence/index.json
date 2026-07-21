@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "candidate": {
-    "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+    "buildIdentity": "sha256:2e81601051642d02a348e8440567212206a38265c722fbc31df8ad2a302b1a0a",
     "compatibilityManifest": "agent/compatibility-manifest.json"
   },
   "claimBoundary": "Each entry is an exact evidence-cell reference. An entry whose candidateRelation is superseded cannot support a claim about the candidate above. This index has no aggregate host-release conclusion.",
@@ -27,16 +27,16 @@
     { "cellId": "CODEX-LIFECYCLE-LINUX-UNEXECUTED-2f0ae201", "path": "codex/linux/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
     { "cellId": "CODEX-ROUTING-MACOS-UNEXECUTED-2f0ae201", "path": "codex/macos/plugin-host/routing.json", "candidateRelation": "superseded" },
     { "cellId": "CODEX-LIFECYCLE-MACOS-UNEXECUTED-2f0ae201", "path": "codex/macos/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
-    { "cellId": "CLAUDE-INSTALL-ROUTING-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/install-routing.json", "candidateRelation": "current" },
-    { "cellId": "CLAUDE-LIFECYCLE-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/lifecycle.json", "candidateRelation": "current" },
-    { "cellId": "CLAUDE-INSTALL-ROUTING-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/routing.json", "candidateRelation": "current" },
-    { "cellId": "CLAUDE-LIFECYCLE-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/lifecycle.json", "candidateRelation": "current" },
-    { "cellId": "CLAUDE-INSTALL-ROUTING-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/routing.json", "candidateRelation": "current" },
-    { "cellId": "CLAUDE-LIFECYCLE-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/lifecycle.json", "candidateRelation": "current" },
-    { "cellId": "CROSS-HOST-WINDOWS-UNEXECUTED-48cc9c90", "path": "cross-host/windows/plugin-host/independence.json", "candidateRelation": "current" }
+    { "cellId": "CLAUDE-INSTALL-ROUTING-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/install-routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-LIFECYCLE-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-INSTALL-ROUTING-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-LIFECYCLE-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-INSTALL-ROUTING-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-LIFECYCLE-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CROSS-HOST-WINDOWS-UNEXECUTED-48cc9c90", "path": "cross-host/windows/plugin-host/independence.json", "candidateRelation": "superseded" }
   ],
   "withheldClaims": [
-    "Current-candidate Windows and Linux standalone core coverage must be rerun after the host-manifest repairs.",
+    "No recorded host evidence cell matches the current candidate; each required host/OS scenario remains explicitly unclaimed until rerun.",
     "Codex host lifecycle is not supported by the recorded Windows lifecycle cell.",
     "Claude fixture routing did not reach MCP dispatch because the inherited UserPromptSubmit hook is broken.",
     "Cross-host lifecycle and takeover were not executed.",

@@ -59,7 +59,7 @@ test('relocated Codex and Claude bundles initialize, list, and call over real st
           operation: 'capabilities.get',
           outcome: 'succeeded'
         });
-        assert.equal(capabilities.provenance.runtimePath, entrypoint);
+        assert.equal(canonicalPath(capabilities.provenance.runtimePath), canonicalPath(entrypoint));
         assert.equal(capabilities.provenance.buildIdentity, report.buildIdentity);
         const refusal = requireAgentResult(await mcp.callTool('task.status', {
           projectRef: 'not-registered',
@@ -109,5 +109,14 @@ function copyTree(source, destination) {
     const destinationPath = path.join(destination, entry.name);
     if (entry.isDirectory()) copyTree(sourcePath, destinationPath);
     else fs.copyFileSync(sourcePath, destinationPath);
+  }
+}
+
+function canonicalPath(value) {
+  const resolved = path.resolve(value);
+  try {
+    return fs.realpathSync.native(resolved);
+  } catch {
+    return resolved;
   }
 }
