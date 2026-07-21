@@ -127,13 +127,13 @@ async function assertCrossSurfaceReuse({ first, alias }) {
 }
 
 async function assertExternalRefusal() {
-  const fixture = await createAgentSurfaceFixture();
+  let fixture;
   let mcp;
   let external;
   try {
+    external = await createExternalPortOwner();
+    fixture = await createAgentSurfaceFixture({ managedPort: external.port });
     const added = register(fixture, 'us1-external-owner');
-    external = spawnExternalPortOwner(fixture.managedPort, fixture.homeDir);
-    await waitForPort(fixture.managedPort);
     mcp = await connectLaunchdeckMcp({ cwd: fixture.projectRoot, env: fixture.env });
 
     const cli = fixture.runCliJson(['start', 'managed']);
@@ -162,8 +162,8 @@ async function assertExternalRefusal() {
     assert.equal(invalid.effects.changed, false);
   } finally {
     await mcp?.close().catch(() => {});
-    await terminateChild(external);
-    fixture.cleanup();
+    await external?.close().catch(() => {});
+    fixture?.cleanup();
   }
 }
 
@@ -266,23 +266,20 @@ function walk(root, current, snapshot) {
   }
 }
 
-function spawnExternalPortOwner(port, cwd) {
-  const source = [
-    "const net = require('net');",
-    `const server = net.createServer(); server.listen(${port}, '127.0.0.1');`,
-    "const stop = () => server.close(() => process.exit(0));",
-    "process.on('SIGTERM', stop); process.on('SIGINT', stop);"
-  ].join(' ');
-  return spawn(process.execPath, ['-e', source], { cwd, stdio: 'ignore', windowsHide: true });
-}
-
-async function waitForPort(port) {
-  const deadline = Date.now() + 5_000;
-  while (Date.now() < deadline) {
-    if (!await portIsAvailable(port)) return;
-    await delay(25);
-  }
-  throw new Error(`External fixture did not claim port ${port}.`);
+async function createExternalPortOwner() {
+  const server = net.createServer();
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const address = server.address();
+  assert.equal(typeof address, 'object');
+  assert.notEqual(address, null);
+  return {
+    pid: process.pid,
+    port: address.port,
+    close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+  };
 }
 
 function portIsAvailable(port) {
