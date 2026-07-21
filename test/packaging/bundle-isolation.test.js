@@ -52,20 +52,26 @@ test('relocated Codex and Claude bundles initialize, list, and call over real st
       callTimeout: 20_000
     });
     try {
-      const tools = await mcp.listTools();
-      assert.equal(tools.tools.length, 18, host);
-      const capabilities = requireAgentResult(await mcp.callTool('capabilities.get'), {
-        operation: 'capabilities.get',
-        outcome: 'succeeded'
-      });
-      assert.equal(capabilities.provenance.runtimePath, entrypoint);
-      assert.equal(capabilities.provenance.buildIdentity, report.buildIdentity);
-      const refusal = requireAgentResult(await mcp.callTool('task.status', {
-        projectRef: 'not-registered',
-        taskRef: 'dev'
-      }), { operation: 'task.status', outcome: 'refused' });
-      assert.equal(refusal.effects.changed, false);
-      assert.equal(mcp.stdoutFrames().every((frame) => frame && typeof frame === 'object'), true);
+      try {
+        const tools = await mcp.listTools();
+        assert.equal(tools.tools.length, 18, host);
+        const capabilities = requireAgentResult(await mcp.callTool('capabilities.get'), {
+          operation: 'capabilities.get',
+          outcome: 'succeeded'
+        });
+        assert.equal(capabilities.provenance.runtimePath, entrypoint);
+        assert.equal(capabilities.provenance.buildIdentity, report.buildIdentity);
+        const refusal = requireAgentResult(await mcp.callTool('task.status', {
+          projectRef: 'not-registered',
+          taskRef: 'dev'
+        }), { operation: 'task.status', outcome: 'refused' });
+        assert.equal(refusal.effects.changed, false);
+        assert.equal(mcp.stdoutFrames().every((frame) => frame && typeof frame === 'object'), true);
+      } catch (error) {
+        const stderr = mcp.stderrText().trim();
+        if (stderr) error.message = `${error.message}\nMCP stderr: ${stderr}`;
+        throw error;
+      }
     } finally {
       await mcp.close();
     }

@@ -17,8 +17,9 @@ test('agent-surface fixture materializes a deterministic isolated contract', asy
 
   assert.equal(fixture.fixtureDigest, digestFixtureSources());
   assert.match(fixture.fixtureDigest, /^[a-f0-9]{64}$/);
-  assert.equal(path.relative(os.tmpdir(), fixture.projectRoot).startsWith('..'), false);
-  assert.equal(path.relative(os.tmpdir(), fixture.homeDir).startsWith('..'), false);
+  const tempRoot = canonicalPath(os.tmpdir());
+  assert.equal(path.relative(tempRoot, fixture.projectRoot).startsWith('..'), false);
+  assert.equal(path.relative(tempRoot, fixture.homeDir).startsWith('..'), false);
   assert.notEqual(fixture.projectRoot, fixture.homeDir);
 
   const config = YAML.parse(fs.readFileSync(fixture.path('.launchdeck.yml'), 'utf8'));
@@ -127,3 +128,12 @@ test('agent-surface ownership cases cover verified, unknown, external, stale, an
     mismatched: 'external'
   });
 });
+
+function canonicalPath(value) {
+  const resolved = path.resolve(value);
+  try {
+    return fs.realpathSync.native(resolved);
+  } catch {
+    return resolved;
+  }
+}
