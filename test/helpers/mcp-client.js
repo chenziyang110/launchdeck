@@ -18,8 +18,7 @@ export async function connectLaunchdeckMcp(options = {}) {
     cwd: options.cwd ?? repoRoot,
     env: options.env ?? {},
     stderr: 'pipe'
-  }, stdoutChunks);
-  transport.stderr?.on('data', (chunk) => stderrChunks.push(Buffer.from(chunk)));
+  }, stdoutChunks, stderrChunks);
   const priorOnError = transport.onerror;
   transport.onerror = (error) => {
     transportErrors.push(error);
@@ -34,7 +33,9 @@ export async function connectLaunchdeckMcp(options = {}) {
   } catch (error) {
     await transport.close().catch(() => {});
     const stderr = Buffer.concat(stderrChunks).toString('utf8').trim();
+    const processDetails = transport.processDetails();
     if (stderr) error.message = `${error.message}\nMCP stderr: ${stderr}`;
+    if (processDetails) error.message = `${error.message}\nMCP process: ${processDetails}`;
     throw error;
   }
   return {
@@ -51,6 +52,7 @@ export async function connectLaunchdeckMcp(options = {}) {
     stdoutText: () => Buffer.concat(stdoutChunks).toString('utf8'),
     stderrText: () => Buffer.concat(stderrChunks).toString('utf8'),
     stdoutFrames: () => parseJsonLines(Buffer.concat(stdoutChunks).toString('utf8')),
+    processDetails: () => transport.processDetails(),
     transportErrors,
     close: () => client.close()
   };
@@ -83,14 +85,27 @@ export function assertToolResultShape(toolResult) {
 }
 
 class CapturingStdioClientTransport extends StdioClientTransport {
-  constructor(server, stdoutChunks) {
+  constructor(server, stdoutChunks, stderrChunks) {
     super(server);
     this.stdoutChunks = stdoutChunks;
+    this.stderrChunks = stderrChunks;
+    this.childExit = null;
   }
 
   async start() {
     await super.start();
     this._process?.stdout?.on('data', (chunk) => this.stdoutChunks.push(Buffer.from(chunk)));
+    this._process?.stderr?.on('data', (chunk) => this.stderrChunks.push(Buffer.from(chunk)));
+    this._process?.once('exit', (code, signal) => {
+      this.childExit = `exitCode=${code ?? 'null'}, signal=${signal ?? 'none'}`;
+    });
+    this._process?.once('error', (error) => {
+      this.childExit = `spawnError=${error?.code ?? error?.name ?? 'unknown'}`;
+    });
+  }
+
+  processDetails() {
+    return this.childExit;
   }
 }
 

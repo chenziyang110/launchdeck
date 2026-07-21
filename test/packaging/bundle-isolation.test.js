@@ -70,6 +70,9 @@ test('relocated Codex and Claude bundles initialize, list, and call over real st
       } catch (error) {
         const stderr = mcp.stderrText().trim();
         if (stderr) error.message = `${error.message}\nMCP stderr: ${stderr}`;
+        const processDetails = mcp.processDetails();
+        if (processDetails) error.message = `${error.message}\nMCP process: ${processDetails}`;
+        error.message = `${host} bundle verification failed: ${error.message}`;
         throw error;
       }
     } finally {
