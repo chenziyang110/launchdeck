@@ -45,7 +45,7 @@ JavaScript ESM on Node.js `>=20`: Follow existing repository conventions and kee
 
 - Project cognition and Project Learning are always available, even without an active `sp-*` workflow.
 - When existing-system truth matters, use project cognition before broad source inspection and use its results to narrow live reads.
-- Run `specify learning start --command <workflow> --format json` before non-trivial decisions that depend on local conventions, constraints, or past lessons; expand only selected matching Learning through `show_argv`.
+- Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command <workflow> --format json` before non-trivial decisions that depend on local conventions, constraints, or past lessons; expand only selected matching Learning through `show_argv`.
 
 ## Workflow Recommendations
 
@@ -55,8 +55,8 @@ JavaScript ESM on Node.js `>=20`: Follow existing repository conventions and kee
 
 ## Command Surface Rules
 
-- Treat live `specify --help` output as the authoritative CLI surface.
-- Before suggesting or running a `specify <subcommand>` invocation, verify that help exposes it.
+- Treat live `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify --help` output as the authoritative CLI surface.
+- Before suggesting or running a `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify <subcommand>` invocation, verify that help exposes it.
 - Do not invent unsupported CLI names such as `specify create-feature`.
 - Feature creation uses the generated create-feature script at `.specify/scripts/bash/create-new-feature.sh` or `.specify/scripts/powershell/create-new-feature.ps1`; default feature workspace names use `YYYY-MM-DD-<slug>`.
 

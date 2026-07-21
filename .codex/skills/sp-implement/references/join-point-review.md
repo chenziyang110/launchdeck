@@ -13,7 +13,7 @@ Preserved Contract: implementation review remains embedded, repairs task-layer d
 
 ## Embedded Event-Triggered Review Loop
 
-Do not expose or recommend a separate public review workflow. Review is event-triggered inside `sp-implement`.
+This loop is task-level review embedded in `sp-implement`; do not expose it as a separate public task-review workflow. The mandatory public `sp-review` stage is different: it follows implementation and reviews the integrated product from real entrypoints.
 
 ### Entry Revision Check
 
@@ -57,6 +57,14 @@ Record exactly one decision in the current task lifecycle record or a separate r
 Review may repair the canonical task graph, just-in-time packet, execution state, and current task lifecycle record. Snapshot only artifacts that will actually be rewritten by automatic repair.
 
 Review must not rewrite upstream truth. If a protected requirement, decision, evidence obligation, or boundary is wrong, record the blocker and route to its owning workflow.
+
+Classify newly discovered gaps independently from the technical symptom:
+
+- `implementation_gap`: upstream behavior and task intent are clear, but code, wiring, or tests are missing or wrong; repair and revalidate in the current task.
+- `traceability_gap`: behavior is already supported by upstream truth, but task metadata, CA mapping, or validation coverage is missing; repair the task graph/packet when semantics stay unchanged, otherwise reopen Tasks or Plan.
+- `upstream_truth_gap`: a user-visible behavior, recovery/retry/cancel path, interaction escalation, request-lifecycle rule, requirement, design decision, or architecture truth is missing or contradictory. Stop and reopen the owning upstream workflow; do not convert it into an implementation-only repair.
+
+When a new test or implementation behavior cannot map to an existing requirement, acceptance ref, or `CA-###`, treat that as an `upstream_truth_gap` until current evidence proves it is only task traceability. Persist the classification and evidence in the embedded finding/review record before routing.
 
 ### Task Lifecycle Record
 

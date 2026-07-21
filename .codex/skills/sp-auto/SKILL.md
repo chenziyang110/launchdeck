@@ -24,6 +24,13 @@ credentials, protected systems, human decisions/reviews, or physical access.
 Tailor steps, expected results, failure paths, evidence, and resume action to
 CI, visual review, or product decisions. Never claim completion.
 
+For a feature runtime blocker, do not invent `resume_argv` or overwrite an
+existing blocker. The CLI returns a read-only `show_argv` and structured
+`resolution_action`; `next_argv` stays empty while evidence is missing. After
+the criteria are proven, attach sanitized evidence using the action's declared
+input and execute its base argv. It restores the same owner and keeps the full
+blocker audit.
+
 ## Workflow Contract Summary
 
 - **Execution note**: This summary is routing metadata only. Follow the full contract below end-to-end rather than inferring behavior from the description alone.
@@ -32,9 +39,13 @@ CI, visual review, or product decisions. Never claim completion.
 
 The CLI is the only agent-facing Learning read surface:
 
-1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning start --command <classic-command-name> --format json` before deeper non-trivial work.
-2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning list --command <classic-command-name> --format json` only to filter or page.
+1. Run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning start --command '<classic-command-name>' --format json` before deeper non-trivial work.
+2. Select summaries by applicability and triggers; use `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --format json` only to filter or page.
 3. Execute one matching card's `show_argv`. Do not parse Learning storage.
+
+After minimal live inspection identifies a reused operation or changed entry point, rerun targeted recall with current code, tests, and task/contract evidence, for example `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning list --command '<classic-command-name>' --context 'operation_owner=<owner>' --context 'consumer_owner=<consumer>' --context 'outcome=<result-family>' --format json`. Do not derive these facets from archived specifications. An exact operation-owner match may surface a cross-command candidate even when the new consumer differs; treat it as a candidate, expand one `show_argv`, verify it against live evidence, and do not auto-apply it.
+
+When the entrypoint outcome audit is triggered, persist the live facets as `learning_context`, the contextual invocation as `learning_search_refs`, and returned refs as `learning_candidate_refs`. Record exactly one `applied`, `not_applicable`, or `deferred` item in `learning_dispositions` for every candidate. Do not silently ignore a candidate: applied Learning traces to requirement/consequence refs, not-applicable needs current evidence, and deferred needs an explicit deferral ref.
 
 `start`, `list`, and `show` are read-only. Current repository evidence,
 `.specify/memory/constitution.md`, and explicit user direction override stale or
@@ -42,7 +53,7 @@ candidate Learning.
 
 At closeout, corrections, retries, route changes, recovery, false leads, hidden
 dependencies, validation/tooling/state/cognition gaps, constraints, and near
-misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@4a631657f75460886dbd12ebe48b14fc11cfe0bf specify learning capture-auto`
+misses are capture signals. Prefer `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify learning capture-auto`
 from owning state; manual capture includes summary, problem, action, triggers,
 success criteria, avoid items, exceptions, and evidence.
 
@@ -82,6 +93,9 @@ Its job is to read current repository state, identify the recommended next Spec 
 
 ## Process
 
+- For every feature-bearing candidate, first run `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify workflow show --feature-dir '<feature-dir>' --format json`, then `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify workflow next --feature-dir '<feature-dir>' --format json`. `FEATURE_DIR/workflow-runtime.json` is the required-stage phase lock. Consume the returned structured `next_argv`; never reconstruct or infer the required phase action from Markdown fields.
+- When `next_argv` names `workflow complete-stage`, route to the current required-stage owner so it can finish and validate that stage. When it names `workflow transition --to <stage>`, route to that destination stage and pass the exact argv. When active `accept` returns `workflow closeout`, route to the current accept owner so human acceptance can resume; only completed `accept` has no successor.
+- A blocked runtime intentionally has no `next_argv`. Preserve its tutorial and wait for the declared evidence; once present, fill only the required evidence input in `data.resolution_action` and execute its runtime-owned base argv. `show_argv` refreshes state but never resolves it.
 - Inspect the current repository state surfaces in priority order.
 - When concurrent lanes exist, resolve candidates by command semantics first and run reconcile before any resume decision.
 - If the selected lane has a materialized worktree, continue from that isolated worktree context instead of assuming the leader workspace is the active feature root.
@@ -96,10 +110,10 @@ Its job is to read current repository state, identify the recommended next Spec 
 
 ## Guardrails
 
-- `sp-auto` does not replace `sp-specify`, `sp-plan`, `sp-tasks`, `sp-analyze`, `sp-implement`, `sp-accept`, `sp-debug`, `sp-quick`, or `sp-fast`.
+- `sp-auto` does not replace `sp-specify`, `sp-plan`, `sp-tasks`, `sp-analyze`, `sp-implement`, `sp-review`, `sp-accept`, `sp-debug`, `sp-quick`, or `sp-fast`.
 - `sp-auto` must never invent a new phase progression from chat memory when repository state already records the next step.
 - Always obey the recorded upstream gate.
-- Do not rewrite the underlying workflow state to `/sp.auto`; preserve the canonical downstream `next_command` such as `/sp.plan`, `/sp.tasks`, `/sp.implement`, `/sp.accept`, `/sp.debug`, `/sp.quick`, `/sp.fast`, `/sp.clarify`, or `/sp.deep-research`. Preserve `/sp.analyze` only when an existing state file explicitly records that legacy or diagnostic route.
+- Do not rewrite the underlying workflow state to `/sp.auto`; preserve the canonical downstream `next_command` such as `/sp.plan`, `/sp.tasks`, `/sp.implement`, `/sp.review`, `/sp.accept`, `/sp.debug`, `/sp.quick`, `/sp.fast`, `/sp.clarify`, or `/sp.deep-research`. Preserve `/sp.analyze` only when an existing state file explicitly records that legacy or diagnostic route.
 - If state is missing, stale, conflicting, or cannot identify one safe next step, stop in read-only diagnosis and report the exact blocker instead of improvising a route.
 - Do not guess when multiple resumable lanes exist.
 - Never auto-resume an `uncertain` lane.
@@ -110,35 +124,46 @@ Its job is to read current repository state, identify the recommended next Spec 
 
 Inspect the available state surfaces in this order and prefer the most specific active truth source that does not violate an upstream gate:
 
-1. Active feature `workflow-state.md`
-   - Treat `FEATURE_DIR/workflow-state.md` as the primary phase-lock and `next_command` source for feature workflows. Canonical state tokens include `/sp.plan`, `/sp.tasks`, `/sp.implement`, `/sp.clarify`, and `/sp.deep-research`; `/sp.analyze` is a legacy or explicitly requested diagnostic route only.
+1. Active feature phase runtime and rich state
+   - Treat `FEATURE_DIR/workflow-runtime.json` plus `workflow show`/`workflow next` as the primary required-stage phase lock. `FEATURE_DIR/workflow-state.md` is rich workflow-owned resume/evidence context and may add an auxiliary gate, but it cannot skip or reverse the runtime stage.
+   - Use only the runtime's structured `next_argv` for `complete-stage`, forward `transition`, blocker resume, or terminal status. Legacy `next_command` and `active_command` fields are fallback hints only when no runtime file exists for a noncanonical auxiliary workflow.
    - Clean completed task-generation state with `active_command: sp-tasks`, `status: completed`, `phase_mode: task-generation-only`, and `next_command: /sp.implement` should route directly to `/sp.implement`; preserve `/sp.analyze` only when a feature-level state file explicitly records that legacy or diagnostic route.
-   - If a feature-level `workflow-state.md` explicitly points upstream, obey it even when later-stage artifacts also exist.
+   - If a feature-level `workflow-state.md` contains evidence that explicitly
+     invalidates an upstream stage, do not jump around the CLI phase lock. Use
+     `workflow reopen` with the current revision, reason, evidence, and complete
+     invalidated-artifact set when that evidence is sufficient. A mapped stage
+     already active resumes its owner; the same completed stage is reactivated
+     through reopen. Otherwise route to analyze or the current owner to produce
+     a valid reopen decision.
 
 2. Active implementation execution state
    - Read `FEATURE_DIR/implement-tracker.md` together with `workflow-state.md`.
    - If execution is still active and `workflow-state.md` allows `/sp.implement`, resume the canonical `/sp.implement` route.
-   - If trusted execution is completed and `next_command: /sp.accept`, route to canonical `/sp.accept`; do not repeat implementation or skip to integration.
-   - If `workflow-state.md` still requires `/sp.analyze`, `/sp.plan`, `/sp.tasks`, `/sp.clarify`, or `/sp.deep-research`, obey that recorded upstream gate before resuming implementation.
+   - If trusted execution is completed and `next_command: /sp.review`, route to canonical `/sp.review`; do not repeat implementation or skip system Review.
+   - If `workflow-state.md` still requires `/sp.analyze`, `/sp.plan`, `/sp.tasks`, `/sp.clarify`, or `/sp.deep-research`, reconcile that gate with the CLI runtime. Execute an evidence-backed `workflow reopen` for a backward move or same-completed-stage reactivation; do not route to an upstream command while the runtime still owns a later stage.
 
-3. Post-implementation human acceptance state
-   - If trusted implementation closeout exists and `human-acceptance.json` is `draft`, `ready`, `in_progress`, `blocked`, `rejected`, or `stale`, route to canonical `/sp.accept` before integration or delivery.
-   - Treat `accepted` as complete only when the summary fingerprint is fresh and every required scenario has explicit human PASS.
+3. Post-implementation system Review state
+   - If trusted implementation closeout exists and `review-state.json` is absent, `reviewing`, `repairing`, `blocked`, failed, or stale, route to canonical `/sp.review` before human acceptance.
+   - Treat Review as approved only when the implementation fingerprint is fresh, every mandatory real-entrypoint scenario passes with required integrated evidence, and no blocking finding remains.
 
-4. Quick-task state
+4. Post-Review human acceptance state
+   - If trusted Review closeout exists and `human-acceptance.json` is `draft`, `ready`, `in_progress`, `blocked`, `rejected`, or `stale`, route to canonical `/sp.accept` before integration or delivery.
+   - Treat `accepted` as complete only when the frozen Human Acceptance Universe has zero uncovered required obligations, the approved Review/summary fingerprint and Review-owned runtime-target digest are fresh, every required scenario has structured human PASS evidence against its ready Review-approved runtime target, no acceptance finding is open, and the explicit human decision is accept.
+
+5. Quick-task state
    - Read unfinished `.planning/quick/*/STATUS.md` files.
    - If one active quick task clearly owns the next action, route to the canonical `/sp.quick` token.
    - If the recorded next command is a bounded local repair lane, canonical `/sp.fast` is allowed only when the state explicitly justifies that smaller route.
 
-5. Debug session state
+6. Debug session state
    - Read active `.planning/debug/*.md` session files.
    - If a live investigation owns the current next action, route to the canonical `/sp.debug` token.
 
-6. Discussion handoff state
+7. Discussion handoff state
    - Read active `.specify/discussions/*/discussion-state.json` files when no higher-authority feature, implementation, quick, or debug state has already selected a unique route; use Markdown only for legacy recovery.
    - Treat `status: handoff-ready` plus `next_command: /sp.specify` or `sp-specify` as a `/sp.specify` candidate only when `handoff_consumption_status` is not `consumed`.
    - If `handoff_consumption_status: consumed`, `status: completed`, `consumed_by_feature_dir` is populated, or `next_command: none`, do not count that discussion as a resumable candidate.
-   - If a handoff-ready discussion's `handoff-to-specify.json` path is already referenced by a feature `brainstorming/handoff-to-specify.json` as `source_contract`, treat it as a consumed-stale cleanup item, not a competing route. Recommend `specify discussion mark-consumed <slug> --feature-dir <feature-dir>` as the repair evidence, or perform that repair only when the active workflow allows state cleanup before routing.
+   - If a handoff-ready discussion's `handoff-to-specify.json` path is already referenced by a feature `brainstorming/handoff-to-specify.json` as `source_contract`, treat it as a consumed-stale cleanup item, not a competing route. Recommend `uvx --from git+https://github.com/chenziyang110/spec-kit-plus.git@6fbbf08a0b6833bb783ec6b418d567776b197ae4 specify discussion mark-consumed '<slug>' --feature-dir '<feature-dir>'` as the repair evidence, or perform that repair only when the active workflow allows state cleanup before routing.
    - If multiple unconsumed handoff-ready discussions remain, stop and ask for a specific slug instead of guessing.
 
 ## Route Resolution
@@ -197,6 +222,8 @@ Typical canonical targets include:
 - `/sp.tasks`
 - `/sp.analyze`
 - `/sp.implement`
+- `/sp.review`
+- `/sp.accept`
 - `/sp.debug`
 - `/sp.quick`
 - `/sp.fast`
