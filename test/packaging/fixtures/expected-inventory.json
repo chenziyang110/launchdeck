@@ -1,0 +1,32 @@
+{
+  "codex": [
+    ".codex-plugin/plugin.json",
+    ".mcp.json",
+    "artifact-integrity.json",
+    "compatibility.json",
+    "runtime/launchdeck-mcp.mjs",
+    "skills/launchdeck-agent/SKILL.md",
+    "skills/launchdeck-agent/references/adoption-flow.md",
+    "skills/launchdeck-agent/references/clean-safety.md",
+    "skills/launchdeck-agent/references/command-flows.md",
+    "skills/launchdeck-agent/references/discovery-rules.md",
+    "skills/launchdeck-agent/references/eval-prompts.md",
+    "skills/launchdeck-agent/references/intent-routing.md",
+    "skills/launchdeck-agent/references/recovery-playbooks.md"
+  ],
+  "claude": [
+    ".claude-plugin/plugin.json",
+    ".mcp.json",
+    "artifact-integrity.json",
+    "compatibility.json",
+    "runtime/launchdeck-mcp.mjs",
+    "skills/launchdeck-agent/SKILL.md",
+    "skills/launchdeck-agent/references/adoption-flow.md",
+    "skills/launchdeck-agent/references/clean-safety.md",
+    "skills/launchdeck-agent/references/command-flows.md",
+    "skills/launchdeck-agent/references/discovery-rules.md",
+    "skills/launchdeck-agent/references/eval-prompts.md",
+    "skills/launchdeck-agent/references/intent-routing.md",
+    "skills/launchdeck-agent/references/recovery-playbooks.md"
+  ]
+}

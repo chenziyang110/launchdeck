@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "task_id": "T023",
+  "task_ref": "task-index.json#/tasks/T023",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first-real-runtime-takeover",
+    "reason": "T023 owns adapter-exit and compatible/incompatible runtime takeover contracts; any compatibility gate repair belongs to T024.",
+    "commands": [
+      "node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js test/e2e/cross-runtime-takeover.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "2/3 pass; the incompatible replacement alone still reports canWrite=true, isolating the production gap assigned to T024."
+  },
+  "changed_paths": [
+    "test/e2e/adapter-exit-takeover.test.js",
+    "test/e2e/cross-runtime-takeover.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T023.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js test/e2e/cross-runtime-takeover.test.js","status":"failed-as-expected","summary":"Adapter exit and compatible Codex-to-Claude takeover pass with one spawn/run; incompatible write capability remains the sole intentional RED at T024's boundary."}
+  ],
+  "review": {"trigger":"test-first-boundary","verdict":"cleared","evidence":"The suites use the real stdio MCP and CLI entrypoints, assert PID/run/port/state identity and one spawn receipt, and isolate the only production gap to compatibility propagation rather than introducing test-owned behavior."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"covered","evidence":"Both public adapters observe one Kernel-owned run and state authority."},
+    {"ref":"MP-006","status":"covered","evidence":"The tests require component identity, not package version alone, to decide compatibility."},
+    {"ref":"MP-007","status":"covered","evidence":"Closing either MCP adapter leaves the managed process and shared state intact."},
+    {"ref":"MP-008","status":"covered","evidence":"Real entrypoint lifecycle receipts bind claims to executable evidence."},
+    {"ref":"CA-007","status":"red-confirmed","evidence":"The failing assertion demonstrates that an incompatible observed component still incorrectly advertises write access."},
+    {"ref":"CA-010","status":"red-confirmed","evidence":"A recomputed incompatible build identity cannot yet reduce authorization."},
+    {"ref":"CA-015","status":"covered","evidence":"Adapter replacement performs no migration or state cleanup."},
+    {"ref":"CA-021","status":"covered","evidence":"Adapter exit preserves the same live run and CLI observability."},
+    {"ref":"CA-022","status":"covered","evidence":"Registry, runtime state, logs, and spawn receipts survive adapter exit."},
+    {"ref":"CA-037","status":"covered","evidence":"Closing MCP never signals the managed process."},
+    {"ref":"CA-047","status":"covered","evidence":"Compatible host B observes and reuses host A's run ID and PID without respawn."},
+    {"ref":"CA-048","status":"covered","evidence":"Standalone CLI observes logs/state and safely stops the exact surviving run."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

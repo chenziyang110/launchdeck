@@ -1,0 +1,301 @@
+{
+  "version": 3,
+  "status": "technical_complete_workflow_realign_deferred",
+  "source_contract": "task-index.json",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "current_batch": "US4",
+  "current_task": null,
+  "next_action": "Technical implementation is complete by user direction. Defer workflow-runtime and project-cognition repair as external baseline maintenance; do not hand-edit the runtime stage.",
+  "completed_task_ids": ["T001", "T002", "T003", "T004", "T005", "T006", "T007", "T008", "T009", "T010", "T011", "T012", "T013", "T014", "T015", "T016", "T017", "T018", "T019", "T020", "T021", "T022", "T023", "T024", "T025", "T026", "T027", "T028", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036", "T037", "T038", "T039"],
+  "failed_task_ids": [],
+  "retry_count": 14,
+  "policy_refs": [
+    "plan-contract.json#/complete_first_scope_preservation",
+    "learning:lifecycle-test-file-concurrency",
+    "learning:implement.rerun-validation-after-recovery-before-resolve"
+  ],
+  "user_confirmed_deferral_refs": ["CAP-014", "CAP-015", "CAP-016"],
+  "active_packet_refs": [],
+  "required_obligation_refs": ["CA-012", "CA-015", "CA-020", "CA-021", "CA-022", "CA-023", "CA-032", "CA-033", "CA-034", "CA-035", "CA-037", "CA-040", "CA-045", "CA-047", "CA-048", "CA-049", "CA-050"],
+  "blockers": [
+    {
+      "type": "workflow_runtime_contract_upgrade",
+      "summary": "workflow-runtime.json is reopened at specify revision 8 after a contract upgrade, while the technical task records were completed under the earlier implementation contract.",
+      "source": ".specify/features/2026-07-19-launchdeck-agent-surfaces/workflow-runtime.json",
+      "next_action": "Use the upgraded workflow runtime to reconcile specification, plan, tasks, and validation metadata; then create implementation-handoff.json and run complete-stage instead of manually changing runtime state."
+    },
+    {
+      "type": "project_cognition_closeout_unavailable",
+      "summary": "Inline project cognition closeout and mark-dirty cannot run because status.json exists but project-cognition.db is missing.",
+      "source": "project-cognition closeout-plan/mark-dirty output on 2026-07-21",
+      "next_action": "Restore project-cognition.db, rerun closeout-plan, then submit the runtime-provided delta or payload update."
+    }
+  ],
+  "recovery": "Keep lifecycle tests serialized; after any recovery, rerun the selected task's original validation before accepting it. Stop a real-host lifecycle chain at its first failed survival assertion and retain the exact non-ready cell instead of running dependent stages.",
+  "open_gaps": [
+    {
+      "type": "project_cognition_readiness",
+      "summary": "Project cognition status exists but project-cognition.db is missing; graph-backed navigation is unavailable.",
+      "source": "project-cognition compass for T001",
+      "next_action": "Continue with T001-required refs and bounded live repository evidence; update cognition inline at implementation closeout."
+    },
+    {
+      "type": "candidate_evidence_invalidation",
+      "summary": "T032/T034 standalone OS cells still bind build c9f8ef1e, while the final current candidate is 48cc9c90 after official Codex and Claude host-manifest repairs.",
+      "source": "T035/T036 real host contract repairs",
+      "next_action": "Replay only the directly invalidated Windows/Linux candidate cells once against build 48cc9c90 before any final readiness rollup; do not reuse c9f8ef1e as current evidence."
+    },
+    {
+      "type": "codex_host_lifecycle_non_ready",
+      "summary": "Codex CLI 0.144.4 terminated the MCP-started managed child when the host exited; the shared run record remained only as stale-owned.",
+      "source": "agent/evidence/codex/windows/plugin-host/lifecycle.json",
+      "next_action": "Reopen the managed-process detachment contract before claiming Codex update/disable/uninstall or active CLI takeover readiness; do not infer those claims from standalone adapter-exit tests."
+    },
+    {
+      "type": "claude_user_prompt_hook_blocks_fixture_routing",
+      "summary": "Claude Code 2.1.211 installed and connected the isolated plugin, but an inherited UserPromptSubmit hook blocked the project-scoped fixture before MCP dispatch because .specify/bin/specify-hook.py is missing.",
+      "source": "agent/evidence/claude/windows/plugin-host/install-routing.json",
+      "next_action": "Repair or replace the local Spec Kit hook dependency, or provide an isolated authenticated Claude configuration without that inherited hook; rerun the original capabilities.get -> task.list trace before lifecycle work."
+    }
+  ],
+  "validation": [
+    {
+      "name": "T001 unchanged-repository baseline",
+      "status": "passed",
+      "commands": ["npm run check", "npm test", "npm run smoke", "npm run package:check"]
+    },
+    {
+      "name": "T001 fixture contract",
+      "status": "passed",
+      "commands": ["node --test --test-concurrency=1 test/baseline/agent-surfaces-baseline.test.js"],
+      "summary": "5/5 fixture tests passed; full suite 160 total, 159 passed, 1 existing platform skip."
+    },
+    {
+      "name": "T002 exact dependency and bundle toolchain contract",
+      "status": "passed",
+      "commands": ["exact pin/lock/directory/install-hook assertion", "esbuild in-memory Node 20 ESM probe", "npm run check", "npm test"],
+      "summary": "SDK 1.29.0, Zod 4.4.3, semver 7.8.5, and esbuild 0.28.1 are exact; one output and zero external npm imports; full suite 160 total, 159 passed, 1 existing platform skip."
+    },
+    {
+      "name": "T003 frozen contract RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/contracts/<four T003 files>", "npm run check"],
+      "summary": "Four contract files intentionally fail only because T004 modules are missing; all 50 JavaScript files pass syntax checking."
+    },
+    {
+      "name": "T004 registry/result/compatibility contracts",
+      "status": "passed",
+      "commands": ["node --test --test-concurrency=1 test/contracts/<four contract files>", "npm run check", "npm test"],
+      "summary": "17/17 targeted passed; full suite 177 total, 176 passed, 1 existing platform skip after one recovered external timeout."
+    },
+    {
+      "name": "T005 Kernel policy and lock-order RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/kernel/<four T005 files>", "npm run check"],
+      "summary": "Four intentional RED files fail only on missing T006 modules/exports; 57 JavaScript files pass syntax checking."
+    },
+    {
+      "name": "T006 Kernel policy, compatibility, project-context, and canonical lock authority",
+      "status": "passed",
+      "commands": ["four T005 Kernel contract files", "existing control-plane lock/ownership/runtime regressions", "npm run check", "npm test", "git diff --check"],
+      "summary": "All targeted suites passed; full suite 191 total, 190 passed, 1 existing POSIX skip, and 0 failures after the final change."
+    },
+    {
+      "name": "T007 operation-journal fault and retention RED",
+      "status": "failed-as-expected",
+      "commands": ["three T007 operation-journal test files", "npm run check", "git diff --check"],
+      "summary": "Three intentional RED files fail only on the missing T008 operation-journal module; 63 JavaScript files pass syntax checking."
+    },
+    {
+      "name": "T008 atomic journal, recovery, retention, events, and Kernel transitions",
+      "status": "passed",
+      "commands": ["three T007 journal suites", "existing Kernel/event/lock/state regressions", "real lock proof probe", "operation handler probe", "npm run check", "npm test"],
+      "summary": "13/13 journal tests and 43/43 focused tests passed; full suite 204 total, 203 passed, 1 existing POSIX skip, and 0 failures."
+    },
+    {
+      "name": "T009 bounded queries, cursor, correlation, and adoption RED",
+      "status": "failed-as-expected",
+      "commands": ["four T009 query/observation/adoption/correlation files", "npm run check"],
+      "summary": "The accepted schema bound passes; remaining failures are limited to missing T010 modules and T010-owned correlation semantics."
+    },
+    {
+      "name": "T010 bounded observation and query handlers",
+      "status": "passed",
+      "commands": ["four T009 suites", "focused Kernel/journal/events regression", "query normalization probe", "cursor bound probe", "npm run check", "npm test"],
+      "summary": "11/11 T009 and 43/43 focused tests passed; full suite 215 total, 214 passed, 1 existing POSIX skip, and 0 failures."
+    },
+    {
+      "name": "T011 CLI Kernel adapter and schemaVersion 1 RED",
+      "status": "failed-as-expected",
+      "commands": ["two T011 CLI contract files", "npm run check"],
+      "summary": "Compact compatibility already passes; remaining intentional failures belong only to the T012 map/cutover/nesting implementation."
+    },
+    {
+      "name": "T012 declarative CLI map, Kernel query cutover, and schemaVersion 1 compatibility",
+      "status": "passed",
+      "commands": ["T011 contract tests", "existing CLI tests", "npm run check", "real CLI probes", "npm test"],
+      "summary": "7/7 T011 contracts and 33/33 combined CLI contracts passed; full suite 222 total, 221 passed, 1 existing POSIX skip, and 0 failures."
+    },
+    {
+      "name": "T013 shared lifecycle, concurrency, refusal, partial, and indeterminate RED",
+      "status": "failed-as-expected",
+      "commands": ["three T013 contract files", "npm run check"],
+      "summary": "3/8 existing refusal cases pass; five failures are limited to T014-owned task mutation handlers; syntax check passes for 80 files."
+    },
+    {
+      "name": "T014 Kernel lifecycle handlers and safe CLI mutation cutover",
+      "status": "passed",
+      "commands": ["three T013 contract files", "focused lifecycle/ownership/CLI regressions", "real concurrent CLI start probe", "npm run check", "npm test", "git diff --check"],
+      "summary": "All lifecycle contracts and compatibility regressions passed after recovery; the real concurrency probe produced one run/spawn receipt; full suite 230 total, 229 passed, 1 existing POSIX skip, and 0 failures."
+    },
+    {
+      "name": "T015 canonical safe-clean, drift, fault, recovery, and CLI compatibility RED",
+      "status": "failed-as-expected",
+      "commands": ["three T015 contract files", "npm run check", "git diff --check"],
+      "summary": "The exclusion boundary passes; remaining failures are limited to the missing T016 clean handler, plan digest/Agent CLI cutover, and declarative mapping; syntax check passes for 83 files."
+    },
+    {
+      "name": "T016 canonical plan, journaled safe apply, and CLI clean cutover",
+      "status": "passed",
+      "commands": ["three T015 suites", "existing clean/baseline regressions", "all Kernel tests", "CLI/schema/public-mutation regressions", "npm run check", "npm test", "git diff --check"],
+      "summary": "All targeted clean, fault, recovery, Kernel, and CLI compatibility tests passed after recovery; full suite 240 total, 239 passed, 1 existing POSIX skip, and 0 failures."
+    },
+    {
+      "name": "T017 official-SDK real stdio MCP RED",
+      "status": "failed-as-expected",
+      "commands": ["three real-wire MCP suites", "entrypoint absence check", "npm run check", "git diff --check"],
+      "summary": "All six official-SDK scenarios fail only because src/mcp/stdio-server.js is absent; no direct-handler shortcut exists; syntax check passes for 88 files."
+    },
+    {
+      "name": "T018 SDK stdio server and pure Kernel projection",
+      "status": "passed",
+      "commands": ["three T017 real-wire MCP suites", "shared process/lock/task/journal/CLI regressions", "npm run check", "npm run package:check", "npm test", "git diff --check"],
+      "summary": "All 6 real-wire MCP scenarios and focused regressions passed; package contains the launchdeck-mcp entrypoint; full suite 247 total, 246 passed, 1 existing platform skip, and 0 failures."
+    },
+    {
+      "name": "T019 real CLI/MCP equivalence and US1 journey RED",
+      "status": "failed-as-expected",
+      "commands": ["two T019 real-entrypoint integration suites", "npm run check"],
+      "summary": "After one test-owned fixture recovery, 7/8 journeys pass; the sole remaining failure is task.list inventory shape drift between CLI and MCP, assigned to T020."
+    },
+    {
+      "name": "T020 shared task inventory projection and US1 closeout",
+      "status": "passed",
+      "commands": ["original T019 US1 command", "30 focused CLI/Kernel/MCP regressions", "npm run check", "git diff --check", "npm test"],
+      "summary": "The shared Kernel task inventory projection resolves the sole T019 drift; 8/8 US1 journeys and 30/30 focused tests pass; final unchanged full suite 255 total, 254 passed, 1 existing platform skip, and 0 failures after two external observation-window recoveries."
+    },
+    {
+      "name": "T021 real response-loss and bounded recovery RED",
+      "status": "failed-as-expected",
+      "commands": ["two T021 real CLI/MCP recovery suites", "npm run check"],
+      "summary": "4/5 tests pass; missing/expired operation IDs alone lack a normalized Kernel result across CLI/MCP and are assigned to T022. All response-loss and no-replay counters remain one."
+    },
+    {
+      "name": "T022 normalized public recovery routes",
+      "status": "passed",
+      "commands": ["original T021 recovery command", "26 focused journal/fault/policy/CLI schema regressions", "npm run check", "git diff --check"],
+      "summary": "All 5 real recovery tests and 26 focused regressions pass; CLI/MCP missing and expired IDs now return the same effect-free operation_record_missing_or_expired Agent failure."
+    },
+    {
+      "name": "T023 adapter-exit and cross-runtime takeover RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js test/e2e/cross-runtime-takeover.test.js"],
+      "summary": "2/3 real lifecycle journeys pass: adapter exit and compatible host replacement preserve one run/state authority; the sole failure is the T024-owned incompatible runtime write gate reporting canWrite=true."
+    },
+    {
+      "name": "T024 compatibility propagation and lifecycle takeover",
+      "status": "passed",
+      "commands": ["original T023 lifecycle command", "69 focused compatibility/recovery/lifecycle tests", "npm run check", "git diff --check", "npm test"],
+      "summary": "Observed component identity now drives MCP provenance, diagnosis, capabilities, and the shared Kernel gate; incompatible writes fail closed, compatible takeover does not respawn, 69/69 focused tests pass, and the recovered full suite passes 264 total with 263 passed and 1 existing POSIX skip."
+    },
+    {
+      "name": "T025 deterministic Skill routing and forbidden-call RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/skill/routing-traces.test.js test/skill/forbidden-calls.test.js", "npm run check", "git diff --check"],
+      "summary": "6/8 trace invariants pass; the two intentional failures identify the absent canonical trace contract and five executable force/risky-clean routes assigned to T026. A test-owned path correction was made before accepting this RED; syntax passes for 100 files."
+    },
+    {
+      "name": "T026 canonical MCP-first Skill state machine",
+      "status": "passed",
+      "commands": ["original T025 trace command", "Skill quick_validate in UTF-8 mode", "15 Skill/installer focused tests", "forbidden executable route scan", "npm run check", "git diff --check", "npm test"],
+      "summary": "8/8 ordered trace tests and 15/15 focused Skill/installer tests pass; the canonical Skill validates, public force/risky/follow/adoption-apply routes are absent, and the full suite passes 272 total with 271 passed and 1 existing POSIX skip."
+    },
+    {
+      "name": "T027 non-destructive Skill installation matrix RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/skill/installer-compatibility.test.js test/skill/skill-content-manifest.test.js", "npm run check", "git diff --check"],
+      "summary": "1/9 current legacy-conflict behavior passes; 8 intentional failures isolate the old Codex user path, absent content-manifest/installation-observation APIs, and insufficient divergent-location refusal evidence. Syntax passes for 102 files."
+    },
+    {
+      "name": "T028 canonical Skill manifests and non-destructive installer",
+      "status": "passed",
+      "commands": ["original T027 installer matrix", "24 focused installer/CLI schema/compatibility tests", "npm run check", "git diff --check", "16 final installer regressions"],
+      "summary": "9/9 installation matrix and 24/24 focused regressions pass; Codex defaults to $HOME/.agents, canonical content digests are deterministic, all four copy classes remain observable, and divergent/invalid automatic writes fail before effects."
+    },
+    {
+      "name": "T029 deterministic Plugin build and isolation RED",
+      "status": "failed-as-expected",
+      "commands": ["node --test --test-concurrency=1 test/packaging/plugin-generation.test.js test/packaging/bundle-isolation.test.js test/packaging/host-manifest-policy.test.js", "npm run check", "git diff --check"],
+      "summary": "All 10 generation/isolation cases intentionally fail only because scripts/build-agent-plugins.js is absent; host-policy, archive, digest, relocation, Node, and real-wire contracts are otherwise loadable. Syntax passes for 106 files."
+    },
+    {
+      "name": "T030 deterministic Plugin generation, bundle isolation, and compatibility identity",
+      "status": "passed",
+      "commands": ["three packaging contract suites", "two clean artifact builds", "real isolated stdio launch for Codex and Claude", "npm run check", "npm run package:check", "npm test", "focused recovery of one existing random-port E2E fixture"],
+      "summary": "All 10 packaging contracts pass; both hosts receive deterministic single-file Node 20 ESM bundles, identical shared components, separate policy-free manifests, integrity sidecars, and one build identity. Syntax passes for 107 files and the npm payload contains 52 bounded files. Full regression reached 290/292 with one existing POSIX skip and one transient random-port fixture failure that passed 5/5 immediately when rerun."
+    },
+    {
+      "name": "T031 exact readiness evidence schema and runner",
+      "status": "passed",
+      "commands": ["node --test --test-concurrency=1 test/host/readiness-evidence.test.js", "npm run check", "git diff --check"],
+      "summary": "9/9 focused contracts pass. Exact cells require build, component, surface, host, platform, runtime, scenario, fixture, result, raw-ref, and invalidation dimensions; all non-ready states remain visible; broad readiness fields and divergent/tampered receipts are rejected. Syntax passes for 110 files."
+    },
+    {
+      "name": "T032 Windows immutable-candidate evidence cells",
+      "status": "passed",
+      "commands": ["five serialized Windows candidate commands", "node scripts/run-agent-evidence.js --validate agent/evidence/windows/core-stdio-bundle", "node --test --test-concurrency=1 test/host/readiness-evidence.test.js", "npm run check"],
+      "summary": "Five independent Windows 10.0.26200 x64 cells cover 20 passing core CLI/MCP, real stdio, isolated bundle, fault/recovery, and adapter-exit takeover scenarios for build c9f8ef1e. All raw receipts validate by digest with no diagnostics."
+    },
+    {
+      "name": "T033 macOS immutable-candidate evidence cells",
+      "status": "blocked-as-recorded",
+      "commands": ["local macOS executor availability probe", "node scripts/run-agent-evidence.js --validate agent/evidence/windows/core-stdio-bundle agent/evidence/macos/core-stdio-bundle", "node --test --test-concurrency=1 test/host/readiness-evidence.test.js"],
+      "summary": "Five independent macOS scenario cells are explicitly blocked because no native macOS executor is available. OS version, architecture, and Node remain null rather than inferred; the shared blocker receipt validates by digest and no macOS readiness is claimed."
+    },
+    {
+      "name": "T034 Linux immutable-candidate evidence cells",
+      "status": "passed",
+      "commands": ["five serialized Debian 12 Node 20 candidate commands in read-only Docker mount", "node scripts/run-agent-evidence.js --validate agent/evidence/windows/core-stdio-bundle agent/evidence/macos/core-stdio-bundle agent/evidence/linux/core-stdio-bundle"],
+      "summary": "Five independent Debian 12 x64 cells cover 20 passing scenarios for build c9f8ef1e. The core cell retains its initial minimal-container failure and successful original-command recovery after installing iproute2; all 15 OS cells validate with zero digest diagnostics."
+    },
+    {
+      "name": "T035 real Codex install, routing, and claim-bounded lifecycle evidence",
+      "status": "completed-with-failed-lifecycle-cell",
+      "commands": ["official Codex plugin validator", "focused packaging contracts", "isolated codex plugin install/list/mcp discovery", "two read-only routing traces", "one ordered safe-start lifecycle trace", "Codex evidence schema/hash validation"],
+      "summary": "Windows Codex 0.144.4 user-scope install/routing passes for build 2f0ae201. The real host exits with the managed PID dead and port free, so lifecycle/update/disable/uninstall/takeover is explicitly failed or not executed. macOS/Linux host cells remain not executed; all six cells validate with zero diagnostics."
+    },
+    {
+      "name": "T038 final exclusion and policy audit",
+      "status": "passed",
+      "commands": ["18 focused contract/packaging/Skill audit tests"],
+      "summary": "Public catalog, input schema, canonical Skill, host metadata, and evidence cells mechanically exclude deferred operations, raw execution inputs, policy duplication, broad release fields, and exactly-once wording."
+    },
+    {
+      "name": "T039 release documentation, evidence index, and final validation",
+      "status": "recovered-with-workflow-blocker",
+      "commands": ["npm run check", "npm test", "node --test --test-concurrency=1 test/global-runtime.test.js", "npm run smoke", "npm run package:check", "npm run agent:build", "all evidence validation", "git diff --check"],
+      "summary": "All targeted recovery and release gates pass. The one full-suite failure was a temporary test-lock timeout following an externally terminated earlier run; its 24-test suite passes on immediate rerun. Evidence index documents current versus superseded cells and no broad host claim. Implement-to-review transition remains blocked by the reopened workflow runtime and unavailable project-cognition database."
+    }
+  ],
+  "review_window_policy": {
+    "max_completed_tasks_before_review": 5,
+    "max_unreviewed_changed_paths": 8,
+    "max_unreviewed_validation_failures": 0
+  },
+  "last_review_event": {
+    "task_id": "T035",
+    "trigger": "five-task-review-window",
+    "verdict": "cleared-with-withheld-claims",
+    "repair": "T030-T035 now use an official Codex manifest and explicit LAUNCHDECK_HOME forwarding. Real install/routing is exact-cell ready on Windows; host-lifetime failure and unexecuted OS cells remain visible and block lifecycle/cross-host roll-up."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "capturedAt": "2026-07-20T10:47:51.5128131Z",
+  "codexVersion": "codex-cli 0.144.4",
+  "installed": [
+    {
+      "pluginId": "launchdeck@launchdeck-evidence",
+      "name": "launchdeck",
+      "marketplaceName": "launchdeck-evidence",
+      "version": "0.1.0",
+      "installed": true,
+      "enabled": true,
+      "source": {
+        "source": "local",
+        "path": "C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\marketplace\\build\\codex"
+      },
+      "marketplaceSource": {
+        "sourceType": "local",
+        "source": "\\\\?\\C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\marketplace"
+      },
+      "installPolicy": "AVAILABLE",
+      "authPolicy": "ON_INSTALL"
+    }
+  ],
+  "mcp": {
+    "name": "launchdeck",
+    "enabled": true,
+    "disabled_reason": null,
+    "transport": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./runtime/launchdeck-mcp.mjs"
+      ],
+      "env": {
+        "LAUNCHDECK_AGENT_HOST": "codex"
+      },
+      "env_vars": [
+        "LAUNCHDECK_HOME"
+      ],
+      "cwd": "C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\codex-home\\plugins\\cache\\launchdeck-evidence\\launchdeck\\0.1.0\\."
+    },
+    "startup_timeout_sec": null,
+    "tool_timeout_sec": null,
+    "auth_status": "unsupported"
+  },
+  "cacheRoot": "C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\codex-home\\plugins\\cache\\launchdeck-evidence\\launchdeck\\0.1.0",
+  "cacheFiles": [
+    ".codex-plugin/plugin.json",
+    ".mcp.json",
+    "artifact-integrity.json",
+    "compatibility.json",
+    "runtime/launchdeck-mcp.mjs",
+    "skills/launchdeck-agent/references/adoption-flow.md",
+    "skills/launchdeck-agent/references/clean-safety.md",
+    "skills/launchdeck-agent/references/command-flows.md",
+    "skills/launchdeck-agent/references/discovery-rules.md",
+    "skills/launchdeck-agent/references/eval-prompts.md",
+    "skills/launchdeck-agent/references/intent-routing.md",
+    "skills/launchdeck-agent/references/recovery-playbooks.md",
+    "skills/launchdeck-agent/SKILL.md"
+  ],
+  "validation": [
+    "Plugin validation passed: C:\\Users\\11034\\AppData\\Local\\launchdeck-codex-evidence\\codex-home\\plugins\\cache\\launchdeck-evidence\\launchdeck\\0.1.0"
+  ]
+}

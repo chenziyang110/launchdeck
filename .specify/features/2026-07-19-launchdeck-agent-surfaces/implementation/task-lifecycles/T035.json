@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "task_id": "T035",
+  "task_ref": "task-index.json#/tasks/T035",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": {
+    "status": "failed-as-expected",
+    "summary": "The official Codex plugin validator rejected the generated manifest's custom schemaVersion, buildIdentity, components, and node fields and required structured author/interface metadata."
+  },
+  "changed_paths": [
+    "agent/plugins/codex/plugin.template.json",
+    "agent/plugins/codex/mcp.template.json",
+    "agent/compatibility-manifest.json",
+    "scripts/build-agent-plugins.js",
+    "test/packaging/host-manifest-policy.test.js",
+    "test/packaging/plugin-generation.test.js",
+    "agent/evidence/codex/",
+    ".specify/memory/learnings/INDEX.md",
+    ".specify/memory/learnings/learn-2026-07-20-codex-plugin-mcp-env-forwarding-41904c9cb3.md",
+    ".specify/memory/learnings/learn-2026-07-20-codex-plugin-host-exit-descendant-lifetime-5ad6f35d6a.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T035.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": ["three focused packaging suites", "official plugin-creator validator", "strict-semver build-B generator contract"],
+      "summary": "11 focused packaging cases pass; the generated Codex manifest is accepted by the official validator, uses official discovery fields, forwards optional LAUNCHDECK_HOME, and emits distinct compatible evidence builds."
+    },
+    {
+      "status": "passed",
+      "commands": ["isolated codex plugin marketplace add/install/list", "codex mcp list --json", "read-only codex exec Skill/MCP trace"],
+      "summary": "Codex CLI 0.144.4 installed build 2f0ae201 from a local marketplace, loaded the cached Skill and bundled MCP, forwarded isolated state, resolved project scope, and completed ordered capabilities.get then task.list calls."
+    },
+    {
+      "status": "failed-as-recorded",
+      "commands": ["real Codex Skill/MCP capabilities.get -> task.status -> one task.start", "standalone CLI inspect after Codex exit"],
+      "summary": "The single safe start succeeded as run_v3ZefiY9qQFN, PID 22356, port 59037, but Codex host exit terminated the process. The same shared record survived only as stale-owned, so build-B/update/disable/uninstall/active-takeover claims remain non-ready."
+    },
+    {
+      "status": "passed",
+      "commands": ["node scripts/run-agent-evidence.js --validate agent/evidence/codex"],
+      "summary": "Six exact Codex cells validate with immutable raw receipts: Windows install/routing passed, Windows lifecycle failed, and macOS/Linux routing and lifecycle are visible as not_executed_host_owned."
+    }
+  ],
+  "review": {
+    "trigger": "five-task-review-window",
+    "verdict": "cleared-with-withheld-claims",
+    "evidence": "Official Codex metadata and real install/routing are repaired and proven. The first failed host-lifetime assertion stopped the chained scenario, and no later lifecycle or cross-OS readiness was inferred."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "refs": ["CA-012", "CA-020", "CA-032", "CA-033", "CA-034", "CA-035", "CA-040", "CA-045", "CA-049", "CA-050"],
+      "status": "passed-or-claim-bounded",
+      "evidence": "The exact Windows install/routing cell proves official discovery, cached relative launch, ordered Skill routing, project scope, provenance, and no broad readiness roll-up."
+    },
+    {
+      "refs": ["CA-021", "CA-022", "CA-037", "CA-047", "CA-048"],
+      "status": "failed-visible",
+      "evidence": "The Windows lifecycle cell records host-exit process termination and explicitly leaves update, disable, uninstall, incompatible-build, and active CLI takeover assertions not executed."
+    },
+    {
+      "refs": ["CA-015", "CA-023"],
+      "status": "not-expanded",
+      "evidence": "The failed lifecycle chain did not authorize state deletion or divergent Skill overwrite; isolated host/config/state fixtures were removed after evidence capture."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "Fixed the invalid official manifest and missing Codex env forwarding with focused validation. After the real host killed the managed child on exit, stopped the lifecycle chain immediately, retained the failure receipt, withheld dependent claims, and cleaned only the isolated fixture roots."
+}

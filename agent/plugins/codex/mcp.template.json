@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "launchdeck": {
+      "command": "node",
+      "args": [
+        "./runtime/launchdeck-mcp.mjs"
+      ],
+      "cwd": ".",
+      "env": {
+        "LAUNCHDECK_AGENT_HOST": "codex"
+      },
+      "env_vars": [
+        "LAUNCHDECK_HOME"
+      ]
+    }
+  }
+}

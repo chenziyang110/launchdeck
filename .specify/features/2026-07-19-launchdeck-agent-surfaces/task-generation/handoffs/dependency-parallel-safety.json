@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "lane_id": "dependency-parallel-safety",
+  "status": "accepted-with-controller-repair",
+  "repair_reason": "The replacement lane's safety conclusions were sound, but its temporary source-key list did not match the accepted story-phase handoff. The controller repaired the graph against story-phase-decomposition.json and revalidated the canonical task index.",
+  "dependency_graph": {
+    "key_kind": "story-phase-decomposition source_key",
+    "node_count": 39,
+    "acyclic": true,
+    "nodes": [
+      {"source_key":"SET-001","depends_on":[]},
+      {"source_key":"SET-002","depends_on":["SET-001"]},
+      {"source_key":"FND-001","depends_on":["SET-002"]},
+      {"source_key":"FND-002","depends_on":["FND-001"]},
+      {"source_key":"FND-003","depends_on":["FND-002"]},
+      {"source_key":"FND-004","depends_on":["FND-003"]},
+      {"source_key":"FND-005","depends_on":["FND-004"]},
+      {"source_key":"FND-006","depends_on":["FND-005"]},
+      {"source_key":"FND-007","depends_on":["FND-006"]},
+      {"source_key":"FND-008","depends_on":["FND-007"]},
+      {"source_key":"FND-009","depends_on":["FND-008"]},
+      {"source_key":"FND-010","depends_on":["FND-009"]},
+      {"source_key":"US1-001","depends_on":["FND-010"]},
+      {"source_key":"US1-002","depends_on":["US1-001"]},
+      {"source_key":"US1-003","depends_on":["US1-002"]},
+      {"source_key":"US1-004","depends_on":["US1-003"]},
+      {"source_key":"US1-005","depends_on":["US1-004"]},
+      {"source_key":"US1-006","depends_on":["US1-005"]},
+      {"source_key":"US1-007","depends_on":["US1-006"]},
+      {"source_key":"US1-008","depends_on":["US1-007"]},
+      {"source_key":"US2-001","depends_on":["US1-008"]},
+      {"source_key":"US2-002","depends_on":["US2-001"]},
+      {"source_key":"US2-003","depends_on":["US2-002"]},
+      {"source_key":"US2-004","depends_on":["US2-003"]},
+      {"source_key":"US3-001","depends_on":["US2-004"]},
+      {"source_key":"US3-002","depends_on":["US3-001"]},
+      {"source_key":"US3-003","depends_on":["US3-002"]},
+      {"source_key":"US3-004","depends_on":["US3-003"]},
+      {"source_key":"US3-005","depends_on":["US3-004"]},
+      {"source_key":"US3-006","depends_on":["US3-005"]},
+      {"source_key":"US4-001","depends_on":["US3-006"]},
+      {"source_key":"US4-002","depends_on":["US4-001"]},
+      {"source_key":"US4-003","depends_on":["US4-001"]},
+      {"source_key":"US4-004","depends_on":["US4-001"]},
+      {"source_key":"US4-005","depends_on":["US4-002","US4-003","US4-004"]},
+      {"source_key":"US4-006","depends_on":["US4-002","US4-003","US4-004"]},
+      {"source_key":"US4-007","depends_on":["US4-005","US4-006"]},
+      {"source_key":"POL-001","depends_on":["US4-007"]},
+      {"source_key":"POL-002","depends_on":["POL-001"]}
+    ]
+  },
+  "serialized_shared_write_sets": [
+    {"resource":"operation registry, schemas, and compatibility manifest","source_keys_in_order":["FND-001","FND-002","FND-003","FND-004"],"reason":"Tests, catalog registration, schema publication, and Kernel consumption converge on one authoritative contract surface."},
+    {"resource":"Application Kernel, lock ownership, runtime, and durable state","source_keys_in_order":["FND-003","FND-004","FND-005","FND-006","FND-007","FND-008","US1-001","US1-002","US1-003","US1-004","US2-001","US2-002","US2-003","US2-004"],"reason":"Policy, journal, recovery, lifecycle, clean, and takeover share Kernel composition and state invariants."},
+    {"resource":"CLI adapter, router, and output envelope","source_keys_in_order":["FND-009","FND-010","US1-002","US1-004","US1-007","US1-008","US2-002","US2-004","US3-004","POL-002"],"reason":"The operation map, schemaVersion 1 envelope, help, exit codes, and lifecycle routes share the public CLI boundary."},
+    {"resource":"package.json and package-lock.json","source_keys_in_order":["SET-002","US1-006","US3-006","POL-002"],"reason":"Dependency pins, MCP/build scripts, packaging allowlist, and lockfile resolution must update serially."},
+    {"resource":"canonical launchdeck-agent Skill and installer","source_keys_in_order":["US3-001","US3-002","US3-003","US3-004","POL-001","POL-002"],"reason":"Trace tests, canonical instructions, installer migration, and final audits converge on one Skill tree and installer surface."},
+    {"resource":"Plugin generator, templates, compatibility identity, and generated layout","source_keys_in_order":["US3-005","US3-006","US4-001","POL-001","POL-002"],"reason":"Golden expectations, generator code, bundle output, evidence schema, and release claims consume one immutable generated layout."}
+  ],
+  "parallel_batches": [
+    {
+      "batch_id": "PB-001",
+      "safe": true,
+      "source_keys": ["US4-002","US4-003","US4-004"],
+      "purpose": "Collect Windows, macOS, and Linux core/stdio/bundle evidence in non-overlapping evidence roots against one immutable build.",
+      "write_set_rule": "Each task owns only its OS-specific evidence directory; shared artifacts and readiness aggregation are immutable during the batch.",
+      "join": {
+        "target": "Independent Windows, macOS, and Linux core/stdio/bundle evidence cells for one immutable build identity.",
+        "command": "node scripts/run-agent-evidence.js --validate agent/evidence/windows agent/evidence/macos agent/evidence/linux",
+        "pass": "Every required OS cell has an honest terminal status and no OS result is inferred from another OS.",
+        "recovery": "Keep failed, blocked, unsupported, or stale cells exact; rerun only the owning OS task and do not edit shared registries to mask failure."
+      }
+    },
+    {
+      "batch_id": "PB-002",
+      "safe": true,
+      "source_keys": ["US4-005","US4-006"],
+      "purpose": "Execute independent real Codex and Claude install/routing/lifecycle/takeover evidence after the OS join.",
+      "write_set_rule": "Each task owns only its host-specific evidence directory; bundles, manifests, shared state, and readiness aggregation are immutable inputs.",
+      "join": {
+        "target": "Separate real Codex and Claude install/routing/lifecycle/takeover evidence.",
+        "command": "node scripts/run-agent-evidence.js --validate agent/evidence/codex agent/evidence/claude",
+        "pass": "Each host/version/OS/scope cell has its own real-host receipt and neither host substitutes for the other.",
+        "recovery": "Preserve the passing host receipt, rerun only the failed host task against unchanged artifacts, and return to serialized generator tasks if a rebuild is required."
+      }
+    }
+  ],
+  "no_other_parallel_batches": true,
+  "parallel_policy": "Only PB-001 and PB-002 receive [P]. Shared registries, Kernel, CLI, package/lockfile, state/journal, canonical Skill, generators, and readiness rollup remain serialized.",
+  "blockers": [],
+  "integration_targets": {
+    "task-index.json": ["source_key traceability", "acyclic dependency edges", "PB-001/PB-002 only", "exact join target/command/pass/recovery"],
+    "tasks.md": ["[P] only for T032..T036", "shared-write serialization note", "JP-001 and JP-002 before dependent evidence tasks"]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "cellId": "FAULT-RECOVERY-WINDOWS-10.0.26200-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "cli_mcp",
+    "operations": ["task.run", "operation.list", "operation.get", "operation.reconcile"]
+  },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "windows", "version": "10.0.26200", "build": "26200", "architecture": "x64", "distribution": null },
+  "runtime": { "nodeExecutable": "C:/nvm4w/nodejs/node.exe", "nodeVersion": "24.14.0" },
+  "scenario": {
+    "id": "LOST-RESPONSE-NO-REPLAY",
+    "family": "core-stdio-bundle",
+    "description": "Known-ID and bounded correlation recovery across real CLI and MCP without replay, including indeterminate evidence."
+  },
+  "fixture": {
+    "digest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+    "harnessDigest": "sha256:f27df929bb75f24120aee385d2b571c3784a363b954759b1ec3c73f1a4fdf4e5"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:00:00.000Z",
+    "completedAt": "2026-07-20T10:06:24.715Z",
+    "actions": ["drop MCP response", "drop CLI response", "recover known operation", "correlate bounded candidates", "refuse replay and missing/different recovery"],
+    "commands": ["node --test --test-concurrency=1 test/e2e/operation-response-loss.test.js test/e2e/operation-recovery.test.js"]
+  },
+  "result": {
+    "code": "passed",
+    "summary": "All five exact response-loss and recovery scenarios passed on this Windows build.",
+    "assertions": [
+      { "id": "known-and-lost-id-recovery", "status": "passed", "evidenceRefs": ["recovery-journal"] },
+      { "id": "no-replay", "status": "passed", "evidenceRefs": ["recovery-command"] },
+      { "id": "indeterminate-reconcile-only", "status": "passed", "evidenceRefs": ["recovery-journal"] }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      { "id": "recovery-command", "kind": "command", "path": "raw/fault-recovery.tap.txt", "sha256": "6798c6a16f8d9b6b5cc16959173a4c92fa08cffa0e520cd4afee27c04dc76c22" },
+      { "id": "recovery-journal", "kind": "journal", "path": "raw/fault-recovery.tap.txt", "sha256": "6798c6a16f8d9b6b5cc16959173a4c92fa08cffa0e520cd4afee27c04dc76c22" },
+      { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44" }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:06:24.715Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {},
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+      "harnessDigest": "sha256:f27df929bb75f24120aee385d2b571c3784a363b954759b1ec3c73f1a4fdf4e5"
+    }
+  }
+}

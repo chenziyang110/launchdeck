@@ -1,0 +1,429 @@
+{
+  "version": 1,
+  "lane_id": "contracts-agent-surfaces",
+  "status": "ready",
+  "live_evidence": [
+    {
+      "path": "src/cli.js",
+      "lines": "1-182",
+      "claim": "The CLI is currently the orchestration composition root: it imports config, global-runtime, runtime, control-plane, agent-installer, and output helpers directly and dispatches commands with an if-chain.",
+      "planning_effect": "Extract shared behavior behind an Operation Registry/Application Kernel, then retain cli.js as parsing, legacy mapping, rendering, and exit-code adaptation."
+    },
+    {
+      "path": "src/output.js",
+      "lines": "8-68,70-121",
+      "claim": "Success, failure, and partial JSON envelopes are schemaVersion 1 and intentionally mirror payload fields at top level; compact rendering is a separate compatibility projection.",
+      "planning_effect": "Do not replace the CLI envelope with AgentOperationResult. Nest the Agent result under data.agentResult and preserve every existing field/status/compact projection through a mapping layer."
+    },
+    {
+      "path": "src/cli.js",
+      "lines": "680-905,1231-1324,1841-1985,2047-2083",
+      "claim": "Current CLI exposes bounded line counts but also follow, force/force-owned, risky clean --all --yes, and force-stop; clean currently plans and applies without a caller-visible plan digest.",
+      "planning_effect": "Retain existing CLI compatibility while ensuring none of follow, force-stop, risky clean, raw force/yes, or arbitrary control fields appear in public Agent/MCP schemas. Introduce digest-bound safe-clean adapter behavior without changing legacy schemaVersion 1 meanings."
+    },
+    {
+      "path": "schema/launchdeck.schema.json",
+      "lines": "1-109",
+      "claim": "Configuration schema is draft 2020-12, version 1, and task risk is the closed enum low|medium|high|destructive with a medium default.",
+      "planning_effect": "Reuse draft 2020-12 for Agent schemas and re-evaluate configured task risk in the Kernel; MCP mutations require the evaluated value low."
+    },
+    {
+      "path": "src/agent-installer.js",
+      "lines": "12-35,104-167,240-252",
+      "claim": "The current Codex user target is ~/.codex/skills and --force can overwrite differing source-managed files; current project Codex target is .agents/skills.",
+      "planning_effect": "Change Codex user discovery to current $HOME/.agents/skills plus legacy ~/.codex/skills diagnosis, and prohibit install-time overwrite/deletion of divergent content."
+    },
+    {
+      "path": ".agents/skills/launchdeck-agent/SKILL.md",
+      "lines": "1-35",
+      "claim": "The canonical Skill already owns intent gating, observe-before-mutate, ownership refusal, reconciliation, and clean separation, but routes only through CLI references today.",
+      "planning_effect": "Keep this directory canonical and replace command-only routing with a declared MCP-first/fallback/refusal state machine generated or validated against the Operation Registry."
+    },
+    {
+      "path": ".agents/skills/launchdeck-agent/references/command-flows.md",
+      "lines": "1-61",
+      "claim": "Current flows include force-stop and CLI follow commands that are not permitted on the public Agent surface.",
+      "planning_effect": "Generated/validated Agent flow references must omit those routes even though backward-compatible standalone CLI commands remain."
+    },
+    {
+      "path": "package.json",
+      "lines": "21-40",
+      "claim": "The package publishes src, schema, and the canonical Skill, uses JavaScript ESM, has only yaml as a runtime dependency, and requires Node.js >=20.",
+      "planning_effect": "Place shared runtime in src, schemas in schema, and keep Plugin build output self-contained/prebuilt with no global CLI, npx, or install script."
+    },
+    {
+      "path": "src/control-plane/state.js",
+      "lines": "1-220",
+      "claim": "The user-scoped registry currently has its own versioned state contract (version 2).",
+      "planning_effect": "Compatibility must report registryStateVersion independently from config, CLI, Agent protocol, and package versions."
+    },
+    {
+      "path": "src/runtime.js",
+      "lines": "20-31,62-113,700-722",
+      "claim": "Local runtime state and run index are version 1 and already carry durable process/run evidence used by the control plane.",
+      "planning_effect": "The Kernel must reuse these authorities and add a separate operation-journal version axis rather than introduce a second run/process truth."
+    }
+  ],
+  "contract_files_recommended": [
+    {
+      "path": "schema/agent-operation-result.schema.json",
+      "purpose": "Canonical draft 2020-12 schema for the exact AgentOperationResult top level and its closed semantic enums.",
+      "format": "JSON Schema draft 2020-12"
+    },
+    {
+      "path": "schema/agent-operations.schema.json",
+      "purpose": "Shared $defs and exact input/output resource schemas for the 18 public operations; MCP tool schemas are projected from this catalog.",
+      "format": "JSON Schema draft 2020-12"
+    },
+    {
+      "path": "schema/compatibility-manifest.schema.json",
+      "purpose": "Schema for independent version axes, component digests, supported operation refs, host targets, and fail-closed compatibility rules.",
+      "format": "JSON Schema draft 2020-12"
+    },
+    {
+      "path": "src/kernel/operation-registry.js",
+      "purpose": "Single declared operation catalog consumed by Kernel, CLI mapping validation, MCP tool generation, Skill routing validation, capabilities, and Plugin builds.",
+      "format": "JavaScript ESM exporting frozen OperationDefinition objects"
+    },
+    {
+      "path": "src/kernel/application-kernel.js",
+      "purpose": "Only lifecycle query/execute/recovery authority; composes current config/control-plane/runtime truth with scope, policy, locks, journal, and normalized results.",
+      "format": "JavaScript ESM"
+    },
+    {
+      "path": "src/kernel/agent-result.js",
+      "purpose": "Constructs and validates AgentOperationResult without rendering CLI or MCP transport framing.",
+      "format": "JavaScript ESM"
+    },
+    {
+      "path": "src/adapters/cli-operation-map.js",
+      "purpose": "Maps legacy commands/options/results/exit codes to Operation IDs and schemaVersion 1 envelopes while embedding normalized Agent results.",
+      "format": "JavaScript ESM declarative mapping table"
+    },
+    {
+      "path": "src/mcp/stdio-server.js",
+      "purpose": "Protocol-pure stdio adapter that projects the public registry subset into tools/list and tools/call.",
+      "format": "JavaScript ESM; build input for a single-file ESM bundle"
+    },
+    {
+      "path": "agent/compatibility-manifest.json",
+      "purpose": "Canonical build input binding independent protocol/state/schema axes and component digests without copying policy logic.",
+      "format": "JSON validated by schema/compatibility-manifest.schema.json"
+    },
+    {
+      "path": "agent/plugins/codex/host-manifest.template.json",
+      "purpose": "Codex-only identity, entrypoint, component-path, prerequisite, and presentation inputs; exact host fields remain owned by research-host-runtime evidence.",
+      "format": "Host template JSON"
+    },
+    {
+      "path": "agent/plugins/claude/host-manifest.template.json",
+      "purpose": "Claude-only identity, entrypoint, component-path, prerequisite, and presentation inputs; exact host fields remain owned by research-host-runtime evidence.",
+      "format": "Host template JSON"
+    },
+    {
+      "path": "scripts/build-agent-plugins.js",
+      "purpose": "Validates the catalog/manifest/Skill, builds the prebuilt runtime once, emits separate Codex/Claude packages, computes digests, and rejects policy-bearing host fields.",
+      "format": "JavaScript ESM build script"
+    }
+  ],
+  "interface_map": {
+    "operation_registry": {
+      "consumes": ["operation implementation functions", "input/result schema refs", "policy metadata", "CLI mapping metadata", "MCP exposure metadata", "contract case IDs"],
+      "produces": ["getOperationDefinition(id)", "listOperationDefinitions({surface})", "validateRegistry()", "registryDigest"],
+      "forbidden_responsibility": "No state reads, process actions, transport I/O, host detection, or rendering."
+    },
+    "application_kernel": {
+      "query_interface": "query({ operationId, input, context }): Promise<AgentOperationResult>",
+      "execute_interface": "execute({ operationId, input, context }): Promise<AgentOperationResult>",
+      "recovery_interface": "recover({ operationId: 'operation.get'|'operation.reconcile', input: { operationId }, context }): Promise<AgentOperationResult>",
+      "consumes": ["OperationDefinition", "validated canonical input", "trusted KernelContext", "existing config/registry/run/lock/ownership/log/event truth", "compatibility decision", "operation journal"],
+      "produces": ["AgentOperationResult", "journal transitions for lifecycle mutations", "evidence references"],
+      "invariant": "Only execute may initiate configured lifecycle or clean effects. recover may append evidence and transition the referenced journal record but never replay original effects. query has effects.certainty=none and effects.changed=false."
+    },
+    "cli_adapter": {
+      "consumes": ["argv and cwd", "legacy command mapping", "AgentOperationResult"],
+      "produces": ["existing text output", "schemaVersion 1 JSON/compact envelope", "legacy-compatible exit code"],
+      "boundary": "Parsing/rendering only. Existing force-stop/risky-clean/project-management paths remain CLI-only registry entries and never enter public Agent capabilities."
+    },
+    "mcp_adapter": {
+      "consumes": ["JSON-RPC/MCP frames", "public OperationDefinitions", "adapter-attested host/workspace context", "AgentOperationResult"],
+      "produces": ["tools/list inputSchema/outputSchema/annotations", "tools/call structuredContent", "bounded text content", "stderr diagnostics"],
+      "boundary": "No CLI subprocess, no task/process stdout on protocol stdout, no policy decisions, no default to Plugin installation cwd."
+    },
+    "canonical_skill": {
+      "consumes": ["user lifecycle intent", "capabilities result", "observation results", "normalized refusal/uncertainty semantics"],
+      "produces": ["one safe tool sequence", "bounded user summary"],
+      "boundary": "Does not invent operation inputs, confirmations, raw shell/process controls, policy, or retries."
+    },
+    "plugin_generator": {
+      "consumes": ["prebuilt stdio runtime", "canonical Skill content manifest", "compatibility manifest", "host metadata templates"],
+      "produces": ["separate Codex artifact", "separate Claude artifact", "per-artifact digest/build record"],
+      "boundary": "Host templates cannot contain operation schemas, risk tables, ownership rules, journal rules, or fallback policy."
+    }
+  },
+  "operation_registry_shape": {
+    "definition_fields": {
+      "id": "stable dotted operation ID",
+      "kind": "query|mutation|recovery",
+      "inputSchemaRef": "JSON Pointer into schema/agent-operations.schema.json",
+      "resourceSchemaRef": "JSON Pointer for resource.data discriminated payload",
+      "handler": "Kernel-owned implementation function",
+      "scopePolicy": "none|optional-project|configured-project|trusted-workspace",
+      "riskPolicy": "read-only|configured-low-only|safe-clean-only",
+      "ownershipPolicy": "none|inspect-only-unknown|launchdeck-owned-required",
+      "compatibilityPolicy": "diagnostic-read|compatible-read|compatible-write",
+      "journalPolicy": "none|new-operation|recover-existing",
+      "lockKeys": "deterministic lock-key factory; empty for reads",
+      "mcp": "{ exposed, annotations } derived from kind/policy",
+      "cliMappings": "zero or more legacy/new CLI routes",
+      "contractCases": "non-empty IDs covering success, refusal, and relevant recovery paths"
+    },
+    "definition_invariants": [
+      "IDs are unique and definitions are deeply frozen.",
+      "Exactly the 18 canonical public IDs have mcp.exposed=true in the first release.",
+      "Every exposed input schema has additionalProperties=false and recursively rejects command, shell, env, cwd, force, yes, confirmed, approvalToken, and arbitraryPath.",
+      "Every exposed mutation uses configured-low-only or safe-clean-only, compatible-write, and a non-empty lock key.",
+      "operation.reconcile is recover-existing: it may update the referenced record from live evidence but cannot execute or retry the referenced handler.",
+      "CLI-only definitions may preserve existing broader CLI capabilities but are excluded from capabilities.agentOperations and MCP tools/list."
+    ],
+    "kernel_context": {
+      "fields": ["surface", "host", "runtimeKind", "runtimeVersion", "runtimePath", "stateHome", "buildIdentity", "adapterAttestedProjectRoot", "hostWorkspaceRoots", "abortSignal"],
+      "trust_rule": "Tool/model input never populates runtimePath, stateHome, buildIdentity, adapterAttestedProjectRoot, hostWorkspaceRoots, risk, ownership, approval, or compatibility evidence.",
+      "project_resolution_precedence": ["input.projectRef matched in registry", "adapter-attested explicit project root", "one unambiguous host workspace root", "one registered project only when the operation explicitly permits user-scope default"],
+      "scope_failures": ["project_scope_missing", "project_scope_ambiguous", "project_scope_violation", "project_not_configured"]
+    }
+  },
+  "result_contract": {
+    "top_level_required_exact": ["protocolVersion", "operation", "outcome", "resource", "effects", "safety", "error", "nextActions", "provenance"],
+    "additional_top_level_properties": false,
+    "protocolVersion": "Agent protocol semantic version string; independent of packageVersion and cliSchemaVersion.",
+    "operation": {
+      "required": ["id", "name", "inputDigest", "journalStatus"],
+      "id": "op_<opaque> for journaled/recovered mutations; req_<opaque> for non-journaled queries/adapter refusals",
+      "name": "canonical registry ID",
+      "inputDigest": "sha256:<lowercase hex> over canonical validated input plus resolved target identity, excluding transport metadata",
+      "journalStatus_enum": ["not_applicable", "unavailable", "prepared", "running", "succeeded", "failed", "refused", "indeterminate", "reconciled"]
+    },
+    "outcome": {
+      "required": ["kind", "code", "message", "reusedExistingRun"],
+      "kind_enum": ["succeeded", "failed", "partial", "refused", "indeterminate"],
+      "code": "stable namespaced snake_case semantic code; not resource status or transport code",
+      "reusedExistingRun": "required boolean; true only when start resolves the same configured task to an existing verified owned run"
+    },
+    "resource": {
+      "required": ["kind", "id", "status", "projectRef", "taskRef", "runId"],
+      "optional": ["data"],
+      "kind_enum": ["capabilities", "diagnostic", "projectCollection", "project", "inspection", "adoptionPlan", "taskCollection", "task", "run", "logPage", "eventPage", "operationCollection", "operation", "cleanPlan", "cleanResult"],
+      "status_enum": ["available", "healthy", "degraded", "configured", "unconfigured", "missing", "ambiguous", "idle", "prepared", "starting", "running", "ready", "stopping", "stopped", "completed", "failed", "partial", "stale", "unknown", "external", "planned", "applied", "unchanged", "indeterminate", "reconciled", "refused"],
+      "nullable_identity_rule": "id/projectRef/taskRef/runId remain present and use null when inapplicable or not safely known; status describes the resource only.",
+      "data_rule": "Optional data is selected by kind from agent-operations.schema.json, bounded, and cannot contain a second outcome/error/effects contract."
+    },
+    "effects": {
+      "required": ["certainty", "changed", "evidenceRefs"],
+      "certainty_enum": ["none", "confirmed", "possible", "unknown"],
+      "changed_type": "boolean|null",
+      "rules": ["none implies false", "confirmed requires boolean", "possible or unknown uses null unless a confirmed non-ambiguous subset can be represented", "evidenceRefs is a bounded array of stable journal/run/event/log/state references"]
+    },
+    "safety": {
+      "required": ["risk", "decision", "ownership", "projectScope"],
+      "risk_enum": ["none", "low", "medium", "high", "destructive", "unknown"],
+      "decision_enum": ["allowed", "refused", "not_applicable"],
+      "ownership_status_enum": ["verified", "not_required", "unknown", "external", "mismatch"],
+      "project_scope_status_enum": ["resolved", "not_required", "missing", "ambiguous", "out_of_scope", "unconfigured"]
+    },
+    "error": {
+      "type": "null|{code:string,message:string,details:object}",
+      "rule": "null only for succeeded; failed, partial, refused, and indeterminate require a typed error. Details are structured/redacted and do not contain arbitrary executable commands."
+    },
+    "nextActions": {
+      "type": "array of at most 5 {kind,label,operationName,input,reason}",
+      "kind_enum": ["inspect", "read", "reconcile", "resolve_scope", "fix_config", "upgrade_component", "view_logs", "view_events", "manual_action"],
+      "rule": "operationName/input must validate against an exposed read/recovery operation. No shell string, force, confirmation, approval token, or auto-retry instruction. CLI may separately preserve legacy next command strings outside data.agentResult."
+    },
+    "provenance": {
+      "required": ["surface", "host", "runtimeKind", "runtimeVersion", "runtimePath", "stateHome", "buildIdentity", "agentProtocolVersion", "cliSchemaVersion"],
+      "surface_enum": ["cli", "mcp"],
+      "host_enum": ["standalone", "codex", "claude", "unknown"],
+      "runtimeKind_enum": ["package-cli", "package-mcp", "plugin-bundled-mcp"],
+      "cliSchemaVersion_rule": "1 for CLI results and null for MCP results; never reused as Agent protocol version"
+    }
+  },
+  "public_operation_schemas": {
+    "common": {
+      "closed_objects": true,
+      "projectRef": "optional string 1..256; alias/id/name only, never a filesystem path",
+      "taskRef": "string 1..128 naming a configured task; project and task are separate fields",
+      "cursor": "opaque string max 512",
+      "limit": "integer 1..200",
+      "operationId": "string matching ^op_[A-Za-z0-9_-]{16,128}$",
+      "planDigest": "string matching ^sha256:[0-9a-f]{64}$",
+      "forbidden_recursive": ["command", "shell", "env", "cwd", "force", "yes", "confirmed", "approvalToken", "arbitraryPath", "projectRoot"]
+    },
+    "operations": [
+      {"id":"capabilities.get","kind":"query","required":[],"optional":{"projectRef":"common.projectRef"},"resourceKind":"capabilities","notes":"Reports actual runtime/host/scope/version axes, component digests, public operations and max Agent risk; never claims unsupported host/OS readiness."},
+      {"id":"system.diagnose","kind":"query","required":[],"optional":{"projectRef":"common.projectRef","checks":"unique array max 8 of runtime|compatibility|state|registry|journal|skill|project|transport"},"resourceKind":"diagnostic","notes":"Only bounded diagnostic reads remain available under component mismatch."},
+      {"id":"project.list","kind":"query","required":[],"optional":{"cursor":"common.cursor","limit":"common.limit default 80"},"resourceKind":"projectCollection","notes":"Configured registry projects only."},
+      {"id":"project.inspect","kind":"query","required":["target"],"optional":{"projectRef":"common.projectRef"},"target":"closed discriminated object {kind: project|task|run|port|pid|conflict, value: bounded string or port/pid integer}","resourceKind":"inspection","notes":"Port/PID unknown/external evidence is inspect-only and cannot yield a mutation authorization."},
+      {"id":"adoption.inspect","kind":"query","required":[],"optional":{"projectRef":"common.projectRef","maxDepth":"integer 1..6 default 4","maxFiles":"integer 1..500 default 200","signals":"unique enum array package|scripts|compose|make|just|taskfile|existingConfig"},"resourceKind":"adoptionPlan","notes":"Target root comes only from trusted KernelContext. Returns bounded proposed config and evidence digest; writes no file/user config/registry/journal, starts no task, and creates no authorization consumable by adoption.apply."},
+      {"id":"task.list","kind":"query","required":[],"optional":{"projectRef":"common.projectRef","cursor":"common.cursor","limit":"common.limit default 80"},"resourceKind":"taskCollection","notes":"Configured tasks only; command/env/cwd are not exposed as callable inputs."},
+      {"id":"task.status","kind":"query","required":["taskRef"],"optional":{"projectRef":"common.projectRef"},"resourceKind":"task","notes":"Reports current configured task and owned/unknown/external run evidence separately."},
+      {"id":"task.logs.read","kind":"query","required":["taskRef"],"optional":{"projectRef":"common.projectRef","cursor":"common.cursor","limit":"integer 1..200 default 80","maxBytes":"integer 1..65536 default 32768"},"resourceKind":"logPage","notes":"No follow; redacted bounded content plus next cursor/evidence refs."},
+      {"id":"task.events.read","kind":"query","required":[],"optional":{"projectRef":"common.projectRef","taskRef":"common.taskRef","runId":"bounded opaque run ID","cursor":"common.cursor","limit":"integer 1..200 default 80","windowSeconds":"integer 1..86400"},"resourceKind":"eventPage","notes":"At least project/task/run scope resolves; no follow."},
+      {"id":"task.start","kind":"mutation","required":["taskRef"],"optional":{"projectRef":"common.projectRef"},"resourceKind":"run","notes":"Configured managed task, current risk low, compatibility/scope/locks pass; matching verified run returns reusedExistingRun=true."},
+      {"id":"task.stop","kind":"mutation","required":["taskRef"],"optional":{"projectRef":"common.projectRef"},"resourceKind":"run","notes":"Configured low-risk managed task plus verified Launchdeck ownership; no force mode."},
+      {"id":"task.restart","kind":"mutation","required":["taskRef"],"optional":{"projectRef":"common.projectRef"},"resourceKind":"run","notes":"Configured low-risk managed task plus verified ownership for affected existing run; stop/start phases share one journaled operation."},
+      {"id":"task.run","kind":"mutation","required":["taskRef"],"optional":{"projectRef":"common.projectRef","output":"enum none|summary default summary"},"resourceKind":"run","notes":"Configured finite low-risk task only; command/env/cwd cannot be supplied; child stdout is captured away from MCP stdout."},
+      {"id":"operation.list","kind":"query","required":["projectRef","operationName","createdAfter","createdBefore","states"],"optional":{"taskRef":"required when operationName starts task.","cursor":"common.cursor","limit":"integer 1..20 default 20"},"constraints":"operationName enum task.start|task.stop|task.restart|task.run|clean.applySafe; RFC3339 created window >0 and <=900 seconds; states non-empty subset prepared|running|succeeded|failed|refused|indeterminate|reconciled","resourceKind":"operationCollection","notes":"Correlation only: zero/one/multiple candidates; never authorizes execution. clean.applySafe omits taskRef; task operations require it."},
+      {"id":"operation.get","kind":"query","required":["operationId"],"optional":{},"resourceKind":"operation","notes":"Missing/expired ID returns operation_record_missing_or_expired and never creates new work."},
+      {"id":"operation.reconcile","kind":"recovery","required":["operationId"],"optional":{},"resourceKind":"operation","notes":"Reads live evidence and may transition the same journal record to reconciled/indeterminate; never invokes the original handler."},
+      {"id":"clean.plan","kind":"query","required":[],"optional":{"projectRef":"common.projectRef"},"resourceKind":"cleanPlan","notes":"Safe configured targets only, after retention exclusions; returns relative target descriptors and digest, never arbitrary caller paths or risky targets."},
+      {"id":"clean.applySafe","kind":"mutation","required":["planDigest"],"optional":{"projectRef":"common.projectRef"},"resourceKind":"cleanResult","notes":"Recompute safe plan under lock immediately before deletion and refuse plan_digest_mismatch with effects none; never stops services or removes protected state/evidence."}
+    ],
+    "not_public_agent_operations": {
+      "deferred": ["adoption.apply", "all medium-risk execution", "remote MCP/OAuth/hooks/UI/native/enterprise surfaces"],
+      "dropped": ["task.forceStop", "project.remove", "clean.applyRisky", "reset", "shell.execute", "permanent follow", "external-process termination", "production/remote service management"],
+      "compatibility_note": "Existing standalone CLI commands may remain for backward compatibility, but their presence must not cause MCP exposure, Skill routing, capabilities.agentOperations, or Plugin manifests to imply Agent availability."
+    }
+  },
+  "cli_mapping": {
+    "compatibility_strategy": [
+      "Keep schemaVersion=1, command, ok, status, projectRoot/configPath, data, payload mirrors, error, next, compact projections, and current exit-code behavior.",
+      "For migrated routes, add data.agentResult as a non-breaking nested field in normal JSON; compact output includes only legacy compact fields unless an explicit future compact-contract change is separately approved.",
+      "Map normalized semantics from one Kernel result; do not reconstruct policy/outcome in cli.js.",
+      "Text rendering remains presentation-only and derives from the same result plus legacy payload projection."
+    ],
+    "routes": [
+      {"cli":"capabilities","operation":"capabilities.get","exposure":"new CLI route"},
+      {"cli":"doctor","operation":"system.diagnose","exposure":"existing"},
+      {"cli":"projects / project list","operation":"project.list","exposure":"existing"},
+      {"cli":"inspect / inspect-port","operation":"project.inspect","exposure":"existing typed-target projections"},
+      {"cli":"tasks","operation":"task.list","exposure":"existing"},
+      {"cli":"status --all / ps [--all] / ports / conflicts","operation":"CLI-only aggregate definitions composed from shared query handlers","exposure":"existing; not extra MCP tools"},
+      {"cli":"logs --lines without --follow","operation":"task.logs.read","exposure":"existing"},
+      {"cli":"events --lines without --follow","operation":"task.events.read","exposure":"existing"},
+      {"cli":"start/dev","operation":"task.start","exposure":"existing"},
+      {"cli":"stop without --force-owned","operation":"task.stop","exposure":"existing"},
+      {"cli":"restart","operation":"task.restart","exposure":"existing"},
+      {"cli":"run and setup|build|package|test|lint|typecheck","operation":"task.run or task.start based on configured longRunning","exposure":"existing"},
+      {"cli":"operation list|get|reconcile","operation":"operation.list|get|reconcile","exposure":"new recovery routes needed for cross-surface takeover"},
+      {"cli":"clean preview","operation":"clean.plan","exposure":"existing dry-run projection"},
+      {"cli":"clean --safe","operation":"clean.applySafe","exposure":"existing one-shot adapter obtains plan digest then Kernel revalidates; optional new explicit plan-digest route supports Skill fallback"},
+      {"cli":"adoption inspect","operation":"adoption.inspect","exposure":"new read-only route; no apply route"}
+    ],
+    "cli_only_retained": ["init/config writes", "project add|repair|remove|scan", "agent install/diagnosis", "logs/events --follow", "stop --force-owned", "force-stop", "clean --all --yes"],
+    "cli_only_rule": "Retained routes still use existing Kernel/control-plane safety where lifecycle-related, but are absent from the public Agent registry projection. Force/risky routes never become Skill fallback targets."
+  },
+  "mcp_transport_contract": {
+    "transport": "local stdio only",
+    "tool_list": "Exactly the 18 public_operation_schemas.operations IDs; names and schemas are projected from the registry and validated against the JSON Schema catalog.",
+    "structured_result": "tools/call returns structuredContent equal to one valid AgentOperationResult. content contains at most one concise text summary derived from structuredContent and is never an alternate JSON contract.",
+    "error_boundary": {
+      "json_rpc_protocol_errors": "Malformed JSON-RPC/framing, invalid MCP method shape, or impossible request ID use protocol errors and do not invoke the Kernel.",
+      "tool_input_errors": "A valid tools/call with unknown tool or schema-invalid arguments returns isError=true with a normalized refused AgentOperationResult, req_ correlation ID, journalStatus=not_applicable, and effects none.",
+      "domain_errors": "Kernel failed/partial/refused/indeterminate outcomes return isError=true with the full structured AgentOperationResult; succeeded returns isError=false.",
+      "transport_failure": "No synthetic business result may claim certainty after a broken pipe/host loss. Recovery is through journal operations."
+    },
+    "stdout": "Only serialized protocol frames. One writer serializes responses by JSON-RPC ID; child process output, logs, warnings, and diagnostics never write here.",
+    "stderr": "Bounded redacted runtime diagnostics only; no protocol frames and no secrets/raw env.",
+    "concurrency": "Requests may complete out of order by JSON-RPC ID; Kernel locks serialize conflicting mutations. Server interruption/restart does not cancel or own managed-task lifetime.",
+    "annotations": "Derived only: query/recovery readOnlyHint=true except reconcile is false; all exposed tools destructiveHint=false and openWorldHint=false. Annotations never relax Kernel checks and no exactly-once/idempotent promise is inferred.",
+    "scope": "MCP launch context supplies adapter-attested workspace roots separately from tool input. Missing or multiple roots require projectRef or return typed scope failure; Plugin installation directory is ignored."
+  },
+  "skill_routing_contract": {
+    "canonical_source": ".agents/skills/launchdeck-agent",
+    "states": [
+      {"state":"intent_gate","action":"Require local lifecycle intent plus local project/service anchor; otherwise do not route."},
+      {"state":"capability_probe","action":"Prefer MCP capabilities.get. Verify operation support, low-risk public boundary, build/Skill digests, transport, host, stateHome, and scope before mutation."},
+      {"state":"observe","action":"Use bounded project/task/status/log/event/inspect tools needed for the intent; classify existing run, ownership, ports, stale state, and scope."},
+      {"state":"mutate","action":"Call one declared safe operation only when capabilities and current observation permit it."},
+      {"state":"success","action":"Report outcome, current resource, effects certainty, evidence, provenance, and bounded next actions; reuse matching run."},
+      {"state":"business_refusal","action":"Report refusal. Never CLI-fallback after risk, ownership, scope, compatibility, lock, digest, config, or unsupported-input refusal."},
+      {"state":"uncertain_mutation","action":"Never retry or CLI-fallback after tools/call may have been sent. Use known ID with operation.get/reconcile; if ID response was lost, use exactly one bounded operation.list correlation and stop on zero/multiple."},
+      {"state":"safe_fallback","action":"CLI fallback is permitted only when MCP handshake was unavailable before dispatch or capabilities explicitly omitted the safe operation, and compatible CLI capabilities confirms an equivalent route. Reads may fallback after transport failure; mutations only before any call was sent."},
+      {"state":"refuse_raw","action":"Refuse force-stop, risky clean/reset, raw shell/command/env/cwd/force/confirmation, external termination, production/remote service control, and deferred adoption.apply/medium-risk operations even if standalone CLI exposes them."}
+    ],
+    "fallback_output": "Use CLI --json --compact where compatible, normalize by schemaVersion 1 mapping, and tell the user which surface executed. Never parse human text as authorization/effects evidence.",
+    "installation": "Doctor scans project/plugin copy, $HOME/.agents/skills/launchdeck-agent, and ~/.codex/skills/launchdeck-agent. Identical duplicates use deterministic host precedence and optional user cleanup guidance; divergent copies preserve all content and block a single-active-Skill claim. New user install writes only current path and refuses divergent overwrite."
+  },
+  "compatibility_manifest_contract": {
+    "source_path": "agent/compatibility-manifest.json",
+    "independent_axes": [
+      "packageVersion", "agentProtocolVersion", "cliSchemaVersion", "configSchemaVersion", "registryStateVersion", "runtimeStateVersion", "runIndexVersion", "lockRecordVersion", "eventSchemaVersion", "operationJournalVersion", "operationCatalogVersion", "skillContractVersion", "pluginBundleFormatVersion", "codexHostManifestVersion", "claudeHostManifestVersion"
+    ],
+    "current_evidence_values": {"packageVersion":"0.1.0","cliSchemaVersion":1,"configSchemaVersion":1,"registryStateVersion":2,"runtimeStateVersion":1,"runIndexVersion":1,"eventSchemaVersion":1,"nodeRange":">=20"},
+    "phase_owned_values": ["initial agentProtocolVersion", "operationJournalVersion", "operationCatalogVersion", "Skill contract version", "host manifest versions", "supported ranges after migration tests"],
+    "component_digests": ["runtimeBundleSha256", "operationRegistrySha256", "operationSchemasSha256", "agentResultSchemaSha256", "canonicalSkillContentManifestSha256", "compatibilityManifestCanonicalSha256", "generatedHostManifestSha256 per host"],
+    "digest_rules": ["sha256 lowercase hex", "canonical JSON uses stable key ordering and excludes its own digest/signature/build timestamp", "Skill digest covers sorted relative path plus file bytes and rejects symlinks", "each generated Plugin records all included file digests and one buildIdentity"],
+    "build_identity": "Immutable structure containing packageVersion, source revision/ref supplied by the build environment, and canonical component-set digest; never inferred from host install path.",
+    "supported_operations": "Generated references to registry IDs plus registry/schema digest, separated into cliOperations and agentOperations. The manifest does not copy input schemas or policy logic.",
+    "write_gate": "Any incompatible version axis or mismatch among runtime/registry/schema/Skill build-coupled digests blocks Agent writes. capabilities.get, system.diagnose, and bounded recovery reads remain available when their schemas can be safely decoded.",
+    "readiness": "Capabilities reports only observed runtime/transport/host/OS cells and links evidence IDs; a manifest target is not a readiness claim."
+  },
+  "plugin_generation_contract": {
+    "shared_inputs": ["prebuilt single-file ESM stdio runtime", "canonical Skill directory/content manifest", "compatibility manifest", "operation/result schemas needed at runtime", "package identity/license", "host metadata template"],
+    "separate_outputs": ["Codex Plugin artifact", "Claude Plugin artifact"],
+    "required_contents": ["host manifest", "host-correct canonical Skill copy", "server.mjs prebuilt runtime", "compatibility manifest/build record", "license/metadata required by host"],
+    "forbidden_contents_or_behaviors": ["duplicated operation/risk/ownership/recovery policy", "global launchdeck dependency", "npx invocation", "install/postinstall scripts", "native binary", "remote transport", "Plugin-owned managed-task shutdown", "shared-state deletion during disable/update/uninstall"],
+    "host_template_allowed_fields": ["plugin identity/version", "display metadata", "Node >=20 prerequisite", "relative MCP entrypoint", "relative Skill/component paths", "host-declared capabilities/presentation", "compatibility/build identity reference"],
+    "host_template_forbidden_fields": ["operation definitions", "risk threshold", "ownership decisions", "state/journal paths", "retry/fallback rules", "clean/adoption authorization"],
+    "generation_checks": ["build runtime once per build identity", "validate each host template against host-specific evidence", "emit artifacts separately", "reject absolute build-machine paths", "verify no dependency/install-script requirement", "re-hash emitted contents", "launch each artifact with real host smoke before host-ready label"],
+    "lifetime_boundary": "MCP/host process lifetime owns only protocol requests. Managed tasks remain daemonless OS processes tracked in shared LAUNCHDECK_HOME and survive host/plugin exit, update, disable, and uninstall."
+  },
+  "validation_contract_cases": [
+    {"id":"VC-REG-001","case":"Registry validation proves unique IDs, closed schemas, handler/schema/case refs, and exact 18-tool public projection; deferred/dropped IDs absent."},
+    {"id":"VC-IN-001","case":"Every public input rejects every forbidden field at top-level and nested positions without Kernel side effects."},
+    {"id":"VC-RES-001","case":"Every operation branch validates the nine exact top-level fields; outcome.kind never equals or substitutes resource.status."},
+    {"id":"VC-RES-002","case":"Effects rules hold for read, confirmed mutation, pre-effect failure, response-loss possibility, and unknown evidence."},
+    {"id":"VC-CLI-001","case":"Existing CLI JSON/compact fixtures retain schemaVersion 1, mirrors, errors, next, statuses, and exit codes after Kernel routing."},
+    {"id":"VC-CLI-002","case":"CLI and MCP same contract fixtures compare normalized operation/outcome/resource/effects/safety/error/nextActions/provenance semantics, not raw formatting."},
+    {"id":"VC-SCOPE-001","case":"projectRef, attested explicit root, host roots, and permitted user scope resolve with declared precedence; missing/ambiguous/out-of-scope/plugin-install-cwd cases are distinct refusals."},
+    {"id":"VC-RISK-001","case":"low configured task may execute; medium/high/destructive and compatibility mismatch fail closed even with permissive MCP annotations/host approval."},
+    {"id":"VC-OWN-001","case":"Unknown/external PID or port is inspectable and every stop/restart mutation refuses; verified owned target may mutate."},
+    {"id":"VC-START-001","case":"Concurrent/repeated task.start returns one run and reusedExistingRun=true for the later matching request."},
+    {"id":"VC-JRN-001","case":"Fault before journal persistence causes no side effect; faults after prepared/running/side-effect/response produce recoverable or explicit indeterminate evidence without replay."},
+    {"id":"VC-JRN-002","case":"Same operation ID/input digest recovers original; mismatched digest and missing/expired record refuse without execution."},
+    {"id":"VC-JRN-003","case":"operation.list enforces <=15 minute window, required correlation filters, <=20 limit, and zero/unique/ambiguous semantics without execution."},
+    {"id":"VC-CLEAN-001","case":"clean.plan returns safe retained targets/digest; applySafe recomputes under lock and drift refuses with no deletion; no service/state/evidence removal."},
+    {"id":"VC-ADOPT-001","case":"adoption.inspect output is bounded and leaves project/user config, registry, journal, run/task state, and processes unchanged; no adoption.apply authorization appears."},
+    {"id":"VC-MCP-001","case":"Real stdio client covers initialize, tools/list, tools/call, schema error, structuredContent validation, stdout purity, stderr diagnostics, interruption, restart, and concurrent IDs."},
+    {"id":"VC-MCP-002","case":"Foreground task stdout cannot corrupt protocol framing and is represented only as bounded result/log evidence."},
+    {"id":"VC-SKL-001","case":"Skill traces prove capabilities->observe->mutate, MCP-first, pre-dispatch safe CLI fallback, refusal no-fallback, and uncertainty operation recovery."},
+    {"id":"VC-SKL-002","case":"Skill traces forbid force-stop, risky clean/reset, raw shell/env/cwd/force/approval, external termination, adoption.apply, medium-risk execution, and permanent follow."},
+    {"id":"VC-SKL-003","case":"Current/legacy/plugin Skill copies are digest-compared; identical precedence is deterministic and divergent content is never overwritten/deleted."},
+    {"id":"VC-COMP-001","case":"Capabilities separates all version axes/digests/stateHome/build identity; coupled mismatch permits diagnosis but blocks writes."},
+    {"id":"VC-PLG-001","case":"Codex and Claude artifacts are independently validated, launch with Node 20+, require no global CLI/npx/install script, and contain no duplicated policy."},
+    {"id":"VC-PLG-002","case":"Plugin-started run survives host/plugin exit/update/disable/uninstall and compatible standalone CLI sees same run ID/PID/port/stateHome then safely stops it."},
+    {"id":"VC-RDY-001","case":"Readiness matrix does not roll operation/CLI/MCP/Skill/host/update/recovery/OS evidence into any untested cell."}
+  ],
+  "architecture_impacts": [
+    {"area":"cli.js ownership","impact":"Move orchestration/policy out of command handlers incrementally; retain parsing/rendering and legacy route behavior to limit regression."},
+    {"area":"output.js","impact":"Add a deliberate Agent-result nesting/projection hook while keeping schemaVersion 1 and compact output stable."},
+    {"area":"control-plane/runtime","impact":"Become Kernel dependencies and remain authoritative for registry/run/process/port/lock/log/event truth; no duplicate Plugin state."},
+    {"area":"agent installer","impact":"Add current+legacy+plugin digest diagnosis and non-destructive current-path install behavior; current --force overwrite behavior cannot satisfy the new contract for divergent user Skills."},
+    {"area":"package/build","impact":"Add schema/agent/plugin sources and a deterministic prebuilt ESM artifact step; package allowlist and published contents must be updated deliberately."},
+    {"area":"release evidence","impact":"Host/OS readiness becomes a matrix artifact bound to build identity rather than a package-wide boolean."}
+  ],
+  "capability_disposition_coverage": [
+    {"ids":["CAP-001","CAP-002","CAP-003","CAP-004","CAP-005","CAP-006","CAP-007","CAP-008","CAP-009","CAP-010","CAP-011","CAP-012","CAP-013"],"disposition":"in_scope","coverage":"Registry/Kernel, scope/policy/journal, CLI/MCP, observation/lifecycle/recovery/clean/adoption, Skill, compatibility/Plugins, and validation contracts above."},
+    {"ids":["CAP-014","CAP-015","CAP-016"],"disposition":"deferred","coverage":"Explicitly absent from public schemas, capabilities, Skill routes, and Plugin generation; reopen conditions remain upstream-owned."},
+    {"ids":["CAP-017","CAP-018","CAP-019","CAP-020"],"disposition":"dropped","coverage":"Forbidden public operations/inputs, inspect-only external ownership, idempotency-not-exactly-once language, and local-only transport/service scope."}
+  ],
+  "CA_refs": ["CA-001","CA-002","CA-003","CA-004","CA-005","CA-006","CA-007","CA-008","CA-009","CA-010","CA-011","CA-012","CA-013","CA-014","CA-015","CA-016","CA-017","CA-018","CA-019","CA-020","CA-021","CA-022","CA-023","CA-024","CA-025","CA-026","CA-027","CA-028","CA-029","CA-030","CA-031","CA-032","CA-033","CA-034","CA-035","CA-036","CA-037","CA-038","CA-039","CA-040","CA-041","CA-042","CA-043","CA-044","CA-045","CA-046","CA-047","CA-048","CA-049","CA-050"],
+  "MP_refs": ["MP-001","MP-002","MP-003","MP-004","MP-005","MP-006","MP-007","MP-008"],
+  "coverage_gaps": [
+    {"id":"CG-CONTRACT-001","status":"phase-owned","owner":"research-host-runtime","gap":"Exact Codex and Claude host manifest field names, path substitution, and launch commands require official/current host evidence.","constraint":"May fill only allowed host-template fields; cannot change shared operations, policy, runtime lifetime, Node >=20, or packaging boundary."},
+    {"id":"CG-CONTRACT-002","status":"phase-owned","owner":"data-model-state","gap":"Exact journal file layout, atomic write strategy, retention maintenance, and evidence-ref URI shapes belong to the data/state lane.","constraint":"Must preserve result/journal enums, pre-effect persistence, no pruning unresolved records, and recovery semantics here."},
+    {"id":"CG-CONTRACT-003","status":"phase-owned","owner":"implementation planning","gap":"Initial numeric values for new Agent/catalog/journal/Skill/plugin format axes and supported compatibility ranges require migration fixtures.","constraint":"Axes remain independent and CLI schemaVersion stays 1."},
+    {"id":"CG-CONTRACT-004","status":"phase-owned","owner":"research-host-runtime plus implementation planning","gap":"Choice of bundler/build dependency for a prebuilt single-file ESM runtime is not established by current package evidence.","constraint":"Output must run on Node 20+, need no global CLI/npx/install script, and have deterministic digests."}
+  ],
+  "blockers": [],
+  "integration_targets": [
+    {"target":"contracts/agent-operation-result.schema.json and contracts/agent-operations.schema.json","use":"Render the exact result/public input contracts from this handoff; repository implementation paths are the schema/ recommendations above."},
+    {"target":"contracts/mcp-stdio.md","use":"Carry transport, structured-content/error/stdout/concurrency/scope boundaries."},
+    {"target":"contracts/compatibility-manifest.schema.json and contracts/plugin-generation.md","use":"Carry version-axis, digest, write-gate, and no-policy-duplication contracts."},
+    {"target":"data-model.md","use":"Align OperationDefinition, AgentOperationResult, project scope evidence, journal state, compatibility/build identity, and Plugin artifact entities with data-model-state lane."},
+    {"target":"research.md","use":"Merge phase-owned official Codex/Claude/MCP host facts without weakening this safety boundary."},
+    {"target":"plan.md and plan-contract.json","use":"Carry CLI extraction strategy, exact 18 public operations, Skill state machine, compatibility separation, capability dispositions, validation cases, and CG ownership."},
+    {"target":"quickstart.md","use":"Use safe configured-project start/reuse, response-loss recovery, safe-clean digest refusal, Plugin lifetime takeover, and adoption.inspect negative paths as validation journeys."}
+  ]
+}

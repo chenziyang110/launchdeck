@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-07-19T00:00:00.000Z",
+  "cases": [
+    {
+      "id": "verified-owned",
+      "run": {
+        "runId": "run_fixture_verified",
+        "projectId": "project-fixture",
+        "task": "managed",
+        "command": "node scripts/managed-server.mjs 4321",
+        "cwd": "fixture-project",
+        "pid": 4101,
+        "status": "running",
+        "startedAt": "2026-07-19T00:00:00.000Z"
+      },
+      "listeners": [
+        {"port": 4321, "protocol": "tcp", "pid": 4101, "source": "fixture"}
+      ],
+      "processEvidence": {
+        "alive": true,
+        "source": "fixture",
+        "env": {"LAUNCHDECK_RUN_ID": "run_fixture_verified"}
+      },
+      "expectedConfidence": "verified-owned"
+    },
+    {
+      "id": "unknown",
+      "run": {
+        "runId": "run_fixture_unknown",
+        "projectId": "project-fixture",
+        "task": "managed",
+        "command": "node scripts/managed-server.mjs 4322",
+        "cwd": "fixture-project",
+        "pid": 4102,
+        "status": "running",
+        "startedAt": "2026-07-19T00:00:00.000Z"
+      },
+      "listeners": [
+        {"port": 4322, "protocol": "tcp", "pid": 4102, "source": "fixture"}
+      ],
+      "processEvidence": {"alive": true, "source": "liveness"},
+      "expectedConfidence": "unknown"
+    },
+    {
+      "id": "external",
+      "run": null,
+      "listeners": [
+        {"port": 4323, "protocol": "tcp", "pid": 5103, "source": "fixture"}
+      ],
+      "processEvidence": null,
+      "expectedConfidence": "external"
+    },
+    {
+      "id": "stale-owned",
+      "run": {
+        "runId": "run_fixture_stale",
+        "projectId": "project-fixture",
+        "task": "managed",
+        "command": "node scripts/managed-server.mjs 4324",
+        "cwd": "fixture-project",
+        "pid": 4104,
+        "status": "running",
+        "startedAt": "2026-07-19T00:00:00.000Z"
+      },
+      "listeners": [],
+      "processEvidence": {"alive": false, "source": "fixture"},
+      "expectedConfidence": "stale-owned"
+    },
+    {
+      "id": "mismatched",
+      "run": {
+        "runId": "run_fixture_mismatch",
+        "projectId": "project-fixture",
+        "task": "managed",
+        "command": "node scripts/managed-server.mjs 4325",
+        "cwd": "fixture-project",
+        "pid": 4105,
+        "status": "running",
+        "startedAt": "2026-07-19T00:00:00.000Z"
+      },
+      "listeners": [
+        {"port": 4325, "protocol": "tcp", "pid": 5105, "source": "fixture"}
+      ],
+      "processEvidence": {"alive": true, "source": "fixture"},
+      "expectedConfidence": "external"
+    }
+  ]
+}

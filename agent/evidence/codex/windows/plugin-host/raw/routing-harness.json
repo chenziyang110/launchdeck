@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "codex plugin marketplace add <isolated-marketplace> --json",
+    "codex plugin add launchdeck@launchdeck-evidence --json",
+    "codex mcp list --json",
+    "codex exec -C <fixture> --sandbox read-only --ephemeral --json <prompt>"
+  ],
+  "prompt": "Use the installed launchdeck-agent Skill and only the launchdeck MCP server. This is read-only verification. Call capabilities.get first with projectRef codex-host-evidence. Then call task.list with projectRef codex-host-evidence. Do not call list_mcp_resources, do not run shell commands, and do not mutate anything. Return the project name and task names.",
+  "isolation": [
+    "CODEX_HOME=<isolated>",
+    "LAUNCHDECK_HOME=<isolated>"
+  ]
+}

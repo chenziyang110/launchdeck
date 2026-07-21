@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.dev/schemas/compatibility-manifest.schema.json",
+  "title": "Launchdeck Agent Compatibility Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifestVersion", "buildIdentity", "packageVersion", "nodeRange", "versions", "componentDigests", "supportedOperations", "hostArtifacts", "migrationCapabilities"],
+  "properties": {
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "buildIdentity": { "$ref": "#/$defs/sha256" },
+    "packageVersion": { "$ref": "#/$defs/semver" },
+    "nodeRange": { "type": "string", "minLength": 1 },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agentProtocol", "cliSchema", "configSchema", "registryState", "runtimeState", "runIndex", "lockRecord", "eventSchema", "operationJournal", "operationCatalog", "skillContract", "pluginBundleFormat", "codexHostManifest", "claudeHostManifest"],
+      "properties": {
+        "agentProtocol": { "$ref": "#/$defs/versionAxis" },
+        "cliSchema": { "$ref": "#/$defs/versionAxis" },
+        "configSchema": { "$ref": "#/$defs/versionAxis" },
+        "registryState": { "$ref": "#/$defs/versionAxis" },
+        "runtimeState": { "$ref": "#/$defs/versionAxis" },
+        "runIndex": { "$ref": "#/$defs/versionAxis" },
+        "lockRecord": { "$ref": "#/$defs/versionAxis" },
+        "eventSchema": { "$ref": "#/$defs/versionAxis" },
+        "operationJournal": { "$ref": "#/$defs/versionAxis" },
+        "operationCatalog": { "$ref": "#/$defs/versionAxis" },
+        "skillContract": { "$ref": "#/$defs/versionAxis" },
+        "pluginBundleFormat": { "$ref": "#/$defs/versionAxis" },
+        "codexHostManifest": { "$ref": "#/$defs/versionAxis" },
+        "claudeHostManifest": { "$ref": "#/$defs/versionAxis" }
+      }
+    },
+    "componentDigests": {
+      "type": "object",
+      "minProperties": 5,
+      "additionalProperties": { "$ref": "#/$defs/sha256" },
+      "required": ["runtimeBundle", "operationRegistry", "operationSchemas", "agentResultSchema", "canonicalSkillContentManifest"]
+    },
+    "supportedOperations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registryDigest", "schemaDigest", "cliOperations", "agentOperations", "maxAgentRisk"],
+      "properties": {
+        "registryDigest": { "$ref": "#/$defs/sha256" },
+        "schemaDigest": { "$ref": "#/$defs/sha256" },
+        "cliOperations": { "$ref": "#/$defs/operationList" },
+        "agentOperations": { "$ref": "#/$defs/operationList" },
+        "maxAgentRisk": { "const": "low" }
+      }
+    },
+    "hostArtifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["codex", "claude"],
+      "properties": {
+        "codex": { "$ref": "#/$defs/hostArtifact" },
+        "claude": { "$ref": "#/$defs/hostArtifact" }
+      }
+    },
+    "migrationCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readable", "writable", "diagnosticOnly"],
+      "properties": {
+        "readable": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "writable": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "diagnosticOnly": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "semver": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$" },
+    "versionAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current", "readRange", "writeRange"],
+      "properties": {
+        "current": { "type": ["integer", "string"] },
+        "readRange": { "type": "string", "minLength": 1 },
+        "writeRange": { "type": "string", "minLength": 1 }
+      }
+    },
+    "operationList": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[A-Za-z][A-Za-z0-9]*)+$" } },
+    "hostArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "manifestVersion", "integrityDigest"],
+      "properties": {
+        "artifactId": { "type": "string", "minLength": 1 },
+        "manifestVersion": { "type": ["integer", "string"] },
+        "integrityDigest": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

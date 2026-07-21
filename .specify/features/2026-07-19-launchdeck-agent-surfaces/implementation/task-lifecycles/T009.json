@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "task_id": "T009",
+  "task_ref": "task-index.json#/tasks/T009",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "test-first",
+    "reason": "T009 owns failure-first bounded query, cursor, correlation, redaction, and zero-write adoption inspection contracts; T010 owns their handlers.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/queries.test.js test/kernel/observations.test.js test/kernel/adoption-inspect.test.js test/kernel/operation-correlation.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Final RED: the schema-bound operation.list case passes; three files fail at missing T010 modules and the existing operation handler fails the new zero/unique/ambiguous correlation contract."
+  },
+  "changed_paths": [
+    "test/kernel/queries.test.js",
+    "test/kernel/observations.test.js",
+    "test/kernel/adoption-inspect.test.js",
+    "test/kernel/operation-correlation.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T009.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {"command":"node --check test/kernel/<four T009 files>","status":"passed","summary":"All four T009 test files parse successfully."},
+    {"command":"node --test --test-concurrency=1 test/kernel/queries.test.js test/kernel/observations.test.js test/kernel/adoption-inspect.test.js test/kernel/operation-correlation.test.js","status":"failed-as-expected","summary":"1 schema test passed; 4 test-file outcomes failed only on missing T010 modules or the T010-owned correlation semantics in operation.js."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 69 JavaScript files."},
+    {"command":"T009 trailing-whitespace check","status":"passed","summary":"No trailing whitespace in the four T009 test paths."}
+  ],
+  "review": {
+    "trigger": "intentional-red-boundary",
+    "verdict": "cleared",
+    "evidence": "The tests use the accepted closed schemas and their narrower 15-minute/20-result/64-KiB bounds, bind cursors to trusted resource/query/high-water/expiry state, treat malformed observations as warnings only, and prove adoption inspection by before/after byte inventories. No test introduces arbitrary paths, follow mode, adoption.apply, mutation effects, or correlation-based retry."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-003","status":"satisfied","evidence":"Tests expose only the approved local query operations and enforce the accepted bounded schema limits."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Zero and ambiguous operation correlation have no next action; unique correlation exposes only get/reconcile of the original record."},
+    {"ref":"CA-006","status":"satisfied","evidence":"Log/event tests reject arbitrary path and follow inputs and require cursor-bounded line/byte projections."},
+    {"ref":"CA-009","status":"satisfied","evidence":"Project/task/adoption handlers receive the resolved project from trusted Kernel context; public input cannot nominate a filesystem root."},
+    {"ref":"CA-020","status":"satisfied","evidence":"Adoption inspection uses only the trusted executable project root and ignores/cannot infer Plugin installation scope."},
+    {"ref":"CA-030","status":"satisfied","evidence":"adoption.inspect returns a proposed plan and digest while adoption.apply remains absent from registry, results, and next actions."},
+    {"ref":"CA-031","status":"satisfied","evidence":"Before/after project and state-home inventories plus zero effect assertions prohibit registration, journal, run, config, process, and port mutations."},
+    {"ref":"CA-036","status":"satisfied","evidence":"Cursor tokens bind kind/resource/query/high-water/expiry; logs are byte/line bounded and redacted, malformed JSONL is warning-only."},
+    {"ref":"CA-043","status":"satisfied","evidence":"A unique correlation result exposes only operation.get/reconcile for the original operation ID."},
+    {"ref":"CA-044","status":"satisfied","evidence":"Zero or multiple candidates stop without retry; no next action can re-invoke the observed mutation operation."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

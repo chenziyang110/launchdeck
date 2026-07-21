@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "task_id": "T006",
+  "task_ref": "task-index.json#/tasks/T006",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first",
+    "reason": "T005 froze the T006 Kernel, context, compatibility, policy, and lock-order contract.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/application-kernel-policy.test.js test/kernel/project-context.test.js test/kernel/mutation-lock-order.test.js test/kernel/compatibility-gate.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "0 passed and 4 failed only because T006 modules/exports are missing."
+  },
+  "changed_paths": [
+    "src/kernel/application-kernel.js",
+    "src/kernel/project-context.js",
+    "src/kernel/policy.js",
+    "src/kernel/compatibility.js",
+    "src/control-plane/locks.js",
+    "src/runtime.js",
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T006.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/kernel/application-kernel-policy.test.js test/kernel/project-context.test.js test/kernel/mutation-lock-order.test.js test/kernel/compatibility-gate.test.js","status":"passed","summary":"14/14 Kernel policy, compatibility, project-context, and lock-order contract tests passed after the final application-kernel adjustment."},
+    {"command":"node --test --test-concurrency=1 test/kernel/mutation-lock-order.test.js test/control-plane-locks.test.js","status":"passed","summary":"20/20 targeted canonical and existing lock primitive tests passed."},
+    {"command":"node --test --test-concurrency=1 test/managed-cli.test.js test/cli-control-plane-contract.test.js","status":"passed","summary":"21/21 managed CLI and control-plane contract tests passed through the migrated lock owners."},
+    {"command":"node --test --test-concurrency=1 test/global-runtime.test.js test/runtime-state.test.js","status":"passed","summary":"29/29 global and local runtime-state tests passed through the unified sync/async mutation locks."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 60 JavaScript files after the final change."},
+    {"command":"npm test","status":"passed","summary":"191 total; 190 passed; 1 existing POSIX platform skip; 0 failures; 123.3 seconds after the final change."},
+    {"command":"git diff --check -- src/kernel src/control-plane/locks.js src/control-plane/actions.js src/control-plane/runs.js src/runtime.js test/kernel","status":"passed","summary":"No whitespace errors in T005/T006 contract and implementation paths."}
+  ],
+  "review": {
+    "trigger": "boundary-owner-and-lock-cutover",
+    "verdict": "cleared",
+    "evidence": "The Kernel, project-scope, dynamic-risk, ownership, compatibility, and canonical lock boundaries were reviewed together. Existing registry, run, runtime-state, process, port, and ownership stores remain authoritative; adapters receive no authorization role; all migrated sync/async owners use one ordered lock implementation; targeted and full regressions pass."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"createApplicationKernel is the planned semantic mutation entry and delegates effects to existing handlers/stores; no second lifecycle or state backend was introduced."},
+    {"ref":"MP-002","status":"satisfied","evidence":"Existing CLI/control-plane runtime owners were migrated in place to the shared lock authority, and all legacy lifecycle regressions pass."},
+    {"ref":"MP-003","status":"satisfied","evidence":"evaluateOperationPolicy permits task mutation only when effective runtime risk is low, ownership is verified, scope is resolved, and compatibility permits writes."},
+    {"ref":"CA-001","status":"satisfied","evidence":"Kernel mutation handlers execute only after validation, initial policy evaluation, canonical lock acquisition, and fresh under-lock revalidation."},
+    {"ref":"CA-002","status":"satisfied","evidence":"Adapter annotations are not policy inputs and cannot override Kernel risk, ownership, scope, or compatibility decisions."},
+    {"ref":"CA-004","status":"satisfied","evidence":"Unknown, external, probable, stale, or otherwise unverified ownership cannot reach mutation effects."},
+    {"ref":"CA-007","status":"satisfied","evidence":"Component digest or write-axis mismatch blocks writes while bounded capability and diagnosis queries remain available."},
+    {"ref":"CA-008","status":"satisfied","evidence":"Effective task risk is re-read from trusted project state before effects; medium, high, and destructive risks are refused."},
+    {"ref":"CA-009","status":"satisfied","evidence":"Project context distinguishes resolved, missing, ambiguous, conflicting, out-of-scope, and unconfigured cases and ignores Plugin cwd."},
+    {"ref":"CA-010","status":"satisfied","evidence":"Compatibility checks component and registry/schema digests independently from package/runtime version labels."},
+    {"ref":"CA-016","status":"satisfied","evidence":"Direct sync lifecycle and asynchronous global control-plane mutations now share one canonical risk/lock boundary instead of separate lock-order implementations."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Host approval and descriptive annotations never elevate the under-lock policy result."},
+    {"ref":"CA-020","status":"satisfied","evidence":"Executable project scope comes only from explicit/trusted registered context and cannot cross the allowed workspace roots or inherit Plugin installation cwd."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

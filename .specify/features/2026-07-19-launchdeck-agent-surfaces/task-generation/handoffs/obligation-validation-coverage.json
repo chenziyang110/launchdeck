@@ -1,0 +1,708 @@
+{
+  "version": "1.0.0",
+  "lane_id": "obligation-validation-coverage",
+  "status": "accepted",
+  "source_refs": [
+    "plan-contract.json",
+    "quickstart.md",
+    "research.md",
+    "data-model.md",
+    "contracts/agent-operation-result.schema.json",
+    "contracts/agent-operations.schema.json",
+    "contracts/compatibility-manifest.schema.json",
+    "contracts/mcp-stdio.md",
+    "contracts/plugin-generation.md"
+  ],
+  "task_bundle_catalog": [
+    {
+      "id": "TB-001",
+      "name": "Operation catalog, schemas, and normalized result",
+      "task_strategy": "Land and validate the frozen 18-operation registry, closed input schemas, exact nine-field AgentOperationResult, canonical digests, and contract-case references before adapters move behavior."
+    },
+    {
+      "id": "TB-002",
+      "name": "Kernel context, scope, policy, ownership, and compatibility",
+      "task_strategy": "Create the one query/execute/recover authority; resolve exactly one configured project and re-evaluate risk, ownership, compatibility, and locks immediately before mutation."
+    },
+    {
+      "id": "TB-003",
+      "name": "Operation journal, lock convergence, and recovery",
+      "task_strategy": "Persist prepared before effects, implement state transitions/index/retention, same-ID digest rules, bounded correlation, and evidence-only reconciliation without replay."
+    },
+    {
+      "id": "TB-004",
+      "name": "Task lifecycle and resource integration",
+      "task_strategy": "Route start/stop/restart/run through the Kernel while retaining existing run, process, port, ownership, and state authorities; enforce reuse and verified ownership."
+    },
+    {
+      "id": "TB-005",
+      "name": "Bounded observations",
+      "task_strategy": "Implement query-bound high-water cursors and bounded/redacted capabilities, diagnosis, inspection, status, logs, events, and operation correlation."
+    },
+    {
+      "id": "TB-006",
+      "name": "Digest-bound safe clean",
+      "task_strategy": "Separate clean.plan from clean.applySafe, canonicalize plan digest, journal/lock/recompute before delete, and preserve protected state/evidence."
+    },
+    {
+      "id": "TB-007",
+      "name": "Read-only adoption inspection",
+      "task_strategy": "Implement bounded adoption.inspect over trusted project context with zero writes, zero registration/start, and no adoption.apply authorization."
+    },
+    {
+      "id": "TB-008",
+      "name": "Backward-compatible CLI adapter",
+      "task_strategy": "Incrementally route shared operations through the Kernel while preserving schemaVersion 1 fields, mirrors, compact output, text, statuses, exit codes, and broader CLI-only routes."
+    },
+    {
+      "id": "TB-009",
+      "name": "Typed local stdio MCP adapter",
+      "task_strategy": "Use the pinned SDK transport, project exactly 18 tools, map schema/protocol/domain errors, serialize protocol-only stdout, and keep policy/state in the Kernel."
+    },
+    {
+      "id": "TB-010",
+      "name": "Canonical MCP-first Skill",
+      "task_strategy": "Update the one canonical Skill to capability-probe, observe, invoke one safe operation, recover uncertainty, narrowly fallback before dispatch, and reject unsafe/raw/deferred routes."
+    },
+    {
+      "id": "TB-011",
+      "name": "Non-destructive Skill installer and diagnosis",
+      "task_strategy": "Scan current, legacy, project, and Plugin copies; digest-classify identical/divergent states; install only to the current path and never automatically overwrite/delete divergent user content."
+    },
+    {
+      "id": "TB-012",
+      "name": "Compatibility manifest and build identity",
+      "task_strategy": "Keep version axes independent, compute canonical component digests/build identity, expose capabilities, and fail writes closed on incompatible or tampered components."
+    },
+    {
+      "id": "TB-013",
+      "name": "Prebuilt runtime and dual Plugin generation",
+      "task_strategy": "Build one isolated Node 20 ESM runtime and separately render policy-free Codex and Claude packages with host-correct paths and integrity sidecars."
+    },
+    {
+      "id": "TB-014",
+      "name": "Readiness evidence and claim gating",
+      "task_strategy": "Record exact build/surface/operation/host/version/OS/architecture/scope/Node/scenario evidence cells, invalidate stale cells, and prohibit unsupported rollups."
+    },
+    {
+      "id": "TB-015",
+      "name": "Deferred and dropped capability guards",
+      "task_strategy": "Encode the three user-confirmed deferrals and four explicit exclusions in schemas, capabilities, Skill traces, Plugin generation, docs, and negative tests without removing preserved CLI/local/read/recovery behavior."
+    }
+  ],
+  "obligation_groups": [
+    {
+      "id": "OG-001",
+      "name": "One Kernel, normalized semantics, dynamic policy, and CLI compatibility",
+      "task_refs": ["TB-001", "TB-002", "TB-008", "TB-012"],
+      "validation_refs": ["VT-001", "VT-002", "VT-003", "VT-012", "VT-020"],
+      "mp_mapping": [
+        {
+          "id": "MP-001",
+          "task_refs": ["TB-001", "TB-002", "TB-008", "TB-009"],
+          "validation_refs": ["VT-001", "VT-002", "VT-009"],
+          "gate": "No adapter, Skill, or Plugin may own an alternate lifecycle/policy/state authority."
+        },
+        {
+          "id": "MP-002",
+          "task_refs": ["TB-001", "TB-002", "TB-014"],
+          "validation_refs": ["VT-020"],
+          "gate": "All production, test, packaging, and evidence paths remain rooted in F:/github/launchdeck."
+        },
+        {
+          "id": "MP-004",
+          "task_refs": ["TB-001", "TB-008", "TB-012"],
+          "validation_refs": ["VT-001", "VT-002", "VT-012", "VT-020"],
+          "gate": "CLI schemaVersion 1 and Agent protocol/version axes remain independent and both validate."
+        }
+      ],
+      "ca_mapping": [
+        {"id":"CA-001","task_refs":["TB-001","TB-002","TB-008","TB-009"],"validation_refs":["VT-001","VT-002","VT-009"],"gate":"Every CLI/MCP mutation reaches the same Kernel and ownership gate; direct adapter mutation fails coverage."},
+        {"id":"CA-002","task_refs":["TB-002","TB-009"],"validation_refs":["VT-003","VT-009","VT-019"],"gate":"MCP annotations remain descriptive and cannot alter authorization."},
+        {"id":"CA-007","task_refs":["TB-002","TB-012"],"validation_refs":["VT-003","VT-012","VT-014"],"gate":"CLI and Plugin runtime block incompatible writes and expose exact diagnostic axes."},
+        {"id":"CA-008","task_refs":["TB-002","TB-004"],"validation_refs":["VT-003","VT-004"],"gate":"Current configured/effective risk is evaluated at execution, not copied from a tool hint."},
+        {"id":"CA-010","task_refs":["TB-002","TB-003","TB-012"],"validation_refs":["VT-005","VT-012","VT-014"],"gate":"Package version alone never authorizes shared-state writes."},
+        {"id":"CA-012","task_refs":["TB-001","TB-008","TB-009","TB-012"],"validation_refs":["VT-001","VT-002","VT-009","VT-012"],"gate":"Every normalized result contains surface/runtime/state/build provenance without conflating trust with path."},
+        {"id":"CA-016","task_refs":["TB-002","TB-004","TB-008","TB-009"],"validation_refs":["VT-002","VT-003","VT-004"],"gate":"All shared mutation entrypoints enforce the same dynamic task-risk decision."},
+        {"id":"CA-017","task_refs":["TB-002","TB-009","TB-015"],"validation_refs":["VT-003","VT-009","VT-019"],"gate":"Host approval and MCP annotations never elevate Kernel permissions."},
+        {"id":"CA-024","task_refs":["TB-001","TB-008","TB-009"],"validation_refs":["VT-001","VT-002"],"gate":"outcome.kind and resource.status remain independently asserted in every branch."},
+        {"id":"CA-025","task_refs":["TB-001","TB-008","TB-012"],"validation_refs":["VT-001","VT-002","VT-012","VT-020"],"gate":"CLI, Agent, config, registry, journal, and package versions never collapse into one axis."},
+        {"id":"CA-041","task_refs":["TB-001","TB-008","TB-009"],"validation_refs":["VT-002"],"gate":"Adapter comparison normalizes allowed formatting/provenance differences and fails on semantic drift."}
+      ]
+    },
+    {
+      "id": "OG-002",
+      "name": "Configured project, lifecycle, ownership, reuse, and task lifetime",
+      "task_refs": ["TB-002", "TB-004", "TB-008", "TB-009"],
+      "validation_refs": ["VT-003", "VT-004", "VT-014", "VT-015", "VT-016"],
+      "mp_mapping": [
+        {
+          "id": "MP-003",
+          "task_refs": ["TB-002", "TB-004", "TB-009", "TB-010", "TB-013", "TB-015"],
+          "validation_refs": ["VT-003", "VT-004", "VT-009", "VT-010", "VT-013", "VT-019"],
+          "gate": "First release remains configured-project, low-risk, local stdio, one canonical Skill, and two generated host artifacts."
+        }
+      ],
+      "ca_mapping": [
+        {"id":"CA-003","task_refs":["TB-003","TB-004"],"validation_refs":["VT-004","VT-005"],"gate":"Repeated/concurrent matching start produces one spawn/run and reusedExistingRun=true thereafter."},
+        {"id":"CA-004","task_refs":["TB-002","TB-004"],"validation_refs":["VT-003","VT-004"],"gate":"Unknown/external/probable/stale ownership remains inspect-only; PID/port alone never permits mutation."},
+        {"id":"CA-009","task_refs":["TB-002","TB-009"],"validation_refs":["VT-003","VT-009","VT-015","VT-016"],"gate":"Every MCP call resolves one configured project and never uses Plugin cwd as project authority."},
+        {"id":"CA-014","task_refs":["TB-001","TB-004","TB-009"],"validation_refs":["VT-001","VT-003","VT-009","VT-019"],"gate":"Public task inputs reject command/cwd/env/force recursively and select declared tasks only."},
+        {"id":"CA-020","task_refs":["TB-002","TB-013"],"validation_refs":["VT-003","VT-015","VT-016"],"gate":"Plugin installation scope and executable project scope remain distinct; project scope cannot cross roots."},
+        {"id":"CA-021","task_refs":["TB-004","TB-009","TB-013"],"validation_refs":["VT-009","VT-014","VT-015","VT-016"],"gate":"Closing MCP/host leaves the managed task live and observable under the same run/state identity."},
+        {"id":"CA-031","task_refs":["TB-004","TB-007","TB-015"],"validation_refs":["VT-007","VT-019"],"gate":"adoption inspection never chains registration, configuration write, or task.start."}
+      ]
+    },
+    {
+      "id": "OG-003",
+      "name": "Journal, uncertainty, recovery, idempotency, and clean digest",
+      "task_refs": ["TB-003", "TB-006", "TB-009", "TB-010"],
+      "validation_refs": ["VT-005", "VT-006", "VT-009", "VT-010"],
+      "mp_mapping": [
+        {
+          "id": "MP-007",
+          "task_refs": ["TB-003", "TB-009", "TB-010"],
+          "validation_refs": ["VT-005", "VT-009", "VT-010"],
+          "gate": "Every uncertainty path stops at evidence-based get/list/reconcile; no automatic replay across surfaces."
+        }
+      ],
+      "ca_mapping": [
+        {"id":"CA-005","task_refs":["TB-001","TB-006","TB-015"],"validation_refs":["VT-006","VT-019"],"gate":"Only digest-bound safe clean is public; risky clean and model-authored yes stay excluded."},
+        {"id":"CA-011","task_refs":["TB-003","TB-009","TB-010"],"validation_refs":["VT-005","VT-009","VT-010"],"gate":"Post-dispatch uncertainty cannot cause CLI fallback or a second mutation."},
+        {"id":"CA-013","task_refs":["TB-003","TB-006"],"validation_refs":["VT-006"],"gate":"Kernel recomputes under locks and returns plan_digest_mismatch before deletion on any drift."},
+        {"id":"CA-026","task_refs":["TB-003","TB-006","TB-015"],"validation_refs":["VT-006","VT-019"],"gate":"A plan digest proves identity/freshness only and never stands in for human confirmation."},
+        {"id":"CA-027","task_refs":["TB-001","TB-009","TB-015"],"validation_refs":["VT-001","VT-009","VT-019"],"gate":"confirmed/yes/approvalToken and equivalent nested fields are absent and rejected."},
+        {"id":"CA-028","task_refs":["TB-003"],"validation_refs":["VT-005"],"gate":"Every mutation has a durable prepared record before resource effects and preserves recovery evidence."},
+        {"id":"CA-029","task_refs":["TB-003","TB-004","TB-010"],"validation_refs":["VT-005","VT-010"],"gate":"Indeterminate task.run remains get/reconcile-only and handler count never increases during recovery."},
+        {"id":"CA-042","task_refs":["TB-003","TB-014","TB-015"],"validation_refs":["VT-005","VT-018","VT-019"],"gate":"Product/test language promises resource-aware recovery, not universal exactly-once execution."},
+        {"id":"CA-043","task_refs":["TB-003"],"validation_refs":["VT-005"],"gate":"Same ID/same digest returns or reconciles the original operation without handler execution."},
+        {"id":"CA-044","task_refs":["TB-003","TB-008","TB-009","TB-010"],"validation_refs":["VT-005","VT-009","VT-010"],"gate":"Indeterminate work is never automatically retried by CLI, MCP, or Skill."}
+      ]
+    },
+    {
+      "id": "OG-004",
+      "name": "Canonical Skill, installer, compatibility, generated Plugins, and lifecycle takeover",
+      "task_refs": ["TB-010", "TB-011", "TB-012", "TB-013", "TB-014"],
+      "validation_refs": ["VT-010", "VT-011", "VT-012", "VT-013", "VT-014", "VT-015", "VT-016", "VT-017"],
+      "mp_mapping": [
+        {
+          "id": "MP-005",
+          "task_refs": ["TB-010", "TB-011", "TB-013"],
+          "validation_refs": ["VT-010", "VT-011", "VT-015", "VT-016"],
+          "gate": "One canonical intent Skill remains MCP-first and safety-preserving; divergent copies block a single-active claim."
+        },
+        {
+          "id": "MP-006",
+          "task_refs": ["TB-004", "TB-012", "TB-013"],
+          "validation_refs": ["VT-014", "VT-015", "VT-016", "VT-017"],
+          "gate": "Host/Plugin lifecycle changes component presence only; services and shared state survive for compatible takeover."
+        }
+      ],
+      "ca_mapping": [
+        {"id":"CA-015","task_refs":["TB-012","TB-013"],"validation_refs":["VT-014","VT-015","VT-016"],"gate":"Plugin update/uninstall does not migrate, prune, or delete shared control-plane state."},
+        {"id":"CA-022","task_refs":["TB-013"],"validation_refs":["VT-014","VT-015","VT-016"],"gate":"Disable/update/uninstall preserves registry, journal, logs, events, config, and managed task."},
+        {"id":"CA-023","task_refs":["TB-010","TB-011","TB-012"],"validation_refs":["VT-010","VT-011","VT-012"],"gate":"Current/legacy/project/Plugin Skill digests are diagnosed; divergent content is never overwritten/deleted automatically."},
+        {"id":"CA-032","task_refs":["TB-012","TB-013"],"validation_refs":["VT-012","VT-013"],"gate":"npm runtime, Codex artifact, and Claude artifact are distinct outputs sharing one compatibility/build identity."},
+        {"id":"CA-033","task_refs":["TB-013"],"validation_refs":["VT-013","VT-015","VT-016","VT-017"],"gate":"Shipped runtime launches without global CLI, npx, install scripts, Plugin-local node_modules, or external npm imports."},
+        {"id":"CA-034","task_refs":["TB-012","TB-013"],"validation_refs":["VT-012","VT-013","VT-015","VT-016"],"gate":"Node >=20 prerequisite is explicit; old/missing Node withholds the exact cell."},
+        {"id":"CA-035","task_refs":["TB-010","TB-012","TB-013"],"validation_refs":["VT-011","VT-012","VT-013"],"gate":"Skill/runtime/schema/manifest/host metadata share one build identity; tamper blocks writes."},
+        {"id":"CA-037","task_refs":["TB-004","TB-013"],"validation_refs":["VT-014","VT-015","VT-016","VT-017"],"gate":"Plugin lifecycle cannot signal tasks or delete LAUNCHDECK_HOME state."},
+        {"id":"CA-038","task_refs":["TB-001","TB-002","TB-013"],"validation_refs":["VT-001","VT-013"],"gate":"Host manifests contain identity/path/presentation only and no policy, operation, state, recovery, or authorization rules."},
+        {"id":"CA-047","task_refs":["TB-012","TB-013","TB-014"],"validation_refs":["VT-014","VT-015","VT-016","VT-017"],"gate":"Compatible build B sees build A runId/PID/port/stateHome and safely manages it without respawn."},
+        {"id":"CA-048","task_refs":["TB-012","TB-013","TB-014"],"validation_refs":["VT-014","VT-015","VT-016","VT-017"],"gate":"After uninstall, standalone CLI observes logs/events/state/run and safely takes over; reinstall does not duplicate state."}
+      ]
+    },
+    {
+      "id": "OG-005",
+      "name": "Bounded observation, real stdio, Skill traces, host/OS evidence, and claim discipline",
+      "task_refs": ["TB-005", "TB-009", "TB-010", "TB-013", "TB-014"],
+      "validation_refs": ["VT-008", "VT-009", "VT-010", "VT-013", "VT-015", "VT-016", "VT-017", "VT-018"],
+      "mp_mapping": [
+        {
+          "id": "MP-008",
+          "task_refs": ["TB-014"],
+          "validation_refs": ["VT-017", "VT-018"],
+          "gate": "Every release claim names exact evidence cells; missing/failed/blocked/unsupported/stale cells stay visible."
+        }
+      ],
+      "ca_mapping": [
+        {"id":"CA-006","task_refs":["TB-005","TB-009"],"validation_refs":["VT-008","VT-009"],"gate":"Logs/events use bounded cursor reads and never arbitrary paths or permanent follow."},
+        {"id":"CA-036","task_refs":["TB-009","TB-013"],"validation_refs":["VT-009","VT-013"],"gate":"Every stdout record is protocol JSON; banners/diagnostics/task output make the cell fail."},
+        {"id":"CA-039","task_refs":["TB-014"],"validation_refs":["VT-017","VT-018"],"gate":"CLI evidence cannot fill MCP, Plugin, host, update, uninstall, recovery, or OS cells."},
+        {"id":"CA-040","task_refs":["TB-013","TB-014"],"validation_refs":["VT-015","VT-016","VT-017","VT-018"],"gate":"Codex and Claude install/routing/lifecycle cells remain independent until both pass."},
+        {"id":"CA-045","task_refs":["TB-010","TB-014"],"validation_refs":["VT-010"],"gate":"Skill validation asserts ordered tool/command traces and forbidden calls, not plausible final prose."},
+        {"id":"CA-046","task_refs":["TB-009","TB-014"],"validation_refs":["VT-009","VT-013","VT-017"],"gate":"MCP-ready evidence comes from the shipped runtime over real stdio, never handler-only tests."},
+        {"id":"CA-049","task_refs":["TB-013","TB-014"],"validation_refs":["VT-015","VT-016","VT-017"],"gate":"Each host-ready claim includes a real installation/use trace for the exact host/version/OS/scope/build."},
+        {"id":"CA-050","task_refs":["TB-014"],"validation_refs":["VT-017","VT-018"],"gate":"Docs/capabilities/release labels cannot roll up beyond exact current passing evidence cells."}
+      ]
+    },
+    {
+      "id": "OG-006",
+      "name": "User-confirmed future semantics retained as deferral, not first-release execution",
+      "task_refs": ["TB-007", "TB-015"],
+      "validation_refs": ["VT-007", "VT-019"],
+      "ca_mapping": [
+        {"id":"CA-018","task_refs":["TB-002","TB-015"],"validation_refs":["VT-003","VT-019"],"coverage":"deferred-user-confirmed","gate":"Public MCP rejects medium risk; no elicitation/execute transition ships."},
+        {"id":"CA-019","task_refs":["TB-015"],"validation_refs":["VT-019"],"coverage":"deferred-user-confirmed","gate":"Future confirmation requirements stay documented only and no confirmation-shaped public inputs appear."},
+        {"id":"CA-030","task_refs":["TB-007","TB-015"],"validation_refs":["VT-007","VT-019"],"coverage":"deferred-user-confirmed","gate":"adoption.inspect is delivered, adoption.apply is absent, and inspect output never authorizes a write/start."}
+      ]
+    }
+  ],
+  "capability_coverage": [
+    {"id":"CAP-001","disposition":"in_scope","task_refs":["TB-001","TB-002"],"validation_refs":["VT-001","VT-002"],"acceptance_refs":["AC-001","AC-011"],"claim_gate":"Registry and both adapters demonstrate one Kernel-owned semantic result path."},
+    {"id":"CAP-002","disposition":"in_scope","task_refs":["TB-002"],"validation_refs":["VT-003","VT-009","VT-015","VT-016"],"acceptance_refs":["AC-009"],"claim_gate":"Missing/ambiguous/conflicting/unregistered/plugin-cwd scope cases all refuse distinctly."},
+    {"id":"CAP-003","disposition":"in_scope","task_refs":["TB-002","TB-012"],"validation_refs":["VT-003","VT-012"],"acceptance_refs":["AC-004","AC-005","AC-011"],"claim_gate":"Risk, ownership, project scope, and compatibility are re-evaluated under locks before each mutation."},
+    {"id":"CAP-004","disposition":"in_scope","task_refs":["TB-003"],"validation_refs":["VT-005"],"acceptance_refs":["AC-006","AC-007"],"claim_gate":"Crash/response-loss/same-ID/missing-ID fixtures prove recovery without replay."},
+    {"id":"CAP-005","disposition":"in_scope","task_refs":["TB-008"],"validation_refs":["VT-002","VT-020"],"acceptance_refs":["AC-001","AC-011"],"claim_gate":"All migrated shared routes preserve schemaVersion 1 fixtures, compact projection, text, and exit codes."},
+    {"id":"CAP-006","disposition":"in_scope","task_refs":["TB-001","TB-009"],"validation_refs":["VT-001","VT-009","VT-013"],"acceptance_refs":["AC-001","AC-014"],"claim_gate":"Shipped stdio runtime lists exactly 18 tools and passes real initialize/list/call/error/purity/restart/concurrency flows."},
+    {"id":"CAP-007","disposition":"in_scope","task_refs":["TB-005","TB-009"],"validation_refs":["VT-008","VT-009"],"acceptance_refs":["AC-009","AC-011","AC-014"],"claim_gate":"All observation operations are query-bound, redacted, bounded, cursor-safe, and non-following."},
+    {"id":"CAP-008","disposition":"in_scope","task_refs":["TB-002","TB-004"],"validation_refs":["VT-003","VT-004"],"acceptance_refs":["AC-002","AC-003","AC-004","AC-005"],"claim_gate":"Low-risk lifecycle positive/reuse and medium/external/unknown refusal paths pass through both public adapters."},
+    {"id":"CAP-009","disposition":"in_scope","task_refs":["TB-003","TB-006"],"validation_refs":["VT-005","VT-006"],"acceptance_refs":["AC-006","AC-007","AC-008"],"claim_gate":"Known/lost-ID recovery and stale clean-plan refusal show no replay/deletion."},
+    {"id":"CAP-010","disposition":"in_scope","task_refs":["TB-007"],"validation_refs":["VT-007"],"acceptance_refs":["AC-016"],"claim_gate":"Byte/inventory/process/port snapshots prove bounded adoption.inspect has zero writes and no apply authorization."},
+    {"id":"CAP-011","disposition":"in_scope","task_refs":["TB-010","TB-011"],"validation_refs":["VT-010","VT-011","VT-015","VT-016"],"acceptance_refs":["AC-012","AC-013"],"claim_gate":"Deterministic traces and real-host traces prove MCP-first and narrow pre-dispatch fallback; duplicate migration is non-destructive."},
+    {"id":"CAP-012","disposition":"in_scope","task_refs":["TB-012","TB-013"],"validation_refs":["VT-012","VT-013","VT-015","VT-016","VT-017"],"acceptance_refs":["AC-010","AC-011","AC-015"],"claim_gate":"Separate Codex/Claude artifacts share one tested identity but independently pass host path/install/lifecycle cells."},
+    {"id":"CAP-013","disposition":"in_scope","task_refs":["TB-014"],"validation_refs":["VT-009","VT-010","VT-013","VT-015","VT-016","VT-017","VT-018"],"acceptance_refs":["AC-014","AC-015"],"claim_gate":"Evidence registry contains exact current cells and refuses unsupported rollup."},
+    {"id":"CAP-014","disposition":"deferred-user-confirmed","task_refs":["TB-007","TB-015"],"validation_refs":["VT-007","VT-019"],"acceptance_refs":["AC-016"],"claim_gate":"Deliver adoption.inspect and negative absence/zero-write guards only; adoption.apply is not implemented."},
+    {"id":"CAP-015","disposition":"deferred-user-confirmed","task_refs":["TB-002","TB-010","TB-015"],"validation_refs":["VT-003","VT-010","VT-019"],"acceptance_refs":["AC-005","AC-012"],"claim_gate":"Public MCP/Skill refuses medium risk; existing CLI behavior is preserved but never used as Agent fallback."},
+    {"id":"CAP-016","disposition":"deferred-user-confirmed","task_refs":["TB-013","TB-015"],"validation_refs":["VT-013","VT-019"],"acceptance_refs":["AC-014","AC-015"],"claim_gate":"Only local stdio/Node Plugins are built or claimed; remote/UI/native/enterprise surfaces remain absent."},
+    {"id":"CAP-017","disposition":"dropped-exclusion-guard","task_refs":["TB-001","TB-009","TB-010","TB-015"],"validation_refs":["VT-001","VT-009","VT-010","VT-019"],"acceptance_refs":["AC-005","AC-012","AC-014"],"claim_gate":"Public registry/tools/capabilities/Skill/Plugin exclude high/destructive/force/remove/risky/reset/raw/follow behavior; existing CLI-only compatibility routes are not deleted."},
+    {"id":"CAP-018","disposition":"dropped-exclusion-guard","task_refs":["TB-002","TB-004","TB-015"],"validation_refs":["VT-003","VT-004","VT-019"],"acceptance_refs":["AC-004"],"claim_gate":"External/unknown inspection remains available but every termination/mutation path refuses."},
+    {"id":"CAP-019","disposition":"dropped-exclusion-guard","task_refs":["TB-003","TB-015"],"validation_refs":["VT-005","VT-019"],"acceptance_refs":["AC-006","AC-007"],"claim_gate":"No universal exactly-once claim; journaled resource idempotency, explicit uncertainty, and recovery remain delivered."},
+    {"id":"CAP-020","disposition":"dropped-exclusion-guard","task_refs":["TB-002","TB-009","TB-010","TB-015"],"validation_refs":["VT-003","VT-009","VT-010","VT-019"],"acceptance_refs":["AC-005","AC-009"],"claim_gate":"Local configured-project control remains delivered while remote/production targets and claims are absent."}
+  ],
+  "acceptance_coverage": [
+    {"id":"AC-001","task_refs":["TB-001","TB-002","TB-008","TB-009"],"validation_refs":["VT-001","VT-002"],"real_entrypoint_refs":["RP-CLI","RP-MCP"],"claim_gate":"All shared contract branches compare semantically and CLI envelope remains backward-compatible."},
+    {"id":"AC-002","task_refs":["TB-004","TB-012","TB-013"],"validation_refs":["VT-014","VT-015","VT-016","VT-017"],"real_entrypoint_refs":["RP-CODEX","RP-CLAUDE","RP-LIFECYCLE"],"claim_gate":"Plugin-started run survives host exit and compatible standalone CLI observes/stops the same run."},
+    {"id":"AC-003","task_refs":["TB-003","TB-004"],"validation_refs":["VT-004"],"real_entrypoint_refs":["RP-CLI","RP-MCP"],"claim_gate":"Repeated and concurrent cross-surface start records one spawn and reuse semantics."},
+    {"id":"AC-004","task_refs":["TB-002","TB-004"],"validation_refs":["VT-003","VT-004"],"real_entrypoint_refs":["RP-CLI","RP-MCP","RP-SKILL"],"claim_gate":"External/unknown fixtures survive every attempted public mutation and Skill does not force/fallback."},
+    {"id":"AC-005","task_refs":["TB-001","TB-002","TB-009","TB-010","TB-015"],"validation_refs":["VT-003","VT-009","VT-010","VT-019"],"real_entrypoint_refs":["RP-MCP","RP-SKILL"],"claim_gate":"Medium/high/destructive/raw/external/model-confirmation cases refuse despite host hints and never fallback."},
+    {"id":"AC-006","task_refs":["TB-003","TB-009","TB-010"],"validation_refs":["VT-005","VT-009","VT-010"],"real_entrypoint_refs":["RP-MCP","RP-RECOVERY"],"claim_gate":"Prepared precedes effects; known/lost-ID recovery works and uncertain work never replays."},
+    {"id":"AC-007","task_refs":["TB-003"],"validation_refs":["VT-005"],"real_entrypoint_refs":["RP-RECOVERY"],"claim_gate":"Same-ID/same-digest recovers; different digest and missing/expired refuse with no new work."},
+    {"id":"AC-008","task_refs":["TB-003","TB-006"],"validation_refs":["VT-006"],"real_entrypoint_refs":["RP-CLI","RP-MCP"],"claim_gate":"Every drift class yields plan_digest_mismatch before deletion; fresh digest deletes safe targets only."},
+    {"id":"AC-009","task_refs":["TB-002","TB-009"],"validation_refs":["VT-003","VT-009","VT-015","VT-016"],"real_entrypoint_refs":["RP-MCP","RP-CODEX","RP-CLAUDE"],"claim_gate":"Every exact host fixture proves explicit project resolution and plugin-cwd non-authority."},
+    {"id":"AC-010","task_refs":["TB-012","TB-013","TB-014"],"validation_refs":["VT-014","VT-015","VT-016","VT-017"],"real_entrypoint_refs":["RP-CODEX","RP-CLAUDE","RP-LIFECYCLE"],"claim_gate":"Full build A -> lifecycle change -> build B/CLI same-run takeover chain passes per exact host/OS cell."},
+    {"id":"AC-011","task_refs":["TB-001","TB-002","TB-012"],"validation_refs":["VT-001","VT-003","VT-012"],"real_entrypoint_refs":["RP-CLI","RP-MCP","RP-CODEX","RP-CLAUDE"],"claim_gate":"Capabilities reports actual independent axes/digests/host/scope/evidence and tamper/incompatibility blocks writes."},
+    {"id":"AC-012","task_refs":["TB-010"],"validation_refs":["VT-010","VT-015","VT-016"],"real_entrypoint_refs":["RP-SKILL"],"claim_gate":"Tool traces prove MCP-first, narrow pre-dispatch safe fallback, and refusal/uncertainty no-fallback."},
+    {"id":"AC-013","task_refs":["TB-011"],"validation_refs":["VT-011"],"real_entrypoint_refs":["RP-INSTALLER"],"claim_gate":"Current/legacy scans classify identical/divergent copies and no automatic overwrite/delete occurs."},
+    {"id":"AC-014","task_refs":["TB-009","TB-013","TB-014"],"validation_refs":["VT-009","VT-013","VT-017"],"real_entrypoint_refs":["RP-MCP","RP-OS"],"claim_gate":"Shipped runtime passes the complete real stdio suite on each exact claimed OS cell."},
+    {"id":"AC-015","task_refs":["TB-013","TB-014"],"validation_refs":["VT-015","VT-016","VT-017","VT-018"],"real_entrypoint_refs":["RP-CODEX","RP-CLAUDE","RP-LIFECYCLE","RP-OS"],"claim_gate":"Separate real Codex and Claude install/routing/lifecycle/takeover cells pass on every platform claimed ready."},
+    {"id":"AC-016","task_refs":["TB-007","TB-015"],"validation_refs":["VT-007","VT-019"],"real_entrypoint_refs":["RP-CLI","RP-MCP","RP-SKILL"],"claim_gate":"Before/after snapshots prove adoption.inspect zero writes and every surface excludes adoption.apply authorization."}
+  ],
+  "real_entrypoint_paths": [
+    {
+      "id": "RP-CLI",
+      "surface": "CLI",
+      "chain": ["package bin launchdeck -> src/cli.js", "src/adapters/cli-operation-map.js", "Operation Registry", "Application Kernel", "existing registry/run/ownership/process/port/log/event authorities", "AgentOperationResult", "src/output.js schemaVersion 1/text/compact/exit-code projection"],
+      "validation_refs": ["VT-002", "VT-003", "VT-004", "VT-005", "VT-006", "VT-007", "VT-020"],
+      "entrypoint_gate": "Spawn the real CLI process or packaged bin; direct handler tests alone do not cover this chain."
+    },
+    {
+      "id": "RP-MCP",
+      "surface": "standalone/shipped MCP stdio",
+      "chain": ["node runtime/launchdeck-mcp.mjs", "SDK StdioServerTransport initialize/initialized", "tools/list projected from registry", "tools/call schema validation", "Application Kernel", "shared state/resource authorities", "AgentOperationResult structuredContent and concise text", "protocol-only stdout and bounded stderr"],
+      "validation_refs": ["VT-002", "VT-009", "VT-013", "VT-017"],
+      "entrypoint_gate": "Use the shipped bundle and a real MCP SDK client; no direct server-handler substitute."
+    },
+    {
+      "id": "RP-SKILL",
+      "surface": "canonical Skill",
+      "chain": ["real host/user intent discovers launchdeck-agent", "intent gate", "MCP capabilities.get", "bounded observation", "one safe operation or typed refusal", "known/lost-ID recovery when uncertain", "bounded result report"],
+      "fallback_chain": ["MCP unavailable before dispatch or safe operation explicitly unsupported", "compatible CLI capabilities confirmed", "real CLI --json --compact", "schemaVersion 1 normalization", "report CLI provenance"],
+      "validation_refs": ["VT-010", "VT-015", "VT-016"],
+      "entrypoint_gate": "Any business refusal, sent/possibly-sent mutation, raw/force/risky/remote intent, or ambiguous recovery forbids fallback."
+    },
+    {
+      "id": "RP-INSTALLER",
+      "surface": "Skill installer/doctor",
+      "chain": ["live-help-confirmed CLI installer/diagnosis route", "src/agent-installer.js", "scan project/current user/legacy user/Plugin copies", "canonical content-manifest digest comparison", "absent/single/duplicate-identical/duplicate-divergent/invalid/unreadable result", "optional explicit user action and post-action rescan"],
+      "validation_refs": ["VT-011", "VT-020"],
+      "entrypoint_gate": "Automatic install/update never overwrites or deletes divergent user content; Plugin copy is reported separately."
+    },
+    {
+      "id": "RP-CODEX",
+      "surface": "generated Codex Plugin",
+      "chain": ["host-supported Codex install/enable flow", "cached .codex-plugin/plugin.json and .mcp.json", "Codex Skill discovery", "node plus artifact-relative runtime and plugin-root cwd candidate", "real MCP initialize/list/call", "Application Kernel", "shared LAUNCHDECK_HOME"],
+      "validation_refs": ["VT-013", "VT-015", "VT-017"],
+      "entrypoint_gate": "Claim-gated by exact real Codex version/OS/architecture/scope/Node/build cell; relative cwd/path behavior is not considered proven by source inspection."
+    },
+    {
+      "id": "RP-CLAUDE",
+      "surface": "generated Claude Code Plugin",
+      "chain": ["host-supported Claude validation/install/enable flow", "cached .claude-plugin/plugin.json and .mcp.json", "Claude Skill discovery", "documented Plugin-root-expanded bundled runtime argument", "real MCP initialize/list/call", "Application Kernel", "shared LAUNCHDECK_HOME"],
+      "validation_refs": ["VT-013", "VT-016", "VT-017"],
+      "entrypoint_gate": "Claim-gated by exact real Claude version/OS/architecture/scope/Node/build cell including spaces/non-ASCII path and mid-session identity behavior."
+    },
+    {
+      "id": "RP-LIFECYCLE",
+      "surface": "Plugin update, disable, uninstall, and takeover",
+      "chain": ["Plugin build A starts one managed run", "capture runId/PID/port/stateHome/operation/build identity", "host exit or update/disable/uninstall", "prove task and shared state survive", "compatible Plugin build B and standalone CLI observe same run", "verified ownership/compatibility safe stop", "reinstall/other host observes preserved state"],
+      "validation_refs": ["VT-014", "VT-015", "VT-016", "VT-017"],
+      "entrypoint_gate": "Install, update, disable, uninstall, and takeover are distinct evidence dimensions; the full chain is required for lifecycle readiness."
+    },
+    {
+      "id": "RP-RECOVERY",
+      "surface": "cross-surface response-loss recovery",
+      "chain": ["real mutation dispatched once", "response channel lost at controlled fault point", "known ID -> operation.get/reconcile OR lost ID -> one bounded operation.list", "unique candidate -> get/reconcile; zero/multiple -> stop", "journal/live evidence updates original record", "handler/resource counters prove no replay"],
+      "validation_refs": ["VT-005", "VT-009", "VT-010"],
+      "entrypoint_gate": "Recovery must traverse public CLI or real MCP routes and the durable journal; test-only direct record mutation is insufficient."
+    },
+    {
+      "id": "RP-OS",
+      "surface": "Windows/macOS/Linux native evidence",
+      "chain": ["same release-candidate artifact identity", "native exact OS/version/architecture and Node >=20", "isolated path with spaces/non-ASCII", "core CLI+stdio and bundle cell", "host-specific install/routing/lifecycle cells", "exact receipt persisted and rollup recalculated"],
+      "validation_refs": ["VT-013", "VT-015", "VT-016", "VT-017", "VT-018"],
+      "entrypoint_gate": "One OS/host cell never substitutes for another; current Windows planning workspace is not readiness evidence."
+    }
+  ],
+  "validation_tasks": [
+    {
+      "id": "VT-001",
+      "name": "Registry, schema, result, and exclusion contract suite",
+      "kind": "automated contract",
+      "assertions": ["exact 18 unique public operation IDs", "closed recursive schemas and forbidden-input rejection", "all operation definitions have handler/schema/policy/contract refs", "exact nine-field result with outcome/resource/effects invariants", "deferred/dropped/CLI-only IDs absent from public projections"],
+      "evidence": "Machine-readable schema/catalog validation and per-operation case matrix."
+    },
+    {
+      "id": "VT-002",
+      "name": "Real CLI compatibility and CLI/MCP semantic equivalence",
+      "kind": "automated real entrypoint",
+      "assertions": ["existing CLI schemaVersion 1 fixtures/compact/text/exit codes remain", "same contract fixtures compare normalized operation/outcome/resource/effects/safety/error/nextActions/provenance", "allowed surface/runtime path/generated ID differences only"],
+      "evidence": "Raw CLI JSON/exit code, real MCP structured result, normalized diff, and state/effect receipts."
+    },
+    {
+      "id": "VT-003",
+      "name": "Project scope, dynamic risk, ownership, and compatibility refusal matrix",
+      "kind": "automated Kernel plus real adapters",
+      "assertions": ["resolved/missing/ambiguous/conflicting/unregistered/out-of-scope/plugin-cwd cases", "low positive and medium/high/destructive refusal", "unknown/external/mismatch inspect-only", "host approval/annotations do not elevate", "component mismatch diagnosis-only"],
+      "evidence": "Typed results, no-effect snapshots, external fixture survival, and adapter equivalence receipts."
+    },
+    {
+      "id": "VT-004",
+      "name": "Task lifecycle reuse, concurrency, and ownership suite",
+      "kind": "automated real process/port fixture",
+      "assertions": ["CLI->MCP and MCP->CLI repeated start", "synchronized concurrent starts", "one spawn/runId/PID/port/stateHome", "verified stop/restart positive", "external/unknown start conflict/stop/restart refusal", "partial restart/resource status semantics"],
+      "evidence": "Append-only spawn/signal receipts, run/state records, port observations, and normalized results."
+    },
+    {
+      "id": "VT-005",
+      "name": "Journal crash, retention, correlation, and no-replay suite",
+      "kind": "automated deterministic fault",
+      "assertions": ["fault before prepared has no effect", "prepared/running/post-effect/post-terminal/pre-response faults", "known ID get/reconcile", "lost ID bounded list zero/unique/ambiguous", "same-ID digest rules", "missing/expired refusal", "no handler replay", "unresolved retention and index rebuild"],
+      "evidence": "Durable records/revisions/index receipts, independent handler/effect counters, and public recovery transcripts."
+    },
+    {
+      "id": "VT-006",
+      "name": "Safe-clean digest and protected-state suite",
+      "kind": "automated filesystem fault",
+      "assertions": ["clean.plan zero deletion", "config/target/type/path/symlink/protected-evidence drift", "plan_digest_mismatch before deletion", "fresh safe digest positive", "root/outside/risky/shared-state/run/failure evidence retained"],
+      "evidence": "Before/after tree digests, plan payload/digest, journal transitions, and refusal/positive results."
+    },
+    {
+      "id": "VT-007",
+      "name": "adoption.inspect bounded zero-write suite",
+      "kind": "automated state-diff plus real adapters",
+      "assertions": ["trusted root only", "bounded depth/files/signals", "proposed plan/evidence digest", "byte/inventory/process/port equality", "no registration/journal/start", "no adoption.apply in tools/capabilities/nextActions/Skill/Plugin"],
+      "evidence": "CLI/MCP outputs plus before/after state/process/port receipts and exclusion scan."
+    },
+    {
+      "id": "VT-008",
+      "name": "Bounded observation cursor/redaction suite",
+      "kind": "automated contract/fault",
+      "assertions": ["cursor resource/query binding", "high-water snapshot and expiry", "record/line/byte limits", "no arbitrary paths or permanent follow", "redaction before response/persistence", "malformed record warning without mutation authority"],
+      "evidence": "Cursor fixtures, page transcripts, redaction assertions, and no-effect receipts."
+    },
+    {
+      "id": "VT-009",
+      "name": "Real MCP stdio protocol suite",
+      "kind": "automated shipped-runtime entrypoint",
+      "assertions": ["initialize then initialized", "tools/list exactly 18", "representative/all-schema tools/call", "protocol/tool/domain error separation", "structuredContent schema", "stdout purity/stderr redaction", "child output isolation", "concurrent IDs", "interruption/restart", "response-loss recovery"],
+      "evidence": "SDK-client transcript, byte-level stdout/stderr capture, runtime/build identity, and journal/state receipts."
+    },
+    {
+      "id": "VT-010",
+      "name": "Canonical Skill trace and forbidden-call evaluation",
+      "kind": "deterministic eval plus real host trace",
+      "assertions": ["intent->capabilities->observe->one safe mutation", "pre-dispatch unavailable/unsupported safe CLI fallback only", "business refusal no fallback", "uncertain mutation get/list/reconcile only", "force/risky/raw/remote/external/adoption.apply/medium/follow refusal", "ordered calls rather than prose"],
+      "evidence": "Machine-readable tool/command traces and host discovery/routing receipts."
+    },
+    {
+      "id": "VT-011",
+      "name": "Skill installation and migration matrix",
+      "kind": "automated filesystem plus installer entrypoint",
+      "assertions": ["absent/single/identical/divergent/invalid/unreadable", "current and legacy Codex plus project/Plugin copies", "canonical digest and symlink rejection", "current-path install", "idempotent identical", "no automatic overwrite/delete", "post-action rescan"],
+      "evidence": "Before/after trees, content-manifest digests, installer/doctor results, and user-content preservation receipts."
+    },
+    {
+      "id": "VT-012",
+      "name": "Compatibility, build identity, and tamper suite",
+      "kind": "automated contract/build",
+      "assertions": ["independent version axes", "canonical non-self-referential SHA-256 identity", "all component/host digests", "read/write/diagnostic ranges", "tampered runtime/Skill/schema/manifest refusal", "checksums not presented as authenticity"],
+      "evidence": "Golden canonical payloads, manifest validation, tamper matrix, capabilities and fail-closed results."
+    },
+    {
+      "id": "VT-013",
+      "name": "Deterministic Plugin generation and isolated bundle suite",
+      "kind": "automated build plus native OS execution",
+      "assertions": ["one runtime/Skill/build identity", "separate Codex/Claude trees", "policy-free host manifests", "no absolute build paths", "no external npm import", "no node_modules/global CLI/npx/install script", "spaces/non-ASCII", "Node 20 positive and missing/old negative", "real stdio launch"],
+      "evidence": "Build/metafile/archive/integrity receipts and BUNDLE-* cells for each OS."
+    },
+    {
+      "id": "VT-014",
+      "name": "Host-agnostic Plugin lifetime and compatibility chain",
+      "kind": "automated state/process contract plus host precondition",
+      "assertions": ["host/MCP exit preserves run/state", "compatible build B same run identity", "incompatible build C diagnosis-only", "disable/uninstall cannot signal/delete", "CLI takeover and safe stop", "reinstall recovery"],
+      "evidence": "One chained run/state/ownership/build timeline; does not replace VT-015 or VT-016 host evidence."
+    },
+    {
+      "id": "VT-015",
+      "name": "Real Codex install, routing, lifecycle, and takeover",
+      "kind": "host-owned exact evidence",
+      "assertions": ["supported install/cache flow", "Skill/MCP discovery", "candidate relative cwd/path launch", "explicit project scope", "real tools/refusals", "host exit", "update", "disable", "uninstall", "compatible CLI/build B takeover", "side-by-side Claude non-interference"],
+      "evidence": "CODEX-INSTALL-* and CODEX-LIFECYCLE-* cells; status starts not_executed_host_owned."
+    },
+    {
+      "id": "VT-016",
+      "name": "Real Claude Code install, routing, lifecycle, reload, and takeover",
+      "kind": "host-owned exact evidence",
+      "assertions": ["host validation/install/cache flow", "Plugin-root path expansion", "Skill/MCP discovery", "explicit project scope", "real tools/refusals", "host exit", "mid-session old process identity", "reload/restart", "update", "disable", "uninstall", "compatible CLI/build B takeover", "side-by-side Codex non-interference"],
+      "evidence": "CLAUDE-INSTALL-* and CLAUDE-LIFECYCLE-* cells; status starts not_executed_host_owned."
+    },
+    {
+      "id": "VT-017",
+      "name": "Exact Windows/macOS/Linux evidence matrix",
+      "kind": "release-candidate native execution",
+      "exact_evidence_cells": [
+        "CORE-WINDOWS-{osBuild}-{arch}-{buildIdentity}",
+        "CORE-MACOS-{osVersion}-{arch}-{buildIdentity}",
+        "CORE-LINUX-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "BUNDLE-WINDOWS-{osBuild}-{arch}-{buildIdentity}",
+        "BUNDLE-MACOS-{osVersion}-{arch}-{buildIdentity}",
+        "BUNDLE-LINUX-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "CODEX-INSTALL-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildIdentity}",
+        "CODEX-INSTALL-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildIdentity}",
+        "CODEX-INSTALL-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "CODEX-LIFECYCLE-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildA}-{buildB}",
+        "CODEX-LIFECYCLE-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "CODEX-LIFECYCLE-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "CLAUDE-INSTALL-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildIdentity}",
+        "CLAUDE-INSTALL-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildIdentity}",
+        "CLAUDE-INSTALL-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "CLAUDE-LIFECYCLE-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildA}-{buildB}",
+        "CLAUDE-LIFECYCLE-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "CLAUDE-LIFECYCLE-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "CROSS-HOST-INDEPENDENCE-WINDOWS-{osBuild}-{arch}-{codexVersion}-{claudeVersion}-{buildIdentity}",
+        "CROSS-HOST-INDEPENDENCE-MACOS-{osVersion}-{arch}-{codexVersion}-{claudeVersion}-{buildIdentity}",
+        "CROSS-HOST-INDEPENDENCE-LINUX-{distribution}-{osVersion}-{arch}-{codexVersion}-{claudeVersion}-{buildIdentity}"
+      ],
+      "receipt_fields": ["cellId", "status", "buildIdentity", "surface/operations", "host/version/scope", "exact OS/version/build/architecture", "Node executable/version", "fixture/harness digest", "actions/commands", "protocol/stdout/stderr refs", "journal/run/process/port/state refs", "invalidation triggers"],
+      "claim_gate": "Every placeholder is replaced with recorded exact values at execution; every cell begins not executed and proves only itself."
+    },
+    {
+      "id": "VT-018",
+      "name": "Evidence registry invalidation and readiness-rollup refusal",
+      "kind": "automated release policy",
+      "assertions": ["cell key completeness", "missing/failed/blocked/unsupported/stale visibility", "build/schema/Skill/manifest/host/OS invalidation", "CLI != MCP", "Codex != Claude", "install != lifecycle", "one OS != another", "capabilities/docs expose exact evidence refs only"],
+      "evidence": "Rollup fixtures with intentional missing/stale cells and no broad ready boolean."
+    },
+    {
+      "id": "VT-019",
+      "name": "Deferred/dropped capability exclusion guards",
+      "kind": "automated negative surface scan",
+      "assertions": ["five-field deferral records remain complete", "adoption.apply and medium-risk Agent execution absent", "remote/UI/native/enterprise surfaces absent", "high/destructive/force/remove/risky/reset/raw/follow absent from public Agent", "external termination absent", "exactly-once claim absent", "production/remote target absent", "preserved CLI/local/read/recovery behaviors still present"],
+      "evidence": "Registry/schema/tools/capabilities/Skill/Plugin/docs scans and negative call traces."
+    },
+    {
+      "id": "VT-020",
+      "name": "Repository baseline and published-entrypoint regression",
+      "kind": "automated baseline/package",
+      "assertions": ["npm run check", "npm test", "existing smoke/package checks exposed by live package scripts", "package bin/published allowlist", "no unrelated repository/package-boundary movement", "existing CLI-only routes remain compatible"],
+      "evidence": "Command receipts, package inventory, CLI fixture diff, and repository-root provenance."
+    }
+  ],
+  "deferrals_and_exclusions": {
+    "user_confirmed_deferrals": [
+      {
+        "capability_ref": "CAP-014",
+        "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+        "exact_excluded_behavior": "First-release adoption.apply and every automatic project/user configuration write, registry mutation, or implicit task start.",
+        "residual_risk": "Users receive inspection and a proposed plan only; adoption remains manual until a separately reviewed digest/confirmation contract exists.",
+        "reopen_or_stop_condition": "Stop and reopen specification if adoption writes or apply become a required delivery outcome.",
+        "downstream_artifact": "Generated tasks implement adoption.inspect plus zero-write/absence guards only; tasks.md must not contain adoption.apply implementation.",
+        "does_not_remove": "CAP-010 adoption.inspect and manual existing adoption/configuration workflows outside the public Agent apply surface.",
+        "task_refs": ["TB-007", "TB-015"],
+        "validation_refs": ["VT-007", "VT-019"],
+        "ca_refs": ["CA-030", "CA-031"]
+      },
+      {
+        "capability_ref": "CAP-015",
+        "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+        "exact_excluded_behavior": "First-release public MCP and Skill-fallback execution for medium-risk tasks.",
+        "residual_risk": "Medium-risk configured tasks remain available only through existing standalone CLI policy and are not an Agent fallback target.",
+        "reopen_or_stop_condition": "Stop and reopen when a target host proves a portable human-elicitation contract and medium-risk Agent execution is requested.",
+        "downstream_artifact": "Generated tasks prove low-risk-only MCP/Skill refusal and preserve future digest-bound confirmation semantics as documentation only.",
+        "does_not_remove": "Existing CLI medium-risk behavior or the future prepare/confirm/revalidate design record.",
+        "task_refs": ["TB-002", "TB-010", "TB-015"],
+        "validation_refs": ["VT-003", "VT-010", "VT-019"],
+        "ca_refs": ["CA-018", "CA-019"]
+      },
+      {
+        "capability_ref": "CAP-016",
+        "confirmation_source": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json#/quality_gate/confirmed_digest",
+        "exact_excluded_behavior": "Remote MCP/OAuth, hooks, MCP UI, GUI/TUI, native executable packaging, enterprise managed policy, and production/remote service control.",
+        "residual_risk": "First-release use requires local Node 20+ and stdio host integration; no remote or visual management surface exists.",
+        "reopen_or_stop_condition": "Stop and create a new specification if any deferred surface becomes a required delivery outcome or readiness claim.",
+        "downstream_artifact": "Generated tasks and release evidence contain no implementation or readiness rollup for these surfaces.",
+        "does_not_remove": "Local CLI, local stdio MCP, canonical Skill, Node-based Codex/Claude Plugins, or local configured-project lifecycle management.",
+        "task_refs": ["TB-013", "TB-015"],
+        "validation_refs": ["VT-013", "VT-019"],
+        "ca_refs": ["CA-033", "CA-034", "CA-039", "CA-050"]
+      }
+    ],
+    "dropped_exclusion_guards": [
+      {
+        "capability_ref": "CAP-017",
+        "excluded_behavior": "High/destructive public MCP, force-stop, project removal, risky clean, reset, arbitrary shell/env/cwd/force, model confirmation fields, and permanent follow.",
+        "does_not_remove": "Existing backward-compatible CLI-only force/risky/project-management/follow routes; they remain outside tools/list, capabilities.agentOperations, Skill fallback, and Plugin manifests.",
+        "guard": "VT-001/009/010/019 must prove recursive input and operation absence plus preserved CLI-only fixtures.",
+        "stop_and_reopen_condition": "A new reviewed safety contract explicitly adds any excluded public Agent capability."
+      },
+      {
+        "capability_ref": "CAP-018",
+        "excluded_behavior": "External-process termination or mutation based on port/PID alone.",
+        "does_not_remove": "project.inspect, task.status, conflict diagnosis, and bounded evidence for external/unknown processes.",
+        "guard": "VT-003/004/019 must prove inspectability and survival under every mutation attempt.",
+        "stop_and_reopen_condition": "Ownership semantics are explicitly redefined in a new discussion/specification."
+      },
+      {
+        "capability_ref": "CAP-019",
+        "excluded_behavior": "Absolute/universal exactly-once execution guarantees.",
+        "does_not_remove": "Operation IDs, prepared-before-effects journal, same-ID recovery, resource-aware idempotency, explicit indeterminate outcomes, and get/list/reconcile.",
+        "guard": "VT-005/018/019 must prove no replay while retaining explicit possible/unknown effects and no exactly-once marketing language.",
+        "stop_and_reopen_condition": "A separately bounded operation class proves stronger semantics without changing the general promise."
+      },
+      {
+        "capability_ref": "CAP-020",
+        "excluded_behavior": "Production or remote service management.",
+        "does_not_remove": "Local configured-project lifecycle operations and local Codex/Claude Plugin use.",
+        "guard": "VT-003/009/010/019 must prove no remote target/auth/transport/production operation or Skill route exists.",
+        "stop_and_reopen_condition": "Remote/production control is requested under a new trust, authentication, policy, and evidence contract."
+      }
+    ]
+  },
+  "coverage_gaps": [
+    {
+      "id": "OVC-GAP-001",
+      "owner": "task compilation and implementation",
+      "gap": "No operation journal, operation list/get/reconcile routes, deterministic fault points, or readiness evidence registry exists in current live code.",
+      "claim_gate": "VT-005, VT-014, VT-017, and VT-018 remain required tasks; recovery/lifecycle/readiness cannot be marked complete from planning artifacts."
+    },
+    {
+      "id": "OVC-GAP-002",
+      "owner": "MCP/build implementation",
+      "gap": "The MCP SDK, Zod, esbuild, node-semver, stdio server, bundle, compatibility manifest, and generated Plugin artifacts are not present in current package evidence.",
+      "claim_gate": "VT-009, VT-012, and VT-013 must execute against the shipped artifact before any MCP/bundle claim."
+    },
+    {
+      "id": "OVC-GAP-003",
+      "owner": "CLI/Kernel implementation",
+      "gap": "Current CLI is the orchestration composition root; shared routes have not been cut over to the Kernel or proven semantically equivalent.",
+      "claim_gate": "VT-002 and VT-020 must preserve schemaVersion 1 and existing CLI-only routes."
+    },
+    {
+      "id": "OVC-GAP-004",
+      "owner": "Skill/installer implementation",
+      "gap": "The canonical Skill remains CLI-reference based and the installer still permits forced divergent overwrite and legacy Codex user targeting.",
+      "claim_gate": "VT-010/011 must prove MCP-first routing and non-destructive current/legacy/plugin handling."
+    },
+    {
+      "id": "OVC-GAP-005",
+      "owner": "host verification",
+      "gap": "No real Codex or Claude installation/routing/update/disable/uninstall/takeover receipt exists on any OS.",
+      "claim_gate": "All VT-015/016/017 host cells start not executed; SU-002 remains open for each exact cell."
+    },
+    {
+      "id": "OVC-GAP-006",
+      "owner": "release support policy",
+      "gap": "Exact supported Windows/macOS/Linux versions, architectures, host versions, and installation scopes are not pinned.",
+      "claim_gate": "Replace VT-017 placeholders with exact support dimensions before execution and never broaden a passed cell."
+    },
+    {
+      "id": "OVC-GAP-007",
+      "owner": "Kernel/control-plane implementation",
+      "gap": "Current synchronous and asynchronous lifecycle locks differ, and stable observation cursors/canonical input-digest fixtures do not exist.",
+      "claim_gate": "Lock authority, cursor, and digest contract tests must pass before shared mutation cutover."
+    },
+    {
+      "id": "OVC-GAP-008",
+      "owner": "project cognition maintenance",
+      "gap": "Project cognition graph is missing/stale; plan ownership claims rely on bounded live repository evidence.",
+      "claim_gate": "Task compilation and implementation must recheck touched live owners; reopen if evidence contradicts the one-authority map."
+    }
+  ],
+  "stop_and_reopen": [
+    "Any CLI, MCP, Skill, or Plugin path requires a second lifecycle backend, state namespace, policy authority, or Plugin-owned task lifetime.",
+    "CLI schemaVersion 1 public field/status/compact/exit-code compatibility cannot be preserved while mapping Kernel results.",
+    "A first-release public Agent requirement adds medium/high/destructive execution, arbitrary shell/env/cwd/force, risky clean, external termination, permanent follow, or remote/production control.",
+    "adoption.apply, configuration writes, registry mutation, or implicit task start becomes first-release scope.",
+    "A host cannot launch the isolated prebuilt Node 20 runtime without global Launchdeck, npx, install script, Plugin-local node_modules, or external runtime assets.",
+    "Journal/lock design cannot durably persist prepared before effects or cannot prevent replay of indeterminate work.",
+    "A real Codex/Claude host contract contradicts the generated path/manifest strategy and cannot be fixed within policy-free host templates.",
+    "Live repository evidence contradicts existing registry/run/ownership/state authority or requires moving implementation outside F:/github/launchdeck.",
+    "Any requested release statement exceeds exact current evidence cells."
+  ],
+  "unmapped_items": {
+    "CA": [],
+    "MP": [],
+    "CAP": [],
+    "AC": [],
+    "coverage_accounting": {
+      "CA_expected": 50,
+      "CA_mapped": 50,
+      "MP_expected": 8,
+      "MP_mapped": 8,
+      "CAP_expected": 20,
+      "CAP_mapped": 20,
+      "AC_expected": 16,
+      "AC_mapped": 16
+    }
+  },
+  "blockers": [],
+  "integration_targets": [
+    {
+      "target": "tasks.md",
+      "need": "Compile TB-001 through TB-015 into dependency-ordered implementation and validation tasks; preserve complete first-release scope, all five-field deferrals, all four exclusion guards, and every claim gate."
+    },
+    {
+      "target": "task-index.json",
+      "need": "Index every generated task against exact CA/MP/CAP/AC refs, validation task refs, real-entrypoint paths, phase owner, and deferred/dropped disposition without treating evidence tasks as implementation completion."
+    },
+    {
+      "target": "contract and Kernel task group",
+      "need": "Own TB-001..TB-007 and VT-001/003/004/005/006/007/008 before adapter cutover; one Kernel/state authority is a hard dependency."
+    },
+    {
+      "target": "CLI and MCP adapter task group",
+      "need": "Own TB-008/TB-009 and VT-002/009 using RP-CLI and RP-MCP real entrypoints, preserving CLI compatibility and real stdio evidence separately."
+    },
+    {
+      "target": "Skill and installer task group",
+      "need": "Own TB-010/TB-011 and VT-010/011, including real ordered traces, current/legacy/plugin digest matrix, and narrow fallback boundary."
+    },
+    {
+      "target": "compatibility, build, and Plugin task group",
+      "need": "Own TB-012/TB-013 and VT-012/013; generated Codex/Claude contents may pass generation before real-host readiness but must never be labeled host-ready."
+    },
+    {
+      "target": "host and release-evidence task group",
+      "need": "Own TB-014 and VT-014..VT-018; create exact host/OS/build cells, retain not-executed/blocked/unsupported states, and gate rollups."
+    },
+    {
+      "target": "deferral/exclusion guard task group",
+      "need": "Own TB-015 and VT-019, ensuring CAP-014..016 five-field records and CAP-017..020 does-not-remove boundaries are visible in generated tasks and acceptance review."
+    },
+    {
+      "target": "acceptance review",
+      "need": "Reject completion if any CA/MP/CAP/AC becomes unmapped, if any real-entrypoint chain is replaced solely by handler/mock evidence, or if a readiness claim lacks exact evidence-cell receipts."
+    }
+  ]
+}

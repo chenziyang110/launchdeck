@@ -1,0 +1,28 @@
+{
+  "forbiddenKeys": [
+    "adoption",
+    "authorization",
+    "clean",
+    "fallback",
+    "journal",
+    "launchdeckHome",
+    "managedTaskLifetime",
+    "operations",
+    "ownership",
+    "policy",
+    "projectRoot",
+    "retry",
+    "risk",
+    "state",
+    "stateHome"
+  ],
+  "forbiddenRuntimeTokens": [
+    "node_modules",
+    "npx ",
+    "npm install",
+    "postinstall",
+    "launchdeck-mcp --global",
+    "http://",
+    "https://"
+  ]
+}

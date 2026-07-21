@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   createSampleConfig,
   findConfig,
@@ -40,8 +40,11 @@ import {
   resolveRegisteredProject
 } from './global-runtime.js';
 import {
+  applySafeCleanPlan,
+  buildSafeCleanPlan,
   cleanTargets,
   listProcesses,
+  observeTaskOwnership,
   readState,
   resolveCleanTargets,
   runtimePaths,
@@ -50,8 +53,17 @@ import {
   tailLog,
 } from './runtime.js';
 import { reconcileManagedRuns, stopManagedRun, restartManagedRun } from './control-plane/actions.js';
-import { readRunIndex, startManagedRun } from './control-plane/runs.js';
+import { createRunContext, readRunIndex, startManagedRun } from './control-plane/runs.js';
 import { eventsPath, readEvents, redactLogLine } from './control-plane/events.js';
+import { mapCliInvocation } from './adapters/cli-operation-map.js';
+import { createApplicationKernel } from './kernel/application-kernel.js';
+import { createCapabilitiesHandlers } from './kernel/operations/capabilities.js';
+import { createProjectHandlers } from './kernel/operations/project.js';
+import { createTaskHandlers, toTaskInventoryItem } from './kernel/operations/task.js';
+import { createAdoptionHandlers } from './kernel/operations/adoption.js';
+import { createOperationHandlers } from './kernel/operations/operation.js';
+import { createCleanHandlers } from './kernel/operations/clean.js';
+import { createOperationJournal } from './control-plane/operation-journal.js';
 
 const LIFECYCLE_ALIASES = new Set([
   'setup',
@@ -90,12 +102,20 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
       return initCommand(options, io);
     }
 
+    if (command === 'capabilities') {
+      return await capabilitiesCommand(options, io);
+    }
+
+    if (command === 'diagnose') {
+      return await diagnoseCommand(options, io);
+    }
+
     if (command === 'doctor') {
       return doctorCommand(options, io);
     }
 
     if (command === 'tasks') {
-      return tasksCommand(options, io);
+      return await tasksCommand(options, io);
     }
 
     if (command === 'project') {
@@ -107,7 +127,15 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
     }
 
     if (command === 'projects') {
-      return projectsCommand(options, io);
+      return await projectsCommand(options, io);
+    }
+
+    if (command === 'adoption') {
+      return await adoptionCommand(positionals, options, io);
+    }
+
+    if (command === 'operation') {
+      return await operationCommand(positionals, options, io);
     }
 
     if (command === 'status') {
@@ -159,7 +187,7 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
     }
 
     if (command === 'clean') {
-      return cleanCommand(options, io);
+      return await cleanCommand(options, io);
     }
 
     if (command === 'run') {
@@ -239,9 +267,78 @@ function doctorCommand(options, io) {
   return report.status === 'error' ? 1 : 0;
 }
 
-function tasksCommand(options, io) {
+async function capabilitiesCommand(options, io) {
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['capabilities'],
+    options
+  });
+  if (options.json) {
+    writeJson(io, createSuccessEnvelope('capabilities', { agentResult }));
+  } else {
+    const operations = agentResult.resource.data?.operations ?? [];
+    write(io, `Launchdeck Agent capabilities: ${operations.length} operations (${agentResult.resource.data?.riskBoundary ?? 'unknown'} risk boundary)\n`);
+    for (const operation of operations) {
+      write(io, `- ${operation.name} (${operation.kind})\n`);
+    }
+  }
+  return 0;
+}
+
+async function diagnoseCommand(options, io) {
+  const stateHome = globalRuntimePaths().homeDir;
+  const configPath = findConfig(process.cwd());
+  const diagnosticChecks = {
+    runtime: () => ({ status: 'healthy', code: 'runtime_available', nodeVersion: process.version }),
+    compatibility: () => ({
+      status: 'healthy',
+      code: 'compatibility_manifest_loaded',
+      buildIdentity: cliAgentProvenance().buildIdentity
+    }),
+    state: () => ({
+      status: fs.existsSync(stateHome) ? 'healthy' : 'unavailable',
+      code: fs.existsSync(stateHome) ? 'state_home_available' : 'state_home_not_created'
+    }),
+    registry: () => ({ status: 'healthy', code: 'registry_readable', projectCount: listRegisteredProjects().length }),
+    journal: () => ({ status: 'healthy', code: 'journal_authority_available' }),
+    skill: () => ({
+      status: fs.existsSync(new URL('../.agents/skills/launchdeck-agent/SKILL.md', import.meta.url)) ? 'healthy' : 'unavailable',
+      code: fs.existsSync(new URL('../.agents/skills/launchdeck-agent/SKILL.md', import.meta.url))
+        ? 'canonical_skill_available'
+        : 'canonical_skill_unavailable'
+    }),
+    project: () => ({
+      status: configPath ? 'healthy' : 'unavailable',
+      code: configPath ? 'project_config_available' : 'project_config_not_found'
+    }),
+    transport: () => ({ status: 'healthy', code: 'standalone_cli_available' })
+  };
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['diagnose'],
+    options,
+    capabilitiesOptions: { diagnosticChecks }
+  });
+  const checks = agentResult.resource.data?.checks ?? {};
+  if (options.json) {
+    writeJson(io, createSuccessEnvelope('diagnose', { checks, agentResult }));
+  } else {
+    write(io, `Launchdeck Agent diagnosis: ${agentResult.resource.status}\n`);
+    for (const [name, check] of Object.entries(checks)) {
+      write(io, `- ${name}: ${check.status ?? 'unknown'}\n`);
+    }
+  }
+  return 0;
+}
+
+async function tasksCommand(options, io) {
   const config = loadConfig(process.cwd());
   const tasks = Object.values(config.tasks).map(toTaskInventoryItem);
+  const project = cliProject(config);
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['tasks'],
+    options,
+    project,
+    taskHandlers: createTaskHandlers({ listTasks: async () => tasks })
+  });
   if (options.json) {
     writeJson(
       io,
@@ -249,7 +346,8 @@ function tasksCommand(options, io) {
         'tasks',
         {
           project: config.project,
-          tasks
+          tasks,
+          agentResult
         },
         config
       )
@@ -417,11 +515,17 @@ function agentCommand(positionals, options, io) {
   });
 }
 
-function projectsCommand(options, io) {
+async function projectsCommand(options, io) {
   const projects = listRegisteredProjects();
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['projects'],
+    options,
+    projectHandlers: createProjectHandlers({ listProjects: async () => projects })
+  });
   const payload = {
     registryPath: globalRuntimePaths().registryPath,
-    projects
+    projects,
+    agentResult
   };
   if (options.json) {
     writeJson(io, createSuccessEnvelope('projects', payload));
@@ -434,6 +538,108 @@ function projectsCommand(options, io) {
     }
   }
   return 0;
+}
+
+async function adoptionCommand(positionals, options, io) {
+  if (positionals[1] !== 'inspect') {
+    throw new LaunchdeckError('unknown_command', `Unknown adoption command '${positionals[1] ?? ''}'.`, {
+      command: 'adoption',
+      supportedCommands: ['inspect']
+    });
+  }
+  const config = loadConfig(process.cwd());
+  const project = cliProject(config);
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['adoption', 'inspect'],
+    options,
+    project,
+    adoptionHandlers: createAdoptionHandlers()
+  });
+  const payload = {
+    ...(agentResult.resource.data ?? {}),
+    agentResult
+  };
+  if (options.json) {
+    writeJson(io, createSuccessEnvelope('adoption.inspect', payload, config));
+  } else {
+    const evidence = agentResult.resource.data?.evidence;
+    write(io, `Adoption preview: ${evidence?.files?.length ?? 0} files inspected; no changes applied.\n`);
+  }
+  return 0;
+}
+
+async function operationCommand(positionals, options, io) {
+  const subcommand = positionals[1];
+  if (!['list', 'get', 'reconcile'].includes(subcommand)) {
+    throw new LaunchdeckError('unknown_command', `Unknown operation command '${subcommand ?? ''}'.`, {
+      command: 'operation',
+      supportedCommands: ['list', 'get', 'reconcile']
+    });
+  }
+
+  const journal = createOperationJournal({ env: process.env });
+  let project;
+  if (subcommand === 'list') {
+    const projectTarget = positionals[2];
+    if (!projectTarget) {
+      throw new LaunchdeckError('invalid_arguments', '`launchdeck operation list` requires a registered project target.');
+    }
+    project = normalizeCliProject(resolveRegisteredProject(projectTarget));
+    const before = options.createdBefore ?? new Date().toISOString();
+    options = {
+      ...options,
+      operationName: options.operationName ?? 'task.start',
+      createdBefore: before,
+      createdAfter: options.createdAfter ?? new Date(Date.parse(before) - 15 * 60 * 1000).toISOString(),
+      states: options.states ?? ['prepared', 'running', 'succeeded', 'failed', 'refused', 'indeterminate', 'reconciled'],
+      limit: options.limit ?? 20
+    };
+  } else {
+    const operationId = positionals[2];
+    if (!operationId) {
+      throw new LaunchdeckError('invalid_arguments', `\`launchdeck operation ${subcommand}\` requires an operation id.`);
+    }
+    try {
+      const record = await journal.get(operationId);
+      const projectRef = record.projectRef ?? {};
+      project = {
+        id: projectRef.projectId ?? projectRef.alias,
+        projectId: projectRef.projectId ?? projectRef.alias,
+        alias: projectRef.alias,
+        name: projectRef.alias ?? projectRef.projectId
+      };
+    } catch {
+      project = undefined;
+    }
+  }
+
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['operation', subcommand, subcommand === 'list' ? undefined : positionals[2]].filter((entry) => entry !== undefined),
+    options,
+    project,
+    operationHandlers: createOperationHandlers({ journal })
+  });
+  const payload = { ...(agentResult.resource.data ?? {}), agentResult };
+  if (options.json) {
+    if (agentResult.outcome.kind === 'succeeded') {
+      writeJson(io, createSuccessEnvelope(`operation.${subcommand}`, payload));
+    } else {
+      const error = new LaunchdeckError(
+        agentResult.error?.code ?? agentResult.outcome.code,
+        agentResult.error?.message ?? agentResult.outcome.message,
+        agentResult.error?.details ?? {}
+      );
+      writeJson(io, createFailureEnvelope(`operation.${subcommand}`, error, {}, payload));
+    }
+  } else if (subcommand === 'list') {
+    const records = agentResult.resource.data?.records ?? [];
+    write(io, `Found ${records.length} operation record(s).\n`);
+    for (const record of records) write(io, `- ${record.operationId}: ${record.state}\n`);
+  } else {
+    const record = agentResult.resource.data?.record;
+    write(io, `Operation ${record?.operationId ?? positionals[2]}: ${record?.state ?? agentResult.resource.status}\n`);
+  }
+  return agentResult.outcome.kind === 'succeeded' ? 0 : 1;
 }
 
 async function statusCommand(options, io) {
@@ -485,6 +691,61 @@ async function runCommand(taskName, options, io) {
 async function runConfiguredTask(taskName, options, io, metadata = {}) {
   const config = loadConfig(process.cwd());
   const task = requireTask(config, taskName);
+  if (isSharedLifecycleTask(task)) {
+    const operation = task.longRunning ? 'task.start' : 'task.run';
+    const executed = await executeSharedTaskMutation({
+      operation,
+      positionals: [metadata.alias ?? 'run', taskName],
+      options,
+      config,
+      taskName,
+      task,
+      project: cliProject(config),
+      global: false
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure('run', executed.agentResult, options, io, config, {
+        task: taskName,
+        ...metadata
+      }, executed.legacy.ownership);
+    }
+    if (task.longRunning) {
+      const processInfo = executed.legacy.run;
+      writeTaskStart(processInfo, options, io, {
+        command: 'run',
+        context: config,
+        payload: {
+          task: taskName,
+          ...metadata,
+          agentResult: executed.agentResult
+        }
+      });
+      return 0;
+    }
+    const result = executed.legacy.runResult;
+    if (options.json) {
+      const payload = {
+        task: taskName,
+        ...metadata,
+        ...result,
+        agentResult: executed.agentResult
+      };
+      if (result.code === 0) {
+        writeJson(io, createSuccessEnvelope('run', payload, config));
+      } else {
+        writeJson(io, createFailureEnvelope(
+          'run',
+          new LaunchdeckError('task_command_failed', `Task '${taskName}' exited with code ${result.code}.`, {
+            task: taskName,
+            code: result.code
+          }),
+          config,
+          payload
+        ));
+      }
+    }
+    return result.code;
+  }
   if (task.longRunning) {
     const processInfo = await startManagedRunWithContext(taskName, task, config, {
       beforeStart: () => assertTaskPortsAvailable(config, taskName, task)
@@ -537,6 +798,34 @@ async function startCommand(taskName, options, io, commandName = 'start') {
   const resolvedTaskName = taskName ?? (config.tasks.start ? 'start' : 'dev');
   const task = requireTask(config, resolvedTaskName);
   requireManagedTask(config, resolvedTaskName, task);
+  if (isSharedLifecycleTask(task)) {
+    const executed = await executeSharedTaskMutation({
+      operation: 'task.start',
+      positionals: [commandName, resolvedTaskName],
+      options,
+      config,
+      taskName: resolvedTaskName,
+      task,
+      project: cliProject(config),
+      global: false
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure(commandName, executed.agentResult, options, io, config, {
+        task: resolvedTaskName
+      }, executed.legacy.ownership);
+    }
+    const processInfo = executed.legacy.run;
+    writeTaskStart(processInfo, options, io, {
+      command: commandName,
+      context: config,
+      payload: {
+        task: resolvedTaskName,
+        readiness: processInfo.readiness,
+        agentResult: executed.agentResult
+      }
+    });
+    return 0;
+  }
   const processInfo = await startManagedRunWithContext(resolvedTaskName, task, config, {
     beforeStart: () => assertTaskPortsAvailable(config, resolvedTaskName, task)
   });
@@ -560,6 +849,55 @@ async function restartCommand(taskName, options, io) {
   const resolvedTaskName = taskName ?? (config.tasks.start ? 'start' : 'dev');
   const task = requireTask(config, resolvedTaskName);
   requireManagedTask(config, resolvedTaskName, task);
+
+  if (isSharedLifecycleTask(task)) {
+    const executed = await executeSharedTaskMutation({
+      operation: 'task.restart',
+      positionals: ['restart', resolvedTaskName],
+      options,
+      config,
+      taskName: resolvedTaskName,
+      task,
+      project: cliProject(config),
+      global: false
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure('restart', executed.agentResult, options, io, config, {
+        task: resolvedTaskName
+      }, executed.legacy.ownership);
+    }
+    const legacy = executed.legacy.restart;
+    if (executed.agentResult.outcome.kind === 'partial' || executed.agentResult.outcome.kind === 'failed') {
+      if (!options.json) throw legacy.error;
+      if (legacy.error?.code === 'port_release_timeout') {
+        writeJson(io, createFailureEnvelope('restart', legacy.error, config, {
+          agentResult: executed.agentResult
+        }));
+        return 1;
+      }
+      const results = legacy.phase === 'start'
+        ? [
+            { task: resolvedTaskName, ok: true, status: 'stopped' },
+            { task: resolvedTaskName, ok: false, status: 'start_failed', error: legacy.error }
+          ]
+        : [{ task: resolvedTaskName, ok: false, status: 'stop_failed', error: legacy.error }];
+      writeJson(io, createPartialEnvelope('restart', results, config, {
+        agentResult: executed.agentResult
+      }));
+      return 1;
+    }
+    const processInfo = legacy.startedRun;
+    writeTaskStart(processInfo, options, io, {
+      command: 'restart',
+      context: config,
+      payload: {
+        task: resolvedTaskName,
+        readiness: processInfo.readiness,
+        agentResult: executed.agentResult
+      }
+    });
+    return 0;
+  }
 
   let stopped;
   try {
@@ -748,9 +1086,22 @@ async function inspectCommand(rawTarget, options, io) {
     throw new LaunchdeckError('invalid_arguments', '`launchdeck inspect` requires a target.');
   }
 
-  const result = await inspectTarget(rawTarget);
+  let result;
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['inspect', rawTarget],
+    options,
+    projectResolver: async () => {
+      result = await inspectTarget(rawTarget);
+      const project = normalizeCliProject(result.project);
+      return project ? resolvedCliProjectContext(project) : unresolvedCliProjectContext();
+    },
+    projectHandlers: createProjectHandlers({
+      inspectProject: async () => result ?? inspectTarget(rawTarget)
+    })
+  });
+  result ??= await inspectTarget(rawTarget);
   if (options.json) {
-    writeJson(io, createSuccessEnvelope('inspect', result));
+    writeJson(io, createSuccessEnvelope('inspect', { ...result, agentResult }));
   } else {
     write(io, `Inspect ${result.target.raw ?? rawTarget}: ${result.classification ?? result.status ?? 'unknown'}\n`);
     if (result.project) {
@@ -779,8 +1130,8 @@ async function logsCommand(taskName, options, io) {
 
   const config = loadConfig(process.cwd());
   const resolvedTaskName = taskName ?? 'dev';
-  const result = tailLogWithContext(config.projectRoot, resolvedTaskName, options.lines, config);
   if (options.follow) {
+    const result = tailLogWithContext(config.projectRoot, resolvedTaskName, options.lines, config);
     return await followLog(result, {
       task: result.taskName,
       run: runForLog(config.projectRoot, result.taskName, result.logPath),
@@ -793,6 +1144,19 @@ async function logsCommand(taskName, options, io) {
       }
     }, options, io);
   }
+  let result;
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['logs', resolvedTaskName],
+    options,
+    project: cliProject(config),
+    taskHandlers: createTaskHandlers({
+      readTaskLogLines: async () => {
+        result = tailLogWithContext(config.projectRoot, resolvedTaskName, options.lines, config);
+        return splitObservationLines(result.content);
+      }
+    })
+  });
+  result ??= tailLogWithContext(config.projectRoot, resolvedTaskName, options.lines, config);
   if (options.json) {
     writeJson(
       io,
@@ -801,7 +1165,8 @@ async function logsCommand(taskName, options, io) {
         {
           task: result.taskName,
           logPath: result.logPath,
-          content: result.content
+          content: result.content,
+          agentResult
         },
         config
       )
@@ -845,6 +1210,20 @@ async function globalLogsCommand(target, options, io) {
     }, options, io);
   }
 
+  let boundedResult;
+  const agentResult = await executeCliAgentOperation({
+    positionals: ['logs', taskName],
+    options,
+    project: normalizeCliProject(projectPayload),
+    taskHandlers: createTaskHandlers({
+      readTaskLogLines: async () => {
+        boundedResult = result;
+        return splitObservationLines(result.content);
+      }
+    })
+  });
+  boundedResult ??= result;
+
   if (options.json) {
     writeJson(
       io,
@@ -854,7 +1233,8 @@ async function globalLogsCommand(target, options, io) {
           project: projectPayload,
           task: result.taskName,
           logPath: result.logPath,
-          content: result.content
+          content: result.content,
+          agentResult
         },
         config
       )
@@ -873,7 +1253,33 @@ async function eventsCommand(target, options, io) {
     return await followEvents(target, options, io, homeDir);
   }
 
-  const result = await readEvents({
+  let result;
+  let agentResult;
+  if (target) {
+    const scope = await resolveEventScope(target, homeDir);
+    agentResult = await executeCliAgentOperation({
+      positionals: ['events'],
+      options,
+      project: scope.project,
+      context: { taskRef: scope.taskRef, runId: scope.runId },
+      taskHandlers: createTaskHandlers({
+        readTaskEvents: async () => {
+          result = await readEvents({ homeDir, limit: 1_000 });
+          return {
+            events: limitEventHistory(filterEventsForTarget(result.events, target), options.lines),
+            warnings: result.warnings
+          };
+        }
+      })
+    });
+  } else {
+    agentResult = await executeCliAgentOperation({
+      positionals: ['events'],
+      options,
+      taskHandlers: createTaskHandlers()
+    });
+  }
+  result ??= await readEvents({
     homeDir,
     limit: target ? 1_000 : options.lines
   });
@@ -882,7 +1288,8 @@ async function eventsCommand(target, options, io) {
     target: target ?? 'all',
     events,
     warnings: result.warnings,
-    errors: result.errors
+    errors: result.errors,
+    ...(agentResult ? { agentResult } : {})
   };
   if (options.json) {
     writeJson(io, createSuccessEnvelope('events', payload));
@@ -894,6 +1301,32 @@ async function eventsCommand(target, options, io) {
     }
   }
   return result.errors.length > 0 && events.length === 0 ? 1 : 0;
+}
+
+async function resolveEventScope(target, homeDir) {
+  if (target.startsWith('run:')) {
+    const runId = target.slice('run:'.length);
+    const source = await readEvents({ homeDir, limit: 1_000 });
+    const event = [...source.events].reverse().find((entry) => entry.runId === runId);
+    if (!event?.projectId && !event?.alias) {
+      throw new LaunchdeckError('project_not_found', `No registered project scope was found for run '${runId}'.`, { runId });
+    }
+    const project = normalizeCliProject(resolveRegisteredProject(event.projectId ?? event.alias));
+    return { project, runId, taskRef: event.task };
+  }
+  if (isGlobalTaskTarget(target)) {
+    const { projectTarget, taskName } = parseGlobalTaskTarget(target);
+    return {
+      project: normalizeCliProject(resolveRegisteredProject(projectTarget)),
+      taskRef: taskName,
+      runId: undefined
+    };
+  }
+  return {
+    project: normalizeCliProject(resolveRegisteredProject(target)),
+    taskRef: undefined,
+    runId: undefined
+  };
 }
 
 async function followLog(logResult, context, options, io) {
@@ -1116,6 +1549,36 @@ async function startGlobalTaskCommand(target, options, io, commandName = 'start'
   const config = loadRegisteredConfig(project);
   const task = requireTask(config, taskName);
   requireManagedTask(config, taskName, task);
+  if (isSharedLifecycleTask(task)) {
+    const executed = await executeSharedTaskMutation({
+      operation: 'task.start',
+      positionals: [commandName, taskName],
+      options,
+      config,
+      taskName,
+      task,
+      project,
+      global: true
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure(commandName, executed.agentResult, options, io, config, {
+        project: { id: project.id, name: config.project.name },
+        task: taskName
+      }, executed.legacy.ownership);
+    }
+    const processInfo = executed.legacy.run;
+    writeTaskStart(processInfo, options, io, {
+      command: commandName,
+      context: config,
+      payload: {
+        project: { id: project.id, name: config.project.name },
+        task: taskName,
+        readiness: processInfo.readiness,
+        agentResult: executed.agentResult
+      }
+    });
+    return 0;
+  }
   const processInfo = await startManagedRunWithContext(taskName, task, config, {
     project,
     global: true,
@@ -1141,6 +1604,63 @@ async function startGlobalTaskCommand(target, options, io, commandName = 'start'
 }
 
 async function restartGlobalTaskCommand(target, options, io) {
+  const { projectTarget, taskName } = parseGlobalTaskTarget(target);
+  const project = resolveRegisteredProject(projectTarget);
+  const config = loadRegisteredConfig(project);
+  const task = requireTask(config, taskName);
+  requireManagedTask(config, taskName, task);
+  if (isSharedLifecycleTask(task)) {
+    const executed = await executeSharedTaskMutation({
+      operation: 'task.restart',
+      positionals: ['restart', taskName],
+      options,
+      config,
+      taskName,
+      task,
+      project,
+      global: true
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure('restart', executed.agentResult, options, io, config, {
+        project: { id: project.id, name: config.project.name },
+        task: taskName
+      }, executed.legacy.ownership);
+    }
+    const legacy = executed.legacy.restart;
+    if (executed.agentResult.outcome.kind === 'partial' || executed.agentResult.outcome.kind === 'failed') {
+      if (!options.json) throw legacy.error;
+      if (legacy.error?.code === 'port_release_timeout') {
+        writeJson(io, createFailureEnvelope('restart', legacy.error, config, {
+          agentResult: executed.agentResult
+        }));
+        return 1;
+      }
+      const results = legacy.phase === 'start'
+        ? [
+            { task: taskName, ok: true, status: 'stopped' },
+            { task: taskName, ok: false, status: 'start_failed', error: legacy.error }
+          ]
+        : [{ task: taskName, ok: false, status: 'stop_failed', error: legacy.error }];
+      writeJson(io, createPartialEnvelope('restart', results, config, {
+        agentResult: executed.agentResult
+      }));
+      return 1;
+    }
+    const result = {
+      project: normalizeCliProject(project),
+      task: taskName,
+      stoppedRun: legacy.stopped[0] ?? null,
+      startedRun: legacy.startedRun,
+      transactionId: legacy.transactionId,
+      agentResult: executed.agentResult
+    };
+    if (options.json) {
+      writeJson(io, createSuccessEnvelope('restart', result, config));
+    } else {
+      write(io, `Restarted ${result.project.name}:${result.task} (${result.startedRun.pid}).\n`);
+    }
+    return 0;
+  }
   const result = await restartManagedRun(target, { env: process.env });
   const context = lifecycleResultContext(result);
 
@@ -1153,6 +1673,46 @@ async function restartGlobalTaskCommand(target, options, io) {
 }
 
 async function stopGlobalTaskCommand(target, options, io) {
+  if (!options.forceOwned) {
+    const { projectTarget, taskName } = parseGlobalTaskTarget(target);
+    const project = resolveRegisteredProject(projectTarget);
+    const config = loadRegisteredConfig(project);
+    const task = requireTask(config, taskName);
+    if (isSharedLifecycleTask(task)) {
+      const executed = await executeSharedTaskMutation({
+        operation: 'task.stop',
+        positionals: ['stop', taskName],
+        options,
+        config,
+        taskName,
+        task,
+        project,
+        global: true
+      });
+      if (executed.agentResult.outcome.kind === 'refused') {
+        return writeAgentFailure('stop', executed.agentResult, options, io, config, {
+          project: { id: project.id, name: config.project.name },
+          task: taskName
+        }, executed.legacy.ownership);
+      }
+      const stopped = executed.legacy.stopped;
+      const payload = {
+        project: normalizeCliProject(project),
+        task: taskName,
+        stopped,
+        failed: [],
+        agentResult: executed.agentResult
+      };
+      if (options.json) {
+        writeJson(io, createSuccessEnvelope('stop', payload, config));
+      } else if (stopped.length === 0) {
+        write(io, `No managed process found for ${target}.\n`);
+      } else {
+        write(io, `Stopped ${payload.project.name}:${taskName} (${stopped[0].pid}).\n`);
+      }
+      return 0;
+    }
+  }
   return stopGlobalLifecycleCommand(target, options, io, 'stop', { forceOwned: options.forceOwned });
 }
 
@@ -1187,6 +1747,42 @@ async function stopCommand(taskName, options, io) {
   }
 
   const config = loadConfig(process.cwd());
+  const task = taskName ? config.tasks[taskName] : undefined;
+  if (taskName && !options.forceOwned && isSharedLifecycleTask(task)) {
+    const executed = await executeSharedTaskMutation({
+      operation: 'task.stop',
+      positionals: ['stop', taskName],
+      options,
+      config,
+      taskName,
+      task,
+      project: cliProject(config),
+      global: false
+    });
+    if (executed.agentResult.outcome.kind === 'refused') {
+      return writeAgentFailure(
+        'stop',
+        executed.agentResult,
+        options,
+        io,
+        config,
+        { task: taskName },
+        executed.legacy.ownership
+      );
+    }
+    const stopped = executed.legacy.stopped;
+    if (options.json) {
+      writeJson(io, createSuccessEnvelope('stop', {
+        process: stopped[0],
+        agentResult: executed.agentResult
+      }, config));
+    } else if (stopped.length === 0) {
+      write(io, `No managed process found for ${taskName}.\n`);
+    } else {
+      write(io, `Stopped ${stopped[0].name} (${stopped[0].pid}).\n`);
+    }
+    return 0;
+  }
   let stopped;
   try {
     stopped = stopManagedTasksWithContext(config.projectRoot, taskName, config);
@@ -1228,40 +1824,29 @@ async function stopCommand(taskName, options, io) {
   return 0;
 }
 
-function cleanCommand(options, io) {
+async function cleanCommand(options, io) {
   const config = loadConfig(process.cwd());
-  const mode = options.all
-    ? 'all'
-    : options.safe
-      ? 'safe'
-      : 'dry-run';
-  const planMode = mode === 'safe' ? 'safe' : 'all';
-  const targets = resolveCleanTargets(config.projectRoot, config.clean, planMode);
-  const refused = targets.find((target) => target.status === 'refused');
+  if (options.all) return cleanAllCommand(config, options, io);
 
-  if (refused) {
-    const error = new LaunchdeckError(
-      refused.refusalCode,
-      cleanRefusalMessage(refused),
-      {
-        rawPath: refused.rawPath ?? refused.path,
-        resolvedPath: refused.resolvedPath ?? refused.absolutePath,
-        canonicalPath: refused.canonicalPath
-      }
-    );
-    const payload = {
-      dryRun: true,
+  const mode = options.safe ? 'safe' : 'dry-run';
+  const preview = await executeSharedCleanOperation({
+    operation: 'clean.plan',
+    config,
+    options
+  });
+  const plan = preview.resource.data;
+  const targets = cleanLegacyTargets(plan, mode);
+  const refused = plan.refusals?.[0];
+
+  if (preview.outcome.kind !== 'succeeded' || refused) {
+    return writeCleanAgentFailure({
+      config,
+      options,
+      io,
       mode,
       targets,
-      removed: []
-    };
-    if (options.json) {
-      writeJson(io, createFailureEnvelope('clean', error, config, payload));
-    } else {
-      writeError(io, `launchdeck: [${refused.refusalCode}] ${error.message}\n`);
-      writeCleanTargets(io, targets);
-    }
-    return 1;
+      agentResult: preview
+    });
   }
 
   if (mode === 'dry-run') {
@@ -1269,7 +1854,9 @@ function cleanCommand(options, io) {
       dryRun: true,
       mode,
       targets,
-      removed: []
+      removed: [],
+      planDigest: plan.planDigest,
+      agentResult: preview
     };
     if (options.json) {
       writeJson(io, createSuccessEnvelope('clean', payload, config));
@@ -1280,27 +1867,25 @@ function cleanCommand(options, io) {
     return 0;
   }
 
-  if (options.all && !options.yes) {
-    const error = new LaunchdeckError('confirmation_required', '`launchdeck clean --all` requires --yes.');
-    const payload = {
-      dryRun: true,
+  const applied = await executeSharedCleanOperation({
+    operation: 'clean.applySafe',
+    config,
+    options,
+    planDigest: plan.planDigest
+  });
+  if (applied.outcome.kind !== 'succeeded') {
+    return writeCleanAgentFailure({
+      config,
+      options,
+      io,
       mode,
-      targets,
-      removed: []
-    };
-    if (options.json) {
-      writeJson(io, createFailureEnvelope('clean', error, config, payload));
-    } else {
-      writeError(io, `launchdeck: [${error.code}] ${error.message}\n`);
-      writeCleanTargets(io, targets);
-    }
-    return 1;
+      targets: cleanLegacyTargets(applied.resource.data, mode),
+      agentResult: applied
+    });
   }
 
-  const retainedTargets = mode === 'safe'
-    ? applySafeCleanRetention(config, targets)
-    : targets;
-  const removed = cleanTargets(retainedTargets);
+  const appliedData = applied.resource.data;
+  const removed = appliedData.removed ?? [];
   if (options.json) {
     writeJson(
       io,
@@ -1309,8 +1894,10 @@ function cleanCommand(options, io) {
         {
           dryRun: false,
           mode,
-          targets: retainedTargets,
-          removed
+          targets: appliedData.targets ?? targets,
+          removed,
+          planDigest: appliedData.planDigest,
+          agentResult: applied
         },
         config
       )
@@ -1323,137 +1910,111 @@ function cleanCommand(options, io) {
   return 0;
 }
 
-function applySafeCleanRetention(config, targets) {
-  const protectedPaths = collectProtectedEvidencePaths(config);
-  if (protectedPaths.length === 0) {
-    return targets;
+function cleanAllCommand(config, options, io) {
+  const targets = resolveCleanTargets(config.projectRoot, config.clean, 'all');
+  const refused = targets.find((target) => target.status === 'refused');
+  if (refused) {
+    const error = new LaunchdeckError(refused.refusalCode, cleanRefusalMessage(refused), cleanRefusalDetails(refused));
+    const payload = { dryRun: true, mode: 'all', targets, removed: [] };
+    if (options.json) writeJson(io, createFailureEnvelope('clean', error, config, payload));
+    else {
+      writeError(io, `launchdeck: [${refused.refusalCode}] ${error.message}\n`);
+      writeCleanTargets(io, targets);
+    }
+    return 1;
   }
+  if (!options.yes) {
+    const error = new LaunchdeckError('confirmation_required', '`launchdeck clean --all` requires --yes.');
+    const payload = { dryRun: true, mode: 'all', targets, removed: [] };
+    if (options.json) writeJson(io, createFailureEnvelope('clean', error, config, payload));
+    else {
+      writeError(io, `launchdeck: [${error.code}] ${error.message}\n`);
+      writeCleanTargets(io, targets);
+    }
+    return 1;
+  }
+  const removed = cleanTargets(targets);
+  if (options.json) {
+    writeJson(io, createSuccessEnvelope('clean', {
+      dryRun: false,
+      mode: 'all',
+      targets,
+      removed
+    }, config));
+  } else {
+    for (const target of removed) write(io, `${target.existed ? 'Removed' : 'Skipped missing'} ${target.path}\n`);
+  }
+  return 0;
+}
 
-  return targets.map((target) => {
-    const targetPath = target.absolutePath ?? target.resolvedPath;
-    if (!targetPath || target.status === 'refused') {
-      return target;
-    }
-    const protectedInsideTarget = protectedPaths.filter((protectedPath) =>
-      samePath(protectedPath, targetPath) || isInside(targetPath, protectedPath)
-    );
-    if (protectedInsideTarget.length === 0) {
-      return target;
-    }
-    return {
-      ...target,
-      retention: {
-        policy: 'preserve-running-and-failure-evidence',
-        reason: 'Safe clean preserves active run logs and latest failure-linked evidence.',
-        protectedPaths: protectedInsideTarget
-      },
-      protectedPaths: protectedInsideTarget
-    };
+async function executeSharedCleanOperation(input) {
+  const project = cliProject(input.config);
+  return executeCliAgentOperation({
+    positionals: ['clean'],
+    options: {
+      ...input.options,
+      all: false,
+      safe: input.operation === 'clean.applySafe'
+    },
+    context: { planDigest: input.planDigest },
+    project,
+    operationJournal: createOperationJournal({ env: process.env }),
+    taskHandlers: createCleanHandlers({
+      createPlan: async () => buildSafeCleanPlan(input.config, { env: process.env }),
+      applySafe: async ({ plan }) => {
+        const removed = applySafeCleanPlan(plan);
+        return {
+          removed,
+          changed: removed.some((entry) => entry.existed === true),
+          evidenceRefs: [
+            `file:${input.config.configPath}`,
+            `file:${runtimePaths(input.config.projectRoot).statePath}`
+          ]
+        };
+      }
+    })
   });
 }
 
-function collectProtectedEvidencePaths(config) {
-  return uniquePaths([
-    ...activeLogEvidencePaths(config),
-    ...failureLogEvidencePaths(config)
-  ]);
+function cleanLegacyTargets(plan, mode) {
+  const safeTargets = [...(plan.targets ?? []), ...(plan.refusals ?? [])];
+  return mode === 'dry-run'
+    ? [...safeTargets, ...(plan.excludedRiskyTargets ?? [])]
+    : safeTargets;
 }
 
-function activeLogEvidencePaths(config) {
-  const protectedPaths = [];
-  try {
-    const state = readState(config.projectRoot);
-    for (const processInfo of Object.values(state.processes ?? {})) {
-      if (['starting', 'running', 'ready', 'stopping'].includes(processInfo.status) && processInfo.logPath) {
-        protectedPaths.push(processInfo.logPath);
-      }
-    }
-  } catch {
-    // Safe clean must remain conservative even if local state cannot be read.
+function writeCleanAgentFailure(input) {
+  const errorPayload = input.agentResult.error ?? {
+    code: input.agentResult.outcome.code,
+    message: input.agentResult.outcome.message,
+    details: {}
+  };
+  const error = new LaunchdeckError(errorPayload.code, errorPayload.message, errorPayload.details);
+  const payload = {
+    dryRun: true,
+    mode: input.mode,
+    targets: input.targets,
+    removed: [],
+    planDigest: input.agentResult.resource.data?.planDigest,
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    agentResult: input.agentResult
+  };
+  if (input.options.json) writeJson(input.io, createFailureEnvelope('clean', error, input.config, payload));
+  else {
+    writeError(input.io, `launchdeck: [${error.code}] ${error.message}\n`);
+    writeCleanTargets(input.io, input.targets);
   }
-
-  try {
-    for (const run of readRunIndex().runs ?? []) {
-      if (
-        samePath(run.projectRoot, config.projectRoot)
-        && ['starting', 'running', 'ready', 'stopping'].includes(run.status)
-        && run.logPath
-      ) {
-        protectedPaths.push(run.logPath);
-      }
-    }
-  } catch {
-    // Missing global run index is normal for local-only projects.
-  }
-
-  return protectedPaths;
+  return 1;
 }
 
-function failureLogEvidencePaths(config) {
-  const protectedPaths = [];
-  try {
-    for (const run of readRunIndex().runs ?? []) {
-      if (
-        samePath(run.projectRoot, config.projectRoot)
-        && ['failed', 'stop_failed', 'stale'].includes(run.status)
-        && run.logPath
-      ) {
-        protectedPaths.push(run.logPath);
-      }
-    }
-  } catch {
-    // Missing or unreadable global state should not make safe clean destructive.
-  }
-
-  try {
-    const eventResult = fs.existsSync(eventsPath(globalRuntimePaths().homeDir))
-      ? readEventsSync(globalRuntimePaths().homeDir, 1_000)
-      : { events: [] };
-    for (const event of eventResult.events) {
-      const logPath = event?.data?.logPath;
-      if (
-        typeof logPath === 'string'
-        && ['failed', 'stop_failed'].includes(event.status)
-        && isInside(config.projectRoot, logPath)
-      ) {
-        protectedPaths.push(logPath);
-      }
-    }
-  } catch {
-    // Event retention is best-effort and conservative for paths we can read.
-  }
-
-  const logsDir = runtimePaths(config.projectRoot).logsDir;
-  try {
-    if (fs.existsSync(logsDir)) {
-      for (const entry of fs.readdirSync(logsDir)) {
-        const candidate = path.join(logsDir, entry);
-        if (entry.includes('failed') && fs.statSync(candidate).isFile()) {
-          protectedPaths.push(candidate);
-        }
-      }
-    }
-  } catch {
-    // Failure log filename fallback is only a retention hint.
-  }
-
-  return protectedPaths;
-}
-
-function readEventsSync(homeDir, limit) {
-  const eventPath = eventsPath(homeDir);
-  const events = [];
-  const lines = fs.readFileSync(eventPath, 'utf8').split(/\r?\n/);
-  for (const line of lines) {
-    if (!line.trim()) {
-      continue;
-    }
-    const event = parseJsonLine(line);
-    if (event) {
-      events.push(event);
-    }
-  }
-  return { events: events.slice(Math.max(0, events.length - limit)) };
+function cleanRefusalDetails(refused) {
+  return {
+    rawPath: refused.rawPath ?? refused.path,
+    resolvedPath: refused.resolvedPath ?? refused.absolutePath,
+    canonicalPath: refused.canonicalPath
+  };
 }
 
 function buildDoctorReport(config) {
@@ -1567,19 +2128,6 @@ function formatDoctorReport(report) {
   }
 
   return `${lines.join('\n')}\n`;
-}
-
-function toTaskInventoryItem(task) {
-  return {
-    name: task.name,
-    type: task.longRunning ? 'managed' : 'foreground',
-    risk: task.risk,
-    ports: task.ports,
-    command: task.command,
-    cwd: task.cwd,
-    description: task.description,
-    log: task.log
-  };
 }
 
 function writeTasksReport(config, tasks, io) {
@@ -1766,6 +2314,409 @@ function lifecycleResultContext(result) {
   };
 }
 
+async function executeSharedTaskMutation(input) {
+  const legacy = {};
+  const project = normalizeCliProject(input.project ?? cliProject(input.config));
+  const evidenceRefs = [`file:${runtimePaths(input.config.projectRoot).statePath}`];
+  const mutations = {};
+
+  if (input.operation === 'task.start') {
+    mutations.start = async (scope) => {
+      const runContext = lifecycleRunContext(scope, project, input.config, input.taskName);
+      const run = await startManagedRunWithContext(input.taskName, input.task, input.config, {
+        project,
+        global: input.global === true,
+        env: process.env,
+        locks: false,
+        runContext,
+        beforeStart: async () => {
+          if (input.global) assertProjectStillRegistered(project);
+          await assertTaskPortsAvailable(input.config, input.taskName, input.task);
+        }
+      });
+      legacy.run = run;
+      return {
+        run,
+        reusedExistingRun: run.reusedExistingRun === true,
+        changed: run.changed !== false,
+        evidenceRefs
+      };
+    };
+  } else if (input.operation === 'task.stop') {
+    mutations.stop = async () => {
+      const stopped = stopManagedTasksWithContext(
+        input.config.projectRoot,
+        input.taskName,
+        input.config,
+        { locks: false }
+      );
+      legacy.stopped = stopped;
+      return {
+        run: stopped[0] ?? null,
+        changed: stopped.length > 0,
+        evidenceRefs
+      };
+    };
+  } else if (input.operation === 'task.restart') {
+    mutations.restart = async (scope) => {
+      if (input.global) {
+        try {
+          const target = `${project.alias ?? project.projectId}:${input.taskName}`;
+          const result = await restartManagedRun(target, {
+            env: process.env,
+            operationId: scope.operationId,
+            locks: false
+          });
+          legacy.restart = {
+            phase: 'completed',
+            stopped: [result.stoppedRun],
+            startedRun: result.startedRun,
+            transactionId: result.transactionId
+          };
+          return {
+            status: 'completed',
+            stoppedRun: result.stoppedRun,
+            startedRun: result.startedRun,
+            changed: true,
+            evidenceRefs
+          };
+        } catch (error) {
+          const processInfo = readState(input.config.projectRoot).processes?.[input.taskName];
+          const stoppedRun = processInfo?.runId ? processInfo : null;
+          legacy.restart = { phase: stoppedRun ? 'start' : 'stop', stopped: stoppedRun ? [stoppedRun] : [], error };
+          return stoppedRun
+            ? {
+                status: 'partial',
+                stoppedRun,
+                startedRun: null,
+                changed: true,
+                evidenceRefs,
+                error: toLifecycleMutationError(error, error?.code ?? 'task_start_failed')
+              }
+            : {
+                status: 'failed',
+                stoppedRun: null,
+                startedRun: null,
+                certainty: 'none',
+                changed: false,
+                evidenceRefs,
+                error: toLifecycleMutationError(error, error?.code ?? 'task_stop_failed')
+              };
+        }
+      }
+      let stopped;
+      try {
+        stopped = stopManagedTasksWithContext(
+          input.config.projectRoot,
+          input.taskName,
+          input.config,
+          { locks: false }
+        );
+      } catch (error) {
+        legacy.restart = { phase: 'stop', stopped: [], error };
+        return {
+          status: 'failed',
+          stoppedRun: null,
+          startedRun: null,
+          certainty: 'none',
+          changed: false,
+          evidenceRefs,
+          error: toLifecycleMutationError(error, 'task_stop_failed')
+        };
+      }
+      try {
+        const runContext = lifecycleRunContext(scope, project, input.config, input.taskName);
+        const startedRun = await startManagedRunWithContext(input.taskName, input.task, input.config, {
+          project,
+          global: input.global === true,
+          env: process.env,
+          locks: false,
+          runContext,
+          beforeStart: async () => {
+            if (input.global) assertProjectStillRegistered(project);
+            await assertTaskPortsAvailable(input.config, input.taskName, input.task);
+          }
+        });
+        legacy.restart = { phase: 'completed', stopped, startedRun };
+        return {
+          status: 'completed',
+          stoppedRun: stopped[0] ?? null,
+          startedRun,
+          changed: stopped.length > 0 || startedRun.changed !== false,
+          evidenceRefs
+        };
+      } catch (error) {
+        legacy.restart = { phase: 'start', stopped, error };
+        return stopped.length > 0
+          ? {
+              status: 'partial',
+              stoppedRun: stopped[0],
+              startedRun: null,
+              changed: true,
+              evidenceRefs,
+              error: toLifecycleMutationError(error, 'task_start_failed')
+            }
+          : {
+              status: 'failed',
+              stoppedRun: null,
+              startedRun: null,
+              certainty: 'none',
+              changed: false,
+              evidenceRefs,
+              error: toLifecycleMutationError(error, 'task_start_failed')
+            };
+      }
+    };
+  } else if (input.operation === 'task.run') {
+    mutations.run = async () => {
+      const result = await runTask(input.task, input.config.projectRoot, { captureOutput: input.options.json });
+      legacy.runResult = result;
+      return {
+        status: result.code === 0 ? 'completed' : 'failed',
+        exitCode: result.code,
+        stdout: result.stdout ?? '',
+        stderr: result.stderr ?? '',
+        changed: true,
+        evidenceRefs,
+        ...(result.code === 0 ? {} : {
+          error: {
+            code: 'task_command_failed',
+            message: `Task '${input.taskName}' exited with code ${result.code}.`,
+            details: { task: input.taskName, code: result.code }
+          }
+        })
+      };
+    };
+  }
+
+  const agentResult = await executeCliAgentOperation({
+    positionals: input.positionals,
+    options: input.options,
+    context: { taskRef: input.taskName, longRunning: input.task.longRunning, agentEligible: true },
+    project,
+    taskResolver: () => input.task,
+    ownershipResolver: () => {
+      const ownership = observeTaskOwnership(input.config.projectRoot, input.taskName, {
+        env: process.env,
+        allowVerifiedSpawnedParent: input.operation === 'task.restart'
+      });
+      legacy.ownership = ownership;
+      return ownership;
+    },
+    operationJournal: createOperationJournal({ env: process.env }),
+    taskHandlers: createTaskHandlers({ mutations })
+  });
+  return { agentResult, legacy, project };
+}
+
+function lifecycleRunContext(scope, project, config, taskName) {
+  return {
+    ...createRunContext({ project, config, taskName, env: process.env }),
+    operationId: scope.operationId
+  };
+}
+
+function toLifecycleMutationError(error, fallbackCode) {
+  return {
+    code: error?.code ?? fallbackCode,
+    message: error?.message ?? String(error),
+    details: error?.details ?? {}
+  };
+}
+
+function isSharedLifecycleTask(task) {
+  return task?.risk === 'low';
+}
+
+function refusalFromAgentResult(agentResult, ownershipObservation = undefined) {
+  const ownership = agentResult.safety.ownership;
+  const hasPortConflict = agentResult.operation.name === 'task.start'
+    && (ownershipObservation?.ports?.length ?? ownershipObservation?.proof?.portEvidence?.length ?? 0) > 0;
+  const code = hasPortConflict ? 'port_conflict' : ownershipObservation?.code ?? (ownership === 'external'
+    ? 'external_process'
+    : ownership === 'unknown'
+      ? 'unknown_process_owner'
+      : ownership === 'mismatch'
+        ? 'ownership_mismatch'
+        : agentResult.outcome.code);
+  const projectRef = agentResult.resource.projectRef ?? '<project>';
+  const taskRef = agentResult.resource.taskRef ?? '<task>';
+  const [port] = ownershipObservation?.ports ?? ownershipObservation?.proof?.portEvidence
+    ?.map((entry) => entry.port)
+    .filter(Number.isInteger) ?? [];
+  return new LaunchdeckError(
+    code,
+    agentResult.outcome.message,
+    {
+      safety: agentResult.safety,
+      resource: agentResult.resource,
+      operationId: agentResult.operation.id,
+      ...(port ? { port } : {}),
+      next: ownership === 'not_required' || ownership === 'verified'
+        ? []
+        : [
+            {
+              label: 'Inspect target',
+              command: port
+                ? `launchdeck inspect port:${port}`
+                : `launchdeck inspect task:${projectRef}:${taskRef}`,
+              reason: 'Shows current process, port, and ownership evidence.',
+              risk: 'safe'
+            },
+            {
+              label: 'Reconcile state',
+              command: `launchdeck reconcile ${projectRef}:${taskRef}`,
+              reason: 'Refreshes stale Launchdeck state without stopping unknown processes.',
+              risk: 'safe'
+            }
+          ]
+    }
+  );
+}
+
+function writeAgentFailure(command, agentResult, options, io, context, payload = {}, ownershipObservation = undefined) {
+  const error = refusalFromAgentResult(agentResult, ownershipObservation);
+  if (!options.json) throw error;
+  writeJson(io, createFailureEnvelope(command, error, context, {
+    ...payload,
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    next: error.details?.next,
+    agentResult
+  }));
+  return 1;
+}
+
+async function executeCliAgentOperation(input) {
+  const provenance = cliAgentProvenance();
+  const compatibility = cliCompatibility();
+  const mapping = mapCliInvocation({
+    positionals: input.positionals,
+    options: input.options,
+    context: { ...input.context, projectRef: input.project?.projectId ?? input.context?.projectRef }
+  });
+  if (!mapping) {
+    throw new LaunchdeckError('operation_not_supported', 'This CLI route is not mapped to an Agent operation.', {
+      positionals: input.positionals
+    });
+  }
+  const handlers = {
+    ...createCapabilitiesHandlers({ provenance, compatibility, ...(input.capabilitiesOptions ?? {}) }),
+    ...(input.projectHandlers ?? {}),
+    ...(input.taskHandlers ?? {}),
+    ...(input.adoptionHandlers ?? {}),
+    ...(input.operationHandlers ?? {})
+  };
+  const kernel = createApplicationKernel({
+    provenance,
+    handlers,
+    operationJournal: input.operationJournal,
+    taskResolver: input.taskResolver,
+    ownershipResolver: input.ownershipResolver,
+    compatibilityResolver: () => compatibility,
+    projectResolver: input.projectResolver ?? (() => input.project
+      ? {
+          status: 'resolved',
+          code: 'project_scope_resolved',
+          project: input.project,
+          source: 'trustedContext.adapterProjectRoot',
+          reasons: []
+        }
+      : {
+          status: 'unconfigured',
+          code: 'project_not_configured',
+          project: null,
+          source: null,
+          reasons: []
+        })
+  });
+  return kernel.execute(mapping, {
+    trustedContext: input.project
+      ? { cwd: process.cwd(), adapterProjectRoot: input.project.projectRoot }
+      : { cwd: process.cwd() }
+  });
+}
+
+function cliProject(config) {
+  const projectId = stableProjectId(config.projectRoot);
+  return {
+    id: projectId,
+    projectId,
+    alias: config.project.alias ?? config.project.name,
+    name: config.project.name,
+    projectRoot: config.projectRoot,
+    configPath: config.configPath
+  };
+}
+
+function normalizeCliProject(project) {
+  if (!project || typeof project !== 'object') return null;
+  const projectRoot = project.projectRoot;
+  if (typeof projectRoot !== 'string' || !projectRoot) return null;
+  const projectId = project.projectId ?? project.id ?? stableProjectId(projectRoot);
+  return {
+    ...project,
+    id: project.id ?? projectId,
+    projectId,
+    alias: project.alias ?? project.name,
+    name: project.name ?? project.alias ?? projectId,
+    projectRoot,
+    configPath: project.configPath
+  };
+}
+
+function resolvedCliProjectContext(project) {
+  return {
+    status: 'resolved',
+    code: 'project_scope_resolved',
+    project,
+    source: 'trustedContext.adapterProjectRoot',
+    reasons: []
+  };
+}
+
+function unresolvedCliProjectContext() {
+  return {
+    status: 'unconfigured',
+    code: 'project_not_configured',
+    project: null,
+    source: null,
+    reasons: []
+  };
+}
+
+function splitObservationLines(content) {
+  if (!content) return [];
+  return String(content).split(/\r?\n/);
+}
+
+function cliAgentProvenance() {
+  const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(new URL('../agent/compatibility-manifest.json', import.meta.url), 'utf8'));
+  return {
+    surface: 'cli',
+    host: 'standalone',
+    runtimeKind: 'package-cli',
+    runtimeVersion: packageJson.version,
+    runtimePath: fileURLToPath(import.meta.url),
+    stateHome: globalRuntimePaths().homeDir,
+    buildIdentity: manifest.buildIdentity,
+    agentProtocolVersion: manifest.versions.agentProtocol.current,
+    cliSchemaVersion: manifest.versions.cliSchema.current
+  };
+}
+
+function cliCompatibility() {
+  return {
+    canRead: true,
+    canWrite: true,
+    diagnosticOnly: false,
+    axes: {},
+    components: {}
+  };
+}
+
 function writeTaskStart(processInfo, options, io, envelope = undefined) {
   if (options.json) {
     if (envelope) {
@@ -1850,12 +2801,26 @@ function parseArgs(argv) {
     compact: false,
     agent: undefined,
     dryRun: false,
+    checks: undefined,
+    createdAfter: undefined,
+    createdBefore: undefined,
+    cursor: undefined,
     lines: 80,
+    limit: undefined,
+    maxBytes: undefined,
+    maxDepth: undefined,
+    maxFiles: undefined,
     name: undefined,
+    operationName: undefined,
     path: undefined,
+    runId: undefined,
     safe: false,
+    signals: undefined,
     scope: undefined,
+    states: undefined,
+    taskRef: undefined,
     target: undefined,
+    windowSeconds: undefined,
     yes: false
   };
   const positionals = [];
@@ -1897,6 +2862,34 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--dry-run') {
       options.dryRun = true;
+    } else if (arg === '--checks') {
+      options.checks = parseListOption(argv[++index], '--checks');
+    } else if (arg === '--cursor') {
+      options.cursor = requireOptionValue(argv[++index], '--cursor');
+    } else if (arg === '--limit') {
+      options.limit = parseIntegerOption(argv[++index], '--limit', 1, 200);
+    } else if (arg === '--max-bytes') {
+      options.maxBytes = parseIntegerOption(argv[++index], '--max-bytes', 1, 65_536);
+    } else if (arg === '--max-depth') {
+      options.maxDepth = parseIntegerOption(argv[++index], '--max-depth', 1, 6);
+    } else if (arg === '--max-files') {
+      options.maxFiles = parseIntegerOption(argv[++index], '--max-files', 1, 500);
+    } else if (arg === '--signals') {
+      options.signals = parseListOption(argv[++index], '--signals');
+    } else if (arg === '--run-id') {
+      options.runId = requireOptionValue(argv[++index], '--run-id');
+    } else if (arg === '--window-seconds') {
+      options.windowSeconds = parseIntegerOption(argv[++index], '--window-seconds', 1, 86_400);
+    } else if (arg === '--task') {
+      options.taskRef = requireOptionValue(argv[++index], '--task');
+    } else if (arg === '--operation-name') {
+      options.operationName = requireOptionValue(argv[++index], '--operation-name');
+    } else if (arg === '--created-after') {
+      options.createdAfter = requireOptionValue(argv[++index], '--created-after');
+    } else if (arg === '--created-before') {
+      options.createdBefore = requireOptionValue(argv[++index], '--created-before');
+    } else if (arg === '--states') {
+      options.states = parseListOption(argv[++index], '--states');
     } else if (arg === '--name') {
       const value = argv[index + 1];
       if (!value || value.startsWith('-')) {
@@ -1944,27 +2937,35 @@ function parseArgs(argv) {
   return { positionals, options };
 }
 
+function requireOptionValue(value, optionName) {
+  if (!value || value.startsWith('-')) {
+    throw new LaunchdeckError('invalid_arguments', `${optionName} requires a value.`);
+  }
+  return value;
+}
+
+function parseListOption(value, optionName) {
+  const values = requireOptionValue(value, optionName)
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  if (values.length === 0) {
+    throw new LaunchdeckError('invalid_arguments', `${optionName} requires at least one value.`);
+  }
+  return values;
+}
+
+function parseIntegerOption(value, optionName, minimum, maximum) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < minimum || number > maximum) {
+    throw new LaunchdeckError('invalid_arguments', `${optionName} requires an integer between ${minimum} and ${maximum}.`);
+  }
+  return number;
+}
+
 function isInside(projectRoot, targetPath) {
   const relative = path.relative(path.resolve(projectRoot), path.resolve(targetPath));
   return relative === '' || (relative && !relative.startsWith('..') && !path.isAbsolute(relative));
-}
-
-function uniquePaths(paths) {
-  const seen = new Set();
-  const unique = [];
-  for (const candidate of paths) {
-    if (typeof candidate !== 'string' || !candidate) {
-      continue;
-    }
-    const resolved = path.resolve(candidate);
-    const key = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
-    if (seen.has(key)) {
-      continue;
-    }
-    seen.add(key);
-    unique.push(resolved);
-  }
-  return unique;
 }
 
 function timestampMs(value) {
@@ -2049,8 +3050,11 @@ function helpText() {
 
 Usage:
   launchdeck init [--force]
+  launchdeck capabilities [--json] [--compact]
+  launchdeck diagnose [--checks runtime,compatibility,...] [--json] [--compact]
   launchdeck doctor [--json] [--compact]
   launchdeck tasks [--json] [--compact]
+  launchdeck adoption inspect [--max-depth 4] [--max-files 200] [--json] [--compact]
   launchdeck project add [path] [--name name] [--json] [--compact]
   launchdeck project remove <name|id|path> [--json] [--compact]
   launchdeck project scan <dir> [--json] [--compact]
@@ -2072,6 +3076,9 @@ Usage:
   launchdeck inspect-port <port> [--json] [--compact]
   launchdeck logs [task|project:task] [--lines 80] [--follow] [--json] [--compact]
   launchdeck events [target] [--lines 80] [--follow] [--json] [--compact]
+  launchdeck operation list <project> [--operation-name task.start] [--task task] [--states running,indeterminate] [--created-after time] [--created-before time] [--limit 20] [--json] [--compact]
+  launchdeck operation get <operationId> [--json] [--compact]
+  launchdeck operation reconcile <operationId> [--json] [--compact]
   launchdeck reconcile [project[:task]] [--json] [--compact]
   launchdeck stop [task|project:task] [--force-owned] [--json] [--compact]
   launchdeck force-stop <project:task> [--json] [--compact]

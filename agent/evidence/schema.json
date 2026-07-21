@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.dev/schemas/readiness-evidence-cell.schema.json",
+  "title": "Launchdeck Readiness Evidence Cell",
+  "description": "One exact build/surface/host/platform/scenario receipt. A cell proves only its own dimensions and cannot contain a broad readiness roll-up.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "cellId",
+    "status",
+    "buildIdentity",
+    "componentDigests",
+    "surface",
+    "host",
+    "platform",
+    "runtime",
+    "scenario",
+    "fixture",
+    "execution",
+    "result",
+    "evidence",
+    "invalidation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "cellId": { "type": "string", "pattern": "^[A-Z0-9][A-Za-z0-9._-]{7,255}$" },
+    "status": {
+      "enum": [
+        "not_executed",
+        "not_executed_host_owned",
+        "passed",
+        "failed",
+        "blocked",
+        "unsupported",
+        "stale"
+      ]
+    },
+    "buildIdentity": { "$ref": "#/$defs/prefixedDigest" },
+    "componentDigests": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/prefixedDigest" },
+      "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9]*$" }
+    },
+    "surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "operations"],
+      "properties": {
+        "kind": { "enum": ["cli", "mcp", "cli_mcp", "isolated_bundle", "codex_plugin", "claude_plugin", "cross_host"] },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "versions", "scope"],
+      "properties": {
+        "kind": { "enum": ["standalone", "codex", "claude", "cross_host"] },
+        "versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "codex": { "type": "string", "minLength": 1, "maxLength": 128 },
+            "claude": { "type": "string", "minLength": 1, "maxLength": 128 }
+          }
+        },
+        "scope": { "enum": ["standalone", "user", "project", "plugin", "mixed"] }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "version", "build", "architecture", "distribution"],
+      "properties": {
+        "os": { "enum": ["windows", "macos", "linux"] },
+        "version": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+        "build": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+        "architecture": { "type": ["string", "null"], "minLength": 1, "maxLength": 64 },
+        "distribution": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeExecutable", "nodeVersion"],
+      "properties": {
+        "nodeExecutable": { "type": ["string", "null"], "minLength": 1, "maxLength": 1024 },
+        "nodeVersion": { "type": ["string", "null"], "pattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$" }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "family", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]{2,127}$" },
+        "family": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,127}$" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 1024 }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "harnessDigest"],
+      "properties": {
+        "digest": { "$ref": "#/$defs/prefixedDigest" },
+        "harnessDigest": { "$ref": "#/$defs/prefixedDigest" }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startedAt", "completedAt", "actions", "commands"],
+      "properties": {
+        "startedAt": { "type": ["string", "null"], "format": "date-time" },
+        "completedAt": { "type": ["string", "null"], "format": "date-time" },
+        "actions": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 2048 } },
+        "commands": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 4096 } }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "summary", "assertions"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 2048 },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "evidenceRefs"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+              "status": { "enum": ["not_executed", "passed", "failed", "blocked", "unsupported", "stale"] },
+              "evidenceRefs": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rawRefs"],
+      "properties": {
+        "rawRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind", "path", "sha256"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 128 },
+              "kind": { "enum": ["command", "protocol", "stdout", "stderr", "journal", "run", "process", "port", "state", "host", "artifact", "log", "event", "other"] },
+              "path": { "type": "string", "minLength": 1, "maxLength": 1024 },
+              "sha256": { "$ref": "#/$defs/bareDigest" }
+            }
+          }
+        }
+      }
+    },
+    "invalidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "checkedAt", "invalidatedAt", "reasons", "keys"],
+      "properties": {
+        "state": { "enum": ["current", "invalidated"] },
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "invalidatedAt": { "type": ["string", "null"], "format": "date-time" },
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+        },
+        "keys": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["buildIdentity", "evidenceSchemaVersion", "hostVersions", "os", "osVersion", "osBuild", "architecture", "nodeVersion", "fixtureDigest", "harnessDigest"],
+          "properties": {
+            "buildIdentity": { "$ref": "#/$defs/prefixedDigest" },
+            "evidenceSchemaVersion": { "const": 1 },
+            "hostVersions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "codex": { "type": "string", "minLength": 1, "maxLength": 128 },
+                "claude": { "type": "string", "minLength": 1, "maxLength": 128 }
+              }
+            },
+            "os": { "enum": ["windows", "macos", "linux"] },
+            "osVersion": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+            "osBuild": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+            "architecture": { "type": ["string", "null"], "minLength": 1, "maxLength": 64 },
+            "nodeVersion": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+            "fixtureDigest": { "$ref": "#/$defs/prefixedDigest" },
+            "harnessDigest": { "$ref": "#/$defs/prefixedDigest" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "prefixedDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "bareDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

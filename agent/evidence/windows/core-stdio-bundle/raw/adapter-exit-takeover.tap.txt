@@ -1,0 +1,8 @@
+command: node --test --test-concurrency=1 test/e2e/adapter-exit-takeover.test.js
+exitCode: 0
+stderr: empty
+✔ adapter exit leaves one managed run for capabilities, inspect, logs, and safe CLI stop takeover (5959.4413ms)
+tests: 1
+pass: 1
+fail: 0
+durationMs: 6206.864

@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "execution_model": "adaptive",
+  "execution_mode": "heavy",
+  "workflow_status": "completed",
+  "dispatch_shape": "parallel-subagents",
+  "execution_surface": "native-subagents",
+  "capability_degraded": false,
+  "decision_reason": "The plan spans safety-critical lifecycle operations, shared persistent state, concurrency, compatibility, local stdio protocol, canonical Skill routing, two host packaging formats, destructive-clean boundaries, and cross-platform verification.",
+  "lanes": [
+    {
+      "lane_id": "research-host-runtime",
+      "input_refs": [
+        "spec-contract.json",
+        "context.md",
+        "package.json",
+        "official MCP, Codex, and Claude documentation"
+      ],
+      "result_ref": "planning/handoffs/research-host-runtime.json",
+      "status": "accepted",
+      "integration_status": "consumed-once",
+      "consumed_by": ["research.md", "plan-contract.json", "plan.md"],
+      "integration_target": "research.md and plan-contract.json architecture/dependency decisions",
+      "blocker": null
+    },
+    {
+      "lane_id": "data-model-state",
+      "input_refs": [
+        "spec-contract.json",
+        "context.md",
+        "src/global-runtime.js",
+        "src/runtime.js",
+        "src/control-plane/"
+      ],
+      "result_ref": "planning/handoffs/data-model-state.json",
+      "status": "accepted",
+      "integration_status": "consumed-once",
+      "consumed_by": ["data-model.md", "plan-contract.json", "plan.md"],
+      "integration_target": "data-model.md and plan-contract.json architecture/state decisions",
+      "blocker": null
+    },
+    {
+      "lane_id": "contracts-agent-surfaces",
+      "input_refs": [
+        "spec-contract.json",
+        "spec.md",
+        "src/cli.js",
+        "src/output.js",
+        "schema/"
+      ],
+      "result_ref": "planning/handoffs/contracts-agent-surfaces.json",
+      "status": "accepted",
+      "integration_status": "consumed-once",
+      "consumed_by": ["contracts/", "plan-contract.json", "plan.md"],
+      "integration_target": "contracts/ and plan-contract.json interface map",
+      "blocker": null
+    },
+    {
+      "lane_id": "quickstart-validation",
+      "input_refs": [
+        "spec-contract.json",
+        "accepted research/data-model/contracts lane results"
+      ],
+      "result_ref": "planning/handoffs/quickstart-validation.json",
+      "status": "accepted",
+      "integration_status": "consumed-once",
+      "consumed_by": ["quickstart.md", "plan-contract.json", "plan.md"],
+      "integration_target": "quickstart.md, validation matrix, and plan-contract.json",
+      "blocker": null
+    }
+  ]
+}

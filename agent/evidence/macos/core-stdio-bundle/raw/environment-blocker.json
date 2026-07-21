@@ -1,0 +1,20 @@
+{
+  "capturedAt": "2026-07-20T10:15:08.113Z",
+  "candidateBuildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "executor": {
+    "os": "windows",
+    "version": "10.0.26200",
+    "build": "26200",
+    "architecture": "x64"
+  },
+  "localExecutionEntrypoints": {
+    "qemuSystemX8664": false,
+    "qemuSystemAarch64": false,
+    "multipass": false,
+    "lima": false,
+    "docker": true,
+    "wsl": true
+  },
+  "conclusion": "no_native_macos_execution_entrypoint",
+  "effect": "Every macOS core, stdio, bundle, recovery, and takeover cell remains blocked; Windows evidence is not reused."
+}

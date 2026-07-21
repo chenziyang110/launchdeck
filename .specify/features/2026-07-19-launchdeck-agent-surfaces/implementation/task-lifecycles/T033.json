@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "task_id": "T033",
+  "task_ref": "task-index.json#/tasks/T033",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": null,
+  "changed_paths": [
+    "agent/evidence/macos/core-stdio-bundle/",
+    "agent/evidence/schema.json",
+    "scripts/run-agent-evidence.js",
+    "test/host/readiness-evidence.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T033.json"
+  ],
+  "validation": [
+    {
+      "status": "blocked-as-recorded",
+      "commands": ["local macOS executor availability probe", "node scripts/run-agent-evidence.js --validate agent/evidence/windows/core-stdio-bundle agent/evidence/macos/core-stdio-bundle", "node --test --test-concurrency=1 test/host/readiness-evidence.test.js"],
+      "summary": "All five macOS scenario documents validate as blocked exact cells; the executor receipt proves no local native macOS route and Windows evidence is not reused."
+    }
+  ],
+  "review": {"trigger": null, "verdict": "cleared", "evidence": "Blocked cells retain null unobserved platform/runtime dimensions and withhold every macOS claim."},
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"refs": ["CA-039", "CA-041", "CA-046", "CA-050"], "status": "blocked-visible", "evidence": "Five separate macOS cells identify the unavailable native runner and do not reuse Windows or contract evidence."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "Extended the exact-cell schema so blocked/not-executed cells may retain null unobserved environment dimensions while passed/failed/stale evidence still requires exact OS, architecture, and Node values."
+}

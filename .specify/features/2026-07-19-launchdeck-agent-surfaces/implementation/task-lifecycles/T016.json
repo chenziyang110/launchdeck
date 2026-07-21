@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "task_id": "T016",
+  "task_ref": "task-index.json#/tasks/T016",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first",
+    "reason": "T015 froze canonical clean planning, digest drift, lock/pre-effect ordering, path/evidence retention, journal recovery, and CLI compatibility.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/clean-operations.test.js test/kernel/clean-operation-faults.test.js test/contracts/clean-cli-compatibility.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Risky/confirmation exclusions pass; CLI planDigest/mapping cases and Kernel clean handler cases fail only on T016-owned implementation gaps."
+  },
+  "changed_paths": [
+    "src/kernel/operations/clean.js",
+    "src/kernel/application-kernel.js",
+    "src/runtime.js",
+    "src/adapters/cli-operation-map.js",
+    "src/cli.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T016.json"
+  ],
+  "validation": [
+    {
+      "command": "node --test --test-concurrency=1 test/kernel/clean-operations.test.js test/kernel/clean-operation-faults.test.js test/contracts/clean-cli-compatibility.test.js",
+      "status": "passed",
+      "summary": "10/10 canonical plan, positive apply, drift, unsafe target, fault/recovery, schema, real CLI, and mapping contracts passed."
+    },
+    {
+      "command": "existing clean control-plane, safety, and baseline regressions",
+      "status": "passed",
+      "summary": "29/29 existing clean and agent-surface baseline tests passed after filtering protected evidence to project-contained paths."
+    },
+    {
+      "command": "all explicit test/kernel/*.test.js files",
+      "status": "passed",
+      "summary": "49/49 Kernel policy, lock, journal, recovery, query, task, adoption, and clean tests passed."
+    },
+    {
+      "command": "CLI adapter/schema/clean and public mutation contract regression",
+      "status": "passed",
+      "summary": "14/14 declarative map, legacy projection, compact exclusion, safe clean, and forbidden-input tests passed."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 84 JavaScript files."
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "summary": "240 total; 239 passed; 1 existing POSIX platform skip; 0 failures; 201.6 seconds."
+    },
+    {
+      "command": "git diff --check -- <T016 paths>",
+      "status": "passed",
+      "summary": "All T016 source and lifecycle changes passed whitespace validation."
+    }
+  ],
+  "review": {
+    "trigger": "journaled-safe-clean-cutover-and-recovery-boundary",
+    "verdict": "cleared",
+    "evidence": "clean.plan and clean.applySafe share one canonical Kernel handler and existing runtime clean authority; apply persists prepared, acquires canonical locks, recomputes current project-contained evidence, refuses digest/path drift before running/deletion, then records one effect; CLI dry-run/safe retain schemaVersion 1 fields while risky all/yes stays CLI-only."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"The Kernel clean handler delegates planning, evidence retention, and deletion to the existing runtime/config/run/event/state authorities; no second filesystem or state backend exists."},
+    {"ref":"MP-004","status":"satisfied","evidence":"Normal CLI JSON preserves dryRun/mode/targets/removed and adds planDigest/data.agentResult; text and risky CLI behavior stay stable, and compact remains free of Agent protocol objects."},
+    {"ref":"MP-007","status":"satisfied","evidence":"clean.applySafe is journaled before effects; crash recovery reconciles the original operation and never invokes deletion a second time."},
+    {"ref":"CA-005","status":"satisfied","evidence":"Public mapping exposes only clean.plan and digest-bound clean.applySafe; clean --all --yes is explicitly CLI-only and carries no Agent result."},
+    {"ref":"CA-013","status":"satisfied","evidence":"Application Kernel preflight recomputes the canonical plan while locks are held and transitions prepared directly to refused with plan_digest_mismatch and zero deletion on drift."},
+    {"ref":"CA-026","status":"satisfied","evidence":"The digest binds project/config/safe targets/refusals/protected evidence only; it cannot select risky targets or satisfy the separate human confirmation required by CLI-only clean --all."},
+    {"ref":"CA-027","status":"satisfied","evidence":"Closed public schemas continue rejecting yes, confirmed, approvalToken, riskyTargets, path, and equivalent nested fields before journal/effects."},
+    {"ref":"CA-028","status":"satisfied","evidence":"Fault probes prove prepared precedes revalidation, current plan is checked before running, running precedes the first deletion effect, and recovery evidence remains durable."},
+    {"ref":"CA-041","status":"satisfied","evidence":"Real CLI preview/safe calls and Kernel contracts agree on plan/outcome/resource/effects while retaining permitted schemaVersion 1 formatting and provenance differences."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": {
+    "trigger": "protected-evidence clean regression",
+    "action": "Restricted protected evidence in the canonical project clean plan to paths contained by the current project root, preventing the newly prepared external journal directory from manufacturing its own digest drift; reran the original T015 suite and existing clean regressions.",
+    "result": "passed"
+  }
+}

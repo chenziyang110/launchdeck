@@ -1,0 +1,12 @@
+command: docker run node:20-bookworm-slim node --test --test-concurrency=1 test/e2e/operation-response-loss.test.js test/e2e/operation-recovery.test.js
+exitCode: 0
+stderr: empty
+ok 1 - real correlation routes distinguish zero, unique, and ambiguous candidates without retry authority (1664.240636ms)
+ok 2 - same ID reads original evidence while different-digest-shaped and missing recovery requests never create work (1537.139921ms)
+ok 3 - indeterminate foreground evidence remains non-replayable through real MCP and CLI reconciliation (1261.735231ms)
+ok 4 - dropped MCP response recovers by known ID and bounded lost-ID correlation without replay (2237.420476ms)
+ok 5 - dropped CLI response recovers the original terminal operation through the real CLI route (1294.173719ms)
+tests: 5
+pass: 5
+fail: 0
+durationMs: 8570.894117

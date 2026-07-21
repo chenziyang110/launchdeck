@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CODEX-LIFECYCLE-WINDOWS-0.144.4-USER-2f0ae201",
+  "status": "failed",
+  "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:0b6941163dd94ee2bc5d5d3282fd6225714c459aabb97d986429e2280eacc6f9",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "codexHostMetadata": "sha256:cc1c9a0b820f9c75c93dcc48efafb3f52dba3bffd7a7f92a37ce11207e5f07ed",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "codex_plugin",
+    "operations": [
+      "capabilities.get",
+      "task.status",
+      "task.start"
+    ]
+  },
+  "host": {
+    "kind": "codex",
+    "versions": {
+      "codex": "0.144.4"
+    },
+    "scope": "user"
+  },
+  "platform": {
+    "os": "windows",
+    "version": "10.0.26200",
+    "build": "26200",
+    "architecture": "x64",
+    "distribution": null
+  },
+  "runtime": {
+    "nodeExecutable": "C:/nvm4w/nodejs/node.exe",
+    "nodeVersion": "24.14.0"
+  },
+  "scenario": {
+    "id": "CODEX-LIFECYCLE-TAKEOVER",
+    "family": "codex-lifecycle",
+    "description": "Start one low-risk managed task through real Codex Skill/MCP, exit the host, then require the same live run to survive for build update, disable, uninstall, and CLI takeover."
+  },
+  "fixture": {
+    "digest": "sha256:89ffb30776de73b37f7aa96c8fb4bbfa4c08f9b488c19037298f9e9062b5fb93",
+    "harnessDigest": "sha256:923f97ba44632a6ce55abf64de98ec202e63c1a2369af0732153c1d1b3486a9b"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:45:40.000Z",
+    "completedAt": "2026-07-20T10:46:12.563Z",
+    "actions": [
+      "route capabilities.get then task.status then exactly one task.start",
+      "capture run ID PID port operation and build provenance",
+      "exit real Codex host and MCP",
+      "inspect same run with compatible standalone CLI",
+      "stop downstream lifecycle stages after survival assertion failed"
+    ],
+    "commands": [
+      "codex exec -C <fixture> --sandbox workspace-write --ephemeral --json <lifecycle-prompt>",
+      "node src/cli.js inspect task:codex-host-evidence:managed --json",
+      "node src/cli.js ps --all --json"
+    ]
+  },
+  "result": {
+    "code": "host_exit_terminated_managed_run",
+    "summary": "Codex started run_v3ZefiY9qQFN once, but after the host/MCP exited PID 22356 was dead and port 59037 was free. The shared run record survived only as stale-owned; build B, disable, uninstall, and active CLI takeover claims are withheld.",
+    "assertions": [
+      {
+        "id": "single-safe-start",
+        "status": "passed",
+        "evidenceRefs": [
+          "lifecycle-protocol"
+        ]
+      },
+      {
+        "id": "host-exit-preserves-live-run",
+        "status": "failed",
+        "evidenceRefs": [
+          "lifecycle-protocol",
+          "post-host-exit"
+        ]
+      },
+      {
+        "id": "build-b-update-preserves-run",
+        "status": "not_executed",
+        "evidenceRefs": []
+      },
+      {
+        "id": "disable-reenable-preserves-run",
+        "status": "not_executed",
+        "evidenceRefs": []
+      },
+      {
+        "id": "uninstall-cli-takeover-preserves-run",
+        "status": "not_executed",
+        "evidenceRefs": []
+      },
+      {
+        "id": "incompatible-build-write-refusal",
+        "status": "not_executed",
+        "evidenceRefs": []
+      }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      {
+        "id": "lifecycle-protocol",
+        "kind": "protocol",
+        "path": "raw/codex-start-a.jsonl",
+        "sha256": "ab59bb28fa1f7300dc4f79c30ffa14deaee0b3eaad65e88e46dc318b9479cf21"
+      },
+      {
+        "id": "post-host-exit",
+        "kind": "process",
+        "path": "raw/post-host-exit.json",
+        "sha256": "3b298488038a8975923543c87a6feb0d54fbdcb1e3fce04ba89475b7bcdaf6c9"
+      },
+      {
+        "id": "lifecycle-fixture",
+        "kind": "artifact",
+        "path": "raw/lifecycle-fixture-manifest.json",
+        "sha256": "89ffb30776de73b37f7aa96c8fb4bbfa4c08f9b488c19037298f9e9062b5fb93"
+      },
+      {
+        "id": "lifecycle-harness",
+        "kind": "command",
+        "path": "raw/lifecycle-harness.json",
+        "sha256": "923f97ba44632a6ce55abf64de98ec202e63c1a2369af0732153c1d1b3486a9b"
+      },
+      {
+        "id": "platform",
+        "kind": "host",
+        "path": "raw/platform.json",
+        "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44"
+      }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:46:12.563Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:2f0ae201bc742ecc00f45b98d0930a2aed368eb4b22b5582431960fa08783ac1",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {
+        "codex": "0.144.4"
+      },
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:89ffb30776de73b37f7aa96c8fb4bbfa4c08f9b488c19037298f9e9062b5fb93",
+      "harnessDigest": "sha256:923f97ba44632a6ce55abf64de98ec202e63c1a2369af0732153c1d1b3486a9b"
+    }
+  }
+}

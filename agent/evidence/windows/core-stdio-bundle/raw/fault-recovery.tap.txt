@@ -1,0 +1,12 @@
+command: node --test --test-concurrency=1 test/e2e/operation-response-loss.test.js test/e2e/operation-recovery.test.js
+exitCode: 0
+stderr: empty
+✔ real correlation routes distinguish zero, unique, and ambiguous candidates without retry authority (3899.8407ms)
+✔ same ID reads original evidence while different-digest-shaped and missing recovery requests never create work (1549.8588ms)
+✔ indeterminate foreground evidence remains non-replayable through real MCP and CLI reconciliation (1101.7219ms)
+✔ dropped MCP response recovers by known ID and bounded lost-ID correlation without replay (2214.1264ms)
+✔ dropped CLI response recovers the original terminal operation through the real CLI route (1012.1898ms)
+tests: 5
+pass: 5
+fail: 0
+durationMs: 10403.6884

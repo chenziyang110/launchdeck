@@ -1,0 +1,29 @@
+{
+  "id": "launchdeck",
+  "name": "launchdeck",
+  "version": "$PACKAGE_VERSION",
+  "description": "Safe local project lifecycle control through one shared Launchdeck Kernel.",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "author": {
+    "name": "chenziyang110"
+  },
+  "license": "MIT",
+  "keywords": [
+    "developer-tools",
+    "lifecycle",
+    "mcp"
+  ],
+  "interface": {
+    "displayName": "Launchdeck",
+    "shortDescription": "Safe local project lifecycle control",
+    "longDescription": "Inspect and control configured local project tasks through one shared Launchdeck runtime and MCP server.",
+    "developerName": "chenziyang110",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Skills",
+      "MCP"
+    ],
+    "defaultPrompt": "Use Launchdeck to inspect or control the current local project safely."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "os": "windows",
+  "version": "10.0.26200.0",
+  "build": "26200",
+  "architecture": "x64",
+  "nodeExecutable": "C:\\nvm4w\\nodejs\\node.exe",
+  "nodeVersion": "v24.14.0",
+  "claudeVersion": "2.1.211 (Claude Code)"
+}

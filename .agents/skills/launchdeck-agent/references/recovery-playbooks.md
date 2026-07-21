@@ -2,6 +2,13 @@
 
 Use recovery when state is inconsistent, a port is occupied, a duplicate start is possible, or stop/restart failed.
 
+## Lost Response Boundary
+
+- If the mutation operation ID is known, call `operation.get`; call `operation.reconcile` only when current evidence is required.
+- If the ID is lost, make one `operation.list` call with exact project, operation, task when applicable, states, a positive window no greater than 15 minutes, and limit no greater than 20.
+- A unique candidate may be fetched or reconciled. Zero or multiple candidates stop unresolved.
+- Never invoke the original mutation again and never cross to CLI after possible dispatch.
+
 ## Occupant Classes
 
 - Same task: the port/process belongs to the requested Launchdeck project/task.
@@ -12,12 +19,12 @@ Use recovery when state is inconsistent, a port is occupied, a duplicate start i
 
 ## Port Or Conflict Recovery
 
-1. Observe with `launchdeck ports --json --compact`, `launchdeck conflicts --json --compact`, and `launchdeck inspect port:<port> --json --compact` or `launchdeck inspect-port <port> --json --compact`.
+1. Observe with bounded task/project status and inspection operations.
 2. Classify the occupant.
 3. Same task: report the existing run and avoid duplicate start.
 4. Other Launchdeck task: report the owner and ask whether to stop/restart that Launchdeck-owned target before proceeding.
 5. External known process or unknown process: inspect-only. Report owner/status if known and safe user options; do not authorize raw OS process control.
-6. Stale record: run `launchdeck reconcile [project[:task]] --json --compact`, then re-observe before mutation.
+6. Stale operation evidence: reconcile the existing operation record, then re-observe before any new request.
 
 ## Duplicate-Start Risk
 
@@ -27,11 +34,10 @@ Use recovery when state is inconsistent, a port is occupied, a duplicate start i
 
 ## Stop Failed
 
-1. Gather evidence: `launchdeck inspect <target> --json --compact`, `launchdeck logs <target> --lines 80 --json --compact`, and `launchdeck events <target> --lines 80 --json --compact`.
-2. Run `launchdeck reconcile [project[:task]] --json --compact` if state may be stale.
-3. Retry normal stop only when Launchdeck ownership remains verified.
-4. Use `launchdeck force-stop <project:task> --json --compact` only for Launchdeck-owned targets with normal stop failure or stuck evidence.
-5. If ownership is lost or external, stop and report evidence plus safe next actions.
+1. Gather bounded project/task inspection, logs, and events evidence.
+2. Reconcile only an existing operation record when its state is uncertain.
+3. Do not retry the stop automatically and do not escalate to a stronger process-control route.
+4. Report the failure, ownership evidence, and safe user-controlled next actions.
 
 ## User Summary
 

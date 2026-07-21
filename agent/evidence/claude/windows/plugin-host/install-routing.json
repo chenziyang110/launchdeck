@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CLAUDE-INSTALL-ROUTING-WINDOWS-2.1.211-USER-48cc9c90",
+  "status": "failed",
+  "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:d732a2a8af67d2ad99a712da7a0d471af142765157700781f89ae48eeb845e90",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "claudeHostMetadata": "sha256:a10a7fcb75e49c4bace133624a66bf6a7e75c3c7e868a2418d9650c667883828",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "claude_plugin",
+    "operations": [
+      "capabilities.get",
+      "task.list"
+    ]
+  },
+  "host": {
+    "kind": "claude",
+    "versions": {
+      "claude": "2.1.211 (Claude Code)"
+    },
+    "scope": "user"
+  },
+  "platform": {
+    "os": "windows",
+    "version": "10.0.26200.0",
+    "build": "26200",
+    "architecture": "x64",
+    "distribution": null
+  },
+  "runtime": {
+    "nodeExecutable": "C:/nvm4w/nodejs/node.exe",
+    "nodeVersion": "v24.14.0"
+  },
+  "scenario": {
+    "id": "CLAUDE-INSTALL-ROUTING",
+    "family": "claude-install-routing",
+    "description": "Real Claude Code isolated local-marketplace install, cached artifact discovery, root substitution, Skill/MCP connection, and project-scoped read-only routing."
+  },
+  "fixture": {
+    "digest": "sha256:a3f2fc117e26e33c95245a775fcc2259f7760bf342f6180b96721751f9988a53",
+    "harnessDigest": "sha256:3df8e8967dc149f2e7108430811b30602ee734ac3542a5c21b5aef95be22342f"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T11:07:00.000Z",
+    "completedAt": "2026-07-20T11:11:33.905Z",
+    "actions": [
+      "validate official Claude plugin manifest",
+      "install generated artifact from isolated local marketplace at user scope",
+      "verify cached Skill and MCP component inventory",
+      "launch Claude from cached artifact with only capabilities.get and task.list allowed",
+      "stop at UserPromptSubmit hook failure before fixture MCP dispatch"
+    ],
+    "commands": [
+      "claude plugin marketplace add <isolated-marketplace> --scope user",
+      "claude plugin install launchdeck@launchdeck-evidence --scope user",
+      "claude plugin list --json",
+      "claude plugin details launchdeck@launchdeck-evidence",
+      "claude plugin validate <isolated-cache>",
+      "claude -p --settings <temporary-hook-override> --plugin-dir <isolated-cache> --allowed-tools capabilities.get,task.list --no-session-persistence --output-format stream-json --verbose --max-budget-usd 1 <prompt>"
+    ]
+  },
+  "result": {
+    "code": "claude_user_prompt_hook_blocked",
+    "summary": "Claude Code 2.1.211 validated and installed the generated build at isolated user scope, discovered one Skill and one MCP with CLAUDE_PLUGIN_ROOT root substitution, and connected the plugin MCP. The fixture prompt was blocked before tool dispatch by the inherited UserPromptSubmit hook because .specify/bin/specify-hook.py is missing; lifecycle/update/disable/uninstall/takeover claims are withheld.",
+    "assertions": [
+      {
+        "id": "official-plugin-contract",
+        "status": "passed",
+        "evidenceRefs": [
+          "install-routing"
+        ]
+      },
+      {
+        "id": "isolated-user-install-cache-and-root-substitution",
+        "status": "passed",
+        "evidenceRefs": [
+          "install-routing"
+        ]
+      },
+      {
+        "id": "cached-skill-mcp-connected",
+        "status": "passed",
+        "evidenceRefs": [
+          "install-routing",
+          "routing-attempt"
+        ]
+      },
+      {
+        "id": "fixture-skill-routing-project-scope",
+        "status": "failed",
+        "evidenceRefs": [
+          "routing-attempt",
+          "routing-fixture",
+          "routing-harness"
+        ]
+      }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      {
+        "id": "install-routing",
+        "kind": "host",
+        "path": "raw/install-routing.json",
+        "sha256": "10c00487b05605d205f0a80ab0e59deac3c6034ca0b9eefc42e72bb8cdce5451"
+      },
+      {
+        "id": "routing-attempt",
+        "kind": "protocol",
+        "path": "raw/routing-attempt.jsonl",
+        "sha256": "94c7bd4be07b91dfcaacbba0428abad5311cd641ddf3c8a66976f57f70ba578d"
+      },
+      {
+        "id": "routing-fixture",
+        "kind": "artifact",
+        "path": "raw/routing-fixture/.launchdeck.yml",
+        "sha256": "a3f2fc117e26e33c95245a775fcc2259f7760bf342f6180b96721751f9988a53"
+      },
+      {
+        "id": "routing-harness",
+        "kind": "command",
+        "path": "raw/routing-harness.json",
+        "sha256": "3df8e8967dc149f2e7108430811b30602ee734ac3542a5c21b5aef95be22342f"
+      },
+      {
+        "id": "platform",
+        "kind": "host",
+        "path": "raw/platform.json",
+        "sha256": "6bce4e46368d4395eee31734104c5ef4cfde3f7743546668a8e4446a7ff4d94d"
+      }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T11:15:49.814Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {
+        "claude": "2.1.211 (Claude Code)"
+      },
+      "os": "windows",
+      "osVersion": "10.0.26200.0",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "v24.14.0",
+      "fixtureDigest": "sha256:a3f2fc117e26e33c95245a775fcc2259f7760bf342f6180b96721751f9988a53",
+      "harnessDigest": "sha256:3df8e8967dc149f2e7108430811b30602ee734ac3542a5c21b5aef95be22342f"
+    }
+  }
+}

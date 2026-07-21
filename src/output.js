@@ -6,14 +6,14 @@ const PARTIAL_FAILURE = new LaunchdeckError(
 );
 
 export function createSuccessEnvelope(command, payload = {}, context = {}) {
-  const { status = 'ok', next, ...rest } = payload;
+  const { status = 'ok', next, agentResult, ...rest } = payload;
   return compactEnvelope({
     ok: true,
     schemaVersion: 1,
     command,
     status,
     ...contextFields(context),
-    data: rest,
+    data: compactEnvelope({ ...rest, agentResult }),
     next: normalizeNextActions(next),
     ...rest
   });
@@ -21,7 +21,7 @@ export function createSuccessEnvelope(command, payload = {}, context = {}) {
 
 export function createFailureEnvelope(command, error, context = {}, payload = {}) {
   const errorPayload = toContractErrorPayload(error);
-  const { next, ...rest } = payload;
+  const { next, agentResult, ...rest } = payload;
   const nextActions = normalizeNextActions(
     next ?? error?.next ?? errorPayload.next ?? errorPayload.details?.next,
     errorPayload.code,
@@ -33,7 +33,7 @@ export function createFailureEnvelope(command, error, context = {}, payload = {}
     command,
     status: 'error',
     ...contextFields(context),
-    data: rest,
+    data: compactEnvelope({ ...rest, agentResult }),
     ...contractErrorFields(errorPayload, rest),
     next: nextActions,
     ...rest,
@@ -42,7 +42,7 @@ export function createFailureEnvelope(command, error, context = {}, payload = {}
 }
 
 export function createPartialEnvelope(command, results, context = {}, payload = {}) {
-  const { error = PARTIAL_FAILURE, next, ...rest } = payload;
+  const { error = PARTIAL_FAILURE, next, agentResult, ...rest } = payload;
   const errorPayload = toContractErrorPayload(error);
   const nextActions = normalizeNextActions(
     next ?? error?.next ?? errorPayload.next ?? errorPayload.details?.next,
@@ -57,7 +57,8 @@ export function createPartialEnvelope(command, results, context = {}, payload = 
     ...contextFields(context),
     data: {
       results: normalizeResultErrors(results),
-      ...rest
+      ...rest,
+      ...(agentResult === undefined ? {} : { agentResult })
     },
     results: normalizeResultErrors(results),
     ...contractErrorFields(errorPayload, rest),

@@ -247,6 +247,22 @@ Supported v0 adapter IDs:
 
 `launchdeck agent install` copies the skill directory into `<target>/launchdeck-agent`. It does not delete target files, and it refuses divergent existing targets unless `--force` is supplied. Use `--dry-run` to preview planned writes. Use `--target <dir>` only when you want an explicit skill-root override, such as an isolated test or manual sync destination.
 
+## Agent And Plugin Surfaces
+
+The canonical Skill is MCP-first: it observes through `capabilities.get` before it selects one declared low-risk operation. Its compatible CLI fallback is limited to pre-dispatch MCP unavailability or an omitted safe capability. Once a mutation may have been dispatched, it recovers by operation ID or a bounded correlation query; it does not repeat the mutation on another surface.
+
+Build the separate Codex and Claude artifacts with:
+
+```bash
+npm run agent:build
+```
+
+Each artifact bundles a Node 20 ESM MCP runtime, a generated copy of the canonical Skill, host-specific discovery metadata, `compatibility.json`, and integrity information. Plugin installation changes only the plugin package; Launchdeck's user state home and configured project remain the control-plane authorities.
+
+The public Agent catalog is intentionally narrower than the CLI. It supports only declared configured-project operations, bounded observations, low-risk task lifecycle actions, digest-bound safe clean, and recovery queries. It does not expose raw commands, caller-selected environments or working directories, force operations, risky clean, adoption apply, remote control, or permanent log following.
+
+`agent/evidence/index.json` is the claim boundary for host evidence. It records the exact build, host version, operating system, and scenario for each cell; an older candidate never proves the current candidate, and a failed, blocked, or unexecuted cell stays visible. The current index deliberately makes no general host-release label: Windows Codex lifecycle, Claude fixture routing, cross-host lifecycle, and native macOS coverage still have recorded gaps.
+
 ## JSON And Errors
 
 Commands that support `--json` emit a stable envelope. Success responses use `ok: true`; refusals and failures use `ok: false` with a stable code, message, details object, and `next` actions.
@@ -294,12 +310,9 @@ Add `--compact` with `--json` when the caller needs the smallest practical respo
 - `clean --safe` preserves running evidence, latest failed evidence, and failure-linked logs and events needed to explain status.
 - Destructive `reset` is not shipped as part of this release. It remains a separate feature boundary.
 
-## Release Claims
+## Evidence Claims
 
-- `dev-ready` means local checks and lifecycle smoke passed on one named OS.
-- `platform-smoke-ready` means lifecycle smoke passed on one named OS.
-- `cross-platform-ready` requires recorded lifecycle smoke on Windows, macOS, and Linux.
-- Do not claim a release label without the smoke evidence that supports it.
+The repository records evidence one exact cell at a time. A cell applies only to its build identity, host version, platform, installation scope, runtime, and scenario. Consult `agent/evidence/index.json` before describing any host behavior; do not turn a passing standalone or older-candidate cell into a claim about a different host, platform, or current candidate.
 
 ## Development
 

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "launchdeck",
+  "displayName": "Launchdeck",
+  "version": "$PACKAGE_VERSION",
+  "description": "Safe local project lifecycle control through one shared Launchdeck Kernel.",
+  "author": {
+    "name": "chenziyang110"
+  },
+  "license": "MIT",
+  "keywords": [
+    "developer-tools",
+    "lifecycle",
+    "mcp"
+  ]
+}

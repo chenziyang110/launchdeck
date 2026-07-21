@@ -4,7 +4,7 @@ import path from 'node:path';
 import { LaunchdeckError } from '../errors.js';
 import { isPidRunning, listProcesses, readState, startManagedTask, writeState } from '../runtime.js';
 import { controlPlanePaths } from './state.js';
-import { withLock } from './locks.js';
+import { withLock, withMutationLocks } from './locks.js';
 
 const RUN_INDEX_VERSION = 1;
 const ACTIVE_RUN_STATUSES = new Set(['starting', 'running', 'ready', 'stopping']);
@@ -24,7 +24,11 @@ export async function startManagedRun(taskName, task, config, options = {}) {
       global: globalRun
     });
     if (existing) {
-      return existing;
+      return {
+        ...existing,
+        reusedExistingRun: true,
+        changed: false
+      };
     }
 
     if (options.beforeStart) {
@@ -49,7 +53,9 @@ export async function startManagedRun(taskName, task, config, options = {}) {
     const result = {
       ...processInfo,
       status: readiness.status === 'ready' ? 'ready' : processInfo.status,
-      readiness
+      readiness,
+      reusedExistingRun: false,
+      changed: true
     };
     await recordGlobalRun(result, runContext, options.env);
     return result;
@@ -59,9 +65,14 @@ export async function startManagedRun(taskName, task, config, options = {}) {
     return start();
   }
 
-  return withProjectLock(runContext.projectId, runContext, options.env, async () =>
-    withTaskLock(runContext.projectId, taskName, runContext, options.env, start)
-  );
+  return withMutationLocks({
+    operationId: runContext.operationId ?? runContext.transactionId,
+    projectId: runContext.projectId,
+    taskRef: taskName,
+    env: options.env,
+    ownerCommand: process.argv.join(' '),
+    transactionId: runContext.transactionId
+  }, start);
 }
 
 export function createRunContext({ project, config, taskName, env = process.env }) {
@@ -383,24 +394,6 @@ function isHttpReady(url) {
   });
 }
 
-function withProjectLock(projectId, runContext, env, callback) {
-  return withLock({
-    lockName: `project-${safePathToken(projectId)}`,
-    env: env ?? process.env,
-    ownerCommand: process.argv.join(' '),
-    transactionId: runContext.transactionId
-  }, callback);
-}
-
-function withTaskLock(projectId, taskName, runContext, env, callback) {
-  return withLock({
-    lockName: `task-${safePathToken(projectId)}-${safePathToken(taskName)}`,
-    env: env ?? process.env,
-    ownerCommand: process.argv.join(' '),
-    transactionId: runContext.transactionId
-  }, callback);
-}
-
 function withRunIndexLock(runContext, env, callback) {
   return withLock({
     lockName: 'run-index',
@@ -460,14 +453,6 @@ function hasLaunchdeckOwnedEvidence(run) {
 
 function uniqueStrings(values) {
   return [...new Set(values.filter((value) => typeof value === 'string' && value.length > 0))];
-}
-
-function safePathToken(value) {
-  const token = String(value ?? '').trim();
-  if (!token) {
-    return 'unknown';
-  }
-  return token.replace(/[^a-zA-Z0-9._-]/g, '_');
 }
 
 function unsupportedRunIndexVersionError(runsPath, foundVersion) {

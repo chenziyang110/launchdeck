@@ -1,0 +1,1047 @@
+{
+  "version": "1.0.0",
+  "lane_id": "quickstart-validation",
+  "status": "accepted",
+  "basis_refs": [
+    {
+      "id": "QV-REF-SPEC",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/spec-contract.json",
+      "authority": "Locked feature scope, decisions, public operations, acceptance criteria, journal/recovery rules, and readiness boundaries."
+    },
+    {
+      "id": "QV-REF-HOST",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/planning/handoffs/research-host-runtime.json",
+      "authority": "MCP stdio/runtime stack, generated host artifact layout, isolation proof, host lifecycle proof, build identity, and SU-002 verification ownership."
+    },
+    {
+      "id": "QV-REF-DATA",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/planning/handoffs/data-model-state.json",
+      "authority": "Kernel/result/journal/state machines, operation recovery, ownership evidence, clean-plan digest, Skill installation observation, and readiness evidence-cell model."
+    },
+    {
+      "id": "QV-REF-CONTRACTS",
+      "path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/planning/handoffs/contracts-agent-surfaces.json",
+      "authority": "Exact 18-operation public surface, CLI mapping, MCP transport, Skill routing, compatibility, Plugin generation, and validation contract cases."
+    }
+  ],
+  "scenario": [
+    {
+      "id": "QS-001",
+      "title": "CLI/MCP semantic equivalence and cross-surface start reuse",
+      "objective": "Prove that both adapters consume the same Kernel semantics while preserving CLI schemaVersion 1, and that a matching active run is reused across surfaces without a second spawn.",
+      "phase_owner": "implementation verification",
+      "claim_status": "claim-gated; no equivalence or reuse evidence exists yet",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-002",
+      "title": "Real MCP stdio handshake and tool execution",
+      "objective": "Exercise the built runtime as a subprocess through a real MCP client: initialize, initialized notification, tools/list, tools/call, structured results, schema errors, stdout purity, stderr diagnostics, concurrency, interruption, and restart.",
+      "phase_owner": "MCP and bundle verification",
+      "claim_status": "claim-gated by one exact runtime/build/OS cell",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-HOST", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-003",
+      "title": "Unknown/external ownership remains inspect-only",
+      "objective": "Show that port/PID evidence may be observed but never authorizes start conflict takeover, stop, restart, force, kill, or external termination without verified Launchdeck ownership.",
+      "phase_owner": "Kernel ownership verification",
+      "claim_status": "claim-gated by process/port fixtures on each claimed OS",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-004",
+      "title": "Lost-response recovery without replay",
+      "objective": "After a mutation response is lost, recover through bounded operation.list, operation.get, and operation.reconcile while proving that neither MCP, CLI, nor Skill invokes the original mutation again.",
+      "phase_owner": "journal/fault verification",
+      "claim_status": "claim-gated by durable fault-injection receipts",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-005",
+      "title": "Safe-clean digest drift refuses before deletion",
+      "objective": "Preview safe targets, introduce target/config/protection drift, and prove applySafe recomputes under lock and refuses the stale digest with effects none.",
+      "phase_owner": "Kernel clean verification",
+      "claim_status": "claim-gated; stable drift error-code spelling must be consolidated before fixture freeze",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-006",
+      "title": "adoption.inspect is bounded and zero-write",
+      "objective": "Return a proposed configuration/evidence plan from a trusted project root while proving no project/user configuration, registry, journal, runtime state, process, port, or later adoption authorization changes.",
+      "phase_owner": "adoption inspection implementation verification",
+      "claim_status": "claim-gated; operation does not exist in current live implementation",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-007",
+      "title": "Canonical Skill MCP-first routing and fallback exclusion",
+      "objective": "Validate capability-probe, observe, one-safe-mutation sequencing; permit CLI fallback only before mutation dispatch for unavailable/unsupported safe MCP; and forbid fallback after refusal or uncertain dispatch.",
+      "phase_owner": "Skill/evaluation verification",
+      "claim_status": "claim-gated by deterministic traces and real-host routing receipts",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "id": "QS-008",
+      "title": "Independent Codex/Claude Plugin lifecycle and cross-version takeover",
+      "objective": "For each host and OS, independently install build A, start a managed task, exit/update/disable/uninstall the Plugin, and prove compatible build B and standalone CLI observe the same run/state home and take over safely without duplication or shared-state deletion.",
+      "phase_owner": "real host and release verification",
+      "claim_status": "claim-gated per exact Codex-or-Claude host version, OS/version/architecture, scope, Node version, and build pair; no host readiness is currently proven",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-HOST", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    }
+  ],
+  "preconditions": {
+    "global": [
+      "Use an isolated temporary LAUNCHDECK_HOME and project root for every test cell; record both canonical paths and prove Codex, Claude, CLI, and MCP resolve the same state home only when the scenario requires shared takeover.",
+      "Use Node.js >=20 and record process.execPath, process.version, OS family, exact OS version/build, architecture, host version, installation scope, buildIdentity, component digests, Agent protocol version, state-schema versions, and test artifact digest.",
+      "Create a portable Node fixture project registered through normal Launchdeck configuration with: a low-risk long-running task on a declared port, a low-risk finite task that emits identifiable stdout/stderr, a medium-risk task, safe clean targets, and protected runtime/evidence paths.",
+      "Use deterministic process/port fixtures for verified-owned, unknown, external, stale, and mismatched ownership. Test fixtures must never target unrelated user processes.",
+      "Snapshot registry, run index, project runtime state, operation journal, logs/events, project config, user config, target tree, process set, and declared ports before scenarios that assert zero write or no replay.",
+      "Use a clean generated Plugin artifact rather than the source tree for bundle and host cells. Host cells install through the host-supported flow so the cached/installed copy is executed.",
+      "Discover the live Launchdeck and host command surface before executing any command. Commands in this handoff are harness contracts or placeholders, not evidence that the routes already exist.",
+      "Never run destructive/force fixtures against a non-temporary project. All cleanup is harness-owned after evidence capture, not part of Plugin uninstall behavior."
+    ],
+    "by_scenario": {
+      "QS-001": [
+        "Prepare two cloned semantic fixtures for one-shot CLI-versus-MCP comparison and one shared fixture for cross-surface reuse.",
+        "Instrument the portable task spawner with an append-only spawn receipt so process creation count is independently observable."
+      ],
+      "QS-002": [
+        "Build the exact single-file ESM release-candidate runtime and retain esbuild metafile plus artifact-integrity receipt.",
+        "Run from a temporary path with spaces and non-ASCII characters, with no plugin-local node_modules and no global Launchdeck/npx available."
+      ],
+      "QS-003": [
+        "Launch a fixture-owned external listener without Launchdeck spawn proof and create a separate incomplete/mismatched evidence case classified unknown.",
+        "Record listener PID/start time/port before safe operation calls so survival and no-takeover can be asserted."
+      ],
+      "QS-004": [
+        "Enable deterministic fault points after prepared persistence, after running persistence, after side effect, after terminal persistence, and before response delivery.",
+        "Record handler invocation and spawn/stop/delete counters outside the response channel."
+      ],
+      "QS-005": [
+        "Create only disposable safe targets and a protected state/evidence sentinel outside the clean set.",
+        "Support controlled drift variants: config hash, target existence/type, canonical path/symlink resolution, and protected evidence."
+      ],
+      "QS-006": [
+        "Prepare an unregistered fixture project with recognizable package/script/compose signals and no existing Launchdeck configuration.",
+        "Capture byte digests and directory inventories for all possible project and user state owners before invocation."
+      ],
+      "QS-007": [
+        "Validate the canonical Skill digest and ensure divergent duplicate Skill copies are not silently selected.",
+        "Provide deterministic mock/real adapters for healthy MCP, pre-handshake failure, capability omission, business refusal, and post-dispatch transport loss."
+      ],
+      "QS-008": [
+        "Produce build A and compatible build B with distinct package/runtime/build identities, plus incompatible build C for fail-closed negative proof.",
+        "Install Codex and Claude artifacts independently; record each installed/cached root and host settings before and after every lifecycle action.",
+        "Use a long-running low-risk task whose runId, PID, port, ownership proof, and stateHome can be observed by Plugin A, Plugin B, and standalone CLI."
+      ]
+    }
+  },
+  "steps": [
+    {
+      "scenario_id": "QS-001",
+      "journey": [
+        {
+          "step": 1,
+          "action": "On cloned fixture A, execute a representative query and low-risk mutation through the CLI JSON route; retain the schemaVersion 1 envelope and nested AgentOperationResult.",
+          "evidence": "Raw CLI JSON, exit code, normalized semantic projection, state diff, run/spawn receipts."
+        },
+        {
+          "step": 2,
+          "action": "On cloned fixture B, execute the same canonical operation/input through a real MCP tools/call after capabilities.get and required observation.",
+          "evidence": "MCP request/response IDs, structuredContent, text summary, normalized semantic projection, state diff, run/spawn receipts."
+        },
+        {
+          "step": 3,
+          "action": "Compare operation name, outcome, resource, effects, safety, typed error, and nextActions after normalizing allowed provenance/presentation and nondeterministic IDs/timestamps.",
+          "evidence": "Machine-readable semantic diff with an empty unexpected-difference set."
+        },
+        {
+          "step": 4,
+          "action": "On one shared fixture, start the low-risk long-running task through one surface, then call task.start through the other surface; repeat in reverse order with a fresh state home.",
+          "evidence": "Same runId/PID/port/stateHome, one spawn receipt, second result reusedExistingRun=true and effects changed=false."
+        },
+        {
+          "step": 5,
+          "action": "Issue concurrent matching start calls from CLI/MCP under controlled synchronization.",
+          "evidence": "One active run, one process spawn, stable ownership evidence, and all later results identify reuse rather than duplicate execution."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-002",
+      "journey": [
+        {
+          "step": 1,
+          "action": "Spawn the shipped runtime with node through the SDK StdioClientTransport and send initialize with a supported protocol version and declared client capabilities.",
+          "evidence": "Negotiated protocol version, server identity/capabilities, build identity, Node identity, runtime path, and state home."
+        },
+        {
+          "step": 2,
+          "action": "Send notifications/initialized, then tools/list.",
+          "evidence": "Exactly the 18 canonical public operation IDs, closed input schemas, valid output schemas, and no deferred/dropped/CLI-only operations."
+        },
+        {
+          "step": 3,
+          "action": "Call capabilities.get, task.status, task.run for the finite stdout/stderr fixture, and one safe refusal case.",
+          "evidence": "Valid nine-field AgentOperationResult in structuredContent; at most one concise text projection; correct isError boundary."
+        },
+        {
+          "step": 4,
+          "action": "Call an unknown tool and send top-level and nested forbidden/schema-invalid inputs.",
+          "evidence": "Normalized refusal with req_ correlation, journalStatus not_applicable, effects none, and zero Kernel side effects."
+        },
+        {
+          "step": 5,
+          "action": "Send concurrent non-conflicting requests with distinct JSON-RPC IDs and conflicting mutations that require Kernel locks.",
+          "evidence": "Responses correlate by ID even if completion order differs; conflicting resource effects remain serialized and non-duplicated."
+        },
+        {
+          "step": 6,
+          "action": "Inspect every runtime stdout record and stderr record while the finite task emits distinctive output.",
+          "evidence": "Every stdout record is a valid MCP/JSON-RPC frame; task output never contaminates protocol stdout; diagnostics are bounded/redacted on stderr or Launchdeck logs/events."
+        },
+        {
+          "step": 7,
+          "action": "Interrupt/close the stdio client, restart the MCP runtime, and observe any managed task from the new runtime.",
+          "evidence": "Adapter shutdown follows transport lifecycle; managed-task lifetime and shared state are unchanged; restart does not replay prior operations."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-003",
+      "journey": [
+        {
+          "step": 1,
+          "action": "Observe the external listener through project.inspect/task.status and separately observe the incomplete/mismatched case.",
+          "evidence": "External and unknown classifications remain distinct, bounded, and visible without being upgraded by PID/port alone."
+        },
+        {
+          "step": 2,
+          "action": "Attempt task.start where the declared port is externally or ambiguously occupied, then attempt task.stop and task.restart for external/unknown evidence through both safe CLI mapping and MCP.",
+          "evidence": "Refused outcome, effects none/changed=false, ownership external or unknown/mismatch, no process signal, no spawn, and no port takeover."
+        },
+        {
+          "step": 3,
+          "action": "Pass model-authored confirmation/approval/force fields and permissive host annotations in negative variants.",
+          "evidence": "Schema or policy refusal remains unchanged; host hints do not become Kernel authorization."
+        },
+        {
+          "step": 4,
+          "action": "Verify the canonical Skill reports the refusal and does not call CLI force-stop, stop --force-owned, shell, or any fallback mutation.",
+          "evidence": "Trace terminates in business_refusal/refuse_raw; external fixture remains alive."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-004",
+      "journey": [
+        {
+          "step": 1,
+          "action": "For each fault point, dispatch task.start once and sever/drop the response channel after the configured durable/effect boundary.",
+          "evidence": "One Kernel handler invocation at most, operation record/effects state appropriate to the fault boundary, and no automatic adapter retry."
+        },
+        {
+          "step": 2,
+          "action": "When the operation ID is known, call operation.get; call operation.reconcile only for prepared/running/indeterminate records that need live evidence.",
+          "evidence": "Same record/ID/inputDigest returned or transitioned; original task.start handler count remains unchanged."
+        },
+        {
+          "step": 3,
+          "action": "When the response carrying the ID is lost, call operation.list once with projectRef, exact operationName, taskRef, a positive window no greater than 15 minutes, non-empty journal states, and limit no greater than 20.",
+          "evidence": "Zero, unique, and ambiguous candidates are differentiated; listing is bounded/snapshot-based and has effects none."
+        },
+        {
+          "step": 4,
+          "action": "For a unique candidate, call operation.get then operation.reconcile if necessary. For zero or multiple candidates, stop and report correlation failure/ambiguity.",
+          "evidence": "No original mutation replay in any branch; only the original journal record may be reconciled."
+        },
+        {
+          "step": 5,
+          "action": "Attempt same-ID/same-digest recovery, same-ID/different-digest recovery, and missing/expired-ID recovery from both CLI and MCP.",
+          "evidence": "Same digest recovers original work; mismatch and missing/expired refuse with no new prepared record, handler call, or resource effect."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-005",
+      "journey": [
+        {
+          "step": 1,
+          "action": "Call clean.plan for the registered fixture and retain planDigest, config hash, sorted safe target descriptors, refusals, and protected evidence snapshot.",
+          "evidence": "Read-only clean plan with effects none and no deletion."
+        },
+        {
+          "step": 2,
+          "action": "Independently introduce each drift variant after preview: modify config, add/remove/change target type, change canonical/symlink resolution, or change protected evidence.",
+          "evidence": "Fresh filesystem/config snapshots identify the exact drift."
+        },
+        {
+          "step": 3,
+          "action": "Call clean.applySafe with the old planDigest through CLI and MCP semantic fixtures.",
+          "evidence": "Kernel recomputes under lock and refuses before deletion with effects none/changed=false; every safe and protected sentinel remains."
+        },
+        {
+          "step": 4,
+          "action": "Generate a new plan after drift and apply only a still-safe current digest in a separate positive fixture.",
+          "evidence": "Only declared safe targets are removed; shared state, active-run evidence, latest-failure evidence, roots, outside-root paths, and risky targets remain."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-006",
+      "journey": [
+        {
+          "step": 1,
+          "action": "Capture byte digests/inventories of project configuration candidates, user registry/config, journal, run index, local runtime state, logs/events, process set, and ports.",
+          "evidence": "Signed or hashed before-snapshot tied to fixture identity."
+        },
+        {
+          "step": 2,
+          "action": "Call adoption.inspect through CLI and MCP using only trusted adapter project context plus bounded maxDepth/maxFiles/signals.",
+          "evidence": "Bounded adoptionPlan with proposed configuration and evidence digest; no caller-supplied arbitrary root."
+        },
+        {
+          "step": 3,
+          "action": "Repeat the snapshots and compare byte content, directory inventory, process/port set, journal count, and registry membership.",
+          "evidence": "Zero writes, zero new operation journal mutation, zero task/process start, and effects none/changed=false."
+        },
+        {
+          "step": 4,
+          "action": "Inspect tools/list, capabilities, nextActions, Skill routes, and Plugin metadata for any adoption.apply authorization.",
+          "evidence": "adoption.apply is absent; the inspect result cannot be consumed as an execution authorization."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-007",
+      "journey": [
+        {
+          "step": 1,
+          "action": "For a supported low-risk start intent with healthy MCP, run the canonical Skill trace.",
+          "evidence": "Trace is intent_gate -> capabilities.get -> bounded observation -> one task.start -> success; no CLI process is invoked."
+        },
+        {
+          "step": 2,
+          "action": "Fail MCP before handshake/dispatch, then separately return capabilities that omit the requested safe operation; provide a compatible CLI capabilities route.",
+          "evidence": "A CLI --json --compact fallback may occur only in these pre-dispatch safe cases, is identified as CLI execution, and is normalized from schemaVersion 1 rather than human text."
+        },
+        {
+          "step": 3,
+          "action": "Return risk, ownership, scope, compatibility, lock, digest, config, or unsupported-input business refusal after a valid MCP response.",
+          "evidence": "Skill reports refusal and terminates; no CLI fallback or reformulated mutation."
+        },
+        {
+          "step": 4,
+          "action": "Drop transport after tools/call may have been sent.",
+          "evidence": "No task.start/stop/restart/run/clean replay. Skill uses known operation ID or exactly one bounded operation.list correlation, then get/reconcile; zero/multiple candidates stop."
+        },
+        {
+          "step": 5,
+          "action": "Present forbidden intents and tempting standalone CLI routes: force-stop, risky clean/reset, raw command/shell/env/cwd/force/yes/confirmation/approval token, external termination, production/remote service, adoption.apply, medium-risk execution, and permanent follow.",
+          "evidence": "Trace ends in refuse_raw with no MCP mutation, CLI fallback, shell execution, confirmation synthesis, or permanent stream."
+        }
+      ]
+    },
+    {
+      "scenario_id": "QS-008",
+      "journey": [
+        {
+          "step": 1,
+          "action": "For one host/OS/scope cell, install build A through the supported host flow and verify the host executes its installed/cached copy with no global Launchdeck, npx, install script, or plugin-local node_modules.",
+          "evidence": "Host/version/scope, installed root, manifest identity, runtime path, Node identity, Skill/runtime/schema digests, buildIdentity A, and successful real MCP handshake."
+        },
+        {
+          "step": 2,
+          "action": "Use the Plugin Skill/MCP to start the low-risk long-running fixture and capture runId, PID, port, ownership proof, journal ID, stateHome, and build A provenance.",
+          "evidence": "One managed run tied to shared LAUNCHDECK_HOME."
+        },
+        {
+          "step": 3,
+          "action": "Exit the host/MCP process and verify the managed task remains alive and observable from compatible standalone CLI without spawning a replacement.",
+          "evidence": "Same runId/PID/port/stateHome and one spawn receipt after host exit."
+        },
+        {
+          "step": 4,
+          "action": "Update that host's Plugin to compatible build B. For hosts that retain an old MCP process mid-session, record the old identity, then perform the documented reload/restart before asserting build B.",
+          "evidence": "No implicit task restart; build B observes the build A run through compatible state/protocol axes and reports exact provenance."
+        },
+        {
+          "step": 5,
+          "action": "Disable the Plugin, verify task/state continuity, re-enable or use standalone CLI, then safely stop only after verified ownership/compatibility checks.",
+          "evidence": "Same run is stopped once; no duplicate spawn, external signal, or state-home divergence."
+        },
+        {
+          "step": 6,
+          "action": "Repeat with a fresh run and uninstall the Plugin while it is active; verify registry, journal, logs, events, shared config, and managed task remain. Use compatible CLI/build B for observation and takeover.",
+          "evidence": "Uninstall removes only host-owned Plugin presence/settings; shared state and service lifetime remain independent."
+        },
+        {
+          "step": 7,
+          "action": "Install incompatible build C and attempt diagnosis, observation, and mutation against build A state.",
+          "evidence": "Capabilities/system diagnosis report exact incompatible axes; writes fail closed; no takeover, migration guess, or task duplication occurs."
+        },
+        {
+          "step": 8,
+          "action": "Install both Codex and Claude artifacts in the same isolated user/project setup, then update/disable/uninstall one host at a time.",
+          "evidence": "Artifacts/settings remain host-specific; changing one host does not overwrite/delete the other host package or shared Launchdeck state, and both report the same canonical build/component identity only when built from the same release."
+        }
+      ]
+    }
+  ],
+  "expected_semantics": [
+    {
+      "scenario_id": "QS-001",
+      "assertions": [
+        "CLI and MCP compare on canonical Agent semantics, not raw envelopes, JSON-RPC IDs, text formatting, timestamps, generated operation IDs, absolute runtime paths, or surface-specific provenance fields.",
+        "The comparison projection includes operation.name/inputDigest class/journalStatus, outcome.kind/code/reusedExistingRun, resource kind/status/projectRef/taskRef/runId semantics, effects certainty/changed/evidence class, safety decision/risk/ownership/projectScope, typed error, and normalized nextActions.",
+        "Allowed provenance differences are surface, host, runtimeKind, runtimePath, and cliSchemaVersion; CLI remains schemaVersion 1 and MCP cliSchemaVersion is null.",
+        "A repeated matching start is a succeeded operation with running/ready resource, confirmed effects, changed=false, reusedExistingRun=true, and the original runId/PID; it is not a second successful spawn."
+      ]
+    },
+    {
+      "scenario_id": "QS-002",
+      "assertions": [
+        "initialize is the first MCP lifecycle exchange and tools traffic follows initialized notification.",
+        "tools/list exposes exactly the 18 canonical public operations and excludes all CLI-only, deferred, and dropped capabilities.",
+        "Successful tools/call returns isError=false; Kernel refused/failed/partial/indeterminate and valid-call schema/tool failures return isError=true with a valid AgentOperationResult where the contract permits; malformed protocol input remains a JSON-RPC/MCP protocol error.",
+        "stdout contains protocol frames only, stderr contains bounded redacted diagnostics only, and managed-task stdout/stderr is represented through bounded result/log/event evidence.",
+        "Transport exit owns only the MCP adapter process and does not stop managed tasks or erase shared state."
+      ]
+    },
+    {
+      "scenario_id": "QS-003",
+      "assertions": [
+        "PID or port evidence alone never upgrades ownership to verified.",
+        "Unknown/external/mismatch remains inspect-only; start conflict, stop, and restart refuse before effects with no process signal or spawn.",
+        "Host approvals, annotations, model confirmations, force-like inputs, and Skill fallback cannot relax the Kernel decision."
+      ]
+    },
+    {
+      "scenario_id": "QS-004",
+      "assertions": [
+        "Every mutation has a Kernel-issued prepared journal record before effects; caller request IDs are not operation identities.",
+        "operation.list/get are reads and operation.reconcile may only add evidence/transition the existing record; none invokes the original handler.",
+        "A known ID retrieves/reconciles the original. A lost ID permits one bounded correlation query; zero/multiple candidates never authorize replay.",
+        "Same ID plus same digest recovers original work; different digest and missing/expired records refuse without creating new work.",
+        "Prepared/running/indeterminate records remain retained and unresolved until evidence-based reconciliation; age or dead adapter does not imply safe replay."
+      ]
+    },
+    {
+      "scenario_id": "QS-005",
+      "assertions": [
+        "clean.plan is a pure query and planDigest is not execution authority by itself.",
+        "clean.applySafe journals, locks, recomputes, and compares current safe targets before the first deletion.",
+        "Any config/target/path/type/protected-evidence drift refuses with effects none/changed=false and preserves every target.",
+        "Only a fresh matching safe digest may remove safe targets; risky/outside/root/symlink-escape/shared-state/run-evidence paths remain untouched."
+      ]
+    },
+    {
+      "scenario_id": "QS-006",
+      "assertions": [
+        "adoption.inspect is a bounded query over a trusted project root and returns effects none/changed=false.",
+        "No configuration, registry, journal, runtime/run, log/event, process, or port state changes.",
+        "No adoption.apply operation, next action, approval, token, digest, or Plugin field can authorize later execution."
+      ]
+    },
+    {
+      "scenario_id": "QS-007",
+      "assertions": [
+        "Healthy supported MCP is preferred and executes at most one declared safe mutation after capabilities and observation.",
+        "Mutation CLI fallback is allowed only before any MCP tools/call dispatch when handshake is unavailable or the safe operation is explicitly unsupported and CLI compatibility is confirmed.",
+        "Business refusal and post-dispatch uncertainty never fallback or retry; recovery uses operation operations only.",
+        "The Skill never exposes or selects raw shell/process controls, force/risky operations, external termination, adoption.apply, medium-risk execution, or permanent follow."
+      ]
+    },
+    {
+      "scenario_id": "QS-008",
+      "assertions": [
+        "Codex and Claude packages are generated, installed, updated, disabled, and uninstalled as separate host artifacts; one host lifecycle does not mutate the other host package.",
+        "Plugin/host/MCP lifetime is independent from managed-task and LAUNCHDECK_HOME lifetime.",
+        "Compatible build B and standalone CLI observe the build A run with the same runId/PID/port/stateHome and may stop only with compatible schemas and verified ownership.",
+        "Incompatible build C remains diagnosis-only and fails writes closed.",
+        "A passing host cell proves only the recorded host/version/OS/version/architecture/scope/Node/build/scenario dimensions."
+      ]
+    }
+  ],
+  "validation_matrix": {
+    "evidence_cell_key": [
+      "buildIdentity",
+      "surface",
+      "operationSet",
+      "hostName",
+      "hostVersion",
+      "osFamily",
+      "osVersionOrBuild",
+      "architecture",
+      "installationScope",
+      "nodeVersion",
+      "scenarioId",
+      "fixtureDigest"
+    ],
+    "required_receipt_fields": [
+      "cellId",
+      "status passed|failed|blocked|unsupported",
+      "exact evidence-cell key",
+      "start/end timestamps",
+      "commands or host actions actually used",
+      "artifact/runtime/Skill/schema/manifest digests",
+      "stateHome and project identity",
+      "test/harness revision",
+      "stdout/stderr/protocol transcript references",
+      "journal/run/process/port/state diff references",
+      "failure or unsupported reason",
+      "invalidation triggers"
+    ],
+    "contract_and_harness_layers": [
+      {
+        "layer": "L0-contract",
+        "scope": "Registry/schema/result/CLI mapping/Skill state-machine and deterministic fault-model tests",
+        "required_scenarios": ["QS-001", "QS-003", "QS-004", "QS-005", "QS-006", "QS-007"],
+        "claim_boundary": "Can support contract correctness only; cannot prove real stdio, host, Plugin, update, uninstall, or OS readiness."
+      },
+      {
+        "layer": "L1-real-stdio",
+        "scope": "Built runtime subprocess with real SDK client and byte-level stream observation",
+        "required_scenarios": ["QS-001", "QS-002", "QS-003", "QS-004", "QS-005", "QS-006"],
+        "claim_boundary": "Can prove only the exact standalone runtime/build/OS cells; cannot prove Codex or Claude routing/lifecycle."
+      },
+      {
+        "layer": "L2-skill",
+        "scope": "Deterministic Skill trace/eval plus real-host intent routing",
+        "required_scenarios": ["QS-003", "QS-004", "QS-007"],
+        "claim_boundary": "Mock traces prove routing contract; only host traces prove the recorded host's Skill discovery/routing."
+      },
+      {
+        "layer": "L3-host-lifecycle",
+        "scope": "Real Codex or Claude installation, launch, scope, update, disable, uninstall, and cross-version takeover",
+        "required_scenarios": ["QS-002", "QS-007", "QS-008"],
+        "claim_boundary": "Host/OS/scope/build-specific only; no cross-host or cross-OS inference."
+      }
+    ],
+    "platform_host_cells": [
+      {
+        "cell_template": "CORE-WINDOWS-{osBuild}-{arch}-{buildIdentity}",
+        "os_family": "Windows",
+        "surface": "CLI plus standalone real stdio MCP",
+        "scenarios": ["QS-001", "QS-002", "QS-003", "QS-004", "QS-005", "QS-006"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Record exact Windows edition/version/build and architecture at execution."
+      },
+      {
+        "cell_template": "CORE-MACOS-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "macOS",
+        "surface": "CLI plus standalone real stdio MCP",
+        "scenarios": ["QS-001", "QS-002", "QS-003", "QS-004", "QS-005", "QS-006"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Record exact macOS version/build and architecture at execution."
+      },
+      {
+        "cell_template": "CORE-LINUX-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "Linux",
+        "surface": "CLI plus standalone real stdio MCP",
+        "scenarios": ["QS-001", "QS-002", "QS-003", "QS-004", "QS-005", "QS-006"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Record exact distribution, kernel/userspace version, and architecture at execution."
+      },
+      {
+        "cell_template": "BUNDLE-WINDOWS-{osBuild}-{arch}-{buildIdentity}",
+        "os_family": "Windows",
+        "surface": "isolated prebuilt bundle",
+        "scenarios": ["QS-002"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Requires no node_modules/global Launchdeck/npx/install script, paths with spaces/non-ASCII, metafile/archive/digest proof."
+      },
+      {
+        "cell_template": "BUNDLE-MACOS-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "macOS",
+        "surface": "isolated prebuilt bundle",
+        "scenarios": ["QS-002"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Same isolation protocol as Windows, executed natively on exact macOS cell."
+      },
+      {
+        "cell_template": "BUNDLE-LINUX-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "Linux",
+        "surface": "isolated prebuilt bundle",
+        "scenarios": ["QS-002"],
+        "status": "not_executed_phase_owned",
+        "claim_gate": "Same isolation protocol as Windows, executed natively on exact Linux cell."
+      },
+      {
+        "cell_template": "CODEX-INSTALL-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildIdentity}",
+        "os_family": "Windows",
+        "host": "Codex",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Codex version and supported installation scope required."
+      },
+      {
+        "cell_template": "CODEX-INSTALL-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "macOS",
+        "host": "Codex",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Codex version and supported installation scope required."
+      },
+      {
+        "cell_template": "CODEX-INSTALL-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "Linux",
+        "host": "Codex",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Codex version and supported installation scope required."
+      },
+      {
+        "cell_template": "CODEX-LIFECYCLE-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildA}-{buildB}",
+        "os_family": "Windows",
+        "host": "Codex",
+        "surface": "update/disable/uninstall/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must execute the full start-survive-update-disable-uninstall-compatible-CLI takeover chain."
+      },
+      {
+        "cell_template": "CODEX-LIFECYCLE-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "os_family": "macOS",
+        "host": "Codex",
+        "surface": "update/disable/uninstall/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must execute the full lifecycle chain natively on exact macOS cell."
+      },
+      {
+        "cell_template": "CODEX-LIFECYCLE-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "os_family": "Linux",
+        "host": "Codex",
+        "surface": "update/disable/uninstall/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must execute the full lifecycle chain natively on exact Linux cell."
+      },
+      {
+        "cell_template": "CLAUDE-INSTALL-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildIdentity}",
+        "os_family": "Windows",
+        "host": "Claude Code",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Claude Code version and supported installation scope required."
+      },
+      {
+        "cell_template": "CLAUDE-INSTALL-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "macOS",
+        "host": "Claude Code",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Claude Code version and supported installation scope required."
+      },
+      {
+        "cell_template": "CLAUDE-INSTALL-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildIdentity}",
+        "os_family": "Linux",
+        "host": "Claude Code",
+        "surface": "Plugin install/discovery/MCP/Skill",
+        "scenarios": ["QS-002", "QS-007"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Real supported Claude Code version and supported installation scope required."
+      },
+      {
+        "cell_template": "CLAUDE-LIFECYCLE-WINDOWS-{hostVersion}-{scope}-{osBuild}-{arch}-{buildA}-{buildB}",
+        "os_family": "Windows",
+        "host": "Claude Code",
+        "surface": "update/disable/uninstall/reload/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must include mid-session old-process observation, documented reload/restart, and full lifecycle chain."
+      },
+      {
+        "cell_template": "CLAUDE-LIFECYCLE-MACOS-{hostVersion}-{scope}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "os_family": "macOS",
+        "host": "Claude Code",
+        "surface": "update/disable/uninstall/reload/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must include mid-session old-process observation and full native macOS lifecycle chain."
+      },
+      {
+        "cell_template": "CLAUDE-LIFECYCLE-LINUX-{hostVersion}-{scope}-{distribution}-{osVersion}-{arch}-{buildA}-{buildB}",
+        "os_family": "Linux",
+        "host": "Claude Code",
+        "surface": "update/disable/uninstall/reload/takeover",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "Must include mid-session old-process observation and full native Linux lifecycle chain."
+      },
+      {
+        "cell_template": "CROSS-HOST-INDEPENDENCE-{osFamily}-{osVersion}-{arch}-{codexVersion}-{claudeVersion}-{buildIdentity}",
+        "os_family": "Windows|macOS|Linux, one separate exact cell each",
+        "host": "Codex plus Claude Code",
+        "surface": "side-by-side independent package lifecycle",
+        "scenarios": ["QS-008"],
+        "status": "not_executed_host_owned",
+        "claim_gate": "One passing OS cell does not cover another; update/disable/uninstall one host while proving the other artifact/settings and shared state remain intact."
+      }
+    ],
+    "rollup_rule": "A rollup is passed only when every cell explicitly required by that named claim is current and passed. Missing, failed, blocked, unsupported, or stale cells remain visible and withhold the dependent claim."
+  },
+  "commands_or_harnesses": [
+    {
+      "id": "QV-H-BASELINE",
+      "kind": "existing repository commands",
+      "commands": ["npm run check", "npm test", "npm run smoke", "npm run package:check"],
+      "use": "Regression baseline only after implementation changes exist.",
+      "claim_boundary": "These commands do not by themselves prove real MCP, Plugin, host, or cross-platform readiness."
+    },
+    {
+      "id": "QV-H-EQUIVALENCE",
+      "kind": "phase-owned semantic comparison harness",
+      "invocation_contract": "Run the same OperationDefinition fixture through CLI adapter and MCP adapter, validate both schemas, normalize allowed transport/provenance differences, and emit a machine-readable semantic diff plus state/effect receipts.",
+      "covers": ["QS-001", "QS-003", "QS-005", "QS-006"],
+      "must_not": "Compare only human text, treat different generated IDs as semantic drift, or hide outcome/resource/effects differences."
+    },
+    {
+      "id": "QV-H-STDIO",
+      "kind": "phase-owned real protocol harness",
+      "invocation_contract": "Launch the shipped ESM runtime with node using @modelcontextprotocol/sdk v1.x Client and StdioClientTransport; observe raw stdout/stderr bytes for purity without replacing the SDK as the valid-protocol oracle.",
+      "sequence": ["initialize", "notifications/initialized", "tools/list", "tools/call"],
+      "covers": ["QS-002", "QS-004"],
+      "negative_extension": "A separate raw subprocess probe may inject malformed frames to verify protocol-error containment; it must not become production framing code."
+    },
+    {
+      "id": "QV-H-FAULTS",
+      "kind": "phase-owned deterministic journal/effect fault harness",
+      "invocation_contract": "Inject failures at prepared, running, post-effect, terminal-persisted, and pre-response boundaries; count handler/resource effects independently and drive list/get/reconcile from both surfaces.",
+      "covers": ["QS-004"],
+      "must_not": "Auto-retry, generate a caller-selected new operation ID, or infer no effect from a missing response."
+    },
+    {
+      "id": "QV-H-STATE-DIFF",
+      "kind": "phase-owned read-only snapshot harness",
+      "invocation_contract": "Digest/inventory permitted state roots and record bounded process/port observations before and after clean refusal and adoption inspection.",
+      "covers": ["QS-005", "QS-006", "QS-008"],
+      "must_not": "Read arbitrary unrelated user locations, persist secrets/raw environment, or perform cleanup before receipts are finalized."
+    },
+    {
+      "id": "QV-H-SKILL-TRACE",
+      "kind": "phase-owned deterministic Skill trace/eval harness",
+      "invocation_contract": "Feed intent plus controlled MCP/CLI outcomes, capture ordered tool/command attempts, validate the routing state machine, and fail on forbidden inputs, fallback, retry, shell, or permanent-follow behavior.",
+      "covers": ["QS-003", "QS-004", "QS-007"],
+      "claim_boundary": "Deterministic traces do not prove host Skill discovery; real-host receipts remain separate."
+    },
+    {
+      "id": "QV-H-PLUGIN-BUILD",
+      "kind": "phase-owned deterministic artifact harness",
+      "invocation_contract": "Build once per build identity, emit separate Codex and Claude packages, validate manifests, inspect esbuild metafile/archive inventory, verify all digests, and launch only the shipped copy in isolation.",
+      "covers": ["QS-002", "QS-008"],
+      "must_not": "Use global Launchdeck, npx, install/postinstall scripts, absolute build-machine paths, Plugin-local durable state, or duplicated host policy."
+    },
+    {
+      "id": "QV-H-CODEX-HOST",
+      "kind": "host-owned manual/automated real-host runner",
+      "invocation_contract": "Use the supported Codex Plugin flow for the exact tested version/scope; capture install/cache path, Skill/MCP discovery, project scope, launch, update, disable, uninstall, and takeover receipts.",
+      "covers": ["QS-002", "QS-007", "QS-008"],
+      "claim_status": "not available as evidence until executed on each target OS cell"
+    },
+    {
+      "id": "QV-H-CLAUDE-HOST",
+      "kind": "host-owned manual/automated real-host runner",
+      "invocation_contract": "Run host-supported Plugin validation/install flow for the exact Claude Code version/scope; capture root substitution, Skill/MCP discovery, project scope, launch, mid-session update identity, reload/restart, disable, uninstall, and takeover receipts.",
+      "covers": ["QS-002", "QS-007", "QS-008"],
+      "claim_status": "not available as evidence until executed on each target OS cell"
+    },
+    {
+      "id": "QV-H-CLI-RECOVERY",
+      "kind": "phase-owned CLI routes",
+      "symbolic_commands": [
+        "<launchdeck-cli> operation list --project <ref> --operation <name> --task <task> --created-after <time> --created-before <time> --state <state> --json --compact",
+        "<launchdeck-cli> operation get <operationId> --json --compact",
+        "<launchdeck-cli> operation reconcile <operationId> --json --compact"
+      ],
+      "use": "Cross-surface recovery/takeover after live help confirms the final syntax.",
+      "claim_status": "routes are contract-required but not present in current live CLI evidence"
+    }
+  ],
+  "negative_paths": [
+    {
+      "id": "NP-001",
+      "case": "MCP input includes command, shell, env, cwd, force, yes, confirmed, approvalToken, arbitraryPath, or projectRoot at top level or nested.",
+      "expected": "Closed-schema refusal, req_ correlation, journal not applicable, effects none, no Kernel mutation."
+    },
+    {
+      "id": "NP-002",
+      "case": "Project scope is missing, ambiguous, conflicting, unregistered, outside scope, or only the Plugin cache/install cwd is available.",
+      "expected": "Typed scope refusal; no guessed project and no mutation."
+    },
+    {
+      "id": "NP-003",
+      "case": "Configured/effective task risk is medium, high, or destructive, even with host approval or permissive tool annotations.",
+      "expected": "Kernel refusal before effects; Skill does not fallback to broader CLI execution."
+    },
+    {
+      "id": "NP-004",
+      "case": "Port/PID/process evidence is external, unknown, stale, probable, or mismatched rather than verified-owned.",
+      "expected": "Inspectable only; start conflict/stop/restart/termination refuses, fixture process survives."
+    },
+    {
+      "id": "NP-005",
+      "case": "Matching task.start is issued repeatedly or concurrently across CLI and MCP.",
+      "expected": "One spawn and one active run; later results reuse original run identity."
+    },
+    {
+      "id": "NP-006",
+      "case": "Mutation response is lost after possible dispatch/effect.",
+      "expected": "No retry/fallback; bounded operation correlation and get/reconcile only."
+    },
+    {
+      "id": "NP-007",
+      "case": "operation.list finds zero or multiple candidates.",
+      "expected": "Explicit not-found/ambiguous result and stop; neither candidate selection by guess nor original-operation replay."
+    },
+    {
+      "id": "NP-008",
+      "case": "Recovery ID is reused with a different input digest or references a missing/pruned/expired record.",
+      "expected": "Hard refusal without new record or resource effect."
+    },
+    {
+      "id": "NP-009",
+      "case": "Safe-clean plan changes after preview through config, target, path/type, symlink, or protected-evidence drift.",
+      "expected": "Fresh recomputation detects mismatch and refuses before deletion with all sentinels intact."
+    },
+    {
+      "id": "NP-010",
+      "case": "adoption.inspect is offered an arbitrary caller root or its output is treated as authorization for adoption.apply.",
+      "expected": "Scope/schema refusal or read-only bounded plan; no adoption.apply route/action and zero writes."
+    },
+    {
+      "id": "NP-011",
+      "case": "MCP stdout receives a banner, warning, task output, console.log, or malformed non-protocol line.",
+      "expected": "Purity harness fails the cell; no host/runtime readiness claim."
+    },
+    {
+      "id": "NP-012",
+      "case": "Runtime bundle has an external npm import, requires node_modules/global Launchdeck/npx/install script, or resolves an absolute build-machine path.",
+      "expected": "Build/isolation cell fails; SU-002 remains unresolved for every dependent host cell."
+    },
+    {
+      "id": "NP-013",
+      "case": "Runtime/Skill/schema/manifest/build/state compatibility digest or range mismatches.",
+      "expected": "Capabilities/diagnosis only where safely readable; every write fails closed."
+    },
+    {
+      "id": "NP-014",
+      "case": "Plugin update occurs while an older MCP process is still active.",
+      "expected": "Old and new provenance remains explicit; no silent readiness assertion, state migration guess, original-operation replay, or managed-task restart."
+    },
+    {
+      "id": "NP-015",
+      "case": "Plugin disable/uninstall attempts to stop managed tasks or remove LAUNCHDECK_HOME registry/journal/log/event/config state.",
+      "expected": "Lifecycle test fails immediately; shared state and task must remain for compatible CLI takeover."
+    },
+    {
+      "id": "NP-016",
+      "case": "Skill sees divergent current/legacy/plugin copies or receives a forbidden force/risky/raw/remote/follow intent.",
+      "expected": "No silent Skill selection/overwrite/delete and no fallback execution; report divergence or refuse raw intent."
+    },
+    {
+      "id": "NP-017",
+      "case": "Node is absent or below version 20 in a host cell.",
+      "expected": "Clear bounded startup/host diagnostic where available and no readiness claim for that environment."
+    }
+  ],
+  "readiness_claim_rules": [
+    "This handoff is a validation design, not execution evidence. Every matrix cell begins not_executed_phase_owned or not_executed_host_owned.",
+    "A passing contract/unit fixture cannot prove real stdio, Skill discovery, Plugin packaging, host launch, update, disable, uninstall, takeover, or operating-system readiness.",
+    "A passing standalone bundle/stdio cell cannot prove Codex or Claude behavior. Codex never proves Claude, Claude never proves Codex, and one host version/scope never proves another.",
+    "Windows, macOS, and Linux claims require separate native cells recording exact OS version/build, architecture, Node version, artifact identity, and harness revision. No portability claim may be inferred from the current Windows workspace.",
+    "Install/discovery, update, disable, uninstall, host-exit survival, cross-version takeover, incompatible-version refusal, and cross-host independence are separate evidence dimensions; a pass in one does not fill another.",
+    "Plugin lifecycle readiness requires one uninterrupted evidence chain: build A starts a run, host/Plugin exits or changes, the run/state survives, compatible build B or CLI observes the same runId/PID/port/stateHome, and safe stop uses verified ownership without duplication.",
+    "Bundle readiness requires the shipped copy to run with Node >=20 but without node_modules, global Launchdeck, npx, or install scripts; metafile/archive/integrity and stdout-purity evidence are mandatory.",
+    "SU-002 is resolved only for exact passing bundle plus real-host cells. A missing, blocked, failed, unsupported, or stale cell leaves its host-specific readiness claim unresolved.",
+    "Any change to buildIdentity, runtime bundle, operation catalog/schema, result schema, canonical Skill digest, compatibility manifest, host manifest, Node range, host version, OS support contract, or scenario harness invalidates dependent evidence cells.",
+    "Checksums establish tested byte identity and drift detection only; they do not establish publisher authenticity.",
+    "A matrix rollup must name the exact required cells and expose every missing/failed/blocked/unsupported/stale dependency. It must never report a single unconditional Plugin-ready or cross-platform-ready boolean.",
+    "Capabilities may report observed environment and evidence IDs only. Artifact targets, manifest declarations, source-level tests, or generated snapshots are not readiness evidence."
+  ],
+  "CA_refs": [
+    "CA-001",
+    "CA-002",
+    "CA-003",
+    "CA-004",
+    "CA-005",
+    "CA-006",
+    "CA-007",
+    "CA-008",
+    "CA-009",
+    "CA-010",
+    "CA-011",
+    "CA-012",
+    "CA-013",
+    "CA-014",
+    "CA-015",
+    "CA-016",
+    "CA-017",
+    "CA-018",
+    "CA-019",
+    "CA-020",
+    "CA-021",
+    "CA-022",
+    "CA-023",
+    "CA-024",
+    "CA-025",
+    "CA-026",
+    "CA-027",
+    "CA-028",
+    "CA-029",
+    "CA-030",
+    "CA-031",
+    "CA-032",
+    "CA-033",
+    "CA-034",
+    "CA-035",
+    "CA-036",
+    "CA-037",
+    "CA-038",
+    "CA-039",
+    "CA-040",
+    "CA-041",
+    "CA-042",
+    "CA-043",
+    "CA-044",
+    "CA-045",
+    "CA-046",
+    "CA-047",
+    "CA-048",
+    "CA-049",
+    "CA-050"
+  ],
+  "MP_refs": ["MP-001", "MP-002", "MP-003", "MP-004", "MP-005", "MP-006", "MP-007", "MP-008"],
+  "coverage_gaps": [
+    {
+      "id": "QV-GAP-001",
+      "status": "phase-owned",
+      "owner": "implementation and host verification",
+      "gap": "No real stdio, Codex, Claude, Plugin lifecycle, or native macOS/Linux evidence was executed by this planning lane.",
+      "claim_gate": "All corresponding matrix cells remain not executed; no readiness statement is unlocked."
+    },
+    {
+      "id": "QV-GAP-002",
+      "status": "phase-owned",
+      "owner": "release support policy",
+      "gap": "Exact supported Windows/macOS/Linux versions, architectures, Codex/Claude versions, and installation scopes are not locked by the upstream contract.",
+      "claim_gate": "Before execution/rollup, replace matrix placeholders with exact supported dimensions; do not broaden a passing cell."
+    },
+    {
+      "id": "QV-GAP-003",
+      "status": "phase-owned",
+      "owner": "journal implementation verification",
+      "gap": "Operation journal, operation.list/get/reconcile CLI routes, fault points, and no-replay counters do not exist in current live evidence.",
+      "claim_gate": "QS-004 and lifecycle recovery/takeover remain unproven until durable fault tests pass."
+    },
+    {
+      "id": "QV-GAP-004",
+      "status": "contract-consolidation-owned",
+      "owner": "plan/schema synthesis",
+      "gap": "The accepted data handoff uses plan_digest_stale while the accepted contract handoff uses plan_digest_mismatch for safe-clean drift.",
+      "claim_gate": "Choose one stable outcome code in the canonical schema/registry before freezing QS-005 fixtures; semantics remain refusal before effects."
+    },
+    {
+      "id": "QV-GAP-005",
+      "status": "phase-owned",
+      "owner": "adoption implementation verification",
+      "gap": "adoption.inspect and its bounded zero-write snapshot fixture are contract-defined but absent from current live implementation.",
+      "claim_gate": "No adoption inspection readiness until QS-006 passes on both adapters."
+    },
+    {
+      "id": "QV-GAP-006",
+      "status": "phase-owned",
+      "owner": "Skill implementation/evaluation",
+      "gap": "The current canonical Skill routes to CLI references and has no implemented MCP-first state machine, fallback trace harness, or real-host routing receipt.",
+      "claim_gate": "No Skill MCP-first/fallback claim until deterministic and real-host QS-007 evidence passes."
+    },
+    {
+      "id": "QV-GAP-007",
+      "status": "phase-owned",
+      "owner": "build and compatibility verification",
+      "gap": "Compatible build A/B and incompatible build C fixtures, exact new version-axis values, and migration ranges are not yet produced.",
+      "claim_gate": "Cross-version takeover and fail-closed mismatch claims remain withheld."
+    },
+    {
+      "id": "QV-GAP-008",
+      "status": "host-owned",
+      "owner": "real Codex verification",
+      "gap": "Exact supported Codex install/update/disable/uninstall actions and cached-runtime behavior are not proven by repository tests or this lane.",
+      "claim_gate": "Use the then-current supported host flow and record it in each exact Codex cell."
+    },
+    {
+      "id": "QV-GAP-009",
+      "status": "host-owned",
+      "owner": "real Claude Code verification",
+      "gap": "Documented Claude path/reload/uninstall behavior has not been executed against the generated artifact on any target OS.",
+      "claim_gate": "Use the then-current supported host flow and record old/new MCP identity in each exact Claude lifecycle cell."
+    },
+    {
+      "id": "QV-GAP-010",
+      "status": "phase-owned",
+      "owner": "evidence tooling",
+      "gap": "ReadinessEvidenceCell persistence/reporting, stale invalidation, and dependency-aware rollup are designed but not implemented.",
+      "claim_gate": "Release reporting must not replace missing cells with prose or a package-wide boolean."
+    }
+  ],
+  "blockers": [],
+  "integration_targets": [
+    {
+      "target": "quickstart.md",
+      "need": "Render QS-001 through QS-008 as the representative operator/developer journey, keeping planned commands symbolic until live help confirms syntax.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "plan.md and plan-contract.json",
+      "need": "Create implementation and verification tasks for every harness, matrix cell family, receipt format, evidence invalidation rule, and phase-owned gap; do not mark host verification complete during implementation-only phases.",
+      "basis_refs": ["QV-REF-HOST", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "shared operation-contract test suite",
+      "need": "Own schema/result invariants and CLI/MCP semantic comparison fixtures, including allowed provenance differences and CLI schemaVersion 1 preservation.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "real MCP stdio harness",
+      "need": "Use the SDK client against the shipped runtime, capture protocol/stdout/stderr evidence, exercise valid/error/concurrent/interruption/restart flows, and keep raw malformed-frame probes test-only.",
+      "basis_refs": ["QV-REF-HOST", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "Kernel journal and fault-injection tests",
+      "need": "Prove prepared-before-effects, known/lost-ID recovery, bounded unique/zero/ambiguous correlation, same-ID digest rules, and handler/resource no-replay counters.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "ownership and lifecycle fixtures",
+      "need": "Provide safe portable verified/unknown/external/stale/mismatch process/port cases and cross-surface start-reuse/concurrency evidence without touching unrelated processes.",
+      "basis_refs": ["QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "clean and adoption state-diff tests",
+      "need": "Prove stale safe-clean digest refusal before deletion and adoption.inspect byte/inventory/process/port zero-write behavior; consolidate the clean drift outcome code first.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "canonical Skill tests and evals",
+      "need": "Validate MCP-first sequencing, the narrow pre-dispatch fallback gate, refusal/uncertainty no-fallback, one-correlation recovery, forbidden intent coverage, and duplicate Skill handling.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-DATA", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "Plugin artifact and real-host runners",
+      "need": "Generate separate Codex/Claude artifacts and execute install/discovery/launch/update/disable/uninstall/reload/takeover/independence scenarios on each exact supported OS/host/scope cell.",
+      "basis_refs": ["QV-REF-SPEC", "QV-REF-HOST", "QV-REF-CONTRACTS"]
+    },
+    {
+      "target": "release evidence registry",
+      "need": "Persist exact ReadinessEvidenceCell receipts keyed by build/host/OS/scope/Node/scenario and implement stale invalidation plus dependency-aware claim rollup.",
+      "basis_refs": ["QV-REF-HOST", "QV-REF-DATA"]
+    }
+  ]
+}

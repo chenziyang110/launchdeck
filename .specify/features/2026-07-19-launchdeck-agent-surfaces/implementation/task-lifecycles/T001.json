@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "task_id": "T001",
+  "task_ref": "task-index.json#/tasks/T001",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "replacement-baseline",
+    "reason": "T001 freezes existing behavior and adds reusable tests/fixtures without changing production behavior, so an honest missing-behavior RED is not expected.",
+    "commands": ["npm run check", "npm test", "npm run smoke", "npm run package:check"],
+    "status": "passed",
+    "summary": "Unchanged repository: syntax passed, 154 tests with 153 pass/1 platform skip, lifecycle smoke passed, package dry-run passed."
+  },
+  "changed_paths": [
+    "test/fixtures/agent-surfaces/fixture-manifest.json",
+    "test/fixtures/agent-surfaces/ownership-cases.json",
+    "test/fixtures/agent-surfaces/managed-server.mjs.txt",
+    "test/fixtures/agent-surfaces/finite-task.mjs.txt",
+    "test/helpers/agent-surface-fixture.js",
+    "test/baseline/agent-surfaces-baseline.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/task-index.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T001.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/baseline/agent-surfaces-baseline.test.js","status":"passed","summary":"5 tests passed."},
+    {"command":"npm run check","status":"passed","summary":"Syntax check passed for 46 JavaScript files."},
+    {"command":"npm test","status":"passed","summary":"160 total; 159 passed; 1 existing platform skip; 0 failures."},
+    {"command":"npm run smoke","status":"passed","summary":"Quick Windows lifecycle smoke passed using a temporary workspace and isolated LAUNCHDECK_HOME."},
+    {"command":"npm run package:check","status":"passed","summary":"npm pack dry-run passed with the unchanged 28-file production payload."}
+  ],
+  "review": {
+    "trigger": "required-reference-missing",
+    "verdict": "cleared",
+    "evidence": "The missing plan anchor was repaired to quickstart.md#Baseline-and-Harnesses; targeted and complete validation then passed with no production-code write or scope drift."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-002","status":"satisfied","evidence":"All fixture, test, and tracker writes remain under F:/github/launchdeck."},
+    {"ref":"MP-004","status":"satisfied","evidence":"Baseline tests assert current CLI schemaVersion 1 without defining Agent protocol behavior."},
+    {"ref":"MP-008","status":"satisfied","evidence":"Fixture manifest explicitly limits evidence to local CLI/control-plane baseline and disclaims MCP/Plugin/host/OS readiness."},
+    {"ref":"CA-003","status":"satisfied","evidence":"Managed fixture test proves repeated start keeps one run, PID, port, and spawn receipt."},
+    {"ref":"CA-004","status":"satisfied","evidence":"Synthetic ownership cases classify unknown/external evidence without signaling real unrelated processes."},
+    {"ref":"CA-013","status":"satisfied","evidence":"Fixture materializes disposable safe targets and protected state/evidence/risky sentinels; preview produces no deletion."},
+    {"ref":"CA-025","status":"satisfied","evidence":"CLI baseline asserts schemaVersion 1 explicitly; Agent versioning remains absent from this task."},
+    {"ref":"CA-039","status":"satisfied","evidence":"Fixture claimBoundary prevents CLI baseline from being treated as MCP/Plugin/cross-platform proof."},
+    {"ref":"CA-041","status":"satisfied","evidence":"Baseline retains stable semantic task, run, ownership, clean, and envelope fields for later adapter comparison."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null,
+  "fixture_digest": "9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305"
+}

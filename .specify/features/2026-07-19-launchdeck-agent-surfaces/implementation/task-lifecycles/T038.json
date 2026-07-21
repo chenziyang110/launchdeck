@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "task_id": "T038",
+  "task_ref": "task-index.json#/tasks/T038",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "completed",
+  "red_baseline": null,
+  "changed_paths": [
+    "test/contracts/final-surface-exclusion.test.js",
+    "test/packaging/final-policy-audit.test.js",
+    "test/skill/final-routing-audit.test.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T038.json"
+  ],
+  "validation": [
+    {
+      "status": "passed",
+      "commands": ["node --test --test-concurrency=1 test/contracts/final-surface-exclusion.test.js test/packaging/final-policy-audit.test.js test/skill/final-routing-audit.test.js test/contracts/agent-operation-inputs.test.js test/packaging/host-manifest-policy.test.js test/skill/forbidden-calls.test.js"],
+      "summary": "18 contract, packaging, and Skill audit tests pass. The checks freeze the closed 18-operation catalog, reject raw/confirmation inputs and deferred operations, prevent host-policy duplication, forbid broad evidence labels, and prevent exactly-once wording from public surfaces."
+    }
+  ],
+  "review": {
+    "trigger": "final deferred/dropped surface audit",
+    "verdict": "cleared",
+    "evidence": "No approved capability was removed or activated; the audit adds only regression guards around the public boundary."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "refs": ["CA-004", "CA-005", "CA-014", "CA-017", "CA-018", "CA-019", "CA-026", "CA-027", "CA-030", "CA-038", "CA-042", "CA-044", "CA-050"],
+      "status": "passed",
+      "evidence": "The mechanical audit keeps inspect-only ownership, digest-bound clean, closed public inputs, low-risk-only routing, deferred adoption, and exact evidence boundaries intact."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": "Keep all approved operations intact. If a later change breaks an exclusion guard, reopen its owning contract rather than activating a deferred capability."
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.dev/schemas/agent-operations.schema.json",
+  "title": "Launchdeck Public Agent Operation Inputs",
+  "description": "Closed first-release input catalog. Semantic constraints such as configured-project scope, current low-risk evaluation, ownership, compatibility, time-window width, and clean-plan revalidation are enforced by the Application Kernel.",
+  "oneOf": [
+    { "$ref": "#/$defs/capabilities.get" },
+    { "$ref": "#/$defs/system.diagnose" },
+    { "$ref": "#/$defs/project.list" },
+    { "$ref": "#/$defs/project.inspect" },
+    { "$ref": "#/$defs/adoption.inspect" },
+    { "$ref": "#/$defs/task.list" },
+    { "$ref": "#/$defs/task.status" },
+    { "$ref": "#/$defs/task.logs.read" },
+    { "$ref": "#/$defs/task.events.read" },
+    { "$ref": "#/$defs/task.start" },
+    { "$ref": "#/$defs/task.stop" },
+    { "$ref": "#/$defs/task.restart" },
+    { "$ref": "#/$defs/task.run" },
+    { "$ref": "#/$defs/operation.list" },
+    { "$ref": "#/$defs/operation.get" },
+    { "$ref": "#/$defs/operation.reconcile" },
+    { "$ref": "#/$defs/clean.plan" },
+    { "$ref": "#/$defs/clean.applySafe" }
+  ],
+  "$defs": {
+    "projectRef": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "taskRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "cursor": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "operationId": { "type": "string", "pattern": "^op_[A-Za-z0-9_-]{16,128}$" },
+    "planDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "runId": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "capabilities.get": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "capabilities.get" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" } } } }
+    },
+    "system.diagnose": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "system.diagnose" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "checks": { "type": "array", "maxItems": 8, "uniqueItems": true, "items": { "enum": ["runtime", "compatibility", "state", "registry", "journal", "skill", "project", "transport"] } } } } }
+    },
+    "project.list": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "project.list" }, "input": { "type": "object", "additionalProperties": false, "properties": { "cursor": { "$ref": "#/$defs/cursor" }, "limit": { "type": "integer", "minimum": 1, "maximum": 200, "default": 80 } } } }
+    },
+    "project.inspect": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "project.inspect" }, "input": { "type": "object", "additionalProperties": false, "required": ["target"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "target": { "oneOf": [ { "$ref": "#/$defs/stringTarget" }, { "$ref": "#/$defs/portTarget" }, { "$ref": "#/$defs/pidTarget" } ] } } } }
+    },
+    "adoption.inspect": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "adoption.inspect" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "maxDepth": { "type": "integer", "minimum": 1, "maximum": 6, "default": 4 }, "maxFiles": { "type": "integer", "minimum": 1, "maximum": 500, "default": 200 }, "signals": { "type": "array", "uniqueItems": true, "items": { "enum": ["package", "scripts", "compose", "make", "just", "taskfile", "existingConfig"] } } } } }
+    },
+    "task.list": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "task.list" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "cursor": { "$ref": "#/$defs/cursor" }, "limit": { "type": "integer", "minimum": 1, "maximum": 200, "default": 80 } } } }
+    },
+    "task.status": { "$ref": "#/$defs/taskRequiredQuery", "description": "Canonical operation field must equal task.status." },
+    "task.logs.read": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "task.logs.read" }, "input": { "type": "object", "additionalProperties": false, "required": ["taskRef"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" }, "cursor": { "$ref": "#/$defs/cursor" }, "limit": { "type": "integer", "minimum": 1, "maximum": 200, "default": 80 }, "maxBytes": { "type": "integer", "minimum": 1, "maximum": 65536, "default": 32768 } } } }
+    },
+    "task.events.read": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "task.events.read" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" }, "runId": { "$ref": "#/$defs/runId" }, "cursor": { "$ref": "#/$defs/cursor" }, "limit": { "type": "integer", "minimum": 1, "maximum": 200, "default": 80 }, "windowSeconds": { "type": "integer", "minimum": 1, "maximum": 86400 } }, "anyOf": [ { "required": ["projectRef"] }, { "required": ["taskRef"] }, { "required": ["runId"] } ] } }
+    },
+    "task.start": { "$ref": "#/$defs/taskMutationStart" },
+    "task.stop": { "$ref": "#/$defs/taskMutationStop" },
+    "task.restart": { "$ref": "#/$defs/taskMutationRestart" },
+    "task.run": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "task.run" }, "input": { "type": "object", "additionalProperties": false, "required": ["taskRef"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" }, "output": { "enum": ["none", "summary"], "default": "summary" } } } }
+    },
+    "operation.list": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "operation.list" }, "input": { "type": "object", "additionalProperties": false, "required": ["projectRef", "operationName", "createdAfter", "createdBefore", "states"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" }, "operationName": { "enum": ["task.start", "task.stop", "task.restart", "task.run", "clean.applySafe"] }, "createdAfter": { "type": "string", "format": "date-time" }, "createdBefore": { "type": "string", "format": "date-time" }, "states": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["prepared", "running", "succeeded", "failed", "refused", "indeterminate", "reconciled"] } }, "cursor": { "$ref": "#/$defs/cursor" }, "limit": { "type": "integer", "minimum": 1, "maximum": 20, "default": 20 } } } }
+    },
+    "operation.get": { "$ref": "#/$defs/operationRecoveryGet" },
+    "operation.reconcile": { "$ref": "#/$defs/operationRecoveryReconcile" },
+    "clean.plan": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "clean.plan" }, "input": { "type": "object", "additionalProperties": false, "properties": { "projectRef": { "$ref": "#/$defs/projectRef" } } } }
+    },
+    "clean.applySafe": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "clean.applySafe" }, "input": { "type": "object", "additionalProperties": false, "required": ["planDigest"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "planDigest": { "$ref": "#/$defs/planDigest" } } } }
+    },
+    "taskRequiredQuery": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "const": "task.status" }, "input": { "type": "object", "additionalProperties": false, "required": ["taskRef"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" } } } }
+    },
+    "taskMutationStart": { "$ref": "#/$defs/taskMutation", "properties": { "operation": { "const": "task.start" } } },
+    "taskMutationStop": { "$ref": "#/$defs/taskMutation", "properties": { "operation": { "const": "task.stop" } } },
+    "taskMutationRestart": { "$ref": "#/$defs/taskMutation", "properties": { "operation": { "const": "task.restart" } } },
+    "taskMutation": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "type": "string" }, "input": { "type": "object", "additionalProperties": false, "required": ["taskRef"], "properties": { "projectRef": { "$ref": "#/$defs/projectRef" }, "taskRef": { "$ref": "#/$defs/taskRef" } } } }
+    },
+    "operationRecoveryGet": { "$ref": "#/$defs/operationRecovery", "properties": { "operation": { "const": "operation.get" } } },
+    "operationRecoveryReconcile": { "$ref": "#/$defs/operationRecovery", "properties": { "operation": { "const": "operation.reconcile" } } },
+    "operationRecovery": {
+      "type": "object", "additionalProperties": false, "required": ["operation", "input"],
+      "properties": { "operation": { "type": "string" }, "input": { "type": "object", "additionalProperties": false, "required": ["operationId"], "properties": { "operationId": { "$ref": "#/$defs/operationId" } } } }
+    },
+    "stringTarget": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "value"],
+      "properties": { "kind": { "enum": ["project", "task", "run", "conflict"] }, "value": { "type": "string", "minLength": 1, "maxLength": 256 } }
+    },
+    "portTarget": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "value"],
+      "properties": { "kind": { "const": "port" }, "value": { "type": "integer", "minimum": 1, "maximum": 65535 } }
+    },
+    "pidTarget": {
+      "type": "object", "additionalProperties": false, "required": ["kind", "value"],
+      "properties": { "kind": { "const": "pid" }, "value": { "type": "integer", "minimum": 1 } }
+    }
+  }
+}

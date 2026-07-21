@@ -1,0 +1,12 @@
+{
+  "command": "claude -p --settings {hooks.UserPromptSubmit=[]} --plugin-dir <isolated-cache> --allowed-tools capabilities.get,task.list --no-session-persistence --output-format stream-json --verbose --max-budget-usd 1 <prompt>",
+  "intendedOrder": [
+    "capabilities.get",
+    "task.list"
+  ],
+  "permissions": [
+    "only mcp__plugin_launchdeck_launchdeck__capabilities_get",
+    "only mcp__plugin_launchdeck_launchdeck__task_list"
+  ],
+  "result": "Claude user-level UserPromptSubmit hook executed before the prompt and blocked the fixture session because .specify/bin/specify-hook.py is missing."
+}

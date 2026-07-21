@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { LaunchdeckError } from './errors.js';
+import { canonicalDigest } from './kernel/compatibility.js';
 
 export const AGENT_SKILL_NAME = 'launchdeck-agent';
 
@@ -14,7 +16,7 @@ const ADAPTERS = [
     id: 'codex',
     label: 'Codex CLI',
     projectSkillRoot: ['.agents', 'skills'],
-    userSkillRoot: ['.codex', 'skills']
+    userSkillRoot: ['.agents', 'skills']
   },
   {
     id: 'claude-code',
@@ -52,6 +54,7 @@ export function listAgentTargets(options = {}) {
 
 export function doctorAgentInstaller(options = {}) {
   const paths = listAgentTargets(options);
+  const skillInstallations = inspectAgentSkillInstallations(options);
   const checks = [];
 
   checks.push({
@@ -62,6 +65,21 @@ export function doctorAgentInstaller(options = {}) {
       ? `Found ${paths.source.path}`
       : `Missing ${paths.source.path}`,
     details: { path: paths.source.path }
+  });
+
+  const installationWarning = ['divergent', 'invalid'].includes(skillInstallations.status);
+  checks.push({
+    code: 'skill_installation_compatibility',
+    severity: 'warning',
+    status: installationWarning ? 'warn' : 'pass',
+    message: installationWarning
+      ? 'Skill copies require explicit user selection; no content was modified.'
+      : `Skill copy status: ${skillInstallations.status}.`,
+    details: {
+      status: skillInstallations.status,
+      preferredLocationId: skillInstallations.preferredLocationId,
+      locations: skillInstallations.locations
+    }
   });
 
   checks.push({
@@ -93,10 +111,11 @@ export function doctorAgentInstaller(options = {}) {
 
   return {
     ok: summary.error === 0,
-    status: summary.error > 0 ? 'error' : 'ok',
+    status: summary.error > 0 ? 'error' : summary.warn > 0 ? 'warn' : 'ok',
     summary,
     source: paths.source,
     targets: paths.targets,
+    skillInstallations,
     checks
   };
 }
@@ -118,6 +137,9 @@ export function installAgentSkill(options = {}) {
   const target = options.target
     ? explicitTargetDescriptor(agent, scope, options.target, projectRoot)
     : targetDescriptor(agent, scope, projectRoot, homeDir);
+  if (!options.target && agent.id === 'codex' && scope === 'user') {
+    assertAutomaticCodexInstallSafe(options);
+  }
   const comparison = compareSkillDirectories(source.path, target.targetDir);
   if (comparison.invalidTarget) {
     throw new LaunchdeckError(
@@ -184,6 +206,131 @@ export function supportedAgents() {
   return ADAPTERS.map((adapter) => adapter.id);
 }
 
+export function createSkillContentManifest(skillDir) {
+  const root = path.resolve(skillDir);
+  if (!fs.existsSync(root)) {
+    throw new LaunchdeckError('agent_skill_missing', `Agent skill directory does not exist: ${root}`, { path: root });
+  }
+  const rootEntry = fs.lstatSync(root);
+  if (rootEntry.isSymbolicLink()) throw skillSymlinkError(root);
+  if (!rootEntry.isDirectory()) {
+    throw new LaunchdeckError('agent_skill_invalid', `Agent skill path is not a directory: ${root}`, { path: root });
+  }
+
+  const files = [];
+  collectManifestFiles(root, '', files);
+  files.sort((left, right) => compareCanonicalStrings(left.path, right.path));
+  const identity = {
+    schemaVersion: 1,
+    skillName: AGENT_SKILL_NAME,
+    files
+  };
+  return Object.freeze({
+    ...identity,
+    files: Object.freeze(files.map((entry) => Object.freeze(entry))),
+    contentDigest: canonicalDigest(identity)
+  });
+}
+
+export function inspectAgentSkillInstallations(options = {}) {
+  const projectRoot = path.resolve(options.projectRoot ?? process.cwd());
+  const homeDir = path.resolve(options.homeDir ?? os.homedir());
+  const source = validateCanonicalSource(options);
+  if (!source.valid || !source.contentManifest) {
+    throw new LaunchdeckError('agent_source_invalid', `Canonical agent skill source is invalid: ${source.errors.join('; ')}`, {
+      source: source.path,
+      errors: source.errors
+    });
+  }
+
+  const descriptors = [
+    {
+      id: 'codex:user-current',
+      kind: 'user-current',
+      host: 'codex',
+      path: path.join(homeDir, '.agents', 'skills', AGENT_SKILL_NAME)
+    },
+    {
+      id: 'codex:user-legacy',
+      kind: 'user-legacy',
+      host: 'codex',
+      path: path.join(homeDir, '.codex', 'skills', AGENT_SKILL_NAME)
+    },
+    {
+      id: 'codex:project',
+      kind: 'project',
+      host: 'codex',
+      path: path.join(projectRoot, '.agents', 'skills', AGENT_SKILL_NAME)
+    },
+    ...normalizePluginRoots(options.pluginRoots).map((plugin) => ({
+      id: `${plugin.host}:plugin:${plugin.id}`,
+      kind: 'plugin',
+      host: plugin.host,
+      pluginId: plugin.id,
+      path: path.join(plugin.path, 'skills', AGENT_SKILL_NAME)
+    }))
+  ];
+  const locations = descriptors.map((descriptor) => observeSkillLocation(
+    descriptor,
+    source.contentManifest.contentDigest
+  ));
+  const present = locations.filter((location) => location.relation !== 'absent');
+  const invalid = present.filter((location) => location.relation === 'invalid');
+  const divergent = present.filter((location) => location.relation === 'divergent');
+  const valid = present.filter((location) => location.contentDigest);
+  const groupsByDigest = new Map();
+  for (const location of valid) {
+    const group = groupsByDigest.get(location.contentDigest) ?? [];
+    group.push(location.id);
+    groupsByDigest.set(location.contentDigest, group);
+  }
+  const groups = [...groupsByDigest.entries()]
+    .sort(([left], [right]) => compareCanonicalStrings(left, right))
+    .map(([contentDigest, locationIds]) => ({
+      contentDigest,
+      canonical: contentDigest === source.contentManifest.contentDigest,
+      locationIds
+    }));
+  const status = invalid.length > 0
+    ? 'invalid'
+    : divergent.length > 0
+      ? 'divergent'
+      : present.length === 0
+        ? 'absent'
+        : present.length === 1
+          ? 'canonical'
+          : 'identical_duplicates';
+  const preferredLocation = ['divergent', 'invalid'].includes(status)
+    ? null
+    : locations.find((location) => location.id === 'codex:user-current' && location.relation === 'canonical')
+      ?? locations.find((location) => location.relation === 'canonical')
+      ?? null;
+  const guidance = ['divergent', 'invalid'].includes(status)
+    ? ['Preserve every observed copy and explicitly select a migration source and target before changing content.']
+    : status === 'identical_duplicates'
+      ? ['Prefer the current $HOME/.agents location; optional duplicate cleanup remains user-controlled.']
+      : status === 'absent'
+        ? ['Install new Codex user copies under $HOME/.agents/skills.']
+        : [];
+
+  return Object.freeze({
+    skillName: AGENT_SKILL_NAME,
+    status,
+    canonical: Object.freeze({
+      path: source.path,
+      contentDigest: source.contentManifest.contentDigest,
+      manifest: source.contentManifest
+    }),
+    preferredLocationId: preferredLocation?.id ?? null,
+    locations: Object.freeze(locations.map((location) => Object.freeze(location))),
+    groups: Object.freeze(groups.map((group) => Object.freeze({
+      ...group,
+      locationIds: Object.freeze([...group.locationIds])
+    }))),
+    guidance: Object.freeze(guidance)
+  });
+}
+
 function requireAgent(agentId) {
   if (!agentId) {
     throw new LaunchdeckError('invalid_arguments', '`launchdeck agent install` requires --agent <id>.', {
@@ -216,6 +363,7 @@ function validateCanonicalSource(options = {}) {
   const sourcePath = path.join(packageRoot, '.agents', 'skills', AGENT_SKILL_NAME);
   const manifestPath = path.join(sourcePath, 'SKILL.md');
   const errors = [];
+  let contentManifest = null;
 
   if (!fs.existsSync(sourcePath) || !fs.statSync(sourcePath).isDirectory()) {
     errors.push('source directory is missing');
@@ -228,6 +376,13 @@ function validateCanonicalSource(options = {}) {
       errors.push('SKILL.md does not declare name: launchdeck-agent');
     }
   }
+  if (errors.length === 0) {
+    try {
+      contentManifest = createSkillContentManifest(sourcePath);
+    } catch (error) {
+      errors.push(error?.message ?? 'canonical content manifest is invalid');
+    }
+  }
 
   return {
     name: AGENT_SKILL_NAME,
@@ -235,7 +390,9 @@ function validateCanonicalSource(options = {}) {
     manifestPath,
     exists: errors.length === 0 || fs.existsSync(sourcePath),
     valid: errors.length === 0,
-    errors
+    errors,
+    contentManifest,
+    contentDigest: contentManifest?.contentDigest ?? null
   };
 }
 
@@ -278,10 +435,12 @@ function compareSkillDirectories(sourceDir, targetDir) {
     };
   }
 
-  if (!fs.statSync(targetDir).isDirectory()) {
+  const targetEntry = fs.lstatSync(targetDir);
+  if (targetEntry.isSymbolicLink() || !targetEntry.isDirectory()) {
     return {
       exists: true,
       invalidTarget: true,
+      invalidCode: targetEntry.isSymbolicLink() ? 'agent_skill_symlink' : 'agent_skill_invalid',
       current: false,
       divergent: true,
       sourceFiles: listFiles(sourceDir),
@@ -324,7 +483,7 @@ function compareSkillDirectories(sourceDir, targetDir) {
 function listFiles(root) {
   const files = [];
   collectFiles(root, '', files);
-  return files.sort((left, right) => left.localeCompare(right));
+  return files.sort(compareCanonicalStrings);
 }
 
 function collectFiles(root, relativeDir, files) {
@@ -342,6 +501,98 @@ function collectFiles(root, relativeDir, files) {
       });
     }
   }
+}
+
+function collectManifestFiles(root, relativeDir, files) {
+  const directory = path.join(root, relativeDir);
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const relativePath = path.join(relativeDir, entry.name);
+    const absolutePath = path.join(directory, entry.name);
+    if (entry.isSymbolicLink()) throw skillSymlinkError(absolutePath);
+    if (entry.isDirectory()) {
+      collectManifestFiles(root, relativePath, files);
+      continue;
+    }
+    if (!entry.isFile()) {
+      throw new LaunchdeckError('agent_skill_invalid', `Unsupported Agent skill entry: ${absolutePath}`, {
+        path: absolutePath
+      });
+    }
+    const content = fs.readFileSync(absolutePath);
+    files.push({
+      path: relativePath.replaceAll('\\', '/'),
+      bytes: content.length,
+      sha256: `sha256:${createHash('sha256').update(content).digest('hex')}`
+    });
+  }
+}
+
+function normalizePluginRoots(pluginRoots = []) {
+  if (!Array.isArray(pluginRoots)) return [];
+  return pluginRoots.map((plugin, index) => ({
+    id: String(plugin?.id ?? `plugin-${index + 1}`),
+    host: ['codex', 'claude'].includes(plugin?.host) ? plugin.host : 'unknown',
+    path: path.resolve(plugin?.path ?? '')
+  }));
+}
+
+function observeSkillLocation(descriptor, canonicalContentDigest) {
+  if (!fs.existsSync(descriptor.path)) {
+    return { ...descriptor, exists: false, relation: 'absent', code: 'not_installed', contentDigest: null };
+  }
+  try {
+    const manifest = createSkillContentManifest(descriptor.path);
+    return {
+      ...descriptor,
+      exists: true,
+      relation: manifest.contentDigest === canonicalContentDigest ? 'canonical' : 'divergent',
+      code: manifest.contentDigest === canonicalContentDigest ? 'content_identical' : 'content_divergent',
+      contentDigest: manifest.contentDigest,
+      manifest
+    };
+  } catch (error) {
+    return {
+      ...descriptor,
+      exists: true,
+      relation: 'invalid',
+      code: error?.code ?? 'agent_skill_invalid',
+      contentDigest: null,
+      error: error?.message ?? 'Agent skill copy is invalid.'
+    };
+  }
+}
+
+function assertAutomaticCodexInstallSafe(options) {
+  const observation = inspectAgentSkillInstallations(options);
+  const divergentLocations = observation.locations
+    .filter((location) => ['divergent', 'invalid'].includes(location.relation))
+    .map((location) => ({
+      id: location.id,
+      path: location.path,
+      relation: location.relation,
+      code: location.code,
+      contentDigest: location.contentDigest
+    }));
+  if (divergentLocations.length === 0) return;
+  throw new LaunchdeckError(
+    'agent_target_conflict',
+    'Divergent or invalid Launchdeck Skill copies were preserved; explicitly select a migration before installing.',
+    {
+      divergentLocations,
+      preferredLocationId: null,
+      next: observation.guidance
+    }
+  );
+}
+
+function skillSymlinkError(targetPath) {
+  return new LaunchdeckError('agent_skill_symlink', 'Agent skill packages cannot contain symbolic links.', {
+    path: targetPath
+  });
+}
+
+function compareCanonicalStrings(left, right) {
+  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 function sameFileContent(left, right) {

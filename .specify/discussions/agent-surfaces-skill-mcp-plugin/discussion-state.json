@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "status_family": "discussion",
+  "slug": "agent-surfaces-skill-mcp-plugin",
+  "topic": "Launchdeck 的 Skill、MCP 与 Claude/Codex Plugin 产品及技术架构",
+  "status": "completed",
+  "lifecycle_phase": "consumed",
+  "summary": "Handoff assessment is ready-for-contract. The current Launchdeck repository is the locked implementation target; first release is one shared Kernel with backward-compatible CLI, low-risk local stdio MCP, one canonical Skill, and separately generated Codex/Claude Plugins. Hard unknowns and conflicts are zero; host elicitation and path-variable verification remain non-blocking soft unknowns.",
+  "created_at": "2026-07-16T09:51:17Z",
+  "updated_at": "2026-07-19T10:26:53Z",
+  "closed_at": "2026-07-19T10:26:53Z",
+  "archived_at": null,
+  "blocker_reason": null,
+  "turn_packet": {
+    "version": 1,
+    "discussion_slug": "agent-surfaces-skill-mcp-plugin",
+    "lifecycle_phase": "consumed",
+    "turn_class": "product_intent",
+    "user_goal": "Launchdeck 的 Skill、MCP 与 Claude/Codex Plugin 产品及技术架构",
+    "current_decision_frame": "Launchdeck 的 Skill、MCP 与 Claude/Codex Plugin 产品及技术架构",
+    "confirmed_decisions": [
+      "Lock F:/github/launchdeck as the implementation target and current behavior source of truth.",
+      "Lock first release to low-risk local stdio MCP, existing configured projects, canonical Skill, and generated Codex/Claude Plugins.",
+      "Defer automatic adoption writes, medium-plus MCP risk, force-stop, risky clean/reset, remote MCP, hooks, UI, native binaries, and enterprise policy implementation."
+    ],
+    "changed_recommendations": [],
+    "context_boundary": {
+      "status": "not-started"
+    },
+    "verified_fact_refs": [],
+    "open_assumptions": [],
+    "open_questions": [],
+    "current_recommendation": "Draft one sp-specify requirement contract preserving the Kernel, safety, recovery, compatibility, packaging, and verification obligations.",
+    "allowed_actions": [
+      "archive"
+    ],
+    "persistence_mode": "lifecycle-transition",
+    "next_gate": "archive"
+  },
+  "latest_checkpoint": {
+    "event_id": "a44d111c669042dd8ea2c15a73f847c9",
+    "timestamp": "2026-07-16T13:03:09Z"
+  },
+  "handoff": {
+    "review_status": "user-confirmed",
+    "quality_gate_status": "user_confirmed",
+    "review_digest": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+    "contract_path": ".specify/discussions/agent-surfaces-skill-mcp-plugin/handoff-to-specify.json",
+    "recommended_consumer": "sp-specify"
+  },
+  "consumption": {
+    "status": "consumed",
+    "consumed_at": "2026-07-19T10:26:53Z",
+    "consumer_path": ".specify/features/2026-07-19-launchdeck-agent-surfaces",
+    "evidence_path": ".specify/features/2026-07-19-launchdeck-agent-surfaces/brainstorming/handoff-to-specify.json",
+    "review_digest": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6"
+  },
+  "next_command": "none"
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "agent-surfaces-fixture",
+  "evidenceScope": "local-cli-control-plane-baseline-only",
+  "tasks": [
+    {
+      "name": "managed",
+      "type": "managed",
+      "risk": "low",
+      "scriptTemplate": "managed-server.mjs.txt"
+    },
+    {
+      "name": "finite",
+      "type": "foreground",
+      "risk": "low",
+      "scriptTemplate": "finite-task.mjs.txt",
+      "mode": "low"
+    },
+    {
+      "name": "medium",
+      "type": "foreground",
+      "risk": "medium",
+      "scriptTemplate": "finite-task.mjs.txt",
+      "mode": "medium"
+    }
+  ],
+  "clean": {
+    "safe": [
+      {
+        "path": "artifacts/safe-output",
+        "description": "Disposable generated output"
+      },
+      {
+        "path": "artifacts/safe-cache",
+        "description": "Disposable generated cache"
+      }
+    ],
+    "risky": [
+      {
+        "path": "artifacts/risky-dependencies",
+        "description": "Dependency-like content that requires the existing CLI confirmation path"
+      }
+    ]
+  },
+  "sentinels": [
+    {
+      "id": "protected-state",
+      "path": ".launchdeck/state/protected-state.json",
+      "content": "{\"protected\":true,\"kind\":\"state\"}\n"
+    },
+    {
+      "id": "protected-evidence",
+      "path": ".launchdeck/logs/latest-failure.log",
+      "content": "agent-surfaces-protected-failure-evidence\n"
+    },
+    {
+      "id": "risky-content",
+      "path": "artifacts/risky-dependencies/keep.txt",
+      "content": "must-not-be-removed-by-safe-clean\n"
+    }
+  ],
+  "ownershipCases": "ownership-cases.json",
+  "claimBoundary": "This fixture proves only isolated current CLI/control-plane behavior. It does not prove MCP, Plugin, host, update, uninstall, recovery, macOS, or Linux readiness."
+}

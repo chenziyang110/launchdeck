@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "task_id": "T020",
+  "task_ref": "task-index.json#/tasks/T020",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-real-entrypoint-equivalence",
+    "reason": "T019 proves all other US1 journeys and isolates one task.list inventory projection mismatch for T020.",
+    "commands": [
+      "node --test --test-concurrency=1 test/contracts/cli-mcp-equivalence.test.js test/e2e/agent-surface-us1.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "7/8 pass; CLI returns type/command/cwd task inventory fields while MCP substitutes longRunning."
+  },
+  "changed_paths": [
+    "src/kernel/operations/task.js",
+    "src/cli.js",
+    "src/mcp/stdio-server.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T020.json"
+  ],
+  "validation": [
+    {"command":"node --test --test-concurrency=1 test/contracts/cli-mcp-equivalence.test.js test/e2e/agent-surface-us1.test.js","status":"passed","summary":"The inherited T019 RED is resolved; all 8 real CLI/MCP equivalence and US1 journeys pass."},
+    {"command":"node --test --test-concurrency=1 <30 focused CLI/Kernel/MCP projection regressions>; npm run check; git diff --check","status":"passed","summary":"30/30 focused tests pass; syntax check covers 93 JavaScript files and whitespace validation passes."},
+    {"command":"npm test","status":"baseline-timeout-recovered","summary":"Two unchanged full-suite attempts outlived 300s and 420s external observation windows and completed after the caller lost the exit code; no assertion failure was observed."},
+    {"command":"npm test","status":"passed","summary":"Original full-suite command rerun unchanged with a 600s observation window: 255 total, 254 passed, 1 existing platform skip, 0 failures in about 280 seconds."}
+  ],
+  "review": {
+    "trigger": "recovery-validation-after-baseline-timeouts",
+    "verdict": "cleared",
+    "evidence": "The only implementation change centralizes the pre-existing CLI task inventory shape in the Kernel task module and reuses it from MCP. No operation, input, policy, state, effect, or compatibility surface changed; the inherited RED, focused regressions, and unchanged full suite all pass."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Task inventory projection now has one shared Kernel helper consumed by both adapters; no backend or authority was added."},
+    {"ref":"MP-003","status":"satisfied","evidence":"The fix changes query output shape only and does not expand the 18-operation or low-risk mutation boundary."},
+    {"ref":"MP-004","status":"satisfied","evidence":"CLI legacy task mirrors and schemaVersion 1 nested Agent result remain byte-shape compatible in focused and full regressions."},
+    {"ref":"MP-007","status":"satisfied","evidence":"All cross-surface reuse, concurrency, ownership, and adapter-lifetime journeys remain green."},
+    {"ref":"CA-001","status":"satisfied","evidence":"Both surfaces still use createTaskHandlers and the same Application Kernel operation result path."},
+    {"ref":"CA-003","status":"satisfied","evidence":"US1 synchronized and cross-surface starts pass with one run/spawn and truthful reuse."},
+    {"ref":"CA-004","status":"satisfied","evidence":"External and unknown ownership refusal journeys remain green and leave processes alive."},
+    {"ref":"CA-005","status":"satisfied","evidence":"Digest-bound safe clean and adoption.apply absence remain green."},
+    {"ref":"CA-009","status":"satisfied","evidence":"MCP project resolution behavior was untouched and all explicit-scope journeys pass."},
+    {"ref":"CA-013","status":"satisfied","evidence":"Clean drift recomputation still refuses before deletion."},
+    {"ref":"CA-024","status":"satisfied","evidence":"The green equivalence fixture compares full outcome and resource independently, including the repaired task collection."},
+    {"ref":"CA-025","status":"satisfied","evidence":"CLI schemaVersion 1 and MCP null CLI schema provenance remain separate and explicitly asserted."},
+    {"ref":"CA-031","status":"satisfied","evidence":"Adoption zero-write/process/port inventory remains green."},
+    {"ref":"CA-036","status":"satisfied","evidence":"Real MCP stdout isolation remains covered by the full suite."},
+    {"ref":"CA-041","status":"satisfied","evidence":"All normalized semantic fields now match; only generated IDs and approved provenance fields are excluded."},
+    {"ref":"CA-046","status":"satisfied","evidence":"The repaired equivalence proof still uses real official-SDK stdio, not direct handler calls."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}

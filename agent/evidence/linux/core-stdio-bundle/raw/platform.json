@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-07-20T10:23:53.026Z",
+  "os": {
+    "distribution": "Debian GNU/Linux",
+    "version": "12",
+    "codename": "bookworm",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "architecture": "x64"
+  },
+  "node": {
+    "executable": "/usr/local/bin/node",
+    "version": "20.20.2",
+    "architecture": "x64"
+  },
+  "container": {
+    "image": "node:20-bookworm-slim",
+    "digest": "sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0",
+    "sourceMount": "read-only",
+    "nodeModules": "isolated Docker volume",
+    "portObservationPackage": "iproute2=6.1.0-3"
+  },
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "compatibilityManifestSha256": "285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+  "evidenceSchemaSha256": "ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192",
+  "fixtureDigest": "9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305"
+}

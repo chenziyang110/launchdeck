@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cellId": "CORE-CLI-MCP-WINDOWS-10.0.26200-x64-c9f8ef1e",
+  "status": "passed",
+  "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+  "componentDigests": {
+    "compatibilityManifest": "sha256:285796db2fa242a103cced129e2751c03c6efbb157016d23a6dd5595584803e7",
+    "runtime": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationSchema": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "skill": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "evidenceSchema": "sha256:ba65cea6f9d1c21feb64d7022e0d99c83e90390d91b9a0056bd0bcca5be9c192"
+  },
+  "surface": {
+    "kind": "cli_mcp",
+    "operations": ["capabilities.get", "project.inspect", "adoption.inspect", "task.start", "task.stop", "clean.plan", "clean.applySafe"]
+  },
+  "host": { "kind": "standalone", "versions": {}, "scope": "standalone" },
+  "platform": { "os": "windows", "version": "10.0.26200", "build": "26200", "architecture": "x64", "distribution": null },
+  "runtime": { "nodeExecutable": "C:/nvm4w/nodejs/node.exe", "nodeVersion": "24.14.0" },
+  "scenario": {
+    "id": "CORE-CLI-MCP-EQUIVALENCE",
+    "family": "core-stdio-bundle",
+    "description": "CLI/MCP run reuse, synchronized start, ownership refusal, clean-plan drift refusal, and adoption zero-write behavior."
+  },
+  "fixture": {
+    "digest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+    "harnessDigest": "sha256:b7077fd89863c4e9c877a94839d081fdab83f1debd36ce1c9b60b457381255ef"
+  },
+  "execution": {
+    "startedAt": "2026-07-20T10:00:00.000Z",
+    "completedAt": "2026-07-20T10:06:24.715Z",
+    "actions": ["compare CLI and MCP", "start concurrently", "refuse external ownership", "refuse stale clean digest", "inspect adoption without writes"],
+    "commands": ["node --test --test-concurrency=1 test/e2e/agent-surface-us1.test.js"]
+  },
+  "result": {
+    "code": "passed",
+    "summary": "All five exact core CLI/MCP scenarios passed on this Windows build.",
+    "assertions": [
+      { "id": "one-run-one-spawn", "status": "passed", "evidenceRefs": ["core-state", "core-process"] },
+      { "id": "ownership-and-clean-refusal", "status": "passed", "evidenceRefs": ["core-command"] },
+      { "id": "adoption-zero-write", "status": "passed", "evidenceRefs": ["core-state"] }
+    ]
+  },
+  "evidence": {
+    "rawRefs": [
+      { "id": "core-command", "kind": "command", "path": "raw/core-cli-mcp.tap.txt", "sha256": "04a579a5b39cbde013bb6c78252375780aeac15014945269bba77e38f6609398" },
+      { "id": "core-state", "kind": "state", "path": "raw/core-cli-mcp.tap.txt", "sha256": "04a579a5b39cbde013bb6c78252375780aeac15014945269bba77e38f6609398" },
+      { "id": "core-process", "kind": "process", "path": "raw/core-cli-mcp.tap.txt", "sha256": "04a579a5b39cbde013bb6c78252375780aeac15014945269bba77e38f6609398" },
+      { "id": "platform", "kind": "host", "path": "raw/platform.json", "sha256": "7b830cb629a0663474f1eebc7f4356ca3cf47b23c1f1a48be1282bbb1f144c44" }
+    ]
+  },
+  "invalidation": {
+    "state": "current",
+    "checkedAt": "2026-07-20T10:06:24.715Z",
+    "invalidatedAt": null,
+    "reasons": [],
+    "keys": {
+      "buildIdentity": "sha256:c9f8ef1ee494f3007ee365dc67e94bc21226610e2ec3e5f380dd05593c09cb5d",
+      "evidenceSchemaVersion": 1,
+      "hostVersions": {},
+      "os": "windows",
+      "osVersion": "10.0.26200",
+      "osBuild": "26200",
+      "architecture": "x64",
+      "nodeVersion": "24.14.0",
+      "fixtureDigest": "sha256:9dcbd164b90fb2aa27112411d65c6c2b740c6d8730e64fb2a16c977d20ffa305",
+      "harnessDigest": "sha256:b7077fd89863c4e9c877a94839d081fdab83f1debd36ce1c9b60b457381255ef"
+    }
+  }
+}

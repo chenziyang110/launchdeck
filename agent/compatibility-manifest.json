@@ -1,0 +1,122 @@
+{
+  "manifestVersion": 1,
+  "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+  "packageVersion": "0.1.0",
+  "nodeRange": ">=20",
+  "versions": {
+    "agentProtocol": { "current": "1.0.0", "readRange": "^1.0.0", "writeRange": "^1.0.0" },
+    "cliSchema": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "configSchema": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "registryState": { "current": 2, "readRange": "1 - 2", "writeRange": "2" },
+    "runtimeState": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "runIndex": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "lockRecord": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "eventSchema": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "operationJournal": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "operationCatalog": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "skillContract": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "pluginBundleFormat": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "codexHostManifest": { "current": 1, "readRange": "1", "writeRange": "1" },
+    "claudeHostManifest": { "current": 1, "readRange": "1", "writeRange": "1" }
+  },
+  "componentDigests": {
+    "runtimeBundle": "sha256:57dce15d2249c33de5a33e35bc6d98a5e0b8a0a92c997f6bee3d39457e4a5eca",
+    "operationRegistry": "sha256:2d8c075a4f7b256b60b25fd25a16c298d8fe6a32a6692197bb01d79e47efbe8b",
+    "operationSchemas": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "agentResultSchema": "sha256:3e89f63695ed8c96ea0c4f9db85067d4abd2a45322ac9d5b853553b30d541207",
+    "canonicalSkillContentManifest": "sha256:ed9e562905020382bcc2758424d53b28da668ac760a5bd3ea95f9bd0948a3581",
+    "compatibilitySchema": "sha256:ee802539f92909593c63d4d8109afb4dcaa124dec10c20cd9d254f260f2effa6"
+  },
+  "supportedOperations": {
+    "registryDigest": "sha256:2d8c075a4f7b256b60b25fd25a16c298d8fe6a32a6692197bb01d79e47efbe8b",
+    "schemaDigest": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
+    "cliOperations": [
+      "capabilities.get",
+      "system.diagnose",
+      "project.list",
+      "project.inspect",
+      "adoption.inspect",
+      "task.list",
+      "task.status",
+      "task.logs.read",
+      "task.events.read",
+      "task.start",
+      "task.stop",
+      "task.restart",
+      "task.run",
+      "operation.list",
+      "operation.get",
+      "operation.reconcile",
+      "clean.plan",
+      "clean.applySafe"
+    ],
+    "agentOperations": [
+      "capabilities.get",
+      "system.diagnose",
+      "project.list",
+      "project.inspect",
+      "adoption.inspect",
+      "task.list",
+      "task.status",
+      "task.logs.read",
+      "task.events.read",
+      "task.start",
+      "task.stop",
+      "task.restart",
+      "task.run",
+      "operation.list",
+      "operation.get",
+      "operation.reconcile",
+      "clean.plan",
+      "clean.applySafe"
+    ],
+    "maxAgentRisk": "low"
+  },
+  "hostArtifacts": {
+    "codex": {
+      "artifactId": "launchdeck-codex-plugin",
+      "manifestVersion": 1,
+      "integrityDigest": "sha256:cc1c9a0b820f9c75c93dcc48efafb3f52dba3bffd7a7f92a37ce11207e5f07ed"
+    },
+    "claude": {
+      "artifactId": "launchdeck-claude-plugin",
+      "manifestVersion": 1,
+      "integrityDigest": "sha256:a10a7fcb75e49c4bace133624a66bf6a7e75c3c7e868a2418d9650c667883828"
+    }
+  },
+  "migrationCapabilities": {
+    "readable": [
+      "agentProtocol",
+      "cliSchema",
+      "configSchema",
+      "registryState",
+      "runtimeState",
+      "runIndex",
+      "lockRecord",
+      "eventSchema",
+      "operationJournal",
+      "operationCatalog",
+      "skillContract",
+      "pluginBundleFormat",
+      "codexHostManifest",
+      "claudeHostManifest"
+    ],
+    "writable": [
+      "agentProtocol",
+      "cliSchema",
+      "configSchema",
+      "registryState",
+      "runtimeState",
+      "runIndex",
+      "lockRecord",
+      "eventSchema",
+      "operationJournal",
+      "operationCatalog",
+      "skillContract",
+      "pluginBundleFormat",
+      "codexHostManifest",
+      "claudeHostManifest"
+    ],
+    "diagnosticOnly": []
+  }
+}

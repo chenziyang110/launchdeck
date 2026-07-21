@@ -1,0 +1,6 @@
+version: 1
+project:
+  name: codex-host-evidence
+tasks:
+  inspect:
+    command: node --version

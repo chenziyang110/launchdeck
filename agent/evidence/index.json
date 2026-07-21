@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "candidate": {
+    "buildIdentity": "sha256:48cc9c90211fb89143da8446b2d7923256ceed07d122c66600df01900eb1c5d1",
+    "compatibilityManifest": "agent/compatibility-manifest.json"
+  },
+  "claimBoundary": "Each entry is an exact evidence-cell reference. An entry whose candidateRelation is superseded cannot support a claim about the candidate above. This index has no aggregate host-release conclusion.",
+  "entries": [
+    { "cellId": "CORE-CLI-MCP-WINDOWS-10.0.26200-x64-c9f8ef1e", "path": "windows/core-stdio-bundle/core-cli-mcp.json", "candidateRelation": "superseded" },
+    { "cellId": "REAL-STDIO-WINDOWS-10.0.26200-x64-c9f8ef1e", "path": "windows/core-stdio-bundle/real-stdio.json", "candidateRelation": "superseded" },
+    { "cellId": "ISOLATED-BUNDLE-WINDOWS-10.0.26200-x64-c9f8ef1e", "path": "windows/core-stdio-bundle/isolated-bundle.json", "candidateRelation": "superseded" },
+    { "cellId": "FAULT-RECOVERY-WINDOWS-10.0.26200-x64-c9f8ef1e", "path": "windows/core-stdio-bundle/fault-recovery.json", "candidateRelation": "superseded" },
+    { "cellId": "ADAPTER-EXIT-TAKEOVER-WINDOWS-10.0.26200-x64-c9f8ef1e", "path": "windows/core-stdio-bundle/adapter-exit-takeover.json", "candidateRelation": "superseded" },
+    { "cellId": "CORE-CLI-MCP-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e", "path": "linux/core-stdio-bundle/core-cli-mcp.json", "candidateRelation": "superseded" },
+    { "cellId": "REAL-STDIO-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e", "path": "linux/core-stdio-bundle/real-stdio.json", "candidateRelation": "superseded" },
+    { "cellId": "ISOLATED-BUNDLE-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e", "path": "linux/core-stdio-bundle/isolated-bundle.json", "candidateRelation": "superseded" },
+    { "cellId": "FAULT-RECOVERY-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e", "path": "linux/core-stdio-bundle/fault-recovery.json", "candidateRelation": "superseded" },
+    { "cellId": "ADAPTER-EXIT-TAKEOVER-LINUX-DEBIAN12-6.6.87.2-x64-c9f8ef1e", "path": "linux/core-stdio-bundle/adapter-exit-takeover.json", "candidateRelation": "superseded" },
+    { "cellId": "CORE-CLI-MCP-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e", "path": "macos/core-stdio-bundle/core-cli-mcp.json", "candidateRelation": "superseded" },
+    { "cellId": "REAL-STDIO-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e", "path": "macos/core-stdio-bundle/real-stdio.json", "candidateRelation": "superseded" },
+    { "cellId": "ISOLATED-BUNDLE-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e", "path": "macos/core-stdio-bundle/isolated-bundle.json", "candidateRelation": "superseded" },
+    { "cellId": "FAULT-RECOVERY-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e", "path": "macos/core-stdio-bundle/fault-recovery.json", "candidateRelation": "superseded" },
+    { "cellId": "ADAPTER-EXIT-TAKEOVER-MACOS-BLOCKED-NO-NATIVE-RUNNER-c9f8ef1e", "path": "macos/core-stdio-bundle/adapter-exit-takeover.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-INSTALL-ROUTING-WINDOWS-0.144.4-USER-2f0ae201", "path": "codex/windows/plugin-host/install-routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-LIFECYCLE-WINDOWS-0.144.4-USER-2f0ae201", "path": "codex/windows/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-ROUTING-LINUX-UNEXECUTED-2f0ae201", "path": "codex/linux/plugin-host/routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-LIFECYCLE-LINUX-UNEXECUTED-2f0ae201", "path": "codex/linux/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-ROUTING-MACOS-UNEXECUTED-2f0ae201", "path": "codex/macos/plugin-host/routing.json", "candidateRelation": "superseded" },
+    { "cellId": "CODEX-LIFECYCLE-MACOS-UNEXECUTED-2f0ae201", "path": "codex/macos/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "CLAUDE-INSTALL-ROUTING-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/install-routing.json", "candidateRelation": "current" },
+    { "cellId": "CLAUDE-LIFECYCLE-WINDOWS-2.1.211-USER-48cc9c90", "path": "claude/windows/plugin-host/lifecycle.json", "candidateRelation": "current" },
+    { "cellId": "CLAUDE-INSTALL-ROUTING-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/routing.json", "candidateRelation": "current" },
+    { "cellId": "CLAUDE-LIFECYCLE-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/lifecycle.json", "candidateRelation": "current" },
+    { "cellId": "CLAUDE-INSTALL-ROUTING-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/routing.json", "candidateRelation": "current" },
+    { "cellId": "CLAUDE-LIFECYCLE-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/lifecycle.json", "candidateRelation": "current" },
+    { "cellId": "CROSS-HOST-WINDOWS-UNEXECUTED-48cc9c90", "path": "cross-host/windows/plugin-host/independence.json", "candidateRelation": "current" }
+  ],
+  "withheldClaims": [
+    "Current-candidate Windows and Linux standalone core coverage must be rerun after the host-manifest repairs.",
+    "Codex host lifecycle is not supported by the recorded Windows lifecycle cell.",
+    "Claude fixture routing did not reach MCP dispatch because the inherited UserPromptSubmit hook is broken.",
+    "Cross-host lifecycle and takeover were not executed.",
+    "No native macOS executor was available."
+  ]
+}

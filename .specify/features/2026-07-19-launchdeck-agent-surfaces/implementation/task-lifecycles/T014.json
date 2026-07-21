@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "task_id": "T014",
+  "task_ref": "task-index.json#/tasks/T014",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first",
+    "reason": "T013 froze the shared low-risk lifecycle, reuse/concurrency, ownership, partial restart, indeterminate run, and forbidden-input contract.",
+    "commands": [
+      "node --test --test-concurrency=1 test/kernel/task-operations.test.js test/kernel/task-operation-concurrency.test.js test/contracts/public-mutation-refusals.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Three no-effect refusal tests pass; five lifecycle tests fail because createTaskHandlers has no mutation handlers."
+  },
+  "changed_paths": [
+    "src/kernel/operations/task.js",
+    "src/kernel/application-kernel.js",
+    "src/control-plane/actions.js",
+    "src/control-plane/runs.js",
+    "src/runtime.js",
+    "src/adapters/cli-operation-map.js",
+    "src/cli.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T014.json"
+  ],
+  "validation": [
+    {
+      "command": "node --test --test-concurrency=1 test/kernel/task-operations.test.js test/kernel/task-operation-concurrency.test.js test/contracts/public-mutation-refusals.test.js",
+      "status": "passed",
+      "summary": "8/8 shared lifecycle, one-spawn convergence, refusal, partial restart, and indeterminate run contracts passed."
+    },
+    {
+      "command": "focused Kernel, journal, lifecycle, ownership, CLI, and repaired inspect regressions",
+      "status": "passed",
+      "summary": "Kernel/journal suites and all focused lifecycle compatibility cases passed after repairing legacy refusal mirrors, transaction identity, restart authority, and port detail projection."
+    },
+    {
+      "command": "two concurrent real CLI starts against one isolated managed fixture",
+      "status": "passed",
+      "summary": "Both calls returned the same run ID; the first reported changed=true, the second reusedExistingRun=true and changed=false, with exactly one spawn receipt."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 80 JavaScript files."
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "summary": "230 total; 229 passed; 1 existing POSIX platform skip; 0 failures; 196.4 seconds."
+    },
+    {
+      "command": "git diff --check -- <T014 source paths>",
+      "status": "passed",
+      "summary": "All T014 source changes passed whitespace validation."
+    }
+  ],
+  "review": {
+    "trigger": "lifecycle-mutation-cutover-and-recovery-boundary",
+    "verdict": "cleared",
+    "evidence": "Low-risk start/dev/run/aliases/explicit stop/restart now enter one Application Kernel path with dynamic policy revalidation and canonical locks; existing lifecycle authorities remain the sole effect providers; force, risky, stop-all, and follow controls remain CLI-only; real concurrent starts converge on one spawn receipt; final CLI schemaVersion 1 and full-suite regressions are green."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {"ref":"MP-001","status":"satisfied","evidence":"Kernel handlers delegate to the existing config, runtime state, global run index, ownership proof, events, locks, and process lifecycle authorities; no parallel backend was added."},
+    {"ref":"MP-003","status":"satisfied","evidence":"Kernel resolves current task risk and permits public mutation only for low-risk tasks; medium, high, destructive, unknown, and external cases refuse before effects."},
+    {"ref":"MP-004","status":"satisfied","evidence":"Migrated normal JSON retains legacy mirrors and adds only data.agentResult; compact, text, stable codes, details, next actions, and exit meanings remain compatible."},
+    {"ref":"MP-007","status":"satisfied","evidence":"Operation journal preparation precedes lifecycle effects, matching starts converge by durable state rather than replay, and indeterminate foreground execution remains reconcile-only."},
+    {"ref":"CA-001","status":"satisfied","evidence":"All public low-risk lifecycle mutations execute as Application Kernel handlers after project, compatibility, risk, ownership, journal, and lock checks."},
+    {"ref":"CA-003","status":"satisfied","evidence":"Sequential, synchronized Kernel, and real concurrent CLI starts produce one run and one spawn receipt with honest reuse and changed semantics."},
+    {"ref":"CA-004","status":"satisfied","evidence":"Unknown and external ownership stays inspect-only; legacy CLI refusal codes/actions are projections of the same no-effect Kernel result."},
+    {"ref":"CA-008","status":"satisfied","evidence":"Task risk comes from the trusted config-backed resolver and is re-evaluated under the ordered mutation locks immediately before effects."},
+    {"ref":"CA-014","status":"satisfied","evidence":"Public mutation schema rejects command, cwd, environment, force, confirmation, path, remote, and policy override fields recursively before effects."},
+    {"ref":"CA-016","status":"satisfied","evidence":"The same low-only Kernel risk gate protects start, stop, restart, and run; permissive CLI annotations cannot broaden it."},
+    {"ref":"CA-017","status":"satisfied","evidence":"Adapter trusted context supplies scope only and cannot inject approval, force, ownership, or risk authority."},
+    {"ref":"CA-021","status":"satisfied","evidence":"Managed processes remain independent of adapter lifetime and keep the existing run/state identity and observation path."},
+    {"ref":"CA-029","status":"satisfied","evidence":"Uncertain finite completion is persisted as indeterminate and returns operation.reconcile without invoking the run provider again."},
+    {"ref":"CA-031","status":"satisfied","evidence":"Lifecycle routing never invokes adoption inspection, registration, config writes, or any implicit discovery-to-start chain."},
+    {"ref":"CA-041","status":"satisfied","evidence":"Kernel, CLI, and existing lifecycle regressions normalize to the same semantic outcomes while preserving explicitly allowed CLI formatting and provenance differences."}
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": {
+    "trigger": "expanded and full-suite compatibility regressions",
+    "action": "Repaired an accidental restart closure placement, legacy refusal code/next/details mirrors, transaction identity, and global restart authority; after each repair reran the originally selected focused validations, then reran the complete serialized suite.",
+    "result": "passed"
+  }
+}

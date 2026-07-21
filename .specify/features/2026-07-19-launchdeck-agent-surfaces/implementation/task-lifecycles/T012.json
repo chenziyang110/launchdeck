@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "task_id": "T012",
+  "task_ref": "task-index.json#/tasks/T012",
+  "source_revision": "a2a870b1209c26068d8fb337fa1774018a09bc148148ea57343f47686adb04e6",
+  "execution_mode": "leader-direct",
+  "packet_ref": null,
+  "status": "accepted",
+  "red_baseline": {
+    "mode": "inherited-test-first",
+    "reason": "T011 froze the declarative CLI mapping, additive data.agentResult, schemaVersion 1, compact, text, exit, and CLI-only compatibility contract.",
+    "commands": [
+      "node --test --test-concurrency=1 test/contracts/cli-kernel-adapter.test.js test/contracts/cli-schema-v1-regression.test.js"
+    ],
+    "status": "failed-as-expected",
+    "summary": "Compact compatibility passes; remaining failures are limited to the missing CLI operation map and the T012-owned Agent-result nesting and query cutover."
+  },
+  "changed_paths": [
+    "src/adapters/cli-operation-map.js",
+    "src/cli.js",
+    "src/output.js",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/tasks.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/execution-state.json",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implement-tracker.md",
+    ".specify/features/2026-07-19-launchdeck-agent-surfaces/implementation/task-lifecycles/T012.json"
+  ],
+  "validation": [
+    {
+      "command": "node --test --test-concurrency=1 test/contracts/cli-kernel-adapter.test.js test/contracts/cli-schema-v1-regression.test.js",
+      "status": "passed",
+      "summary": "7/7 declarative route, real CLI, additive nesting, schemaVersion 1, failure/partial, and compact compatibility cases passed."
+    },
+    {
+      "command": "existing CLI contract and control-plane contract regression",
+      "status": "passed",
+      "summary": "33/33 combined T011 and existing CLI contract tests passed without text, compact, exit, or legacy mirror drift."
+    },
+    {
+      "command": "npm run check",
+      "status": "passed",
+      "summary": "Syntax check passed for 77 JavaScript files."
+    },
+    {
+      "command": "real capabilities/diagnose/adoption/events CLI probes and git diff --check",
+      "status": "passed",
+      "summary": "New query routes produced nested normalized results, compact stayed legacy-only, unscoped events produced an explicit no-effect Agent refusal, adoption remained preview-only, and whitespace validation passed."
+    },
+    {
+      "command": "npm test",
+      "status": "passed",
+      "summary": "222 total; 221 passed; 1 existing POSIX platform skip; 0 failures; 149.2 seconds."
+    }
+  ],
+  "review": {
+    "trigger": "cli-kernel-adapter-cutover-boundary",
+    "verdict": "cleared",
+    "evidence": "The declarative map contains only approved bounded query/adoption/recovery routes; migrated reads execute through Application Kernel handlers over existing authorities; CLI-only force, destructive clean, install, init, and follow behavior remains outside the Agent catalog; normal JSON nests only data.agentResult, compact excludes it, and the full regression is green."
+  },
+  "ui_verification": {
+    "applicable": false,
+    "evidence_scope": "task",
+    "integration_base_ref": null,
+    "evidence": [],
+    "contract_check": "not-applicable",
+    "runtime_evidence": "not-applicable",
+    "visual_comparison": "not-applicable",
+    "fidelity_status": "not-applicable",
+    "reviewer": "agent",
+    "human_review_ref": null
+  },
+  "obligation_evidence": [
+    {
+      "ref": "MP-001",
+      "status": "satisfied",
+      "evidence": "CLI query/adoption/recovery routes inject the existing config, registry, inspection, log, event, and journal authorities into one Application Kernel; no second state or policy backend was introduced."
+    },
+    {
+      "ref": "MP-004",
+      "status": "satisfied",
+      "evidence": "Legacy schemaVersion 1 fields, mirrors, text, compact projection, and exit meanings remain stable while AgentOperationResult is additive only at data.agentResult."
+    },
+    {
+      "ref": "CA-009",
+      "status": "satisfied",
+      "evidence": "Project-scoped reads receive Kernel-resolved trusted config/registry/journal context; unscoped global events preserve legacy CLI behavior but the Agent projection refuses before effects instead of inventing project authority."
+    },
+    {
+      "ref": "CA-012",
+      "status": "satisfied",
+      "evidence": "Every migrated Agent result records cli/standalone/package-cli surface, runtime version/path, canonical state home, build identity, Agent protocol, and CLI schema provenance."
+    },
+    {
+      "ref": "CA-024",
+      "status": "satisfied",
+      "evidence": "Adapter tests and real CLI probes keep outcome.kind and resource.status independent inside the nested normalized result, including safe unscoped-event refusal."
+    },
+    {
+      "ref": "CA-025",
+      "status": "satisfied",
+      "evidence": "CLI schemaVersion remains 1 and is not derived from or collapsed into Agent protocol, package, config, state, or journal versions."
+    },
+    {
+      "ref": "CA-041",
+      "status": "satisfied",
+      "evidence": "Real CLI fixtures prove additive normal JSON, legacy-only compact JSON, unchanged CLI-only reachability, and no semantic drift across existing CLI regressions."
+    }
+  ],
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "recovery": null
+}
