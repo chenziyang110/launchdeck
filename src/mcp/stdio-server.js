@@ -400,10 +400,29 @@ function readJson(url) {
   return JSON.parse(fs.readFileSync(url, 'utf8'));
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(modulePath)) {
+if (isCurrentEntrypoint()) {
   const diagnostics = createDiagnosticWriter();
   runStdioServer({ diagnostics }).catch((error) => {
     diagnostics.report('server_start_failed', error);
     process.exitCode = 1;
   });
+}
+
+function isCurrentEntrypoint() {
+  if (!process.argv[1]) return false;
+  const entrypointPath = canonicalModulePath(process.argv[1]);
+  const currentModulePath = canonicalModulePath(modulePath);
+  if (process.platform === 'win32') {
+    return entrypointPath.toLowerCase() === currentModulePath.toLowerCase();
+  }
+  return entrypointPath === currentModulePath;
+}
+
+function canonicalModulePath(value) {
+  const resolved = path.resolve(value);
+  try {
+    return fs.realpathSync.native(resolved);
+  } catch {
+    return resolved;
+  }
 }
