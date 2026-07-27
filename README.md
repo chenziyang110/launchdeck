@@ -6,9 +6,25 @@ Launchdeck is a CLI-first, user-scoped global control plane for local project se
 
 The base feature is daemonless. Launchdeck keeps one authoritative control-plane namespace for the current user, with shared state, locks, logs, events, and live OS inspection.
 
-## Install From Source
+## Install
 
-Launchdeck requires Node.js 20 or newer. Until an npm release is published, install directly from the repository:
+Launchdeck requires Node.js 20 or newer. npm registry publication is a separate release step; the supported v0.2.0 package can be installed directly from its immutable GitHub tag.
+
+Install the CLI globally:
+
+```bash
+npm install --global github:chenziyang110/launchdeck#v0.2.0
+launchdeck --help
+```
+
+Or install it into another project:
+
+```bash
+npm install --save-dev github:chenziyang110/launchdeck#v0.2.0
+npx launchdeck --help
+```
+
+To work from a source checkout instead:
 
 ```bash
 git clone https://github.com/chenziyang110/launchdeck.git
@@ -18,7 +34,7 @@ npm install --global .
 launchdeck --help
 ```
 
-## What v0.1 Covers
+## What v0.2 Covers
 
 - `init` creates a project-local `.launchdeck.yml`.
 - `doctor` inspects config and reports stable findings.
@@ -32,8 +48,23 @@ launchdeck --help
 - `logs` and `events` support bounded reads and `--follow` JSON Lines streaming.
 - `clean`, `clean --safe`, and `clean --all --yes` handle safe hygiene only.
 - `agent paths`, `agent doctor`, and `agent install` expose the local Launchdeck agent skill installer.
+- `agent setup`, `agent status`, `agent update`, `agent repair`, and `agent uninstall` manage receipt-owned runtime, Skill, MCP, launcher, and host configuration artifacts.
+- Codex, Claude Code, GitHub Copilot, and Visual Studio adapters use an exact compatibility matrix and evidence-cell claim boundary instead of broad host-readiness claims.
 - `--json` emits a stable machine-readable envelope with `schemaVersion` and `next` actions.
 - `--json --compact` emits a shorter machine-readable envelope for agents and scripts that need lower-token status checks.
+
+## Unified Lifecycle And Agent Boundary
+
+Launchdeck uses one lifecycle model across the CLI, MCP, and installed Agent surfaces. The CLI is the human and automation entrypoint, MCP exposes the bounded Agent operation catalog, and the installed `launchdeck-agent` Skill decides when to use MCP first or a compatible CLI JSON fallback. All mutation still flows through the shared Kernel and the same ownership, compatibility, lock, journal, and recovery rules.
+
+The installer and installed Agent have separate responsibilities:
+
+- The installer installs or repairs Launchdeck-owned runtime, Skill, MCP, launcher, host config, and receipt artifacts. It never authors a project `.launchdeck.yml`.
+- The installed Agent may author one missing project `.launchdeck.yml` only after an explicit config-authoring request, bounded project inspection, and preservation of any existing config.
+- Host approval, host trust prompts, extension reloads, and runtime readiness are separate layers. Installing files does not prove the host has approved, trusted, reloaded, or launched the MCP runtime unless exact evidence says so.
+- Project scope is the default for setup/install planning. User scope is explicit and must be selected with `--scope user`; it is not silently inferred from home-directory access.
+
+Host support is evidence-cell based. A claim applies only to the exact host, host version, component, scope, platform, build identity, and scenario recorded for that cell. The current evidence index deliberately withholds broad real-host readiness claims for the current candidate; deterministic fixtures prove fixture behavior, not unverified real hosts or operating systems.
 
 ## Quick Demo
 
@@ -96,6 +127,21 @@ Pop-Location
 ```
 
 The demo server also exposes a controlled exit endpoint so stale state recovery can be exercised without killing unmanaged processes.
+
+## Agent-Authored Flask Flow
+
+The Agent-first Flask acceptance path uses `demos/flask-server/` as a fresh copied project. The installer setup step installs the Agent surface and must leave `.launchdeck.yml` absent. A deterministic installed-Agent fixture process, standing in for a real host conversation, reads the installed `launchdeck-agent` Skill, inspects the copied Flask project, calls production MCP stdio `capabilities.get`, and authors the reviewable `.launchdeck.yml`. This fixture is intentionally not described as an LLM or interactive host; real-host/OS claims require separate evidence cells.
+
+After the config exists, the accepted public webpage flow is:
+
+```text
+launchdeck up --json
+launchdeck status --all --json
+launchdeck logs start --json
+launchdeck down --json
+```
+
+Expected evidence is a healthy managed Flask process, `status --all` visibility, `logs start` returning `task`, `logPath`, and non-empty Flask process log content, an HTTP request reaching the webpage, and `down` cleanup in a `finally` path.
 
 ## Concepts
 
@@ -205,7 +251,9 @@ clean:
 | `launchdeck inspect <target> [--json]` | Unifies inspection for `project:<alias, id, or path>`, `task:<project:task>`, `run:<runId>`, `port:<port>`, `pid:<pid>`, and `conflict:<id>`. |
 | `launchdeck inspect-port <port> [--json]` | Compatibility wrapper for `launchdeck inspect port:<port>`. |
 | `launchdeck start [task or project:task] [--json]` | Starts a managed task. Without a task, it uses `start` when configured, otherwise `dev`. Declared ports are checked before spawning. |
+| `launchdeck up [task or project:task] [--json]` | Accepted Agent-facing alias for managed start. Without a task, it uses `start` when configured, otherwise `dev`. |
 | `launchdeck stop [task or project:task] [--force-owned] [--json]` | Stops one managed task or all currently running managed tasks when no task is given. `--force-owned` only strengthens termination for verified-owned runs. |
+| `launchdeck down [task or project:task] [--json]` | Accepted Agent-facing alias for managed stop. It follows the same Launchdeck-owned process boundary as `stop`. |
 | `launchdeck force-stop <project:task> [--json]` | Explicit force command for verified-owned process trees. |
 | `launchdeck restart [task or project:task] [--json]` | Stops then starts a managed task. Partial failures stay inspectable. Global `project:task` targets use the registry. |
 | `launchdeck reconcile [project[:task]] [--json]` | Refreshes stale Launchdeck state against live OS observations without killing unmanaged processes. |
@@ -215,6 +263,12 @@ clean:
 | `launchdeck agent paths [--json]` | Lists the canonical `launchdeck-agent` skill source plus known project and user skill target directories. |
 | `launchdeck agent doctor [--json]` | Validates the canonical skill package and conservative adapter matrix without writing files. |
 | `launchdeck agent install --agent <id> [--scope project\|user] [--dry-run] [--force] [--target dir] [--json]` | Copies `.agents/skills/launchdeck-agent` into one selected local agent host target. Defaults to project scope; user scope must be explicit. |
+| `launchdeck agent setup --host <id> --component <name> --scope project\|user [--project path] [--dry-run] [--yes] [--json]` | Plans and, after explicit approval, installs the selected receipt-owned Agent components for an exact scope and host. |
+| `launchdeck agent status [--host <id>] [--scope project\|user] [--project path] [--json]` | Reports receipt ownership, build identity, drift, host approval/reload state, and runtime readiness without mutation. |
+| `launchdeck agent doctor [--host <id>] [--scope project\|user] [--project path] [--json]` | Applies the failing health gate to the same read-only installation evidence reported by status. |
+| `launchdeck agent update [--host <id>] [--scope project\|user] [--project path] [--dry-run] [--yes] [--json]` | Creates and verifies a new immutable build receipt while retaining the previous recoverable build. |
+| `launchdeck agent repair [--host <id>] [--scope project\|user] [--project path] [--force] [--dry-run] [--yes] [--json]` | Recreates only proven receipt-owned missing or divergent targets; unrelated content remains outside the repair boundary. |
+| `launchdeck agent uninstall [--host <id>] [--scope project\|user] [--project path] [--dry-run] [--yes] [--json]` | Removes only revalidated receipt-owned targets and preserves user-authored or unrelated content. |
 
 ## Observability Streams
 
@@ -236,20 +290,24 @@ Launchdeck does not kill unknown external processes. If a declared port is alrea
 
 Launchdeck owns the canonical agent skill at `.agents/skills/launchdeck-agent`. Host-specific skill folders are generated or synced targets.
 
-Supported v0 adapter IDs:
+The table below documents target paths, not an aggregate support guarantee. A host/version/component/scope row is supported only when the compatibility matrix and evidence index contain a current matching cell.
 
 | Agent ID | Project target | User target |
 | --- | --- | --- |
-| `codex` | `.agents/skills` | `~/.codex/skills` |
+| `codex` | `.agents/skills` | `~/.agents/skills` |
 | `claude-code` | `.claude/skills` | `~/.claude/skills` |
 | `github-copilot` | `.github/skills` | `~/.copilot/skills` |
-| `visual-studio` | `.github/skills` | `~/.copilot/skills` |
+| `visual-studio` | `.github/skills` when supported | no confirmed native user Skill target |
 
 `launchdeck agent install` copies the skill directory into `<target>/launchdeck-agent`. It does not delete target files, and it refuses divergent existing targets unless `--force` is supplied. Use `--dry-run` to preview planned writes. Use `--target <dir>` only when you want an explicit skill-root override, such as an isolated test or manual sync destination.
+
+`agent setup`, `agent update`, `agent repair`, and `agent uninstall` report exact host evidence boundaries: detected host/version, selected component, project or explicit user scope, target path, digest, build identity, receipt ownership, and any host approval/reload/readiness state. A pending host approval or required reload is not the same as runtime readiness. Immutable build receipts pin the launcher and MCP runtime to a verified build identity; update creates a new receipt instead of mutating the meaning of an old one.
 
 ## Agent And Plugin Surfaces
 
 The canonical Skill is MCP-first: it observes through `capabilities.get` before it selects one declared low-risk operation. Its compatible CLI fallback is limited to pre-dispatch MCP unavailability or an omitted safe capability. Once a mutation may have been dispatched, it recovers by operation ID or a bounded correlation query; it does not repeat the mutation on another surface.
+
+Adoption inspection remains read-only. MCP `adoption.inspect` is used only for a registered/resolved target; an unregistered missing-config project is inspected through the Agent's bounded workspace read surface because the CLI adoption command also requires an existing config. When a user explicitly asks to create a project-adapted `.launchdeck.yml`, the Skill may write one missing config for exact or strong candidates and validate it with `launchdeck doctor`. It preserves any existing config and never registers, starts, stops, restarts, cleans, or controls processes as a config-authoring side effect.
 
 Build the separate Codex and Claude artifacts with:
 
@@ -266,6 +324,8 @@ The public Agent catalog is intentionally narrower than the CLI. It supports onl
 ## JSON And Errors
 
 Commands that support `--json` emit a stable envelope. Success responses use `ok: true`; refusals and failures use `ok: false` with a stable code, message, details object, and `next` actions.
+
+Process exit behavior is intentionally narrow: successful, no-op, dry-run, and explicit interactive decline outcomes exit 0; typed refusals, failed rollback, partial, indeterminate, or command execution failures exit 1. Human output and JSON output describe the same normalized outcome, scope, build, effect certainty, and safe next action.
 
 Add `--compact` with `--json` when the caller needs the smallest practical response. Compact output preserves the command result, failure code/message/details, process identifiers, ports, concise `next` actions, and bounded log content, but omits duplicated `data` mirrors and verbose compatibility fields. Plain `--json` remains the full backward-compatible contract. Follow streams such as `logs --follow --json` and `events --follow --json` remain JSON Lines.
 

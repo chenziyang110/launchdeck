@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "revision": "agent-host-matrix-contract-v1",
+  "rows": [
+    {
+      "rowId": "codex-0.96.0-win32-skill-project",
+      "host": "codex",
+      "exactVersion": "0.96.0",
+      "platform": "win32",
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".agents/skills/launchdeck-agent",
+      "dialect": "skill-directory",
+      "probe": "codex --version",
+      "approvalBoundary": "none",
+      "fixtureRevision": "codex-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    },
+    {
+      "rowId": "claude-1.5.0-win32-mcp-project",
+      "host": "claude-code",
+      "exactVersion": "1.5.0",
+      "platform": "win32",
+      "component": "mcp",
+      "scope": "project",
+      "relativePath": ".mcp.json",
+      "dialect": "mcpServers.launchdeck",
+      "probe": "claude mcp list",
+      "approvalBoundary": "project-trust-and-host-approval",
+      "fixtureRevision": "claude-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    },
+    {
+      "rowId": "copilot-1.4.2-win32-skill-project",
+      "host": "github-copilot",
+      "exactVersion": "1.4.2",
+      "platform": "win32",
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".agents/skills/launchdeck-agent",
+      "dialect": "skill-directory",
+      "probe": "copilot --version --json",
+      "approvalBoundary": "none",
+      "fixtureRevision": "copilot-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    },
+    {
+      "rowId": "visual-studio-17.14.8-win32-mcp-project",
+      "host": "visual-studio",
+      "exactVersion": "17.14.8",
+      "platform": "win32",
+      "component": "mcp",
+      "scope": "project",
+      "relativePath": ".vs/mcp.json",
+      "dialect": "servers.launchdeck",
+      "probe": "vswhere -format json",
+      "approvalBoundary": "ide-reload",
+      "fixtureRevision": "visual-studio-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    }
+  ],
+  "sharedMcpCoexistence": {
+    "enabled": false,
+    "provenPairs": []
+  }
+}

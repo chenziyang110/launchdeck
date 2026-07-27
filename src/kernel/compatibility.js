@@ -49,10 +49,14 @@ const compatibilityManifestSchema = z.strictObject({
       'operationRegistry',
       'operationSchemas',
       'agentResultSchema',
-      'canonicalSkillContentManifest'
+      'canonicalSkillContentManifest',
+      'stableLaunchers'
     ];
-    if (Object.keys(value).length < 5) {
-      context.addIssue({ code: 'custom', message: 'At least five component digests are required.' });
+    if (Object.keys(value).length < required.length) {
+      context.addIssue({
+        code: 'custom',
+        message: `At least ${required.length} component digests are required.`
+      });
     }
     for (const key of required) {
       if (!Object.hasOwn(value, key)) {

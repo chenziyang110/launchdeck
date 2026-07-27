@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "keep": true,
+    "owner": "fixture"
+  },
+  "mcpServers": {
+    "keep": {
+      "command": "keep-server",
+      "args": [
+        "--safe"
+      ]
+    }
+  }
+}

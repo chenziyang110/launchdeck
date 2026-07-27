@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "requiredPublicCommands": [
+    "agent setup",
+    "up",
+    "status --all",
+    "logs start",
+    "down"
+  ],
+  "requiredProof": [
+    "fresh demo copy uses an allowlist and rejects runtime state recursively",
+    "installer leaves .launchdeck.yml absent",
+    "deterministic installed-Agent fixture process authors .launchdeck.yml from project evidence",
+    "parent runner proves it did not author .launchdeck.yml",
+    "real MCP stdio capabilities.get and build identity are captured",
+    "PYTHONPATH points at the fresh src layout",
+    "HTTP webpage is reachable",
+    "logs start returns task logPath and non-empty Flask process log evidence",
+    "down runs from finally after an up attempt",
+    "producer-observed provenance binds exact evidence cell dimensions"
+  ],
+  "freshCopyPolicy": {
+    "source": "demos/flask-server",
+    "destination": "<WORK_ROOT>/flask project",
+    "allowlist": [
+      "README.md",
+      "pyproject.toml",
+      "src/flask_demo/__init__.py",
+      "src/flask_demo/__main__.py",
+      "src/flask_demo/app.py",
+      "src/flask_demo/static/app.js",
+      "src/flask_demo/static/styles.css",
+      "src/flask_demo/templates/index.html",
+      "tests/test_app.py"
+    ],
+    "recursiveForbidden": [
+      ".launchdeck",
+      ".launchdeck.yml",
+      ".venv",
+      "__pycache__",
+      ".pytest_cache",
+      "node_modules",
+      "scratch",
+      "cache"
+    ],
+    "symlinks": "rejected",
+    "requiredInitialState": ".launchdeck.yml absent"
+  },
+  "sampleEvidence": {
+    "setup": {
+      "schemaVersion": 1,
+      "ok": true,
+      "command": "agent setup",
+      "result": {
+        "outcome": "succeeded"
+      }
+    },
+    "agentAuthored": {
+      "installerLeftConfigAbsent": true,
+      "configAuthored": true,
+      "author": "deterministic-installed-agent-fixture",
+      "interactiveHost": false,
+      "llmReasoning": false,
+      "installedSkill": {
+        "valid": true,
+        "contentSha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "files": [
+          {
+            "path": "SKILL.md",
+            "bytes": 1200,
+            "sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+          }
+        ]
+      },
+      "parentBoundary": {
+        "parentAuthoredConfig": false,
+        "configAbsentBeforeChild": true,
+        "childProcess": {
+          "command": "node",
+          "script": "test/fixtures/agent-first-flask/installed-agent-author.js",
+          "exitStatus": 0
+        },
+        "installedSkill": {
+          "valid": true,
+          "contentSha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        }
+      },
+      "buildIdentity": "sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3",
+      "configInputs": {
+        "files": [
+          "pyproject.toml",
+          "src/flask_demo/app.py",
+          "README.md"
+        ],
+        "projectName": "flask-demo",
+        "moduleName": "flask_demo",
+        "startCommand": "python -m flask_demo",
+        "pyprojectSha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "appSha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "readmeSha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "configSha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "mcpProof": {
+        "ok": true,
+        "command": "MCP stdio capabilities.get",
+        "buildIdentity": "sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3",
+        "provenance": {
+          "buildIdentity": "sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3"
+        },
+        "server": {
+          "path": "src/mcp/stdio-server.js",
+          "sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "tools": [
+          "capabilities.get",
+          "project.inspect",
+          "task.start",
+          "task.stop"
+        ],
+        "capabilities": {
+          "operation": {
+            "name": "capabilities.get"
+          },
+          "outcome": {
+            "kind": "succeeded"
+          },
+          "provenance": {
+            "buildIdentity": "sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3"
+          }
+        }
+      }
+    },
+    "up": {
+      "ok": true,
+      "command": "up"
+    },
+    "status": {
+      "ok": true,
+      "command": "status --all"
+    },
+    "logs": {
+      "ok": true,
+      "command": "logs",
+      "task": "start",
+      "logPath": "<WORK_ROOT>/flask project/.launchdeck/logs/start.log",
+      "content": "Serving Flask app flask_demo on http://127.0.0.1:5055"
+    },
+    "down": {
+      "ok": true,
+      "command": "down"
+    },
+    "page": {
+      "statusCode": 200,
+      "body": "Flask Notes API Notes workspace"
+    },
+    "paths": {
+      "root": "<WORK_ROOT>",
+      "homeDir": "<WORK_ROOT>/launchdeck home",
+      "projectRoot": "<WORK_ROOT>/flask project"
+    },
+    "port": 5055,
+    "producer": {
+      "environment": {
+        "os": {
+          "platform": "linux",
+          "version": "6.8.0",
+          "arch": "x64"
+        },
+        "node": {
+          "version": "24.14.0"
+        }
+      },
+      "host": {
+        "id": "none",
+        "version": "deterministic-installed-agent-fixture",
+        "versionEvidenceDigest": "sha256:1ece50c4f032e40ece09836948562fa5b3dc6a840d263cbec85e1933963f0384",
+        "capabilityMatrixRevision": "deterministic-installed-agent-fixture"
+      }
+    },
+    "provenance": {
+      "schemaVersion": 1,
+      "kind": "agent-first-evidence-provenance",
+      "entrypoint": "flask",
+      "observed": true,
+      "identity": {
+        "buildIdentity": "sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3",
+        "sourceRevision": "flask:flask-demo",
+        "packageDigest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "payloadDigest": "sha256:c25193e825893344fe5d16a444bbc28ab8ac28e5802bfbb2642409103f435096"
+      },
+      "environment": {
+        "os": {
+          "platform": "linux",
+          "version": "6.8.0",
+          "arch": "x64"
+        },
+        "node": {
+          "version": "24.14.0"
+        }
+      },
+      "host": {
+        "id": "none",
+        "version": "deterministic-installed-agent-fixture",
+        "versionEvidenceDigest": "sha256:1ece50c4f032e40ece09836948562fa5b3dc6a840d263cbec85e1933963f0384",
+        "capabilityMatrixRevision": "deterministic-installed-agent-fixture"
+      },
+      "scope": {
+        "kind": "project",
+        "identity": "project:sha256:28a98744ee88f141c2b48b69f450309d665b1d20bbcb6e85f392a2c2063dbd96"
+      },
+      "component": "flask",
+      "scenario": {
+        "id": "agent-first-flask-lifecycle",
+        "kind": "flask",
+        "revision": "sha256:7f178bfa7752c1de73a08ae9b3cbeb8a9c38ffa7f4663ad72a832cbbfa277b43"
+      },
+      "command": {
+        "entrypoint": "launchdeck flask lifecycle",
+        "argv": [
+          "launchdeck",
+          "up",
+          "status --all",
+          "logs start",
+          "down"
+        ],
+        "cwd": "<PROJECT>"
+      },
+      "result": {
+        "exitCode": 0,
+        "outcome": "succeeded",
+        "effectCertainty": "complete",
+        "stdoutSha256": "sha256:ba3f0c637ca6b3098fb11601600976c67bd7ccb94807df29fb72ea4a0d958e26",
+        "stderrSha256": "sha256:487df8876699c9aed506c648d1ed443630519ad4f5615fc653209ad07eb8546b"
+      },
+      "candidate": {
+        "kind": "scenario",
+        "uri": "flask:sha256:dbe65c1a9d4dad7749d19ed67f218c106e65a5844913c316f8901e1124f4b2c3",
+        "sha256": "sha256:57e1f62784f20c7dc2a4bbc21b2f857fcc26ae441635b0b7cd96eb793e23d018",
+        "byteLength": 969,
+        "manifestDigest": "sha256:7f178bfa7752c1de73a08ae9b3cbeb8a9c38ffa7f4663ad72a832cbbfa277b43",
+        "immutable": true,
+        "mutable": false
+      },
+      "evidence": {
+        "rawRefs": [
+          {
+            "path": "producer/flask-evidence.json",
+            "sha256": "sha256:485559ac0e518e451b026b18be67e6f621fff96b90df2b908b66a804ccb7090e",
+            "byteLength": 2935
+          }
+        ]
+      }
+    }
+  }
+}

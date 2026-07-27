@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import {
   createCliFixture,
   createTempProject,
@@ -76,10 +77,56 @@ export function createControlPlaneFixture(options = {}) {
       }
       cleaned = true;
       project.runCli(['stop', '--json'], withFixtureEnv(home.env, { timeout: 5_000 }));
+      killRecordedFixtureProcesses(project);
       project.cleanup();
       home.cleanup();
     }
   };
+}
+
+function killRecordedFixtureProcesses(project) {
+  const statePath = project.path('.launchdeck', 'runtime', 'state.json');
+  if (!fs.existsSync(statePath)) return;
+
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  } catch {
+    return;
+  }
+
+  for (const processInfo of Object.values(state.processes ?? {})) {
+    const pid = Number(processInfo?.pid);
+    const proof = processInfo?.ownershipProof;
+    if (
+      !Number.isInteger(pid)
+      || pid <= 0
+      || pid === process.pid
+      || proof?.source !== 'launchdeck-spawn'
+      || Number(proof.pid) !== pid
+      || !sameFixturePath(proof.projectRoot, project.projectRoot)
+    ) {
+      continue;
+    }
+    try {
+      process.kill(pid, 'SIGTERM');
+    } catch (error) {
+      if (error?.code !== 'ESRCH') {
+        try {
+          process.kill(pid, 'SIGKILL');
+        } catch {}
+      }
+    }
+  }
+}
+
+function sameFixturePath(left, right) {
+  if (typeof left !== 'string' || typeof right !== 'string') return false;
+  const resolvedLeft = fs.realpathSync.native(left);
+  const resolvedRight = fs.realpathSync.native(right);
+  return process.platform === 'win32'
+    ? resolvedLeft.toLowerCase() === resolvedRight.toLowerCase()
+    : resolvedLeft === resolvedRight;
 }
 
 export function withControlPlaneFixture(callback, options = {}) {

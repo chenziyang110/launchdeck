@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A small local Flask notes workspace.">
+    <title>Flask Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="/" aria-label="Flask Notes home">
+        <span class="brand-mark" aria-hidden="true">FN</span>
+        <span>Flask Notes</span>
+      </a>
+      <div class="service-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        Local service
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="compose-panel" aria-labelledby="page-title">
+        <div class="intro">
+          <p class="eyebrow">Quick capture</p>
+          <h1 id="page-title">Keep the useful thought close.</h1>
+          <p class="intro-copy">A deliberately small notebook backed by a local Flask API. Notes reset when the server restarts.</p>
+        </div>
+
+        <form id="note-form" class="note-form">
+          <label for="note-text">New note</label>
+          <textarea id="note-text" name="text" rows="5" maxlength="280" required placeholder="Write something worth returning to…"></textarea>
+          <div class="form-footer">
+            <span id="character-count" class="character-count">0 / 280</span>
+            <button id="submit-button" type="submit">Add note</button>
+          </div>
+          <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+
+        <dl class="service-details">
+          <div>
+            <dt>API</dt>
+            <dd>/api/notes</dd>
+          </div>
+          <div>
+            <dt>Port</dt>
+            <dd>5055</dd>
+          </div>
+          <div>
+            <dt>Storage</dt>
+            <dd>In memory</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="notes-panel" aria-labelledby="notes-title">
+        <header class="notes-header">
+          <div>
+            <p class="eyebrow">Current session</p>
+            <h2 id="notes-title">Notes</h2>
+          </div>
+          <span id="note-count" class="note-count" aria-live="polite">0 notes</span>
+        </header>
+
+        <div id="notes-list" class="notes-list" aria-busy="true">
+          <div class="loading-state" role="status">Loading notes…</div>
+        </div>
+      </section>
+    </main>
+
+    <template id="note-template">
+      <article class="note-card">
+        <div class="note-number" aria-hidden="true"></div>
+        <p class="note-text"></p>
+        <button class="delete-button" type="button">Delete</button>
+      </article>
+    </template>
+  </body>
+</html>

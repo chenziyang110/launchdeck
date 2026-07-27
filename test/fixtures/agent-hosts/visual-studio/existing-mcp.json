@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "fixture-tools": {
+      "type": "stdio",
+      "command": "fixture-tool",
+      "args": ["serve"]
+    }
+  },
+  "inputs": [
+    {
+      "id": "fixture-input",
+      "type": "promptString",
+      "description": "Fixture-only input"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "launchdeck": {
+      "command": "launchdeck/bin/launchdeck-mcp",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

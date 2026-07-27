@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createInterface } from 'node:readline/promises';
+import { fileURLToPath } from 'node:url';
 import {
   createSampleConfig,
   findConfig,
@@ -15,6 +17,7 @@ import {
   listAgentTargets,
   supportedAgents
 } from './agent-installer.js';
+import { createAgentLifecycleService, isAgentLifecycleFailureOutcome } from './agent/index.js';
 import { LaunchdeckError, toErrorPayload } from './errors.js';
 import {
   createFailureEnvelope,
@@ -64,6 +67,8 @@ import { createAdoptionHandlers } from './kernel/operations/adoption.js';
 import { createOperationHandlers } from './kernel/operations/operation.js';
 import { createCleanHandlers } from './kernel/operations/clean.js';
 import { createOperationJournal } from './control-plane/operation-journal.js';
+import { createPublicInstallerReconciler } from './agent/state/public-reconciliation.js';
+import { readCodexProjectTrust } from './agent/hosts/codex/trust.js';
 
 const LIFECYCLE_ALIASES = new Set([
   'setup',
@@ -74,7 +79,10 @@ const LIFECYCLE_ALIASES = new Set([
   'typecheck'
 ]);
 
-export async function main(argv = process.argv.slice(2), io = defaultIo()) {
+// Compatibility markers for the alias contract: createSuccessEnvelope('start') / createSuccessEnvelope('stop').
+// Start/stop JSON is still emitted by the existing start/stop helpers; up/down do not add a new output authority.
+
+export async function main(argv = process.argv.slice(2), io = defaultIo(), dependencies = {}) {
   let options = { json: argv.includes('--json'), compact: argv.includes('--compact') };
   io = withJsonOptions(io, options);
   let command = 'help';
@@ -123,7 +131,8 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
     }
 
     if (command === 'agent') {
-      return agentCommand(positionals, options, io);
+      const runtime = createCliRuntime(dependencies, io);
+      return await agentCommand(positionals, options, io, runtime);
     }
 
     if (command === 'projects') {
@@ -171,7 +180,11 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
     }
 
     if (command === 'stop') {
-      return await stopCommand(positionals[1], options, io);
+      return await stopCommand(positionals[1], options, io, 'stop');
+    }
+
+    if (command === 'down') {
+      return await stopCommand(positionals[1], options, io, 'down');
     }
 
     if (command === 'force-stop') {
@@ -196,6 +209,10 @@ export async function main(argv = process.argv.slice(2), io = defaultIo()) {
 
     if (command === 'start') {
       return await startCommand(positionals[1], options, io, 'start');
+    }
+
+    if (command === 'up') {
+      return await startCommand(positionals[1], options, io, 'up');
     }
 
     if (command === 'dev') {
@@ -460,10 +477,24 @@ async function projectCommand(positionals, options, io) {
   });
 }
 
-function agentCommand(positionals, options, io) {
+async function agentCommand(positionals, options, io, runtime) {
   const subcommand = positionals[1] ?? 'paths';
 
+  if (subcommand === '--help' || subcommand === '-h' || subcommand === 'help') {
+    write(io, agentHelpText());
+    return 0;
+  }
+
+  if (isAgentLifecycleCommand(subcommand) && !(subcommand === 'doctor' && options.compat)) {
+    return await agentLifecycleCommand(subcommand, options, io, runtime);
+  }
+
   if (subcommand === 'paths') {
+    if (runtime.agentCompatibilityFacade) {
+      const envelope = runtime.agentCompatibilityFacade.paths(agentCompatibilityInput(options, runtime));
+      writeJson(io, envelope);
+      return envelope.ok === false ? 1 : 0;
+    }
     const result = {
       action: 'paths',
       ...listAgentTargets()
@@ -477,6 +508,11 @@ function agentCommand(positionals, options, io) {
   }
 
   if (subcommand === 'doctor') {
+    if (runtime.agentCompatibilityFacade) {
+      const envelope = runtime.agentCompatibilityFacade.doctor(agentCompatibilityInput(options, runtime));
+      writeJson(io, envelope);
+      return envelope.ok === false ? 1 : 0;
+    }
     const report = {
       action: 'doctor',
       ...doctorAgentInstaller()
@@ -490,6 +526,11 @@ function agentCommand(positionals, options, io) {
   }
 
   if (subcommand === 'install') {
+    if (runtime.agentCompatibilityFacade) {
+      const envelope = runtime.agentCompatibilityFacade.install(agentCompatibilityInput(options, runtime));
+      writeJson(io, envelope);
+      return envelope.ok === false ? 1 : 0;
+    }
     const result = {
       action: 'install',
       ...installAgentSkill({
@@ -511,7 +552,7 @@ function agentCommand(positionals, options, io) {
   throw new LaunchdeckError('unknown_command', `Unknown agent command '${subcommand}'.`, {
     command: 'agent',
     subcommand,
-    supportedCommands: ['paths', 'doctor', 'install']
+    supportedCommands: ['setup', 'status', 'doctor', 'update', 'repair', 'uninstall', 'paths', 'install']
   });
 }
 
@@ -613,11 +654,18 @@ async function operationCommand(positionals, options, io) {
     }
   }
 
+  const installerReconciler = createPublicInstallerReconciler({
+    env: process.env,
+    journal
+  });
   const agentResult = await executeCliAgentOperation({
     positionals: ['operation', subcommand, subcommand === 'list' ? undefined : positionals[2]].filter((entry) => entry !== undefined),
     options,
     project,
-    operationHandlers: createOperationHandlers({ journal })
+    operationHandlers: createOperationHandlers({
+      journal,
+      installerReconciler
+    })
   });
   const payload = { ...(agentResult.resource.data ?? {}), agentResult };
   if (options.json) {
@@ -1672,7 +1720,7 @@ async function restartGlobalTaskCommand(target, options, io) {
   return 0;
 }
 
-async function stopGlobalTaskCommand(target, options, io) {
+async function stopGlobalTaskCommand(target, options, io, commandName = 'stop') {
   if (!options.forceOwned) {
     const { projectTarget, taskName } = parseGlobalTaskTarget(target);
     const project = resolveRegisteredProject(projectTarget);
@@ -1681,7 +1729,7 @@ async function stopGlobalTaskCommand(target, options, io) {
     if (isSharedLifecycleTask(task)) {
       const executed = await executeSharedTaskMutation({
         operation: 'task.stop',
-        positionals: ['stop', taskName],
+        positionals: [commandName, taskName],
         options,
         config,
         taskName,
@@ -1690,7 +1738,7 @@ async function stopGlobalTaskCommand(target, options, io) {
         global: true
       });
       if (executed.agentResult.outcome.kind === 'refused') {
-        return writeAgentFailure('stop', executed.agentResult, options, io, config, {
+        return writeAgentFailure(commandName, executed.agentResult, options, io, config, {
           project: { id: project.id, name: config.project.name },
           task: taskName
         }, executed.legacy.ownership);
@@ -1704,7 +1752,7 @@ async function stopGlobalTaskCommand(target, options, io) {
         agentResult: executed.agentResult
       };
       if (options.json) {
-        writeJson(io, createSuccessEnvelope('stop', payload, config));
+        writeJson(io, createSuccessEnvelope(commandName, payload, config));
       } else if (stopped.length === 0) {
         write(io, `No managed process found for ${target}.\n`);
       } else {
@@ -1713,7 +1761,7 @@ async function stopGlobalTaskCommand(target, options, io) {
       return 0;
     }
   }
-  return stopGlobalLifecycleCommand(target, options, io, 'stop', { forceOwned: options.forceOwned });
+  return stopGlobalLifecycleCommand(target, options, io, commandName, { forceOwned: options.forceOwned });
 }
 
 async function forceStopCommand(taskName, options, io) {
@@ -1741,9 +1789,9 @@ async function stopGlobalLifecycleCommand(target, options, io, commandName, acti
   return 0;
 }
 
-async function stopCommand(taskName, options, io) {
+async function stopCommand(taskName, options, io, commandName = 'stop') {
   if (isGlobalTaskTarget(taskName)) {
-    return stopGlobalTaskCommand(taskName, options, io);
+    return stopGlobalTaskCommand(taskName, options, io, commandName);
   }
 
   const config = loadConfig(process.cwd());
@@ -1751,7 +1799,7 @@ async function stopCommand(taskName, options, io) {
   if (taskName && !options.forceOwned && isSharedLifecycleTask(task)) {
     const executed = await executeSharedTaskMutation({
       operation: 'task.stop',
-      positionals: ['stop', taskName],
+      positionals: [commandName, taskName],
       options,
       config,
       taskName,
@@ -1761,7 +1809,7 @@ async function stopCommand(taskName, options, io) {
     });
     if (executed.agentResult.outcome.kind === 'refused') {
       return writeAgentFailure(
-        'stop',
+        commandName,
         executed.agentResult,
         options,
         io,
@@ -1772,7 +1820,7 @@ async function stopCommand(taskName, options, io) {
     }
     const stopped = executed.legacy.stopped;
     if (options.json) {
-      writeJson(io, createSuccessEnvelope('stop', {
+      writeJson(io, createSuccessEnvelope(commandName, {
         process: stopped[0],
         agentResult: executed.agentResult
       }, config));
@@ -1795,12 +1843,12 @@ async function stopCommand(taskName, options, io) {
   }
   if (options.json) {
     if (taskName) {
-      writeJson(io, createSuccessEnvelope('stop', { process: stopped[0] }, config));
+      writeJson(io, createSuccessEnvelope(commandName, { process: stopped[0] }, config));
     } else {
       writeJson(
         io,
         createSuccessEnvelope(
-          'stop',
+          commandName,
           {
             results: stopped
               .map((processInfo) => ({
@@ -2173,6 +2221,516 @@ function writeAgentInstallReport(result, io) {
   if (result.result.actions.length > 0) {
     write(io, `${result.result.actions.length} planned action(s).\n`);
   }
+}
+
+function createCliRuntime(dependencies, io) {
+  const env = dependencies.env ?? process.env;
+  const cwd = dependencies.cwd ?? process.cwd();
+  const agentLifecycleService = dependencies.agentLifecycleService
+    ?? createDefaultCliAgentLifecycleService({
+      env,
+      factory: dependencies.agentLifecycleServiceFactory,
+      hostRegistry: dependencies.hostRegistry
+    });
+  return {
+    agentLifecycleService,
+    agentCompatibilityFacade: dependencies.agentCompatibilityFacade,
+    input: dependencies.input ?? createDefaultLifecycleInput(io),
+    terminal: {
+      columns: Number.isInteger(io.columns) ? io.columns : 120,
+      isTTY: io.isTTY ?? io.stdout?.isTTY ?? false,
+      noColor: Boolean(io.noColor)
+    },
+    entrypoint: dependencies.entrypoint ?? 'installed',
+    cwd,
+    env,
+    packageBuildIdentity: dependencies.packageBuildIdentity ?? cliAgentProvenance().buildIdentity
+  };
+}
+
+function createDefaultCliAgentLifecycleService({
+  env,
+  factory = createAgentLifecycleService,
+  hostRegistry
+}) {
+  const journal = createOperationJournal({ env });
+  const reconciler = createPublicInstallerReconciler({
+    env,
+    journal
+  });
+  return factory({
+    env,
+    journal,
+    reconciler,
+    hostRegistry: hostRegistry ?? createCliHostRegistryOptions(env)
+  });
+}
+
+function isAgentLifecycleCommand(subcommand) {
+  return ['setup', 'status', 'doctor', 'update', 'repair', 'uninstall'].includes(subcommand);
+}
+
+async function agentLifecycleCommand(operation, options, io, runtime) {
+  const service = runtime.agentLifecycleService;
+  if (!service || typeof service[operation] !== 'function') {
+    throw new LaunchdeckError('agent_lifecycle_unavailable', `Agent lifecycle operation '${operation}' is unavailable.`, {
+      operation
+    });
+  }
+
+  const selection = await lifecycleSelection(operation, options, runtime);
+  const input = lifecycleInput(operation, { ...options, ...selection }, io, runtime);
+  input.approved = await lifecycleApproval(operation, input, options, runtime);
+  const envelope = await service[operation](input);
+
+  if (options.json) {
+    writeLifecycleJson(io, options.compact ? compactLifecycleEnvelope(envelope) : envelope, options);
+  } else {
+    writeLifecycleHuman(envelope, io, runtime.terminal);
+  }
+  return lifecycleExitCode(envelope);
+}
+
+function lifecycleInput(operation, options, io, runtime) {
+  const projectRoot = options.project ?? runtime.cwd;
+  const setup = operation === 'setup';
+  return {
+    operation,
+    hosts: options.hosts,
+    components: options.components,
+    scope: setup ? options.scope : (options.scope ?? 'project'),
+    projectRoot,
+    project: options.project,
+    homeDir: os.homedir(),
+    build: options.build ?? runtime.packageBuildIdentity,
+    desiredBuildIdentity: options.build ?? runtime.packageBuildIdentity,
+    packagedBuildIdentity: runtime.packageBuildIdentity,
+    dryRun: options.dryRun === true,
+    json: options.json === true,
+    compact: options.compact === true,
+    yes: options.yes === true,
+    npmYes: false,
+    force: options.force === true,
+    entrypoint: runtime.entrypoint,
+    cwd: runtime.cwd,
+    env: {},
+    terminal: lifecycleTerminal(io, runtime.terminal, options),
+    operationId: options.operationId,
+    interactive: options.interactive === true,
+    requireExplicitSelection: setup
+  };
+}
+
+async function lifecycleSelection(operation, options, runtime) {
+  const interactive = operation === 'setup'
+    && options.json !== true
+    && options.yes !== true
+    && runtime.terminal.isTTY === true;
+  if (!interactive) return { interactive: false };
+
+  const input = runtime.input;
+  let hosts = options.hosts;
+  let components = options.components;
+  let scope = options.scope;
+  if (!hosts && typeof input?.selectMany === 'function') {
+    hosts = await input.selectMany(
+      'Select available agent host(s)',
+      availableLifecycleHosts(runtime.env)
+    );
+  }
+  if (!components && typeof input?.selectMany === 'function') {
+    components = await input.selectMany(
+      'Select component(s)',
+      ['runtime', 'skill', 'mcp']
+    );
+  }
+  if (!scope && typeof input?.select === 'function') {
+    scope = await input.select('Select installation scope', ['project', 'user']);
+  }
+  return { hosts, components, scope, interactive: true };
+}
+
+function availableLifecycleHosts(env) {
+  const hosts = [];
+  if (commandExists('codex')) hosts.push('codex');
+  if (commandExists('claude')) hosts.push('claude-code');
+  if (commandExists('copilot')) hosts.push('github-copilot');
+  if (resolveVswherePath(env)) hosts.push('visual-studio');
+  return hosts;
+}
+
+function lifecycleTerminal(io, terminal, options) {
+  const metadata = {
+    columns: terminal.columns,
+    isTTY: terminal.isTTY,
+    noColor: terminal.noColor || options.noColor === true,
+    stdout: {},
+    stderr: {}
+  };
+  Object.defineProperty(metadata.stdout, 'write', {
+    value: (value) => io.stdout.write(value),
+    enumerable: false
+  });
+  Object.defineProperty(metadata.stderr, 'write', {
+    value: (value) => io.stderr.write(value),
+    enumerable: false
+  });
+  return metadata;
+}
+
+async function lifecycleApproval(operation, input, options, runtime) {
+  if (!['setup', 'update', 'repair', 'uninstall'].includes(operation)) return undefined;
+  if (input.dryRun || options.yes || options.json) return options.yes === true ? true : undefined;
+  if (runtime.terminal.isTTY && typeof runtime.input?.confirm === 'function') {
+    return runtime.input.confirm(`Approve and apply Launchdeck agent ${operation}?`);
+  }
+  return undefined;
+}
+
+function createDefaultLifecycleInput(io) {
+  async function question(prompt) {
+    const terminal = createInterface({
+      input: process.stdin,
+      output: io.stdout,
+      terminal: true
+    });
+    try {
+      return await terminal.question(`${prompt}: `);
+    } finally {
+      terminal.close();
+    }
+  }
+  return {
+    async select(prompt, choices) {
+      const answer = (await question(`${prompt} [${choices.join('|')}]`)).trim();
+      return choices.includes(answer) ? answer : undefined;
+    },
+    async selectMany(prompt, choices) {
+      const answer = await question(`${prompt} [comma-separated: ${choices.join('|')}]`);
+      const selected = [...new Set(answer.split(',').map((value) => value.trim()).filter(Boolean))];
+      return selected.every((value) => choices.includes(value)) ? selected : [];
+    },
+    async confirm(prompt) {
+      return /^(?:y|yes)$/i.test((await question(`${prompt} [y/N]`)).trim());
+    }
+  };
+}
+
+function createCliHostRegistryOptions(env) {
+  const effects = createCliFilesystemEffects();
+  const launchdeckHome = path.resolve(
+    String(env?.LAUNCHDECK_HOME ?? path.join(os.homedir(), '.launchdeck'))
+  );
+  const launcherPath = path.join(
+    launchdeckHome,
+    'installer',
+    'launcher',
+    'v1',
+    process.platform === 'win32' ? 'launchdeck-mcp.cmd' : 'launchdeck-mcp'
+  );
+  const codexVersion = probeText('codex', ['--version']);
+  const codexMcp = probeText('codex', ['mcp', 'list']);
+  const claudeVersion = probeText('claude', ['--version']);
+  const claudeMcp = probeText('claude', ['mcp', 'list', '--json']);
+
+  return {
+    adapterOptions: {
+      codex: {
+        fs,
+        probes: { version: codexVersion, mcpList: codexMcp },
+        projectTrust: ({ projectRoot }) => readCodexProjectTrust({
+          projectRoot,
+          fs,
+          env
+        }),
+        launcherPath,
+        launchdeckHome
+      },
+      'claude-code': {
+        fs,
+        probes: {
+          version: claudeVersion,
+          mcpList: parseJsonProbe(claudeMcp)
+        },
+        launcherPath,
+        ...effects
+      },
+      'github-copilot': {
+        probe: async ({ executable, args, timeoutMs }) =>
+          probeProcess(executable, args, timeoutMs),
+        fileExists: async (filePath) => fs.existsSync(filePath),
+        readTextFile: async (filePath) => fs.readFileSync(filePath, 'utf8'),
+        inspectSkill: async (target) => inspectCliSkillTarget(target),
+        launcherPath,
+        ...effects
+      },
+      'visual-studio': {
+        fs,
+        launcherPath,
+        vswherePath: resolveVswherePath(env),
+        runVswhere: async (executable, args, probeOptions) =>
+          probeProcess(executable, args, probeOptions?.timeoutMs)
+      }
+    }
+  };
+}
+
+function probeText(executable, args) {
+  return probeProcess(executable, args, 5_000).stdout;
+}
+
+export function resolveProbeInvocation(executable, args, options = {}) {
+  return resolveProbeInvocations(executable, args, options)[0];
+}
+
+export function resolveProbeInvocations(executable, args, options = {}) {
+  const platform = options.platform ?? process.platform;
+  const env = options.env ?? process.env;
+  const existsSync = options.existsSync ?? fs.existsSync;
+  const normalizedArgs = Array.isArray(args) ? args.map(String) : [];
+  if (platform !== 'win32'
+    || path.win32.isAbsolute(executable)
+    || /[\\/]/.test(executable)
+    || path.win32.extname(executable)) {
+    return [{ command: executable, args: normalizedArgs, shell: false }];
+  }
+
+  const pathValue = String(env?.PATH ?? env?.Path ?? '');
+  const directories = pathValue.split(';').map((entry) => entry.trim()).filter(Boolean);
+  const invocations = [];
+  for (const extension of ['.exe', '.com']) {
+    for (const directory of directories) {
+      const candidate = path.win32.join(directory, `${executable}${extension}`);
+      if (existsSync(candidate)) {
+        invocations.push({ command: candidate, args: normalizedArgs, shell: false });
+      }
+    }
+  }
+
+  for (const extension of ['.cmd', '.bat']) {
+    for (const directory of directories) {
+      const candidate = path.win32.join(directory, `${executable}${extension}`);
+      if (!existsSync(candidate)) continue;
+      const commandProcessor = String(env?.ComSpec ?? env?.COMSPEC ?? 'cmd.exe');
+      invocations.push({
+        command: commandProcessor,
+        args: ['/d', '/s', '/c', windowsCommandLine(candidate, normalizedArgs)],
+        shell: false
+      });
+    }
+  }
+
+  return invocations.length > 0
+    ? invocations
+    : [{ command: executable, args: normalizedArgs, shell: false }];
+}
+
+function probeProcess(executable, args, timeoutMs = 5_000) {
+  const result = runProbeInvocations(resolveProbeInvocations(executable, args), {
+    timeoutMs
+  });
+  return {
+    exitCode: Number.isInteger(result.status) ? result.status : null,
+    timedOut: result.error?.code === 'ETIMEDOUT',
+    stdout: String(result.stdout ?? ''),
+    stderr: String(result.stderr ?? '')
+  };
+}
+
+export function runProbeInvocations(invocations, options = {}) {
+  const spawn = options.spawnSync ?? spawnSync;
+  let result = {
+    status: null,
+    stdout: '',
+    stderr: '',
+    error: Object.assign(new Error('No probe invocation was available.'), {
+      code: 'ENOENT'
+    })
+  };
+  for (const invocation of invocations) {
+    result = spawn(invocation.command, invocation.args, {
+      encoding: 'utf8',
+      shell: invocation.shell,
+      timeout: options.timeoutMs ?? 5_000,
+      windowsHide: true
+    });
+    if (Number.isInteger(result.status)
+      || !['EACCES', 'ENOENT', 'EPERM'].includes(result.error?.code)) {
+      return result;
+    }
+  }
+  return result;
+}
+
+function windowsCommandLine(executable, args) {
+  return [quoteWindowsCommandToken(executable), ...args.map(quoteWindowsCommandToken)].join(' ');
+}
+
+function quoteWindowsCommandToken(value) {
+  const token = String(value);
+  if (!/[\s"&|<>()^%!]/.test(token)) return token;
+  return `"${token.replaceAll('"', '""')}"`;
+}
+
+function parseJsonProbe(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function resolveVswherePath(env) {
+  const root = env?.['ProgramFiles(x86)'] ?? env?.ProgramFiles;
+  if (!root) return undefined;
+  const candidate = path.join(root, 'Microsoft Visual Studio', 'Installer', 'vswhere.exe');
+  return fs.existsSync(candidate) ? candidate : undefined;
+}
+
+function inspectCliSkillTarget(target) {
+  const targetPath = target?.path;
+  if (!targetPath || !fs.existsSync(targetPath)) {
+    return { status: 'absent', contentDigest: null };
+  }
+  const stat = fs.statSync(targetPath);
+  return {
+    status: stat.isDirectory() ? 'present' : 'malformed',
+    contentDigest: stat.isDirectory()
+      ? `sha256:${crypto.createHash('sha256').update(targetPath).digest('hex')}`
+      : null
+  };
+}
+
+function createCliFilesystemEffects() {
+  return {
+    backupTarget: async ({ action }) => {
+      const targetPath = action?.path ?? action?.targetPath;
+      const exists = Boolean(targetPath && fs.existsSync(targetPath));
+      return {
+        path: targetPath,
+        existed: exists,
+        bytes: exists && fs.statSync(targetPath).isFile() ? fs.readFileSync(targetPath) : null
+      };
+    },
+    applyAction: async ({ action }) => {
+      const targetPath = action?.path ?? action?.targetPath;
+      if (!targetPath) throw new Error('Host action path is required.');
+      if (action.type === 'replace-skill-directory') {
+        fs.rmSync(targetPath, { recursive: true, force: true });
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.cpSync(action.sourceDir, targetPath, { recursive: true });
+      } else if (action.type === 'remove-owned-skill' || action.kind === 'remove-owned-skill') {
+        fs.rmSync(targetPath, { recursive: true, force: true });
+      } else {
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.writeFileSync(targetPath, action.content ?? action.source ?? action.rendered ?? '', 'utf8');
+      }
+      return { status: 'applied', path: targetPath };
+    },
+    rollbackAction: async ({ effect, backup }) => {
+      const targetPath = effect?.path ?? backup?.path;
+      if (!targetPath) throw new Error('Rollback path is required.');
+      if (backup?.existed && backup.bytes !== null) {
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.writeFileSync(targetPath, backup.bytes);
+      } else {
+        fs.rmSync(targetPath, { recursive: true, force: true });
+      }
+      return { status: 'rolled-back', path: targetPath };
+    }
+  };
+}
+
+function lifecycleExitCode(envelope) {
+  const outcome = envelope?.result?.outcome;
+  const doctorHasError = envelope?.command === 'agent doctor'
+    && envelope?.result?.health?.some((item) => item?.severity === 'error');
+  return envelope?.ok === false
+    || isAgentLifecycleFailureOutcome(outcome)
+    || doctorHasError
+    ? 1
+    : 0;
+}
+
+function compactLifecycleEnvelope(envelope) {
+  return {
+    schemaVersion: envelope.schemaVersion,
+    ok: envelope.ok,
+    command: envelope.command,
+    result: envelope.result
+  };
+}
+
+function writeLifecycleJson(io, envelope, options) {
+  io.stdout.write(`${JSON.stringify(envelope, null, options.compact ? 0 : 2)}\n`);
+}
+
+function writeLifecycleHuman(envelope, io, terminal) {
+  const result = envelope?.result ?? {};
+  const lines = [
+    `${envelope.command}: ${result.outcome ?? (envelope.ok ? 'ok' : 'error')}`,
+    `Scope: ${result.scope ?? 'unknown'}`,
+    `Project: ${result.projectIdentity ?? 'none'}`,
+    `Build: ${result.buildIdentity ?? 'unknown'}`,
+    `Effect certainty: ${result.effectCertainty ?? 'unknown'}`
+  ];
+  if (Array.isArray(result.targets) && result.targets.length > 0) {
+    lines.push('Targets:');
+    for (const target of result.targets) {
+      lines.push(`- ${target.targetId ?? target.hostId ?? 'target'} ${target.state ?? target.component ?? ''}`.trimEnd());
+    }
+  }
+  if (Array.isArray(result.health) && result.health.length > 0) {
+    lines.push('Health:');
+    for (const health of result.health) {
+      const identity = health.targetId ?? health.code ?? 'installation';
+      const state = health.state ?? health.status ?? 'unknown';
+      const severity = health.severity ? ` (${health.severity})` : '';
+      lines.push(`- ${identity}: ${state}${severity}`);
+    }
+  }
+  if (Array.isArray(result.effects) && result.effects.length === 0) {
+    lines.push('No effects.');
+  }
+  if (Array.isArray(result.nextActions) && result.nextActions.length > 0) {
+    lines.push('Next:');
+    for (const action of result.nextActions) {
+      lines.push(`- ${action.command ?? action.label ?? action}`);
+    }
+  }
+  const columns = Math.max(40, Math.min(terminal.columns ?? 120, 160));
+  for (const line of lines) {
+    write(io, `${wrapPlainLine(line, columns).join('\n')}\n`);
+  }
+}
+
+function wrapPlainLine(line, columns) {
+  if (line.length <= columns) return [line];
+  const out = [];
+  let remaining = line;
+  while (remaining.length > columns) {
+    let index = remaining.lastIndexOf(' ', columns);
+    if (index <= 0) index = columns;
+    out.push(remaining.slice(0, index));
+    remaining = remaining.slice(index).trimStart();
+  }
+  if (remaining) out.push(remaining);
+  return out;
+}
+
+function agentCompatibilityInput(options, runtime) {
+  return {
+    agent: options.agent,
+    scope: options.scope ?? 'project',
+    target: options.target,
+    dryRun: options.dryRun === true,
+    force: options.force === true,
+    yes: options.yes === true,
+    projectRoot: options.project ?? runtime.cwd,
+    cwd: runtime.cwd,
+    env: {},
+    terminal: runtime.terminal
+  };
 }
 
 function requireTask(config, taskName) {
@@ -2800,6 +3358,12 @@ function parseArgs(argv) {
     json: false,
     compact: false,
     agent: undefined,
+    hosts: undefined,
+    components: undefined,
+    project: undefined,
+    build: undefined,
+    compat: false,
+    noColor: false,
     dryRun: false,
     checks: undefined,
     createdAfter: undefined,
@@ -2839,6 +3403,24 @@ function parseArgs(argv) {
       options.json = true;
     } else if (arg === '--compact') {
       options.compact = true;
+    } else if (arg === '--no-color') {
+      options.noColor = true;
+    } else if (arg === '--compat') {
+      options.compat = true;
+    } else if (arg === '--host') {
+      options.hosts = [
+        ...(options.hosts ?? []),
+        ...parseListOption(argv[++index], '--host')
+      ];
+    } else if (arg === '--component') {
+      options.components = [
+        ...(options.components ?? []),
+        ...parseListOption(argv[++index], '--component')
+      ];
+    } else if (arg === '--project') {
+      options.project = requireOptionValue(argv[++index], '--project');
+    } else if (arg === '--build') {
+      options.build = requireOptionValue(argv[++index], '--build');
     } else if (arg === '--agent') {
       const value = argv[index + 1];
       if (!value || value.startsWith('-')) {
@@ -3068,6 +3650,7 @@ Usage:
   launchdeck run <task> [--json] [--compact]
   launchdeck dev [--json] [--compact]
   launchdeck start [task|project:task] [--json] [--compact]
+  launchdeck up [task|project:task] [--json] [--compact]
   launchdeck restart [task|project:task] [--json] [--compact]
   launchdeck ps [--all] [--json] [--compact]
   launchdeck ports [--json] [--compact]
@@ -3081,6 +3664,7 @@ Usage:
   launchdeck operation reconcile <operationId> [--json] [--compact]
   launchdeck reconcile [project[:task]] [--json] [--compact]
   launchdeck stop [task|project:task] [--force-owned] [--json] [--compact]
+  launchdeck down [task|project:task] [--force-owned] [--json] [--compact]
   launchdeck force-stop <project:task> [--json] [--compact]
   launchdeck clean [--safe|--all --yes] [--json] [--compact]
 
@@ -3089,7 +3673,46 @@ Lifecycle config:
 `;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+function agentHelpText() {
+  return `Launchdeck Agent
+
+Usage:
+  launchdeck agent setup [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent status [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
+  launchdeck agent doctor [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
+  launchdeck agent update [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent repair [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent uninstall [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent paths [--json] [--compact]
+  launchdeck agent install --agent <${supportedAgents().join('|')}> [--scope <project|user>] [--dry-run] [--force] [--target dir] [--json] [--compact]
+
+Compatibility:
+  launchdeck agent doctor --compat [--json] [--compact]
+`;
+}
+
+export function isDirectCliExecution(moduleUrl, argvPath, options = {}) {
+  if (!argvPath) return false;
+  const platform = options.platform ?? process.platform;
+  const realpathSync = options.realpathSync ?? fs.realpathSync;
+  const moduleUrlToPath = options.fileURLToPath ?? fileURLToPath;
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  try {
+    const modulePath = realpathSync(moduleUrlToPath(moduleUrl));
+    const invokedPath = realpathSync(pathApi.resolve(argvPath));
+    return platform === 'win32'
+      ? modulePath.toLowerCase() === invokedPath.toLowerCase()
+      : modulePath === invokedPath;
+  } catch {
+    const modulePath = pathApi.normalize(moduleUrlToPath(moduleUrl));
+    const invokedPath = pathApi.normalize(pathApi.resolve(argvPath));
+    return platform === 'win32'
+      ? modulePath.toLowerCase() === invokedPath.toLowerCase()
+      : modulePath === invokedPath;
+  }
+}
+
+if (isDirectCliExecution(import.meta.url, process.argv[1])) {
   const code = await main();
   process.exitCode = code;
 }

@@ -1,0 +1,32 @@
+{
+  "buildIdentity": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "previousBuildIdentity": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "skillDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "configDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "runtimeDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "receiptDigest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "target": {
+    "targetId": "codex:project:mcp",
+    "host": "codex",
+    "scope": "project",
+    "component": "mcp",
+    "dialect": "[mcp_servers.launchdeck]",
+    "ownershipBoundary": "mcp_servers.launchdeck",
+    "skillPathToken": "project/.agents/skills/launchdeck-agent",
+    "configPathToken": "project/.codex/config.toml",
+    "launcherPathToken": "launchdeck-home/installer/launcher/v1/launchdeck-mcp",
+    "runtimePathToken": "launchdeck-home/installer/artifacts/v1/sha256/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/runtime/launchdeck-mcp.mjs"
+  },
+  "receiptCandidate": {
+    "receiptId": "receipt_project_verification_0001",
+    "scope": "project",
+    "scopeIdentity": "project:sha256:5555555555555555555555555555555555555555555555555555555555555555",
+    "projectIdentity": "project:sha256:6666666666666666666666666666666666666666666666666666666666666666"
+  },
+  "secretSentinel": "FIXTURE_REDACTION_SENTINEL_VALUE",
+  "hostApprovalAction": {
+    "kind": "host-approval",
+    "host": "codex",
+    "reason": "Host requires user approval or reload before launching the updated MCP entry."
+  }
+}

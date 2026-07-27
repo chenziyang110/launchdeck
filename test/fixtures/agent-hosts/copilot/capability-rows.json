@@ -1,0 +1,18 @@
+[
+  {
+    "id": "copilot-cli-1.4.2-win32-fixture",
+    "host": "github-copilot",
+    "version": "1.4.2",
+    "platform": "win32",
+    "components": {
+      "skill": {
+        "project": true,
+        "user": true
+      },
+      "mcp": {
+        "project": true,
+        "user": true
+      }
+    }
+  }
+]

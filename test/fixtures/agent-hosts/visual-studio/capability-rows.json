@@ -1,0 +1,22 @@
+[
+  {
+    "rowId": "visual-studio-mcp-project-v1",
+    "semanticVersionRange": ">=17.14.0 <19.0.0",
+    "platform": "win32",
+    "component": "mcp",
+    "scope": "project",
+    "relativePath": ".vs/mcp.json",
+    "dialect": "servers.launchdeck",
+    "fixtureRevision": "visual-studio-contract-v1"
+  },
+  {
+    "rowId": "visual-studio-skill-project-v1",
+    "semanticVersionRange": ">=18.5.0 <19.0.0",
+    "platform": "win32",
+    "component": "skill",
+    "scope": "project",
+    "relativePath": ".agents/skills/launchdeck-agent",
+    "dialect": "skill-directory",
+    "fixtureRevision": "visual-studio-contract-v1"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "keep": {
+      "command": "keep-server"
+    }
+  }
+}

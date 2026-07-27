@@ -100,7 +100,8 @@ test('restart --json reports partial_failure when stop succeeds but start fails'
       [
         ['dev', 'stopped'],
         ['dev', 'start_failed']
-      ]
+      ],
+      JSON.stringify(restarted.json)
     );
   });
 });
@@ -163,7 +164,7 @@ test('stop <task> --json stops one managed task with a process payload', async (
 
     const result = fixture.runCliJson(['stop', 'dev']);
 
-    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.status, 0, JSON.stringify(result.json));
     assertSuccessEnvelope(result.json, 'stop', fixture);
     assert.equal(result.json.process.task, 'dev');
     assert.equal(result.json.process.status, 'stopped');
@@ -181,7 +182,7 @@ test('stop --json stops all running managed tasks with per-task results', async 
 
     const result = fixture.runCliJson(['stop']);
 
-    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.status, 0, JSON.stringify(result.json));
     assertSuccessEnvelope(result.json, 'stop', fixture);
     assert.deepEqual(
       result.json.results.map((entry) => [entry.task, entry.ok, entry.status]),

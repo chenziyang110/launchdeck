@@ -70,13 +70,13 @@ test('agent-surface managed task reuses one owned run and one spawn receipt', as
   const fixture = await createAgentSurfaceFixture();
   t.after(() => fixture.cleanup());
 
-  const first = fixture.runCliJson(['start', 'managed'], { timeout: 10_000 });
+  const first = fixture.runCliJson(['start', 'managed']);
   assert.equal(first.status, 0, first.stderr);
   assert.equal(first.json.schemaVersion, 1);
   assert.equal(first.json.process.spawned, true);
   assert.equal(first.json.process.ownershipConfidence, 'verified-owned');
 
-  const second = fixture.runCliJson(['start', 'managed'], { timeout: 10_000 });
+  const second = fixture.runCliJson(['start', 'managed']);
   assert.equal(second.status, 0, second.stderr);
   assert.equal(second.json.process.spawned, false);
   assert.equal(second.json.process.runId, first.json.process.runId);
@@ -87,7 +87,7 @@ test('agent-surface managed task reuses one owned run and one spawn receipt', as
   assert.equal(receipts.length, 1);
   assert.equal(JSON.parse(receipts[0]).runId, first.json.process.runId);
 
-  const stopped = fixture.runCliJson(['stop', 'managed'], { timeout: 10_000 });
+  const stopped = fixture.runCliJson(['stop', 'managed']);
   assert.equal(stopped.status, 0, stopped.stderr);
 });
 

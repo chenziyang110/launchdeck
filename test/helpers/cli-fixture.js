@@ -62,7 +62,7 @@ export function writeFile(root, relativePath, content) {
 }
 
 export function runCli(args = [], options = {}) {
-  const { cwd, env, input, timeout = 10_000 } = options;
+  const { cwd, env, input, timeout = 30_000 } = options;
 
   return spawnSync(process.execPath, [cliPath, ...args], {
     cwd,

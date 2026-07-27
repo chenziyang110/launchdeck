@@ -14,10 +14,12 @@ export const CLI_OPERATION_ROUTES = Object.freeze([
 
 export const CLI_MUTATION_ROUTES = Object.freeze([
   route('start', 'task.start', 'mutation'),
+  route('up', 'task.start', 'mutation'),
   route('dev', 'task.start', 'mutation'),
   route('run', 'task.run', 'mutation'),
   route('lifecycle', 'task.run', 'mutation'),
   route('stop', 'task.stop', 'mutation'),
+  route('down', 'task.stop', 'mutation'),
   route('restart', 'task.restart', 'mutation')
 ]);
 
@@ -120,7 +122,7 @@ export function mapCliInvocation({ positionals = [], options = {}, context = {} 
       : mapped('clean.plan', defined({ projectRef: context.projectRef }));
   }
   if (context.agentEligible === false) return null;
-  if (command === 'start') {
+  if (command === 'start' || command === 'up') {
     return mapped('task.start', taskMutationInput(context, positionals[1] ?? context.taskRef ?? 'dev'));
   }
   if (command === 'dev') {
@@ -136,7 +138,7 @@ export function mapCliInvocation({ positionals = [], options = {}, context = {} 
   if (['setup', 'build', 'package', 'test', 'lint', 'typecheck'].includes(command)) {
     return mapped('task.run', taskMutationInput(context, command));
   }
-  if (command === 'stop' && positionals[1]) {
+  if ((command === 'stop' || command === 'down') && positionals[1]) {
     return mapped('task.stop', taskMutationInput(context, context.taskRef ?? positionals[1]));
   }
   if (command === 'restart') {
@@ -173,7 +175,7 @@ function isCliOnlyInvocation(positionals, options) {
     || command === 'force-stop'
     || (command === 'clean' && options.all)
     || (command === 'logs' && options.follow)
-    || (command === 'stop' && (!positionals[1] || options.forceOwned));
+    || ((command === 'stop' || command === 'down') && (!positionals[1] || options.forceOwned));
 }
 
 function parseInspectionTarget(rawTarget) {

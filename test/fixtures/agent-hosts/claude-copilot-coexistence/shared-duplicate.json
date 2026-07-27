@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "launchdeck": {
+      "command": "__LAUNCHDECK_STABLE_LAUNCHER__",
+      "args": [
+        "serve",
+        "--build",
+        "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    }
+  }
+}

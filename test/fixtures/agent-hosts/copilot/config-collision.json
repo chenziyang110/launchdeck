@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "launchdeck": {
+      "command": "unrelated-launchdeck-command",
+      "args": [
+        "--not-owned"
+      ]
+    }
+  }
+}

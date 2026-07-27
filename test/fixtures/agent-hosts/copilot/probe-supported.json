@@ -1,0 +1,6 @@
+{
+  "exitCode": 0,
+  "timedOut": false,
+  "stdout": "{\"name\":\"GitHub Copilot CLI\",\"version\":\"1.4.2\",\"capabilities\":{\"skill\":true,\"mcp\":true}}",
+  "stderr": ""
+}

@@ -1,0 +1,13 @@
+{
+  "command": "codex mcp list",
+  "trust": "trusted",
+  "entries": [
+    {
+      "name": "launchdeck",
+      "dialect": "[mcp_servers.launchdeck]",
+      "command": "C:\\Launchdeck\\launchdeck.exe",
+      "scope": "project",
+      "ownership": "Launchdeck"
+    }
+  ]
+}

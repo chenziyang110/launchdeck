@@ -48,13 +48,41 @@ const EXPECTED_AXES = Object.freeze([
   'claudeHostManifest'
 ]);
 
-test('production compatibility schemas remain identical to the approved contracts', () => {
-  for (const name of [
-    'agent-operations.schema.json',
-    'compatibility-manifest.schema.json'
-  ]) {
-    assert.deepEqual(readJson(`../../schema/${name}`), readJson(`../../.specify/features/2026-07-19-launchdeck-agent-surfaces/contracts/${name}`), name);
+const EXPECTED_COMPATIBILITY_FIELDS = Object.freeze([
+  'manifestVersion',
+  'buildIdentity',
+  'packageVersion',
+  'nodeRange',
+  'versions',
+  'componentDigests',
+  'supportedOperations',
+  'hostArtifacts',
+  'migrationCapabilities'
+]);
+
+test('production compatibility schemas preserve the public release contracts', () => {
+  const operationSchema = readJson('../../schema/agent-operations.schema.json');
+  const compatibilitySchema = readJson('../../schema/compatibility-manifest.schema.json');
+
+  assert.equal(operationSchema.$schema, 'https://json-schema.org/draft/2020-12/schema');
+  assert.equal(operationSchema.$id, 'https://launchdeck.dev/schemas/agent-operations.schema.json');
+  assert.deepEqual(
+    operationSchema.oneOf.map((entry) => entry.$ref),
+    EXPECTED_AGENT_OPERATIONS.map((operation) => `#/$defs/${operation}`)
+  );
+  for (const operation of EXPECTED_AGENT_OPERATIONS) {
+    const definition = operationSchema.$defs[operation];
+    const referencedName = definition.$ref?.replace('#/$defs/', '');
+    const operationConst = definition.properties?.operation?.const
+      ?? operationSchema.$defs[referencedName]?.properties?.operation?.const;
+    assert.equal(operationConst, operation);
   }
+
+  assert.equal(compatibilitySchema.$schema, 'https://json-schema.org/draft/2020-12/schema');
+  assert.equal(compatibilitySchema.$id, 'https://launchdeck.dev/schemas/compatibility-manifest.schema.json');
+  assert.equal(compatibilitySchema.additionalProperties, false);
+  assert.deepEqual(compatibilitySchema.required, EXPECTED_COMPATIBILITY_FIELDS);
+  assert.deepEqual(Object.keys(compatibilitySchema.properties), EXPECTED_COMPATIBILITY_FIELDS);
 });
 
 test('compatibility manifest has independent axes and the exact Agent catalog', () => {

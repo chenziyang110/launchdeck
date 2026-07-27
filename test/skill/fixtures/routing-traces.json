@@ -115,6 +115,59 @@
       ]
     },
     {
+      "id": "inspect_only_adoption_strong",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "project.list", "outcome": "succeeded" },
+        { "kind": "decision", "name": "project.scope", "outcome": "unregistered_unconfigured" },
+        { "kind": "inspection", "surface": "workspace", "operation": "bounded.read", "input": { "maxDepth": 4, "maxFiles": 200, "secretFiles": "excluded" }, "outcome": "strong" },
+        { "kind": "decision", "name": "config.authoring", "outcome": "inspection_only" },
+        { "kind": "decision", "name": "config.confidence", "outcome": "strong" },
+        { "kind": "report", "outcome": "proposed_no_write" }
+      ]
+    },
+    {
+      "id": "explicit_config_authoring_strong",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "project.list", "outcome": "succeeded" },
+        { "kind": "decision", "name": "project.scope", "outcome": "unregistered_unconfigured" },
+        { "kind": "inspection", "surface": "workspace", "operation": "bounded.read", "input": { "maxDepth": 4, "maxFiles": 200, "secretFiles": "excluded" }, "outcome": "strong" },
+        { "kind": "decision", "name": "config.authoring", "outcome": "explicit_intent" },
+        { "kind": "decision", "name": "config.confidence", "outcome": "strong" },
+        { "kind": "write", "surface": "filesystem", "path": ".launchdeck.yml", "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "doctor", "outcome": "succeeded" },
+        { "kind": "report", "outcome": "succeeded" }
+      ]
+    },
+    {
+      "id": "ambiguous_config_authoring",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "project.list", "outcome": "succeeded" },
+        { "kind": "decision", "name": "project.scope", "outcome": "unregistered_unconfigured" },
+        { "kind": "inspection", "surface": "workspace", "operation": "bounded.read", "input": { "maxDepth": 4, "maxFiles": 200, "secretFiles": "excluded" }, "outcome": "weak" },
+        { "kind": "decision", "name": "config.authoring", "outcome": "explicit_intent" },
+        { "kind": "decision", "name": "config.confidence", "outcome": "weak" },
+        { "kind": "report", "outcome": "proposal_only_no_write" }
+      ]
+    },
+    {
+      "id": "existing_config_authoring_refusal",
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "project.list", "outcome": "succeeded" },
+        { "kind": "decision", "name": "project.scope", "outcome": "unregistered" },
+        { "kind": "inspection", "surface": "workspace", "operation": "config.discovery", "outcome": "existing_config_found" },
+        { "kind": "decision", "name": "config.authoring", "outcome": "existing_config_preserved" },
+        { "kind": "report", "outcome": "refused_no_write" }
+      ]
+    },
+    {
       "id": "forbidden_force",
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },

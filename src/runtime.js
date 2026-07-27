@@ -24,7 +24,7 @@ import { controlPlanePaths } from './control-plane/state.js';
 
 const STATE_VERSION = 1;
 const PROCESS_STATUSES = new Set(['running', 'stopped', 'stale', 'unknown', 'stop_failed']);
-const STOP_VERIFY_TIMEOUT_MS = 2_000;
+const STOP_VERIFY_TIMEOUT_MS = 5_000;
 const STOP_VERIFY_POLL_MS = 50;
 const RUN_INDEX_VERSION = 1;
 const ACTIVE_RUN_STATUSES = new Set(['starting', 'running', 'ready', 'stopping']);
@@ -249,7 +249,9 @@ export function startManagedTask(taskName, task, projectRoot) {
       source: 'launchdeck-spawn',
       confidence: OWNERSHIP_CONFIDENCE.VERIFIED_OWNED,
       runId,
+      transactionId,
       projectId,
+      projectRoot: path.resolve(projectRoot),
       task: taskName,
       pid: managed.pid,
       command: task.command,
@@ -728,10 +730,16 @@ function hasTrustedSpawnOwnershipProof(run, processInfo, proof) {
   if (storedProof.runId !== run.runId || storedProof.projectId !== run.projectId || storedProof.task !== run.task) {
     return false;
   }
+  if (run.transactionId && storedProof.transactionId !== run.transactionId) {
+    return false;
+  }
   if (Number(storedProof.pid) !== Number(run.pid) || Number(processInfo?.pid) !== Number(run.pid)) {
     return false;
   }
   if (storedProof.startedAt !== run.startedAt || storedProof.command !== run.command || !samePath(storedProof.cwd, run.cwd)) {
+    return false;
+  }
+  if (run.projectRoot && !samePath(storedProof.projectRoot, run.projectRoot)) {
     return false;
   }
   return proof.confidence === OWNERSHIP_CONFIDENCE.UNKNOWN
@@ -1238,36 +1246,7 @@ function toRuntimeErrorRecord(error) {
 }
 
 function stopOwnedProcessTreeSync(pid) {
-  if (process.platform !== 'win32') {
-    return stopProcessTreeSync(pid, { force: false });
-  }
-
-  try {
-    process.kill(pid, 'SIGTERM');
-  } catch (error) {
-    if (error?.code === 'ESRCH') {
-      return {
-        pid,
-        ok: true,
-        status: 'stopped',
-        alreadyStopped: true,
-        method: 'process_signal'
-      };
-    }
-    throw new LaunchdeckError('stop_failed', 'Failed to signal managed process.', {
-      pid,
-      method: 'process_signal',
-      causeCode: error?.code,
-      causeMessage: error?.message
-    });
-  }
-
-  return {
-    pid,
-    ok: !isPidRunning(pid),
-    status: isPidRunning(pid) ? 'stop_failed' : 'stopped',
-    method: 'process_signal'
-  };
+  return stopProcessTreeSync(pid, { force: false });
 }
 
 function collectStopFailureEvidence(processInfo, stopResult, ports = processInfo.ports ?? []) {

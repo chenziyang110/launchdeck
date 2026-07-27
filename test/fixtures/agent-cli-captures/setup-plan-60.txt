@@ -1,0 +1,26 @@
+Agent setup
+State: plan-ready
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaa...
+Source: packaged
+
+Plan
+Target: codex project skill
+Path:
+  <PROJECT>/.agents/skills/launchdeck-agent
+Action:
+  copy owned Launchdeck Skill
+
+Target: codex project mcp
+Path:
+  <PROJECT>/.codex/config.toml
+Action:
+  patch owned mcp_servers.launchdeck entry
+
+Effects: none
+Plan digest:
+  sha256:bbbbbbbbbbbb...
+No files changed.
+Next action:
+  launchdeck agent setup --yes

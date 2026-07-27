@@ -1,6 +1,6 @@
 {
   "name": "launchdeck",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Universal lifecycle control for local software projects.",
   "keywords": [
     "cli",
@@ -25,17 +25,20 @@
     "src/",
     "schema/",
     "agent/compatibility-manifest.json",
+    "agent/installer-payload/",
     ".agents/skills/launchdeck-agent/"
   ],
   "scripts": {
     "check": "node scripts/check-syntax.js",
-    "test": "node --test --test-concurrency=1",
+    "test": "node scripts/run-tests.js",
     "test:e2e": "node scripts/run-e2e-tests.js",
     "agent:build": "node scripts/build-agent-plugins.js",
+    "prepack": "node scripts/build-agent-plugins.js --installer-payload",
     "smoke": "node scripts/smoke-lifecycle.js --mode quick --json",
     "package:check": "npm pack --dry-run"
   },
   "dependencies": {
+    "@decimalturn/toml-patch": "2.1.0",
     "@modelcontextprotocol/sdk": "1.29.0",
     "semver": "7.8.5",
     "yaml": "^2.5.1",

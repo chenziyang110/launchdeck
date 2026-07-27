@@ -7,6 +7,7 @@ import { builtinModules } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 import semver from 'semver';
+import { createInstallerPayloadManifest } from '../src/agent/artifacts/manifest.js';
 import { createSkillContentManifest } from '../src/agent-installer.js';
 import {
   canonicalDigest,
@@ -48,7 +49,8 @@ export async function buildAgentPlugins(options = {}) {
     packageVersion,
     runtimeBytes: bundle.bytes,
     skillManifest,
-    hostTemplateDigests
+    hostTemplateDigests,
+    stableLauncherDigest: installerLauncherDigest()
   });
 
   fs.rmSync(outputDir, { recursive: true, force: true });
@@ -95,6 +97,57 @@ export async function buildAgentPlugins(options = {}) {
   };
 }
 
+export async function buildInstallerPayload(options = {}) {
+  const payloadRoot = path.resolve(options.payloadRoot ?? path.join(repoRoot, 'agent', 'installer-payload'));
+  assertWithin(repoRoot, payloadRoot);
+  const observedNodeVersion = normalizeNodeVersion(options.nodeVersion ?? process.versions.node);
+  if (!observedNodeVersion || !semver.satisfies(observedNodeVersion, '>=20')) {
+    const error = new Error(`Node ${options.nodeVersion ?? process.versions.node} does not satisfy >=20.`);
+    error.code = 'node_version_unsupported';
+    throw error;
+  }
+  const packageJson = readJson(path.join(repoRoot, 'package.json'));
+  const packageVersion = options.packageVersion ?? packageJson.version;
+  const baseCompatibility = readJson(path.join(repoRoot, 'agent', 'compatibility-manifest.json'));
+  const skillSource = path.join(repoRoot, '.agents', 'skills', 'launchdeck-agent');
+  const skillManifest = createSkillContentManifest(skillSource);
+  const bundle = await buildRuntimeBundle(packageVersion);
+  assertNoExternalNpmImports(bundle.metafile);
+  const compatibilityManifest = deriveCompatibilityManifest({
+    baseCompatibility,
+    packageVersion,
+    runtimeBytes: bundle.bytes,
+    skillManifest,
+    hostTemplateDigests: Object.fromEntries(hosts.map((host) => [host, hostTemplateDigest(host)])),
+    stableLauncherDigest: installerLauncherDigest(payloadRoot)
+  });
+
+  const runtimeRoot = path.join(payloadRoot, 'runtime');
+  const skillRoot = path.join(payloadRoot, 'skill', 'launchdeck-agent');
+  fs.rmSync(runtimeRoot, { recursive: true, force: true });
+  fs.rmSync(skillRoot, { recursive: true, force: true });
+  fs.mkdirSync(runtimeRoot, { recursive: true });
+  fs.writeFileSync(path.join(runtimeRoot, 'launchdeck-mcp.mjs'), bundle.bytes);
+  copySkillTree(skillSource, skillRoot);
+  writeJson(path.join(repoRoot, 'agent', 'compatibility-manifest.json'), compatibilityManifest);
+  writeJson(path.join(payloadRoot, 'compatibility.json'), compatibilityManifest);
+
+  const manifest = createInstallerPayloadManifest({
+    payloadRoot,
+    compatibilityManifest
+  });
+  writeJson(path.join(payloadRoot, 'manifest.json'), manifest);
+
+  return {
+    schemaVersion: 1,
+    evidenceScope: 'generation',
+    buildIdentity: manifest.buildIdentity,
+    payloadRoot,
+    manifestPath: path.join(payloadRoot, 'manifest.json'),
+    fileCount: manifest.files.length
+  };
+}
+
 async function buildRuntimeBundle(packageVersion) {
   const operationSchema = readJson(path.join(repoRoot, 'schema', 'agent-operations.schema.json'));
   const result = await build({
@@ -125,7 +178,10 @@ async function buildRuntimeBundle(packageVersion) {
     error.code = 'bundle_output_invalid';
     throw error;
   }
-  return { bytes: Buffer.from(result.outputFiles[0].contents), metafile: result.metafile };
+  const bytes = Buffer.from(result.outputFiles[0].contents)
+    .toString('utf8')
+    .replace(/^[\t ]+$/gm, '');
+  return { bytes: Buffer.from(bytes, 'utf8'), metafile: result.metafile };
 }
 
 function deriveCompatibilityManifest(input) {
@@ -136,6 +192,7 @@ function deriveCompatibilityManifest(input) {
   manifest.componentDigests.canonicalSkillContentManifest = input.skillManifest.contentDigest;
   manifest.componentDigests.operationRegistry = manifest.supportedOperations.registryDigest;
   manifest.componentDigests.operationSchemas = manifest.supportedOperations.schemaDigest;
+  manifest.componentDigests.stableLaunchers = input.stableLauncherDigest;
   for (const host of hosts) {
     manifest.hostArtifacts[host].integrityDigest = input.hostTemplateDigests[host];
   }
@@ -191,6 +248,11 @@ function hostTemplateDigest(host) {
     plugin: readHostTemplate(host, 'plugin'),
     mcp: readHostTemplate(host, 'mcp')
   });
+}
+
+export function installerLauncherDigest(payloadRoot = path.join(repoRoot, 'agent', 'installer-payload')) {
+  const launcherRoot = path.join(path.resolve(payloadRoot), 'launcher');
+  return canonicalDigest(treeInventory(launcherRoot));
 }
 
 function renderTemplate(value, replacements) {
@@ -341,9 +403,15 @@ function compare(left, right) {
 async function main(argv) {
   const options = parseArgs(argv);
   try {
-    const report = await buildAgentPlugins(options);
+    const report = options.mode === 'installer-payload'
+      ? await buildInstallerPayload(options)
+      : await buildAgentPlugins(options);
     if (options.json) process.stdout.write(`${JSON.stringify(report)}\n`);
-    else process.stdout.write(`Built Launchdeck Agent Plugins at ${report.outputDir}\n`);
+    else if (options.mode === 'installer-payload') {
+      process.stdout.write(`Built Launchdeck installer payload at ${report.payloadRoot}\n`);
+    } else {
+      process.stdout.write(`Built Launchdeck Agent Plugins at ${report.outputDir}\n`);
+    }
     return 0;
   } catch (error) {
     process.stderr.write(`${JSON.stringify({
@@ -360,7 +428,8 @@ function parseArgs(argv) {
     outputDir: defaultOutputDir,
     nodeVersion: process.versions.node,
     packageVersion: undefined,
-    json: false
+    json: false,
+    mode: 'plugins'
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -375,6 +444,8 @@ function parseArgs(argv) {
       if (!options.packageVersion) throw new Error('--package-version requires a value.');
     } else if (arg === '--json') {
       options.json = true;
+    } else if (arg === '--installer-payload') {
+      options.mode = 'installer-payload';
     } else {
       const error = new Error(`Unknown argument: ${arg}`);
       error.code = 'invalid_arguments';

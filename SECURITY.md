@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Security fixes are provided for the latest `0.1.x` release line while Launchdeck is pre-1.0.
+Security fixes are provided for the latest `0.2.x` release line while Launchdeck is pre-1.0.
 
 ## Reporting a Vulnerability
 

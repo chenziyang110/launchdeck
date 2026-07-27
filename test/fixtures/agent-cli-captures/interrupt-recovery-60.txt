@@ -1,0 +1,13 @@
+Agent update
+Outcome: indeterminate
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaa...
+Effects: unknown
+Operation: op_3333333333333333
+Previous build retained:
+  sha256:999999999999...
+Receipt: receipt_11111111111111111111111111111111
+Exit: 1
+Next action:
+  launchdeck operation reconcile op_3333333333333333

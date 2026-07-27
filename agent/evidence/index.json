@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "candidate": {
-    "buildIdentity": "sha256:2e81601051642d02a348e8440567212206a38265c722fbc31df8ad2a302b1a0a",
+    "buildIdentity": "sha256:c3e63a00e2cc305612582ec1191f4964c4b16456796a0b06b3b75473a1afa1c4",
     "compatibilityManifest": "agent/compatibility-manifest.json"
   },
   "claimBoundary": "Each entry is an exact evidence-cell reference. An entry whose candidateRelation is superseded cannot support a claim about the candidate above. This index has no aggregate host-release conclusion.",
@@ -33,10 +33,13 @@
     { "cellId": "CLAUDE-LIFECYCLE-LINUX-UNEXECUTED-48cc9c90", "path": "claude/linux/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
     { "cellId": "CLAUDE-INSTALL-ROUTING-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/routing.json", "candidateRelation": "superseded" },
     { "cellId": "CLAUDE-LIFECYCLE-MACOS-UNEXECUTED-48cc9c90", "path": "claude/macos/plugin-host/lifecycle.json", "candidateRelation": "superseded" },
-    { "cellId": "CROSS-HOST-WINDOWS-UNEXECUTED-48cc9c90", "path": "cross-host/windows/plugin-host/independence.json", "candidateRelation": "superseded" }
+    { "cellId": "CROSS-HOST-WINDOWS-UNEXECUTED-48cc9c90", "path": "cross-host/windows/plugin-host/independence.json", "candidateRelation": "superseded" },
+    { "cellId": "cell_0a6c7171de37eaa1d0211b40359d9401", "path": "agent-first/flask/lifecycle.json", "candidateRelation": "superseded" },
+    { "cellId": "cell_60fcf147abb6a42dde0612a7d9ce4f78", "path": "agent-first/linux/package.json", "candidateRelation": "superseded" },
+    { "cellId": "cell_d9e4f289599558dbe0bc8fa7b7de891d", "path": "agent-first/windows/package.json", "candidateRelation": "superseded" }
   ],
   "withheldClaims": [
-    "No recorded host evidence cell matches the current candidate; each required host/OS scenario remains explicitly unclaimed until rerun.",
+    "No recorded Host capability evidence cell matches the current candidate; Host-specific lifecycle claims remain explicitly unclaimed until rerun.",
     "Codex host lifecycle is not supported by the recorded Windows lifecycle cell.",
     "Claude fixture routing did not reach MCP dispatch because the inherited UserPromptSubmit hook is broken.",
     "Cross-host lifecycle and takeover were not executed.",

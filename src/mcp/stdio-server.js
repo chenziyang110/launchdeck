@@ -38,6 +38,7 @@ import { createCleanHandlers } from '../kernel/operations/clean.js';
 import { createOperationHandlers } from '../kernel/operations/operation.js';
 import { createProjectHandlers } from '../kernel/operations/project.js';
 import { createTaskHandlers, toTaskInventoryItem } from '../kernel/operations/task.js';
+import { createPublicInstallerReconciler } from '../agent/state/public-reconciliation.js';
 import { createDiagnosticWriter } from './diagnostics.js';
 import { AGENT_TOOLS } from './tool-projection.js';
 
@@ -95,6 +96,7 @@ export async function runStdioServer(options = {}) {
 
 function createMcpKernel({ env, provenance, compatibility }) {
   const journal = createOperationJournal({ env, lockWaitMs: 30_000 });
+  const installerReconciler = createPublicInstallerReconciler({ env, journal });
   const projectResolver = async ({ request, trustedContext, definition }) => {
     let projectRef = request.input.projectRef;
     if (!projectRef && ['operation.get', 'operation.reconcile'].includes(definition.name)) {
@@ -140,7 +142,10 @@ function createMcpKernel({ env, provenance, compatibility }) {
     }),
     ...createAdoptionHandlers(),
     ...createTaskHandlers(taskProviderOptions(env)),
-    ...createOperationHandlers({ journal }),
+    ...createOperationHandlers({
+      journal,
+      installerReconciler
+    }),
     ...createCleanHandlers({
       createPlan: async ({ project }) => buildSafeCleanPlan(loadRegisteredConfig(project), { env }),
       applySafe: async ({ project, plan }) => {

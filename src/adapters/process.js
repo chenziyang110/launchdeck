@@ -1,9 +1,11 @@
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import path from 'node:path';
 import { LaunchdeckError } from '../errors.js';
 
 const DEFAULT_STOP_TIMEOUT_MS = 2_000;
 const DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS = 750;
+const DEFAULT_PROCESS_TREE_TIMEOUT_MS = 10_000;
 const STOP_POLL_INTERVAL_MS = 50;
 const DEFAULT_CAPTURE_BYTES = 65_536;
 
@@ -209,6 +211,149 @@ export function getProcessEvidence(pid, options = {}) {
   return posixProcessEvidence(normalizedPid, { timeoutMs });
 }
 
+export function isProcessDescendant(descendantPid, ancestorPid, options = {}) {
+  const descendant = normalizePid(descendantPid);
+  const ancestor = normalizePid(ancestorPid);
+  if (descendant === ancestor) {
+    return false;
+  }
+  if ((options.platform ?? process.platform) === 'win32' && !options.getProcessEvidence) {
+    return isWindowsProcessDescendant(descendant, ancestor, options);
+  }
+
+  const maxDepth = Number.isInteger(options.maxDepth) && options.maxDepth > 0
+    ? Math.min(options.maxDepth, 128)
+    : 32;
+  const evidenceForPid = options.getProcessEvidence
+    ?? ((pid) => getProcessEvidence(pid, options.processEvidenceOptions));
+  const visited = new Set([descendant]);
+  let currentPid = descendant;
+
+  for (let depth = 0; depth < maxDepth; depth += 1) {
+    let evidence;
+    try {
+      evidence = evidenceForPid(currentPid);
+    } catch {
+      return false;
+    }
+    const parentPid = normalizePid(evidence?.parentPid, { allowMissing: true });
+    if (parentPid === undefined) {
+      return false;
+    }
+    if (parentPid === ancestor) {
+      return true;
+    }
+    if (parentPid <= 1 || visited.has(parentPid)) {
+      return false;
+    }
+    visited.add(parentPid);
+    currentPid = parentPid;
+  }
+
+  return false;
+}
+
+function isWindowsProcessDescendant(descendantPid, ancestorPid, options = {}) {
+  const source = `
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+public static class LaunchdeckProcessTree {
+  const uint SnapshotProcesses = 0x00000002;
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+  struct ProcessEntry {
+    public uint size;
+    public uint usage;
+    public uint processId;
+    public IntPtr defaultHeapId;
+    public uint moduleId;
+    public uint threadCount;
+    public uint parentProcessId;
+    public int basePriority;
+    public uint flags;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+    public string executable;
+  }
+  [DllImport("kernel32.dll", SetLastError = true)]
+  static extern IntPtr CreateToolhelp32Snapshot(uint flags, uint processId);
+  [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  static extern bool Process32First(IntPtr snapshot, ref ProcessEntry entry);
+  [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  static extern bool Process32Next(IntPtr snapshot, ref ProcessEntry entry);
+  [DllImport("kernel32.dll", SetLastError = true)]
+  static extern bool CloseHandle(IntPtr handle);
+  public static bool IsDescendant(int descendant, int ancestor, int maxDepth) {
+    var parents = new Dictionary<int, int>();
+    IntPtr snapshot = CreateToolhelp32Snapshot(SnapshotProcesses, 0);
+    if (snapshot == new IntPtr(-1)) return false;
+    try {
+      var entry = new ProcessEntry();
+      entry.size = (uint)Marshal.SizeOf(entry);
+      if (!Process32First(snapshot, ref entry)) return false;
+      do {
+        parents[(int)entry.processId] = (int)entry.parentProcessId;
+      } while (Process32Next(snapshot, ref entry));
+    } finally {
+      CloseHandle(snapshot);
+    }
+    var seen = new HashSet<int>();
+    int current = descendant;
+    for (int depth = 0; depth < maxDepth; depth++) {
+      int parent;
+      if (!parents.TryGetValue(current, out parent)) return false;
+      if (parent == ancestor) return true;
+      if (parent <= 1 || !seen.Add(parent)) return false;
+      current = parent;
+    }
+    return false;
+  }
+}`;
+  const maxDepth = Number.isInteger(options.maxDepth) && options.maxDepth > 0
+    ? Math.min(options.maxDepth, 128)
+    : 32;
+  const script = [
+    `$source = @'`,
+    source.trim(),
+    `'@`,
+    'Add-Type -TypeDefinition $source -ErrorAction Stop',
+    `[LaunchdeckProcessTree]::IsDescendant(${descendantPid}, ${ancestorPid}, ${maxDepth})`
+  ].join('\n');
+  const pwshScript = `
+$current = ${descendantPid}
+$ancestor = ${ancestorPid}
+$seen = [System.Collections.Generic.HashSet[int]]::new()
+$result = $false
+for ($depth = 0; $depth -lt ${maxDepth}; $depth++) {
+  try {
+    $process = Get-Process -Id $current -ErrorAction Stop
+    $parent = $process.Parent
+  } catch {
+    break
+  }
+  if ($null -eq $parent) { break }
+  $parentId = [int]$parent.Id
+  if ($parentId -eq $ancestor) {
+    $result = $true
+    break
+  }
+  if ($parentId -le 1 -or -not $seen.Add($parentId)) { break }
+  $current = $parentId
+}
+Write-Output $result
+`;
+  const result = runWindowsProcessTreeScript(
+    pwshScript,
+    script,
+    options.timeoutMs ?? DEFAULT_PROCESS_TREE_TIMEOUT_MS,
+    (candidate) => candidate.status === 0
+      && /^(true|false)$/i.test(candidate.stdout.trim())
+  );
+
+  return !result.error
+    && result.status === 0
+    && result.stdout.trim().toLowerCase() === 'true';
+}
+
 export function listPortListeners(options = {}) {
   const { port, platform = process.platform } = options;
   const normalizedPort = port === undefined ? undefined : normalizePort(port);
@@ -225,6 +370,7 @@ export async function stopProcessTree(pid, options = {}) {
     platform = process.platform,
     signal = 'SIGTERM',
     timeoutMs = DEFAULT_STOP_TIMEOUT_MS,
+    processTreeTimeoutMs = DEFAULT_PROCESS_TREE_TIMEOUT_MS,
     force = true
   } = options;
   const normalizedPid = normalizePid(pid);
@@ -238,11 +384,15 @@ export async function stopProcessTree(pid, options = {}) {
     };
   }
 
-  const method = platform === 'win32' ? 'taskkill' : 'process_group_signal';
+  const method = platform === 'win32' ? 'windows_process_tree' : 'process_group_signal';
+  let targetedPids = [normalizedPid];
 
   try {
     if (platform === 'win32') {
-      taskkillProcessTree(normalizedPid, { force });
+      targetedPids = terminateWindowsProcessTree(normalizedPid, {
+        force,
+        timeoutMs: processTreeTimeoutMs
+      });
     } else {
       signalPosixProcessTree(normalizedPid, signal);
     }
@@ -250,12 +400,13 @@ export async function stopProcessTree(pid, options = {}) {
     throw classifyStopFailure(error, normalizedPid, method);
   }
 
-  const stopped = await waitForNotRunning(normalizedPid, timeoutMs);
+  const stopped = await waitForPidsNotRunning(targetedPids, timeoutMs);
   if (!stopped) {
     throw new LaunchdeckError('stop_failed', 'Failed to stop managed process tree.', {
       pid: normalizedPid,
       method,
-      status: 'stop_failed'
+      status: 'stop_failed',
+      livePids: targetedPids.filter((targetPid) => isPidRunning(targetPid))
     });
   }
 
@@ -271,6 +422,8 @@ export function stopProcessTreeSync(pid, options = {}) {
   const {
     platform = process.platform,
     signal = 'SIGTERM',
+    timeoutMs = DEFAULT_STOP_TIMEOUT_MS,
+    processTreeTimeoutMs = DEFAULT_PROCESS_TREE_TIMEOUT_MS,
     force = true
   } = options;
   const normalizedPid = normalizePid(pid);
@@ -284,11 +437,15 @@ export function stopProcessTreeSync(pid, options = {}) {
     };
   }
 
-  const method = platform === 'win32' ? 'taskkill' : 'process_group_signal';
+  const method = platform === 'win32' ? 'windows_process_tree' : 'process_group_signal';
+  let targetedPids = [normalizedPid];
 
   try {
     if (platform === 'win32') {
-      taskkillProcessTree(normalizedPid, { force });
+      targetedPids = terminateWindowsProcessTree(normalizedPid, {
+        force,
+        timeoutMs: processTreeTimeoutMs
+      });
     } else {
       signalPosixProcessTree(normalizedPid, signal);
     }
@@ -296,11 +453,13 @@ export function stopProcessTreeSync(pid, options = {}) {
     throw classifyStopFailure(error, normalizedPid, method);
   }
 
+  const stopped = waitForPidsNotRunningSync(targetedPids, timeoutMs);
   return {
     pid: normalizedPid,
-    ok: !isPidRunning(normalizedPid),
-    status: isPidRunning(normalizedPid) ? 'stop_failed' : 'stopped',
-    method
+    ok: stopped,
+    status: stopped ? 'stopped' : 'stop_failed',
+    method,
+    ...(stopped ? {} : { livePids: targetedPids.filter((targetPid) => isPidRunning(targetPid)) })
   };
 }
 
@@ -468,7 +627,7 @@ function windowsProcessEvidence(pid, options = {}) {
   const result = spawnSync('powershell.exe', [
     '-NoProfile',
     '-Command',
-    `Get-CimInstance Win32_Process -Filter "ProcessId = ${pid}" | Select-Object ProcessId,CommandLine,ExecutablePath,CreationDate | ConvertTo-Json -Compress`
+    `Get-CimInstance Win32_Process -Filter "ProcessId = ${pid}" | Select-Object ProcessId,ParentProcessId,CommandLine,ExecutablePath,CreationDate | ConvertTo-Json -Compress`
   ], {
     encoding: 'utf8',
     timeout: options.timeoutMs ?? DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS,
@@ -490,6 +649,7 @@ function windowsProcessEvidence(pid, options = {}) {
     return {
       pid,
       alive: true,
+      parentPid: normalizePid(parsed.ParentProcessId, { allowMissing: true }),
       command: parsed.CommandLine ?? parsed.ExecutablePath,
       cwd: undefined,
       startTime: parsed.CreationDate,
@@ -507,7 +667,7 @@ function windowsProcessEvidence(pid, options = {}) {
 }
 
 function posixProcessEvidence(pid, options = {}) {
-  const result = spawnSync('ps', ['-p', String(pid), '-o', 'lstart=', '-o', 'command='], {
+  const result = spawnSync('ps', ['-p', String(pid), '-o', 'ppid=', '-o', 'lstart=', '-o', 'command='], {
     encoding: 'utf8',
     timeout: options.timeoutMs ?? DEFAULT_PROCESS_EVIDENCE_TIMEOUT_MS
   });
@@ -528,11 +688,12 @@ function posixProcessEvidence(pid, options = {}) {
   }
 
   const line = result.stdout.trim();
-  const match = line.match(/^([A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2}\s+\d{4})\s+(.+)$/);
+  const match = line.match(/^(\d+)\s+([A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2}\s+\d{4})\s+(.+)$/);
   return {
     ...evidence,
-    startTime: match?.[1],
-    command: match?.[2] ?? line
+    parentPid: normalizePid(match?.[1], { allowMissing: true }),
+    startTime: match?.[2],
+    command: match?.[3] ?? line
   };
 }
 
@@ -754,39 +915,207 @@ function dedupeListeners(listeners) {
   );
 }
 
-function taskkillProcessTree(pid, options = {}) {
-  const args = ['/PID', String(pid), '/T'];
-  if (options.force) {
-    args.push('/F');
+function terminateWindowsProcessTree(pid, options = {}) {
+  const maxDepth = Number.isInteger(options.maxDepth) && options.maxDepth > 0
+    ? Math.min(options.maxDepth, 128)
+    : 32;
+  const pwshScript = `
+$root = ${pid}
+$maxDepth = ${maxDepth}
+$self = Get-Process -Id $PID -ErrorAction Stop
+if ($null -eq $self.Parent) {
+  throw 'PowerShell process parent evidence is unavailable.'
+}
+$parents = @{}
+foreach ($item in Get-Process -ErrorAction SilentlyContinue) {
+  try {
+    $parent = $item.Parent
+    if ($null -ne $parent) {
+      $parents[[int]$item.Id] = [int]$parent.Id
+    }
+  } catch {}
+}
+$depths = @{}
+foreach ($processId in @($parents.Keys)) {
+  if ($processId -eq $root) { continue }
+  $seen = [System.Collections.Generic.HashSet[int]]::new()
+  $current = [int]$processId
+  for ($depth = 1; $depth -le $maxDepth; $depth++) {
+    if (-not $parents.ContainsKey($current)) { break }
+    $parentId = [int]$parents[$current]
+    if ($parentId -eq $root) {
+      $depths[$processId] = $depth
+      break
+    }
+    if ($parentId -le 1 -or -not $seen.Add($parentId)) { break }
+    $current = $parentId
   }
-
-  const result = spawnSync('taskkill', args, {
-    encoding: 'utf8',
-    timeout: options.timeoutMs ?? DEFAULT_STOP_TIMEOUT_MS,
-    windowsHide: true
-  });
-
-  if (result.error) {
-    if (result.error.code === 'ETIMEDOUT') {
-      try {
-        process.kill(pid);
-        if (waitForNotRunningSync(pid, options.timeoutMs ?? DEFAULT_STOP_TIMEOUT_MS)) {
-          return;
+}
+$ordered = @(
+  $depths.GetEnumerator()
+    | Sort-Object Value -Descending
+    | ForEach-Object { [int]$_.Key }
+)
+$ordered += $root
+Write-Output ($ordered -join ',')
+`;
+  const source = `
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+public static class LaunchdeckStopTree {
+  const uint SnapshotProcesses = 0x00000002;
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+  struct ProcessEntry {
+    public uint size;
+    public uint usage;
+    public uint processId;
+    public IntPtr defaultHeapId;
+    public uint moduleId;
+    public uint threadCount;
+    public uint parentProcessId;
+    public int basePriority;
+    public uint flags;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+    public string executable;
+  }
+  [DllImport("kernel32.dll", SetLastError = true)]
+  static extern IntPtr CreateToolhelp32Snapshot(uint flags, uint processId);
+  [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  static extern bool Process32First(IntPtr snapshot, ref ProcessEntry entry);
+  [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  static extern bool Process32Next(IntPtr snapshot, ref ProcessEntry entry);
+  [DllImport("kernel32.dll", SetLastError = true)]
+  static extern bool CloseHandle(IntPtr handle);
+  public static string DeepestFirst(int root, int maxDepth) {
+    var parents = new Dictionary<int, int>();
+    IntPtr snapshot = CreateToolhelp32Snapshot(SnapshotProcesses, 0);
+    if (snapshot == new IntPtr(-1)) return "";
+    try {
+      var entry = new ProcessEntry();
+      entry.size = (uint)Marshal.SizeOf(entry);
+      if (!Process32First(snapshot, ref entry)) return "";
+      do {
+        parents[(int)entry.processId] = (int)entry.parentProcessId;
+      } while (Process32Next(snapshot, ref entry));
+    } finally {
+      CloseHandle(snapshot);
+    }
+    var depths = new Dictionary<int, int>();
+    foreach (var processId in parents.Keys) {
+      if (processId == root) continue;
+      var seen = new HashSet<int>();
+      int current = processId;
+      for (int depth = 1; depth <= maxDepth; depth++) {
+        int parent;
+        if (!parents.TryGetValue(current, out parent)) break;
+        if (parent == root) {
+          depths[processId] = depth;
+          break;
         }
-      } catch {
-        // Surface the original taskkill timeout below.
+        if (parent <= 1 || !seen.Add(parent)) break;
+        current = parent;
       }
     }
+    var ordered = new List<int>(depths.Keys);
+    ordered.Sort((left, right) => depths[right].CompareTo(depths[left]));
+    ordered.Add(root);
+    return String.Join(",", ordered);
+  }
+}`;
+  const script = [
+    `$source = @'`,
+    source.trim(),
+    `'@`,
+    'Add-Type -TypeDefinition $source -ErrorAction Stop',
+    `[LaunchdeckStopTree]::DeepestFirst(${pid}, ${maxDepth})`
+  ].join('\n');
+  const result = runWindowsProcessTreeScript(
+    pwshScript,
+    script,
+    options.timeoutMs ?? DEFAULT_PROCESS_TREE_TIMEOUT_MS,
+    (candidate) => candidate.status === 0
+      && candidate.stdout
+        .trim()
+        .split(',')
+        .some((value) => Number(value.trim()) === pid)
+  );
+
+  if (result.error) {
     throw result.error;
   }
-
-  if (result.status !== 0 && isPidRunning(pid)) {
-    throw new LaunchdeckError('stop_failed', 'taskkill failed to stop the managed process tree.', {
+  if (result.status !== 0) {
+    throw new LaunchdeckError('stop_failed', 'Failed to enumerate the managed Windows process tree.', {
       pid,
       status: result.status,
       stderr: result.stderr?.trim()
     });
   }
+
+  const processIds = result.stdout
+    .trim()
+    .split(',')
+    .map((value) => normalizePid(value.trim(), { allowMissing: true }))
+    .filter((value) => value !== undefined);
+  if (!processIds.includes(pid)) {
+    processIds.push(pid);
+  }
+  for (const processId of processIds) {
+    try {
+      process.kill(processId, 'SIGTERM');
+    } catch (error) {
+      if (error?.code !== 'ESRCH') {
+        throw error;
+      }
+    }
+  }
+  return processIds;
+}
+
+function runWindowsProcessTreeScript(pwshScript, legacyScript, timeoutMs, acceptsModernResult) {
+  const env = windowsProcessInspectionEnv();
+  const startedAt = Date.now();
+  const modern = spawnSync('pwsh.exe', [
+    '-NoProfile',
+    '-NonInteractive',
+    '-EncodedCommand',
+    Buffer.from(pwshScript, 'utf16le').toString('base64')
+  ], {
+    encoding: 'utf8',
+    env,
+    timeout: timeoutMs,
+    windowsHide: true
+  });
+  if (!modern.error && acceptsModernResult(modern)) {
+    return modern;
+  }
+
+  const remainingTimeoutMs = Math.max(1, timeoutMs - (Date.now() - startedAt));
+  return spawnSync('powershell.exe', [
+    '-NoProfile',
+    '-NonInteractive',
+    '-EncodedCommand',
+    Buffer.from(legacyScript, 'utf16le').toString('base64')
+  ], {
+    encoding: 'utf8',
+    env,
+    timeout: remainingTimeoutMs,
+    windowsHide: true
+  });
+}
+
+function windowsProcessInspectionEnv() {
+  const env = { ...process.env };
+  const userProfile = process.env.HOMEDRIVE && process.env.HOMEPATH
+    ? path.win32.join(process.env.HOMEDRIVE, process.env.HOMEPATH)
+    : process.env.USERPROFILE;
+  if (userProfile) {
+    env.HOME = userProfile;
+    env.USERPROFILE = userProfile;
+    env.LOCALAPPDATA = path.win32.join(userProfile, 'AppData', 'Local');
+  }
+  delete env.XDG_STATE_HOME;
+  return env;
 }
 
 function signalPosixProcessTree(pid, signal) {
@@ -807,26 +1136,26 @@ function signalPosixProcessTree(pid, signal) {
   }
 }
 
-async function waitForNotRunning(pid, timeoutMs) {
+async function waitForPidsNotRunning(pids, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() <= deadline) {
-    if (!isPidRunning(pid)) {
+    if (pids.every((pid) => !isPidRunning(pid))) {
       return true;
     }
     await delay(STOP_POLL_INTERVAL_MS);
   }
-  return !isPidRunning(pid);
+  return pids.every((pid) => !isPidRunning(pid));
 }
 
-function waitForNotRunningSync(pid, timeoutMs) {
+function waitForPidsNotRunningSync(pids, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() <= deadline) {
-    if (!isPidRunning(pid)) {
+    if (pids.every((pid) => !isPidRunning(pid))) {
       return true;
     }
     sleepSync(STOP_POLL_INTERVAL_MS);
   }
-  return !isPidRunning(pid);
+  return pids.every((pid) => !isPidRunning(pid));
 }
 
 function classifyStopFailure(error, pid, method) {

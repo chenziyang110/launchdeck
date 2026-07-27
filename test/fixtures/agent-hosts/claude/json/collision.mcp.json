@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "launchdeck": {
+      "command": "old-launchdeck",
+      "args": ["serve"]
+    },
+    "keep": {
+      "command": "keep-server"
+    }
+  },
+  "metadata": {
+    "keep": true
+  }
+}

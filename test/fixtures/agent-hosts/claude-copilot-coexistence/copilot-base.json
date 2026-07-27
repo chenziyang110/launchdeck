@@ -1,0 +1,10 @@
+{
+  "metadata": {
+    "keep": "copilot-native"
+  },
+  "mcpServers": {
+    "other": {
+      "command": "other-server"
+    }
+  }
+}

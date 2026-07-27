@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "revision": "agent-host-matrix-contradictory-v1",
+  "rows": [
+    {
+      "rowId": "copilot-1.4.2-win32-skill-project-a",
+      "host": "github-copilot",
+      "exactVersion": "1.4.2",
+      "platform": "win32",
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".agents/skills/launchdeck-agent",
+      "dialect": "skill-directory",
+      "probe": "copilot --version --json",
+      "approvalBoundary": "none",
+      "fixtureRevision": "copilot-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    },
+    {
+      "rowId": "copilot-1.4.2-win32-skill-project-b",
+      "host": "github-copilot",
+      "exactVersion": "1.4.2",
+      "platform": "win32",
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".github/skills/launchdeck-agent",
+      "dialect": "legacy-skill-directory",
+      "probe": "copilot --version --json",
+      "approvalBoundary": "unknown",
+      "fixtureRevision": "contradictory-contract-v1",
+      "realHostEvidenceRevision": "synthetic-real-host-v1"
+    }
+  ],
+  "sharedMcpCoexistence": {
+    "enabled": false,
+    "provenPairs": []
+  }
+}

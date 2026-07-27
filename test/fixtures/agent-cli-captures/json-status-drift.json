@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "agent status",
+  "result": {
+    "outcome": "succeeded",
+    "effectCertainty": "none",
+    "scope": "project",
+    "projectIdentity": "<PROJECT>",
+    "buildIdentity": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "operationId": null,
+    "planDigest": null,
+    "receiptId": "receipt_11111111111111111111111111111111",
+    "targets": [
+      {
+        "targetId": "codex:project:mcp",
+        "state": "drifted",
+        "path": "<PROJECT>/.codex/config.toml"
+      }
+    ],
+    "health": [
+      {
+        "targetId": "codex:project:mcp",
+        "state": "drifted",
+        "severity": "warn"
+      }
+    ],
+    "effects": [],
+    "nextActions": [
+      {
+        "command": "launchdeck agent repair --yes",
+        "reason": "Restore receipt-owned Launchdeck content."
+      }
+    ]
+  }
+}

@@ -89,6 +89,65 @@ test('mismatched persisted spawn proof never upgrades unknown live ownership', (
   assert.equal(proof.trustedOwnershipProof, undefined);
 });
 
+test('transaction or project-root drift never upgrades trusted spawn ownership', () => {
+  const transactionDrift = activeRun();
+  transactionDrift.ownershipProof = {
+    ...trustedSpawnProof(transactionDrift),
+    transactionId: 'tx_other'
+  };
+  const projectDrift = activeRun();
+  projectDrift.ownershipProof = {
+    ...trustedSpawnProof(projectDrift),
+    projectRoot: `${projectDrift.projectRoot}-other`
+  };
+  const observation = (run) => proveRunOwnership(run, {
+    listeners: [{ port: 4321, protocol: 'tcp', pid: 1234, source: 'test' }],
+    processEvidence: { alive: true, source: 'liveness' },
+    checkedAt: '2026-07-08T00:01:00.000Z'
+  });
+
+  assert.equal(applyTrustedSpawnOwnership(transactionDrift, observation(transactionDrift)).confidence, OWNERSHIP_CONFIDENCE.UNKNOWN);
+  assert.equal(applyTrustedSpawnOwnership(projectDrift, observation(projectDrift)).confidence, OWNERSHIP_CONFIDENCE.UNKNOWN);
+});
+
+test('a listener in the verified run process tree can use trusted spawn ownership', () => {
+  const run = activeRun();
+  run.ownershipProof = trustedSpawnProof(run);
+  const observed = proveRunOwnership(run, {
+    listeners: [{ port: 4321, protocol: 'tcp', pid: 5678, source: 'test' }],
+    processEvidence: { alive: true, source: 'liveness' },
+    isProcessDescendant: (descendantPid, ancestorPid) =>
+      descendantPid === 5678 && ancestorPid === 1234,
+    checkedAt: '2026-07-08T00:01:00.000Z'
+  });
+
+  const proof = applyTrustedSpawnOwnership(run, observed);
+
+  assert.equal(observed.confidence, OWNERSHIP_CONFIDENCE.UNKNOWN);
+  assert.equal(observed.listenerPidsDescendFromRun, true);
+  assert.ok(observed.reasons.includes('listener_pid_descends_from_run'));
+  assert.equal(proof.confidence, OWNERSHIP_CONFIDENCE.VERIFIED_OWNED);
+  assert.equal(proof.trustedOwnershipProof, run.ownershipProof);
+});
+
+test('an unrelated listener remains external when no descendant chain is proven', () => {
+  const run = activeRun();
+  run.ownershipProof = trustedSpawnProof(run);
+  const observed = proveRunOwnership(run, {
+    listeners: [{ port: 4321, protocol: 'tcp', pid: 5678, source: 'test' }],
+    processEvidence: { alive: true, source: 'liveness' },
+    isProcessDescendant: () => false,
+    checkedAt: '2026-07-08T00:01:00.000Z'
+  });
+
+  const proof = applyTrustedSpawnOwnership(run, observed);
+
+  assert.equal(proof.confidence, OWNERSHIP_CONFIDENCE.EXTERNAL);
+  assert.equal(proof.listenerPidsDescendFromRun, false);
+  assert.ok(proof.reasons.includes('listener_pid_differs_from_run'));
+  assert.equal(proof.trustedOwnershipProof, undefined);
+});
+
 test('unknown declared ownership stays unknown in port observation conflicts', () => {
   const observation = buildPortObservation({
     port: 4321,

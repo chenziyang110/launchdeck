@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -7,6 +8,9 @@ const LOCK_RECORD_VERSION = 1;
 const DEFAULT_TTL_MS = 30_000;
 const DEFAULT_WAIT_MS = 0;
 const RETRY_INTERVAL_MS = 10;
+const PROCESS_START_EVIDENCE = new Date(
+  Date.now() - Math.max(0, process.uptime() * 1_000)
+).toISOString();
 
 export const MUTATION_LOCK_ORDER = Object.freeze([
   'operation',
@@ -32,13 +36,14 @@ export async function acquireLock(options = {}) {
       lockName,
       ownerCommand: options.ownerCommand,
       ownerCwd: options.ownerCwd,
+      ownerStartEvidence: options.ownerStartEvidence,
       transactionId: options.transactionId,
       ttlMs
     });
 
     try {
       await writeLockFile(lockPath, record);
-      return createLockHandle({ lockName, lockPath, record });
+      return createLockHandle({ lockName, lockPath, record, ttlMs });
     } catch (error) {
       if (error?.code !== 'EEXIST') {
         throw error;
@@ -47,7 +52,18 @@ export async function acquireLock(options = {}) {
 
     const owner = await readExistingLock(lockPath, lockName);
     const stale = isStaleCandidate(owner);
-    const takeoverAllowed = stale && !isOwnerAlive(owner);
+    const ownerAlive = stale ? isOwnerAlive(owner) : true;
+    const takeoverAllowed = stale && (
+      typeof options.takeoverPolicy === 'function'
+        ? await allowsTakeover(options.takeoverPolicy, {
+          lockName,
+          lockPath,
+          owner: publicLockRecord(owner),
+          staleCandidate: stale,
+          ownerAlive
+        })
+        : !ownerAlive
+    );
 
     if (takeoverAllowed) {
       await removeLockFile(lockPath);
@@ -85,6 +101,7 @@ export function acquireLockSync(options = {}) {
     lockName,
     ownerCommand: options.ownerCommand,
     ownerCwd: options.ownerCwd,
+    ownerStartEvidence: options.ownerStartEvidence,
     transactionId: options.transactionId,
     ttlMs
   });
@@ -186,7 +203,14 @@ export function controlPlanePaths(env = process.env) {
   };
 }
 
-function createLockRecord({ lockName, ownerCommand, ownerCwd, transactionId, ttlMs }) {
+function createLockRecord({
+  lockName,
+  ownerCommand,
+  ownerCwd,
+  ownerStartEvidence,
+  transactionId,
+  ttlMs
+}) {
   const createdAt = new Date();
   const expiresAt = new Date(createdAt.getTime() + ttlMs);
 
@@ -194,10 +218,13 @@ function createLockRecord({ lockName, ownerCommand, ownerCwd, transactionId, ttl
     version: LOCK_RECORD_VERSION,
     lockName,
     ownerPid: process.pid,
+    ownershipToken: crypto.randomBytes(24).toString('hex'),
     ownerCommand: String(ownerCommand ?? process.argv.join(' ')),
     ownerCwd: path.resolve(ownerCwd ?? process.cwd()),
+    ownerStartEvidence: String(ownerStartEvidence ?? PROCESS_START_EVIDENCE),
     transactionId: transactionId === undefined ? undefined : String(transactionId),
     createdAt: createdAt.toISOString(),
+    heartbeatAt: createdAt.toISOString(),
     expiresAt: expiresAt.toISOString()
   };
 }
@@ -211,13 +238,38 @@ async function writeLockFile(lockPath, record) {
   }
 }
 
-function createLockHandle({ lockName, lockPath, record }) {
+function createLockHandle({ lockName, lockPath, record, ttlMs }) {
   let released = false;
 
   return {
     lockName,
     lockPath,
     record,
+    async assertOwned() {
+      if (released) throw lockLostError(lockName, lockPath, record);
+      const current = await readExistingLock(lockPath, lockName);
+      if (!isSameOwner(current, record)) {
+        throw lockLostError(lockName, lockPath, record, current);
+      }
+      return true;
+    },
+    async renew() {
+      if (released) throw lockLostError(lockName, lockPath, record);
+      const current = await readExistingLock(lockPath, lockName);
+      if (!isSameOwner(current, record)) {
+        throw lockLostError(lockName, lockPath, record, current);
+      }
+      const heartbeatAt = new Date();
+      const renewed = {
+        ...current,
+        heartbeatAt: heartbeatAt.toISOString(),
+        expiresAt: new Date(heartbeatAt.getTime() + ttlMs).toISOString()
+      };
+      await replaceOwnedLockFile(lockPath, record, renewed);
+      record.heartbeatAt = renewed.heartbeatAt;
+      record.expiresAt = renewed.expiresAt;
+      return Object.freeze({ ...renewed });
+    },
     async release() {
       if (released) {
         return;
@@ -268,6 +320,7 @@ async function readExistingLock(lockPath, lockName) {
       ownerPid: undefined,
       ownerCommand: 'unknown',
       ownerCwd: 'unknown',
+      ownerStartEvidence: undefined,
       transactionId: undefined,
       createdAt: undefined,
       expiresAt: undefined,
@@ -288,6 +341,7 @@ function readExistingLockSync(lockPath, lockName) {
       ownerPid: undefined,
       ownerCommand: 'unknown',
       ownerCwd: 'unknown',
+      ownerStartEvidence: undefined,
       transactionId: undefined,
       createdAt: undefined,
       expiresAt: undefined,
@@ -309,8 +363,14 @@ function normalizeExistingRecord(record, fallbackLockName) {
     version: record.version,
     lockName: String(record.lockName ?? fallbackLockName),
     ownerPid: Number.isInteger(record.ownerPid) ? record.ownerPid : undefined,
+    ownershipToken: typeof record.ownershipToken === 'string'
+      ? record.ownershipToken
+      : undefined,
     ownerCommand: typeof record.ownerCommand === 'string' ? record.ownerCommand : 'unknown',
     ownerCwd: typeof record.ownerCwd === 'string' ? record.ownerCwd : 'unknown',
+    ownerStartEvidence: typeof record.ownerStartEvidence === 'string'
+      ? record.ownerStartEvidence
+      : undefined,
     transactionId: typeof record.transactionId === 'string' ? record.transactionId : undefined,
     createdAt: typeof record.createdAt === 'string' ? record.createdAt : undefined,
     expiresAt: typeof record.expiresAt === 'string' ? record.expiresAt : undefined,
@@ -340,11 +400,63 @@ function isOwnerAlive(owner) {
   }
 }
 
+async function allowsTakeover(policy, evidence) {
+  if (typeof policy !== 'function') return true;
+  try {
+    const decision = await policy(Object.freeze({ ...evidence }));
+    return decision === true || decision?.allowed === true;
+  } catch {
+    return false;
+  }
+}
+
 function isSameOwner(current, expected) {
   return current?.lockName === expected.lockName
     && current?.ownerPid === expected.ownerPid
+    && current?.ownershipToken === expected.ownershipToken
     && current?.transactionId === expected.transactionId
     && current?.createdAt === expected.createdAt;
+}
+
+async function replaceOwnedLockFile(lockPath, expected, next) {
+  let handle;
+  try {
+    handle = await fs.open(lockPath, 'r+');
+    const current = normalizeExistingRecord(
+      JSON.parse(await handle.readFile('utf8')),
+      expected.lockName
+    );
+    if (!isSameOwner(current, expected)) {
+      throw lockLostError(expected.lockName, lockPath, expected, current);
+    }
+    const content = `${JSON.stringify(next, null, 2)}\n`;
+    await handle.write(content, 0, 'utf8');
+    await handle.truncate(Buffer.byteLength(content));
+    await handle.sync();
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      throw lockLostError(expected.lockName, lockPath, expected);
+    }
+    throw error;
+  } finally {
+    await handle?.close();
+  }
+}
+
+function lockLostError(lockName, lockPath, expected, current = undefined) {
+  const error = new Error(`Lock '${lockName}' ownership was lost.`);
+  error.name = 'LaunchdeckLockError';
+  error.code = 'lock_lost';
+  error.effectCertainty = 'unknown';
+  error.details = {
+    lockName,
+    lockPath,
+    expectedOwnerPid: expected?.ownerPid,
+    currentOwnerPid: current?.ownerPid,
+    ownershipChanged: !isSameOwner(current, expected)
+  };
+  error.next = nextActions(lockName);
+  return error;
 }
 
 async function removeLockFile(lockPath) {
@@ -364,12 +476,18 @@ function lockBusyError({ lockName, lockPath, owner, staleCandidate, takeoverAllo
   error.details = {
     lockName,
     lockPath,
-    owner,
+    owner: publicLockRecord(owner),
     staleCandidate,
     takeoverAllowed
   };
   error.next = nextActions(lockName);
   return error;
+}
+
+function publicLockRecord(owner) {
+  if (!owner || typeof owner !== 'object') return owner;
+  const { ownershipToken: _ownershipToken, ...publicOwner } = owner;
+  return publicOwner;
 }
 
 function nextActions(lockName) {
