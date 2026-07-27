@@ -257,7 +257,7 @@ test('inspect-port reports conflict with listener PID evidence and stays unknown
             task: 'dev',
             command: 'node scripts/dev.js',
             cwd: fixture.projectRoot,
-            pid: 1,
+            pid: 2_147_483_647,
             status: 'running',
             declaredPorts: [port],
             logPath: fixture.path('.launchdeck', 'logs', 'dev.log'),
