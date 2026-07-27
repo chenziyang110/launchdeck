@@ -97,16 +97,20 @@ test('rejected staged symlink records bounded quarantine metadata without follow
   }
   const store = createArtifactStore({ env: fixture.env });
 
-  const error = assert.throws(
+  let installError;
+  assert.throws(
     () => store.install({
       operationId: 'op_0123456789abcdef',
       payloadRoot: fixture.payloadRoot,
       manifest
     }),
-    { code: 'agent_artifact_integrity_failed' }
+    (error) => {
+      installError = error;
+      return error?.code === 'agent_artifact_integrity_failed';
+    }
   );
-  assert.equal(error.details.sourceIntegrityCode, 'agent_payload_symlink_unsupported');
-  assert.equal(fs.existsSync(error.details.quarantinePath), true);
+  assert.equal(installError.details.sourceIntegrityCode, 'agent_payload_symlink_unsupported');
+  assert.equal(fs.existsSync(installError.details.quarantinePath), true);
   const entries = store.listQuarantine();
   assert.equal(entries.length, 1);
   assert.equal(entries[0].reason, 'payload-symlink-unsupported');
@@ -116,7 +120,7 @@ test('rejected staged symlink records bounded quarantine metadata without follow
     reason: 'symlink-unsupported'
   }]);
   assert.deepEqual(
-    fs.readdirSync(error.details.quarantinePath),
+    fs.readdirSync(installError.details.quarantinePath),
     ['quarantine.json']
   );
 });

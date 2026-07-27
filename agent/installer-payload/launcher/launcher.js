@@ -2,7 +2,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 const BUILD_IDENTITY_PATTERN = /^sha256:[0-9a-f]{64}$/;
 const RUNTIME_ENTRYPOINT = 'runtime/launchdeck-mcp.mjs';
@@ -164,49 +164,18 @@ function resolveRuntime(buildIdentity) {
   return containedPath(buildPath, runtimeEntry.path);
 }
 
-function runRuntime(runtimePath, request) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      process.execPath,
-      [runtimePath, ...request.runtimeArgs],
-      {
-        stdio: 'inherit',
-        shell: false,
-        windowsHide: true,
-        env: {
-          ...process.env,
-          LAUNCHDECK_BUILD_IDENTITY: request.buildIdentity
-        }
-      }
+async function runRuntime(runtimePath, request) {
+  process.env.LAUNCHDECK_BUILD_IDENTITY = request.buildIdentity;
+  process.argv = [process.execPath, runtimePath, ...request.runtimeArgs];
+  try {
+    await import(pathToFileURL(runtimePath).href);
+  } catch (error) {
+    throw launcherError(
+      'agent_launcher_start_failed',
+      error?.message ?? 'Pinned runtime could not start.'
     );
-    const forward = (signal) => {
-      if (!child.killed) child.kill(signal);
-    };
-    const forwardInterrupt = () => forward('SIGINT');
-    const forwardTerminate = () => forward('SIGTERM');
-    process.once('SIGINT', forwardInterrupt);
-    process.once('SIGTERM', forwardTerminate);
-    child.once('error', (error) => {
-      removeSignalHandlers(forwardInterrupt, forwardTerminate);
-      reject(launcherError(
-        'agent_launcher_start_failed',
-        error?.message ?? 'Pinned runtime could not start.'
-      ));
-    });
-    child.once('exit', (code, signal) => {
-      removeSignalHandlers(forwardInterrupt, forwardTerminate);
-      if (signal) {
-        resolve(1);
-        return;
-      }
-      resolve(Number.isInteger(code) ? code : 1);
-    });
-  });
-}
-
-function removeSignalHandlers(interruptHandler, terminateHandler) {
-  process.removeListener('SIGINT', interruptHandler);
-  process.removeListener('SIGTERM', terminateHandler);
+  }
+  return Number.isInteger(process.exitCode) ? process.exitCode : 0;
 }
 
 function readManifest(manifestPath) {

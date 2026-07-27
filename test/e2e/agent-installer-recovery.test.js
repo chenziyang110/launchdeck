@@ -364,16 +364,18 @@ test('public reconciliation observes only canonical current-receipt-owned paths 
 });
 
 function createRecoveryFixture(t, scenario) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-${scenario.id}-`));
+  const createdRoot = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-${scenario.id}-`));
+  const createdProject = path.join(createdRoot, 'project');
+  fs.mkdirSync(createdProject, { recursive: true });
+  const project = fs.realpathSync.native(createdProject);
+  const root = path.dirname(project);
   const home = path.join(root, 'home');
-  const project = path.join(root, 'project');
-  fs.mkdirSync(project, { recursive: true });
   const env = { LAUNCHDECK_HOME: home, HOME: path.join(root, 'user') };
   const clock = () => new Date('2026-07-23T12:00:00.000Z');
   const journal = createOperationJournal({ env, clock, eventWriter: async () => {} });
   const receiptStore = createReceiptStore({ env, clock });
   const backupStore = createBackupStore({ env, clock });
-  const scope = resolveInstallationScope({ scope: 'project', projectRoot: fs.realpathSync.native(project) });
+  const scope = resolveInstallationScope({ scope: 'project', projectRoot: project });
   const counters = { apply: 0, rollback: 0, verify: 0 };
   const trace = [];
   const previousReceipt = receiptStore.commit(previousReceiptCandidate(scope));

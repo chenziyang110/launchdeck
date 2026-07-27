@@ -1,18 +1,18 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:2d369bc859e30a74f7c1a8776dcd9e00281b48d86cd9ddff06085dcfb513173d",
+  "buildIdentity": "sha256:c3e63a00e2cc305612582ec1191f4964c4b16456796a0b06b3b75473a1afa1c4",
   "packageVersion": "0.2.0",
   "nodeRange": ">=20",
   "files": [
     {
       "path": "compatibility.json",
       "bytes": 4640,
-      "sha256": "sha256:ce7912039a39484efff7af1230587e772f5b70a88fd3f2ac85f56149771cd5f7"
+      "sha256": "sha256:baaee0cef1f60bb10dbee9653e8f293b55585fea2100935ad3744b68b0d8436b"
     },
     {
       "path": "launcher/launchdeck-mcp",
-      "bytes": 168,
-      "sha256": "sha256:6c7dd79533f03f9fcd84b7f73ce865422f2bb500de7a12a6626fee2995d2a57e"
+      "bytes": 284,
+      "sha256": "sha256:513d9877fcb2e0449c033ce39e59b0b819e7ac1e858656377bcbdd46e89a64aa"
     },
     {
       "path": "launcher/launchdeck-mcp.cmd",
@@ -21,8 +21,8 @@
     },
     {
       "path": "launcher/launcher.js",
-      "bytes": 11472,
-      "sha256": "sha256:0a698d2304b696d5520ff8c8f6f51296e2cdc0b2a5236fcbf37e0a70e16459d4"
+      "bytes": 10598,
+      "sha256": "sha256:b8c2c3e3a83a0af5d0a44a28cf123d77ad3e38aff607e877f920ebb53ab51a02"
     },
     {
       "path": "runtime/launchdeck-mcp.mjs",

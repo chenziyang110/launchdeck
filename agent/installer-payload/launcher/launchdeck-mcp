@@ -1,3 +1,7 @@
 #!/bin/sh
-LAUNCHDECK_LAUNCHER_DIR=$(CDPATH= cd -P -- "$(dirname -- "$0")" && pwd) || exit 1
+LAUNCHDECK_LAUNCHER_DIR=${0%/*}
+if [ "$LAUNCHDECK_LAUNCHER_DIR" = "$0" ]; then
+  LAUNCHDECK_LAUNCHER_DIR=.
+fi
+LAUNCHDECK_LAUNCHER_DIR=$(CDPATH= cd -P -- "$LAUNCHDECK_LAUNCHER_DIR" && pwd) || exit 1
 exec "${LAUNCHDECK_NODE:-node}" "$LAUNCHDECK_LAUNCHER_DIR/launcher.js" "$@"

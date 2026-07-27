@@ -3,13 +3,17 @@ import os from 'node:os';
 import path from 'node:path';
 
 export function createIsolatedStateFixture(testContext, label) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-${safeLabel(label)}-`));
-  const launchdeckHome = path.join(root, 'launchdeck-home');
-  const projectRoot = path.join(root, 'project');
-  const userRoot = path.join(root, 'user');
-  fs.mkdirSync(launchdeckHome, { recursive: true });
-  fs.mkdirSync(projectRoot, { recursive: true });
-  fs.mkdirSync(userRoot, { recursive: true });
+  const createdRoot = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-${safeLabel(label)}-`));
+  const createdLaunchdeckHome = path.join(createdRoot, 'launchdeck-home');
+  const createdProjectRoot = path.join(createdRoot, 'project');
+  const createdUserRoot = path.join(createdRoot, 'user');
+  fs.mkdirSync(createdLaunchdeckHome, { recursive: true });
+  fs.mkdirSync(createdProjectRoot, { recursive: true });
+  fs.mkdirSync(createdUserRoot, { recursive: true });
+  const launchdeckHome = fs.realpathSync.native(createdLaunchdeckHome);
+  const projectRoot = fs.realpathSync.native(createdProjectRoot);
+  const userRoot = fs.realpathSync.native(createdUserRoot);
+  const root = path.dirname(projectRoot);
 
   let cleaned = false;
   testContext.after(() => {

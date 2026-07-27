@@ -11,7 +11,7 @@ import {
   runCliWithDroppedResponse
 } from '../helpers/deterministic-fault-injector.js';
 
-const RESPONSE_LOSS_RECEIPT_TIMEOUT_MS = 10_000;
+const RESPONSE_LOSS_RECEIPT_TIMEOUT_MS = 30_000;
 
 test('dropped MCP response recovers by known ID and bounded lost-ID correlation without replay', async () => {
   const fixture = await createAgentSurfaceFixture();

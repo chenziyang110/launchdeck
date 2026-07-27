@@ -444,11 +444,14 @@ const PACKAGED_BUILD_IDENTITY = JSON.parse(
 const MATRIX_REVISION = `sha256:${'b'.repeat(64)}`;
 
 function createWorkspace(t, label) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-planner-${label}-`));
-  const projectRoot = path.join(root, 'project');
-  const homeDir = path.join(root, 'home');
-  fs.mkdirSync(projectRoot, { recursive: true });
-  fs.mkdirSync(homeDir, { recursive: true });
+  const createdRoot = fs.mkdtempSync(path.join(os.tmpdir(), `launchdeck-planner-${label}-`));
+  const createdProjectRoot = path.join(createdRoot, 'project');
+  const createdHomeDir = path.join(createdRoot, 'home');
+  fs.mkdirSync(createdProjectRoot, { recursive: true });
+  fs.mkdirSync(createdHomeDir, { recursive: true });
+  const projectRoot = fs.realpathSync.native(createdProjectRoot);
+  const homeDir = fs.realpathSync.native(createdHomeDir);
+  const root = path.dirname(projectRoot);
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return {
     root,

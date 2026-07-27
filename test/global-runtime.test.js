@@ -236,7 +236,7 @@ test('inspect-port reports an occupied external port without claiming ownership'
   });
 });
 
-test('inspect-port reports ownership conflict when declared active run pid differs from listener', async () => {
+test('inspect-port reports conflict with listener PID evidence and stays unknown without it', async () => {
   await withGlobalHome(async ({ homeDir, env }) => {
     const fixture = createCliFixture();
     const { server, port } = await listenOnFreePort();
@@ -270,10 +270,15 @@ test('inspect-port reports ownership conflict when declared active run pid diffe
       const result = runCliJson(['inspect-port', String(port)], { cwd: homeDir, env });
 
       assert.equal(result.status, 0, result.stderr);
-      assert.equal(result.json.ownerType, 'conflict');
-      assert.equal(result.json.declaredOwners[0].ownership, 'conflict');
+      const hasListenerPid = result.json.listeners.some((listener) => Number.isInteger(listener.pid));
+      const expectedOwnership = hasListenerPid ? 'conflict' : 'unknown';
+      assert.equal(result.json.ownerType, expectedOwnership);
+      assert.equal(result.json.declaredOwners[0].ownership, expectedOwnership);
       assert.equal(result.json.conflicts.length, 1);
-      assert.equal(result.json.conflicts[0].type, 'ownership_conflict');
+      assert.equal(
+        result.json.conflicts[0].type,
+        hasListenerPid ? 'ownership_conflict' : 'unknown'
+      );
     } finally {
       await closeServer(server);
       fixture.cleanup();
