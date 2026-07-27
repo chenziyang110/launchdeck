@@ -95,7 +95,7 @@ test('npm package exposes the existing CLI, MCP, Skill, and build surfaces', () 
   assert.ok(packageJson.files.includes('.agents/skills/launchdeck-agent/'));
   assert.ok(packageJson.files.includes('agent/compatibility-manifest.json'));
   assert.equal(packageJson.scripts['agent:build'], 'node scripts/build-agent-plugins.js');
-  assert.equal(packageJson.scripts.test, 'node --test --test-concurrency=1 "test/**/*.test.js"');
+  assert.equal(packageJson.scripts.test, 'node scripts/run-tests.js');
 });
 
 test('Flask demo keeps source configuration without persisted Launchdeck runtime state', () => {

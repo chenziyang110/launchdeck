@@ -8,7 +8,8 @@ test('release metadata keeps system tests deterministic and the npm payload boun
   const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 
   assert.equal(packageJson.scripts.check, 'node scripts/check-syntax.js');
-  assert.equal(packageJson.scripts.test, 'node --test --test-concurrency=1 "test/**/*.test.js"');
+  assert.equal(packageJson.scripts.test, 'node scripts/run-tests.js');
+  assert.equal(fs.existsSync(path.join(repoRoot, 'scripts', 'run-tests.js')), true);
   assert.deepEqual(packageJson.files, [
     'src/',
     'schema/',

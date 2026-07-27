@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "check": "node scripts/check-syntax.js",
-    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "test": "node scripts/run-tests.js",
     "test:e2e": "node scripts/run-e2e-tests.js",
     "agent:build": "node scripts/build-agent-plugins.js",
     "prepack": "node scripts/build-agent-plugins.js --installer-payload",
