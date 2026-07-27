@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "provenPairs": [],
+  "reason": "No exact Claude Code and Copilot CLI version pair has maintained coexistence evidence."
+}

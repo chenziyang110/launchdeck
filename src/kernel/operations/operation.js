@@ -1,6 +1,7 @@
 export function createOperationHandlers(options = {}) {
   const journal = requireJournal(options.journal);
   const reconcileRecord = options.reconcileRecord ?? (async () => null);
+  const reconcileInstaller = normalizeInstallerReconciler(options.installerReconciler);
 
   return Object.freeze({
     'operation.get': async ({ request }) => {
@@ -61,26 +62,78 @@ export function createOperationHandlers(options = {}) {
       } catch (error) {
         return operationReadFailure(operationId, error);
       }
+      if (original.installer?.kind === 'agent-installer' && reconcileInstaller) {
+        await reconcileInstaller({
+          operationId,
+          inputDigest: original.inputDigest,
+          context
+        });
+        const recovered = await journal.get(operationId);
+        return operationRecordResult(recovered, outcomeForRecovered(operationId, recovered));
+      }
       const recovered = await journal.recover({
         operationId,
         inputDigest: original.inputDigest,
         reconcile: (record) => reconcileRecord(record, context)
       });
       const unresolved = !['succeeded', 'failed', 'refused', 'reconciled'].includes(recovered.state);
+      const reconciledPartial = recovered.state === 'reconciled'
+        && recovered.resolvedOutcome === 'partial';
       return operationRecordResult(recovered, unresolved
         ? {
             kind: 'indeterminate',
             code: 'operation_still_indeterminate',
             message: `Operation '${operationId}' remains unresolved.`
           }
-        : {
-            code: recovered.state === 'reconciled' ? 'operation_reconciled' : 'operation_already_terminal',
-            message: recovered.state === 'reconciled'
-              ? `Operation '${operationId}' was reconciled from evidence.`
-              : `Operation '${operationId}' was already terminal.`
-          });
+        : reconciledPartial
+          ? {
+              kind: 'partial',
+              code: 'operation_reconciled_partial',
+              message: `Operation '${operationId}' was reconciled with known remaining effects.`
+            }
+          : {
+              code: recovered.state === 'reconciled' ? 'operation_reconciled' : 'operation_already_terminal',
+              message: recovered.state === 'reconciled'
+                ? `Operation '${operationId}' was reconciled from evidence.`
+                : `Operation '${operationId}' was already terminal.`
+            });
     }
   });
+}
+
+function normalizeInstallerReconciler(value) {
+  if (value === undefined || value === null) return null;
+  if (typeof value === 'function') return value;
+  if (typeof value.reconcile === 'function') {
+    return (input) => value.reconcile(input);
+  }
+  throw new TypeError('installerReconciler must be a function or expose reconcile().');
+}
+
+function outcomeForRecovered(operationId, recovered) {
+  const unresolved = !['succeeded', 'failed', 'refused', 'reconciled'].includes(recovered.state);
+  if (unresolved) {
+    return {
+      kind: 'indeterminate',
+      code: 'operation_still_indeterminate',
+      message: `Operation '${operationId}' remains unresolved.`
+    };
+  }
+  if (recovered.state === 'reconciled' && recovered.resolvedOutcome === 'partial') {
+    return {
+      kind: 'partial',
+      code: 'operation_reconciled_partial',
+      message: `Operation '${operationId}' was reconciled with known remaining effects.`
+    };
+  }
+  return {
+    code: recovered.state === 'reconciled'
+      ? 'operation_reconciled'
+      : 'operation_already_terminal',
+    message: recovered.state === 'reconciled'
+      ? `Operation '${operationId}' was reconciled from evidence.`
+      : `Operation '${operationId}' was already terminal.`
+  };
 }
 
 function operationReadFailure(operationId, error) {
@@ -161,6 +214,7 @@ function correlationFor(records) {
 
 function operationRecordResult(record, outcome = {}) {
   const unresolved = !['succeeded', 'failed', 'refused', 'reconciled'].includes(record.state);
+  const uncertain = ['indeterminate', 'partial'].includes(outcome.kind);
   return {
     journalStatus: record.state,
     outcome: {
@@ -179,11 +233,11 @@ function operationRecordResult(record, outcome = {}) {
       data: { record }
     },
     effects: {
-      certainty: 'none',
-      changed: false,
+      certainty: uncertain ? record.effectsCertainty : 'none',
+      changed: uncertain && record.effectsCertainty !== 'none',
       evidenceRefs: record.effectEvidenceRefs ?? []
     },
-    error: outcome.kind === 'indeterminate'
+    error: uncertain
       ? { code: outcome.code, message: outcome.message, details: { journalState: record.state } }
       : null,
     nextActions: unresolved

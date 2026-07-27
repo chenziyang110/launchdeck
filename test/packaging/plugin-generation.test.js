@@ -55,6 +55,13 @@ test('Codex and Claude artifacts have exact separate inventories with byte-ident
   }
 });
 
+test('generated runtimes contain no trailing whitespace', () => {
+  for (const host of ['codex', 'claude']) {
+    const runtime = fs.readFileSync(path.join(first.outputDir, host, 'runtime', 'launchdeck-mcp.mjs'), 'utf8');
+    assert.equal(/^.*[\t ]+$/m.test(runtime), false, host);
+  }
+});
+
 test('compatibility and integrity files bind runtime, canonical Skill, and every shipped byte', () => {
   const canonicalSkill = createSkillContentManifest(path.join(repoRoot, '.agents', 'skills', 'launchdeck-agent'));
   for (const host of ['codex', 'claude']) {

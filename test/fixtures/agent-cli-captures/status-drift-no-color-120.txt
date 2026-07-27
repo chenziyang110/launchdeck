@@ -1,0 +1,11 @@
+Agent status
+Outcome: succeeded
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Effects: none
+Health: drifted warn
+Target: codex project mcp expected owned digest differs from live digest
+Receipt: receipt_11111111111111111111111111111111
+Exit: 0
+Next action: launchdeck agent repair --yes

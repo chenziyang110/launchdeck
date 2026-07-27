@@ -1,0 +1,11 @@
+Agent setup
+Outcome: cancelled
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaa...
+Effects: none
+Receipt: none
+No files changed.
+Exit: 0
+Next action:
+  launchdeck agent setup --dry-run

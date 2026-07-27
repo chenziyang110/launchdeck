@@ -1,0 +1,14 @@
+Agent doctor
+Outcome: refused
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaa...
+Effects: none
+Health: divergent error
+Target:
+  codex project mcp has non-Launchdeck content
+Receipt:
+  receipt_11111111111111111111111111111111
+Exit: 1
+Next action:
+  launchdeck agent status --json

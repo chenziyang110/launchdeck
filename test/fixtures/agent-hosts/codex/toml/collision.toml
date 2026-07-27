@@ -1,0 +1,8 @@
+# keep this comment
+[mcp_servers.launchdeck]
+command = "old-launchdeck"
+args = ["serve"]
+cwd = "C:\\work\\collision"
+
+[mcp_servers.keep]
+command = "keep-server"

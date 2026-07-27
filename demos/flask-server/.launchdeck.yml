@@ -1,0 +1,23 @@
+version: 1
+project:
+  name: launchdeck-flask-demo
+tasks:
+  start:
+    command: python -m flask_demo
+    description: Start the local Flask Notes webpage
+    risk: low
+    longRunning: true
+    url: http://127.0.0.1:5055
+    ports:
+      - 5055
+    log: .launchdeck/logs/start.log
+    env:
+      HOST: 127.0.0.1
+      PORT: "5055"
+      PYTHONPATH: src
+  test:
+    command: python -m pytest
+    description: Run the Flask demo test suite
+    risk: medium
+    env:
+      PYTHONPATH: src

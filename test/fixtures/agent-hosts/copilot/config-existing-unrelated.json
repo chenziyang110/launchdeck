@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "owner": "fixture",
+    "enabled": true
+  },
+  "mcpServers": {
+    "other": {
+      "command": "other-mcp",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

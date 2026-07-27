@@ -1,0 +1,11 @@
+Agent setup
+State: awaiting-approval
+Scope: project
+Project: <PROJECT>
+Build: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Effects: none
+Plan digest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Targets: codex project skill, codex project mcp
+Default: No
+Approve this exact plan? [y/N]
+Next action: type y to apply, or press Enter to cancel with no changes.

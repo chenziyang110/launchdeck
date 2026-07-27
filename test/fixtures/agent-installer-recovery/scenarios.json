@@ -1,0 +1,293 @@
+{
+  "version": 1,
+  "description": "Deterministic installer recovery E2E fault matrix. The scenarios use logical paths and in-memory state only.",
+  "requiredFaultClasses": [
+    "response-loss",
+    "crash-windows",
+    "reverse-rollback",
+    "partial-effects",
+    "indeterminate-effects",
+    "contention",
+    "prior-build-pins",
+    "evidence-based-reconcile"
+  ],
+  "requiredAuthorities": [
+    "createInstallerTransactionCoordinator",
+    "createOperationJournal",
+    "createBackupStore",
+    "createReceiptStore",
+    "createInstallerReconciler",
+    "createPublicInstallerReconciler",
+    "resourceLockRunner"
+  ],
+  "logicalRoots": {
+    "project": "<PROJECT>",
+    "home": "<LAUNCHDECK_HOME>",
+    "installerState": "<LAUNCHDECK_HOME>/installer/v1"
+  },
+  "cases": [
+    {
+      "id": "response-loss-known-id",
+      "faultClass": "response-loss",
+      "operationId": "op_response_loss_known_id",
+      "operation": "agent update",
+      "result": {
+        "outcome": "succeeded",
+        "effectCertainty": "complete",
+        "nextAction": {
+          "command": "launchdeck agent status --json"
+        }
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    },
+    {
+      "id": "crash-windows",
+      "faultClass": "crash-windows",
+      "operationId": "op_crash_windows",
+      "operation": "agent repair",
+      "windows": [
+        "after_prepared",
+        "after_running",
+        "after_effect",
+        "after_receipt"
+      ],
+      "windowResults": [
+        {
+          "window": "after_prepared",
+          "outcome": "indeterminate",
+          "effectCertainty": "unknown",
+          "evidencePreserved": true
+        },
+        {
+          "window": "after_running",
+          "outcome": "failed-and-rolled-back",
+          "effectCertainty": "complete",
+          "evidencePreserved": true
+        },
+        {
+          "window": "after_effect",
+          "outcome": "partial",
+          "effectCertainty": "partial",
+          "evidencePreserved": true
+        },
+        {
+          "window": "after_receipt",
+          "outcome": "indeterminate",
+          "effectCertainty": "unknown",
+          "evidencePreserved": true
+        }
+      ],
+      "result": {
+        "outcome": "indeterminate",
+        "effectCertainty": "unknown",
+        "nextAction": {
+          "command": "launchdeck operation reconcile op_crash_windows"
+        }
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    },
+    {
+      "id": "reverse-rollback-after-launcher",
+      "faultClass": "reverse-rollback",
+      "operationId": "op_reverse_rollback_launcher",
+      "operation": "agent update",
+      "appliedEffects": [
+        "codex:project:skill",
+        "codex:project:mcp",
+        "launcher:project"
+      ],
+      "rollbackEffects": [
+        "launcher:project",
+        "codex:project:mcp",
+        "codex:project:skill"
+      ],
+      "result": {
+        "outcome": "failed-and-rolled-back",
+        "effectCertainty": "complete",
+        "nextAction": {
+          "command": "launchdeck agent status --json"
+        }
+      },
+      "receipts": {
+        "newReceiptCommitted": false,
+        "previousReceiptUsable": true
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    },
+    {
+      "id": "partial-after-second-target",
+      "faultClass": "partial-effects",
+      "operationId": "op_partial_second_target",
+      "operation": "agent uninstall",
+      "knownRemainingEffects": [
+        "codex:project:mcp"
+      ],
+      "unknownEffects": [],
+      "result": {
+        "outcome": "partial",
+        "effectCertainty": "partial",
+        "nextAction": {
+          "command": "launchdeck operation reconcile op_partial_second_target"
+        }
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    },
+    {
+      "id": "indeterminate-response-loss",
+      "faultClass": "indeterminate-effects",
+      "operationId": "op_response_loss_unknown",
+      "operation": "agent update",
+      "knownRemainingEffects": [],
+      "unknownEffects": [
+        "codex:project:mcp"
+      ],
+      "result": {
+        "outcome": "indeterminate",
+        "effectCertainty": "unknown",
+        "nextAction": {
+          "command": "launchdeck operation reconcile op_response_loss_unknown"
+        }
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    },
+    {
+      "id": "contention-overlapping-mutation",
+      "faultClass": "contention",
+      "operationId": "op_contention_first",
+      "operation": "agent repair",
+      "lockOrder": [
+        "artifact-store",
+        "receipt:project:<PROJECT>",
+        "target:codex:project:mcp",
+        "target:codex:project:skill",
+        "launcher"
+      ],
+      "firstOperation": {
+        "state": "running",
+        "resources": [
+          "target:codex:project:mcp",
+          "target:codex:project:skill"
+        ]
+      },
+      "secondOperation": {
+        "operationId": "op_contention_second",
+        "journalWritten": false,
+        "effects": [],
+        "result": {
+          "outcome": "refused",
+          "effectCertainty": "none",
+          "error": {
+            "code": "agent_lifecycle_contention"
+          }
+        }
+      }
+    },
+    {
+      "id": "prior-and-recovery-build-pins",
+      "faultClass": "prior-build-pins",
+      "operationId": "op_prior_recovery_pins",
+      "operation": "agent update",
+      "activeBuild": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "pinnedBuilds": [
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      ],
+      "gcCandidates": [
+        "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "gcDecisions": {
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111": "retained:previous-usable-build",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222": "retained:active-receipt",
+        "sha256:9999999999999999999999999999999999999999999999999999999999999999": "retained:open-recovery-record"
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      }
+    },
+    {
+      "id": "reconcile-no-replay",
+      "faultClass": "evidence-based-reconcile",
+      "operationId": "op_reconcile_no_replay",
+      "operation": "operation reconcile",
+      "evidenceReadOrder": [
+        "journal",
+        "locks",
+        "targets",
+        "artifacts",
+        "receipts"
+      ],
+      "result": {
+        "outcome": "reconciled",
+        "effectCertainty": "complete",
+        "nextAction": {
+          "command": "launchdeck agent repair --yes"
+        }
+      },
+      "reconcile": {
+        "authorizesNewPlan": false,
+        "safeNextAction": {
+          "command": "launchdeck agent repair --yes"
+        }
+      },
+      "recoveryEvidence": {
+        "journalRetained": true,
+        "backupsRetained": true,
+        "effectEvidenceRetained": true,
+        "pinsRetained": true
+      },
+      "replay": {
+        "replayedOldPlan": false,
+        "replayCount": 0
+      }
+    }
+  ]
+}

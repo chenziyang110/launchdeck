@@ -121,6 +121,7 @@ export function createOperationJournal(options = {}) {
           effectsCertainty: 'none',
           effectEvidenceRefs: [],
           resourceRef: null,
+          installer: normalized.installer,
           resultRef: null,
           resolvedOutcome: null,
           createdAt: now,
@@ -199,6 +200,13 @@ export function createOperationJournal(options = {}) {
         return clone(await transitionLocked(id, transition));
       }
       return withOperationLock(id, async () => clone(await transitionLocked(id, transition)));
+    },
+    async checkpoint(operationId, update) {
+      const id = requireOperationId(operationId);
+      if (hasCurrentOperationLock(id, update?.lockProof)) {
+        return clone(await checkpointLocked(id, update));
+      }
+      return withOperationLock(id, async () => clone(await checkpointLocked(id, update)));
     },
     async recover(input = {}) {
       const operationId = requireOperationId(input.operationId);
@@ -321,7 +329,9 @@ export function createOperationJournal(options = {}) {
     let resultRef = record.resultRef;
     let wroteResult = false;
     if (transition.result !== undefined) {
-      const result = redactValue(transition.result);
+      const result = record.installer?.kind === 'agent-installer'
+        ? normalizeInstallerTerminalResult(transition.result)
+        : redactValue(transition.result);
       resultRef = {
         path: path.posix.join('results', `${operationId}.json`),
         digest: canonicalDigest(result)
@@ -335,6 +345,9 @@ export function createOperationJournal(options = {}) {
       effectsCertainty: transition.effectsCertainty ?? defaultEffectsCertainty(nextState, record.effectsCertainty),
       effectEvidenceRefs: redactValue(transition.effectEvidenceRefs ?? record.effectEvidenceRefs),
       resourceRef: transition.resourceRef === undefined ? record.resourceRef : redactValue(transition.resourceRef),
+      installer: transition.installer === undefined
+        ? record.installer
+        : normalizeInstallerPayload(transition.installer),
       resultRef,
       resolvedOutcome: nextState === 'reconciled'
         ? requireResolvedOutcome(transition.resolvedOutcome)
@@ -344,7 +357,11 @@ export function createOperationJournal(options = {}) {
       terminalAt: terminal ? now : null,
       retainUntil: terminal ? new Date(Date.parse(now) + TERMINAL_RETENTION_DAYS * DAY_MS).toISOString() : null,
       revision: record.revision + 1,
-      lastError: transition.lastError === undefined ? record.lastError : redactValue(transition.lastError)
+      lastError: transition.lastError === undefined
+        ? record.lastError
+        : record.installer?.kind === 'agent-installer'
+          ? normalizeInstallerError(transition.lastError)
+          : redactValue(transition.lastError)
     };
     validateTransitionSemantics(nextRecord);
     try {
@@ -354,6 +371,54 @@ export function createOperationJournal(options = {}) {
       throw error;
     }
     await emitLifecycleEvent(nextRecord);
+    return nextRecord;
+  }
+
+  async function checkpointLocked(operationId, update = {}) {
+    const record = readRecordForWrite(operationId);
+    if (TERMINAL_JOURNAL_STATES.includes(record.state)) {
+      throw journalError(
+        'operation_checkpoint_terminal',
+        `Operation '${operationId}' is already terminal.`,
+        { operationId, state: record.state }
+      );
+    }
+    if (update.expectedRevision !== undefined && update.expectedRevision !== record.revision) {
+      throw journalError(
+        'operation_revision_mismatch',
+        `Operation '${operationId}' revision changed.`,
+        {
+          operationId,
+          expectedRevision: update.expectedRevision,
+          actualRevision: record.revision
+        }
+      );
+    }
+    if (!update.installer || typeof update.installer !== 'object' || Array.isArray(update.installer)) {
+      throw journalError(
+        'operation_record_invalid',
+        'Installer checkpoint payload is required.',
+        { operationId }
+      );
+    }
+    const nextRecord = {
+      ...record,
+      effectsCertainty: update.effectsCertainty ?? record.effectsCertainty,
+      effectEvidenceRefs: redactValue(update.effectEvidenceRefs ?? record.effectEvidenceRefs),
+      resourceRef: update.resourceRef === undefined
+        ? record.resourceRef
+        : redactValue(update.resourceRef),
+      installer: normalizeInstallerPayload(update.installer),
+      updatedAt: nowIso(clock),
+      revision: record.revision + 1,
+      lastError: update.lastError === undefined
+        ? record.lastError
+        : record.installer?.kind === 'agent-installer'
+          ? normalizeInstallerError(update.lastError)
+          : redactValue(update.lastError)
+    };
+    validateRecord(nextRecord, paths.recordPath(operationId));
+    await writeRecord(nextRecord);
     return nextRecord;
   }
 
@@ -561,7 +626,8 @@ function normalizePreparedInput(input = {}) {
     taskRef: input.taskRef === null || input.taskRef === undefined
       ? null
       : requireString(input.taskRef, 'taskRef', 128),
-    runtimeProvenance: input.runtimeProvenance ?? {}
+    runtimeProvenance: input.runtimeProvenance ?? {},
+    installer: input.installer === undefined ? null : normalizeInstallerPayload(input.installer)
   };
 }
 
@@ -587,6 +653,15 @@ function validateRecord(record, statePath) {
   for (const field of ['createdAt', 'updatedAt']) normalizeDate(record[field], field);
   if (!['none', 'confirmed', 'possible', 'unknown'].includes(record.effectsCertainty)) {
     throw journalError('operation_record_invalid', 'Operation effects certainty is invalid.', { statePath });
+  }
+  if (
+    record.installer !== undefined
+    && record.installer !== null
+    && (typeof record.installer !== 'object' || Array.isArray(record.installer))
+  ) {
+    throw journalError('operation_record_invalid', 'Installer journal payload is invalid.', {
+      statePath
+    });
   }
   validateTransitionSemantics(record);
 }
@@ -745,6 +820,450 @@ function safeReadJsonLines(filePath, strict = false) {
     }
   }
   return entries;
+}
+
+function normalizeInstallerPayload(value) {
+  if (value === null) return null;
+  if (
+    !value
+    || typeof value !== 'object'
+    || Array.isArray(value)
+    || value.kind !== 'agent-installer'
+  ) {
+    return redactValue(value);
+  }
+  const installer = strictInstallerObject(value, 'installer', [
+    'schemaVersion',
+    'kind',
+    'operation',
+    'planId',
+    'planDigest',
+    'planBindingDigest',
+    'scope',
+    'scopeIdentity',
+    'projectIdentity',
+    'buildIdentity',
+    'includeLauncher',
+    'resourceLocks',
+    'actions',
+    'effects',
+    'verificationEvidence',
+    'backupRefs',
+    'previousBuildPins',
+    'receiptCandidate',
+    'receiptRef',
+    'rollbackEvidence',
+    'rollbackErrors',
+    'reconciliationEvidence',
+    'checkpoints',
+    'terminalResult'
+  ]);
+  return omitUndefined({
+    schemaVersion: installer.schemaVersion,
+    kind: installer.kind,
+    operation: boundedInstallerText(installer.operation, 'installer.operation'),
+    planId: boundedInstallerText(installer.planId, 'installer.planId'),
+    planDigest: installer.planDigest,
+    planBindingDigest: installer.planBindingDigest,
+    scope: installer.scope,
+    scopeIdentity: installer.scopeIdentity,
+    projectIdentity: installer.projectIdentity ?? null,
+    buildIdentity: installer.buildIdentity,
+    includeLauncher: installer.includeLauncher === true,
+    resourceLocks: installerArray(installer.resourceLocks).map((entry) =>
+      boundedInstallerText(entry, 'installer.resourceLock')
+    ),
+    actions: installerArray(installer.actions).map(normalizeInstallerAction),
+    effects: installerArray(installer.effects).map(normalizeInstallerEffect),
+    verificationEvidence: installerArray(installer.verificationEvidence)
+      .map(normalizeInstallerVerification),
+    backupRefs: installerArray(installer.backupRefs).map(normalizeInstallerBackupRef),
+    previousBuildPins: installerArray(installer.previousBuildPins),
+    receiptCandidate: installer.receiptCandidate
+      ? normalizeInstallerReceiptCandidate(installer.receiptCandidate)
+      : null,
+    receiptRef: installer.receiptRef
+      ? normalizeInstallerReceiptRef(installer.receiptRef)
+      : null,
+    rollbackEvidence: installerArray(installer.rollbackEvidence)
+      .map(normalizeInstallerRollbackEvidence),
+    rollbackErrors: installerArray(installer.rollbackErrors)
+      .map(normalizeInstallerRollbackError),
+    reconciliationEvidence: installer.reconciliationEvidence
+      ? normalizeInstallerReconciliationEvidence(installer.reconciliationEvidence)
+      : null,
+    checkpoints: installerArray(installer.checkpoints).map((entry) =>
+      boundedInstallerText(entry, 'installer.checkpoint')
+    ),
+    terminalResult: installer.terminalResult
+      ? normalizeInstallerTerminalResult(installer.terminalResult)
+      : null
+  });
+}
+
+function normalizeInstallerAction(value) {
+  const action = strictInstallerObject(value, 'installer.action', [
+    'actionId',
+    'kind',
+    'targetId',
+    'ownershipBoundary',
+    'targetPath',
+    'preconditionDigest',
+    'desiredDigest',
+    'requiresBackup'
+  ]);
+  return {
+    actionId: boundedInstallerText(action.actionId, 'installer.action.actionId'),
+    kind: boundedInstallerText(action.kind, 'installer.action.kind'),
+    targetId: boundedInstallerText(action.targetId, 'installer.action.targetId'),
+    ownershipBoundary: boundedInstallerText(
+      action.ownershipBoundary,
+      'installer.action.ownershipBoundary',
+      512,
+      { allowBracketPrefix: true }
+    ),
+    targetPath: boundedInstallerText(action.targetPath, 'installer.action.targetPath', 4096),
+    preconditionDigest: action.preconditionDigest,
+    desiredDigest: action.desiredDigest,
+    requiresBackup: action.requiresBackup === true
+  };
+}
+
+function normalizeInstallerEffect(value) {
+  const effect = strictInstallerObject(value, 'installer.effect', [
+    'effectId',
+    'actionId',
+    'targetId',
+    'ownershipBoundary',
+    'effectType',
+    'beforeDigest',
+    'afterDigest',
+    'effectCertainty'
+  ]);
+  return {
+    effectId: boundedInstallerText(effect.effectId, 'installer.effect.effectId'),
+    actionId: boundedInstallerText(effect.actionId, 'installer.effect.actionId'),
+    targetId: boundedInstallerText(effect.targetId, 'installer.effect.targetId'),
+    ownershipBoundary: boundedInstallerText(
+      effect.ownershipBoundary,
+      'installer.effect.ownershipBoundary',
+      512,
+      { allowBracketPrefix: true }
+    ),
+    effectType: boundedInstallerText(effect.effectType, 'installer.effect.effectType'),
+    beforeDigest: effect.beforeDigest,
+    afterDigest: effect.afterDigest,
+    effectCertainty: effect.effectCertainty
+  };
+}
+
+function normalizeInstallerVerification(value) {
+  const evidence = strictInstallerObject(value, 'installer.verification', [
+    'targetId',
+    'kind',
+    'buildIdentity',
+    'observedDigest',
+    'verified'
+  ]);
+  return {
+    targetId: boundedInstallerText(evidence.targetId, 'installer.verification.targetId'),
+    kind: boundedInstallerText(evidence.kind, 'installer.verification.kind'),
+    buildIdentity: evidence.buildIdentity,
+    observedDigest: evidence.observedDigest,
+    verified: evidence.verified === true
+  };
+}
+
+function normalizeInstallerBackupRef(value) {
+  const backup = strictInstallerObject(value, 'installer.backupRef', [
+    'schemaVersion',
+    'backupId',
+    'operationId',
+    'targetId',
+    'sourcePath',
+    'sourceKind',
+    'originalDigest',
+    'backupPath',
+    'permissionsEvidence',
+    'redactionState',
+    'createdAt',
+    'restoredAt',
+    'retentionState'
+  ]);
+  const permissions = backup.permissionsEvidence
+    ? strictInstallerObject(backup.permissionsEvidence, 'installer.backupPermissions', [
+        'mode',
+        'backupMode'
+      ])
+    : null;
+  return {
+    ...backup,
+    backupId: boundedInstallerText(backup.backupId, 'installer.backupId'),
+    operationId: boundedInstallerText(backup.operationId, 'installer.backupOperationId'),
+    targetId: boundedInstallerText(backup.targetId, 'installer.backupTargetId'),
+    sourcePath: boundedInstallerText(backup.sourcePath, 'installer.backupSourcePath', 4096),
+    backupPath: boundedInstallerText(backup.backupPath, 'installer.backupPath', 4096),
+    permissionsEvidence: permissions
+  };
+}
+
+function normalizeInstallerReceiptCandidate(value) {
+  const receipt = strictInstallerObject(value, 'installer.receiptCandidate', [
+    'receiptId',
+    'scope',
+    'scopeIdentity',
+    'projectIdentity',
+    'buildIdentity',
+    'targets',
+    'ownedDigests',
+    'verificationEvidence',
+    'committedAt',
+    'supersedesReceiptId'
+  ]);
+  return {
+    receiptId: boundedInstallerText(receipt.receiptId, 'installer.receiptId'),
+    scope: receipt.scope,
+    scopeIdentity: receipt.scopeIdentity,
+    projectIdentity: receipt.projectIdentity ?? null,
+    buildIdentity: receipt.buildIdentity,
+    targets: installerArray(receipt.targets).map((target) => {
+      const normalized = strictInstallerObject(target, 'installer.receiptTarget', [
+        'targetId',
+        'ownershipBoundary',
+        'desiredDigest'
+      ]);
+      return {
+        targetId: boundedInstallerText(normalized.targetId, 'installer.receiptTargetId'),
+        ownershipBoundary: boundedInstallerText(
+          normalized.ownershipBoundary,
+          'installer.receiptOwnershipBoundary',
+          512,
+          { allowBracketPrefix: true }
+        ),
+        desiredDigest: normalized.desiredDigest
+      };
+    }),
+    ownedDigests: installerArray(receipt.ownedDigests),
+    verificationEvidence: installerArray(receipt.verificationEvidence)
+      .map(normalizeInstallerVerification),
+    committedAt: receipt.committedAt,
+    supersedesReceiptId: receipt.supersedesReceiptId ?? null
+  };
+}
+
+function normalizeInstallerReceiptRef(value) {
+  const receipt = strictInstallerObject(value, 'installer.receiptRef', [
+    'receiptId',
+    'receiptDigest',
+    'scopeIdentity',
+    'buildIdentity'
+  ]);
+  return {
+    receiptId: boundedInstallerText(receipt.receiptId, 'installer.receiptRefId'),
+    receiptDigest: receipt.receiptDigest,
+    scopeIdentity: receipt.scopeIdentity,
+    buildIdentity: receipt.buildIdentity
+  };
+}
+
+function normalizeInstallerRollbackEvidence(value) {
+  const evidence = strictInstallerObject(value, 'installer.rollbackEvidence', [
+    'actionId',
+    'targetId',
+    'restored',
+    'restoredDigest',
+    'verified'
+  ]);
+  return {
+    actionId: boundedInstallerText(evidence.actionId, 'installer.rollbackActionId'),
+    targetId: boundedInstallerText(evidence.targetId, 'installer.rollbackTargetId'),
+    restored: evidence.restored === true,
+    restoredDigest: evidence.restoredDigest,
+    verified: evidence.verified === true
+  };
+}
+
+function normalizeInstallerRollbackError(value) {
+  const entry = strictInstallerObject(value, 'installer.rollbackError', [
+    'actionId',
+    'targetId',
+    'error'
+  ]);
+  return {
+    actionId: boundedInstallerText(entry.actionId, 'installer.rollbackErrorActionId'),
+    targetId: boundedInstallerText(entry.targetId, 'installer.rollbackErrorTargetId'),
+    error: normalizeInstallerError(entry.error)
+  };
+}
+
+function normalizeInstallerReconciliationEvidence(value) {
+  const evidence = strictInstallerObject(value, 'installer.reconciliationEvidence', [
+    'schemaVersion',
+    'classification',
+    'lockEvidence',
+    'liveTargetEvidence',
+    'artifactEvidence',
+    'receiptEvidence'
+  ]);
+  return {
+    schemaVersion: evidence.schemaVersion,
+    classification: evidence.classification,
+    lockEvidence: pickInstallerFields(evidence.lockEvidence, [
+      'state',
+      'processState',
+      'ownerPid',
+      'ownerStartIdentityChanged',
+      'leaseState'
+    ], 'installer.lockEvidence'),
+    liveTargetEvidence: installerArray(evidence.liveTargetEvidence).map((entry) =>
+      pickInstallerFields(entry, [
+        'targetId',
+        'ownershipBoundary',
+        'classification',
+        'observedDigest',
+        'preconditionsMatch',
+        'buildIdentity'
+      ], 'installer.liveTargetEvidence')
+    ),
+    artifactEvidence: installerArray(evidence.artifactEvidence).map((entry) =>
+      pickInstallerFields(entry, [
+        'buildIdentity',
+        'classification'
+      ], 'installer.artifactEvidence')
+    ),
+    receiptEvidence: pickInstallerFields(evidence.receiptEvidence, [
+      'classification',
+      'receiptId',
+      'receiptDigest'
+    ], 'installer.receiptEvidence')
+  };
+}
+
+function normalizeInstallerTerminalResult(value) {
+  const result = strictInstallerObject(value, 'installer.terminalResult', [
+    'outcome',
+    'effectCertainty',
+    'operationId',
+    'receiptId',
+    'buildIdentity',
+    'effects',
+    'classification',
+    'error',
+    'nextActions',
+    'replayed',
+    'recoveredFromJournal'
+  ]);
+  return omitUndefined({
+    outcome: boundedInstallerText(result.outcome, 'installer.result.outcome'),
+    effectCertainty: result.effectCertainty,
+    operationId: result.operationId,
+    receiptId: result.receiptId ?? null,
+    buildIdentity: result.buildIdentity,
+    effects: installerArray(result.effects).map(normalizeInstallerEffect),
+    classification: result.classification === undefined
+      ? undefined
+      : boundedInstallerText(result.classification, 'installer.result.classification'),
+    error: result.error ? normalizeInstallerError(result.error) : null,
+    nextActions: installerArray(result.nextActions).map(normalizeInstallerNextAction),
+    replayed: result.replayed === true,
+    recoveredFromJournal: result.recoveredFromJournal === true
+  });
+}
+
+function normalizeInstallerNextAction(value) {
+  const action = strictInstallerObject(value, 'installer.nextAction', [
+    'operation',
+    'operationId',
+    'reason',
+    'requiresApproval',
+    'targetIds'
+  ]);
+  return omitUndefined({
+    operation: boundedInstallerText(action.operation, 'installer.nextAction.operation'),
+    operationId: action.operationId === undefined
+      ? undefined
+      : boundedInstallerText(action.operationId, 'installer.nextAction.operationId'),
+    reason: boundedInstallerText(action.reason, 'installer.nextAction.reason', 2048),
+    requiresApproval: action.requiresApproval === true,
+    targetIds: action.targetIds === undefined ? undefined : installerArray(action.targetIds)
+  });
+}
+
+function normalizeInstallerError(value) {
+  const error = strictInstallerObject(value, 'installer.error', [
+    'code',
+    'message',
+    'effectCertainty',
+    'details',
+    'nextActions'
+  ]);
+  const details = error.details
+    ? selectInstallerFields(error.details, [
+        'journalState',
+        'classification',
+        'actionId',
+        'originalEffectCertainty',
+        'targetIds'
+      ], 'installer.error.details')
+    : {};
+  return omitUndefined({
+    code: boundedInstallerText(error.code, 'installer.error.code'),
+    message: boundedInstallerText(error.message, 'installer.error.message', 2048),
+    effectCertainty: error.effectCertainty,
+    details,
+    nextActions: installerArray(error.nextActions).map(normalizeInstallerNextAction)
+  });
+}
+
+function selectInstallerFields(value, fields) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.fromEntries(fields
+    .filter((field) => value[field] !== undefined)
+    .map((field) => [field, redactValue(value[field], field)]));
+}
+
+function strictInstallerObject(value, label, allowedFields) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw journalError('operation_record_invalid', `${label} must be an object.`);
+  }
+  const unexpected = Object.keys(value).filter((field) => !allowedFields.includes(field));
+  if (unexpected.length > 0) {
+    throw journalError(
+      'operation_record_invalid',
+      `${label} contains unsupported durable fields.`,
+      { fields: unexpected.slice(0, 20) }
+    );
+  }
+  return value;
+}
+
+function pickInstallerFields(value, fields, label) {
+  if (value === undefined || value === null) return {};
+  const object = strictInstallerObject(value, label, fields);
+  return Object.fromEntries(fields
+    .filter((field) => object[field] !== undefined)
+    .map((field) => [field, redactValue(object[field], field)]));
+}
+
+function installerArray(value) {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value)) {
+    throw journalError('operation_record_invalid', 'Installer durable evidence must be an array.');
+  }
+  return value;
+}
+
+function boundedInstallerText(value, label, maxLength = 512, options = {}) {
+  const text = String(value ?? '').trim();
+  if (
+    !text
+    || text.length > maxLength
+    || /[\u0000-\u001f\u007f]/.test(text)
+    || (options.allowBracketPrefix === true ? /^\{/.test(text) : /^[{[]/.test(text))
+  ) {
+    throw journalError('operation_record_invalid', `${label} is invalid.`);
+  }
+  return redactValue(text, label);
 }
 
 function redactValue(value, key = '') {

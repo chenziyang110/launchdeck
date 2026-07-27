@@ -318,3 +318,5 @@ function compactObject(value) {
     Object.entries(value).filter(([, entry]) => entry !== undefined)
   );
 }
+
+export { atomicWriteJson };

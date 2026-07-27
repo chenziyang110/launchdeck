@@ -1,0 +1,13 @@
+{
+  "command": "claude mcp list",
+  "trust": "approved",
+  "entries": [
+    {
+      "name": "launchdeck",
+      "dialect": "mcpServers.launchdeck",
+      "command": "launchdeck",
+      "scope": "project",
+      "ownership": "Launchdeck"
+    }
+  ]
+}

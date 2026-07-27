@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "legacyAgentCommands": [
+    "paths",
+    "doctor",
+    "install"
+  ],
+  "packageBins": [
+    "launchdeck",
+    "launchdeck-mcp"
+  ],
+  "journalStates": [
+    "prepared",
+    "running",
+    "succeeded",
+    "failed",
+    "refused",
+    "indeterminate",
+    "reconciled"
+  ],
+  "flaskDemo": {
+    "entrypoint": "flask-demo",
+    "module": "flask_demo.app:main",
+    "requiredFiles": [
+      ".launchdeck.yml",
+      "pyproject.toml",
+      "src/flask_demo/app.py",
+      "src/flask_demo/templates/index.html",
+      "src/flask_demo/static/app.js",
+      "src/flask_demo/static/styles.css",
+      "tests/test_app.py"
+    ]
+  }
+}

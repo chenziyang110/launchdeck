@@ -206,7 +206,7 @@ test('restart --json stops, waits for port release, and starts a new run in one 
     const first = fixture.runCliJson(['start', 'restart-owned:dev']);
     assert.equal(first.status, 0, cliFailureMessage(first));
 
-    const restarted = fixture.runGlobalCliJson(['restart', 'restart-owned:dev']);
+    const restarted = fixture.runGlobalCliJson(['restart', 'restart-owned:dev'], { timeout: 20_000 });
 
     assert.equal(restarted.status, 0, cliFailureMessage(restarted));
     assert.equal(restarted.json.command, 'restart');
@@ -225,7 +225,7 @@ test('restart --json stops, waits for port release, and starts a new run in one 
   });
 });
 
-test('restart --json records port_release_timeout when the stopped task leaves its port occupied', async () => {
+test('restart handles a detached listener according to the platform process-tree boundary', async () => {
   await withLifecycleFixture(async ({ fixture }) => {
     const port = await getFreePort();
     writeStickyPortProject(fixture, { name: 'lifecycle-port-timeout', port });
@@ -235,18 +235,27 @@ test('restart --json records port_release_timeout when the stopped task leaves i
 
     const restarted = fixture.runGlobalCliJson(['restart', 'port-timeout:dev'], { timeout: 12_000 });
 
-    assert.equal(restarted.status, 1);
-    assert.equal(errorCode(restarted.json), 'port_release_timeout');
-    assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stop_failed');
-    assertEventIncludes(fixture.homeDir, {
-      type: 'restart.failed',
-      code: 'port_release_timeout',
-      runId: started.json.process.runId
-    });
+    if (process.platform === 'win32') {
+      assert.equal(restarted.status, 0, cliFailureMessage(restarted));
+      assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stopped');
+      await waitForPortListening(port, {
+        timeoutMs: 5_000,
+        failureDetails: detachedRestartFailureMessage(fixture, port, restarted)
+      });
+    } else {
+      assert.equal(restarted.status, 1);
+      assert.equal(errorCode(restarted.json), 'port_release_timeout');
+      assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stop_failed');
+      assertEventIncludes(fixture.homeDir, {
+        type: 'restart.failed',
+        code: 'port_release_timeout',
+        runId: started.json.process.runId
+      });
+    }
   });
 });
 
-test('stop --json preserves stop_failed evidence when termination does not complete', async () => {
+test('stop handles a detached takeover listener according to the platform process-tree boundary', async () => {
   await withLifecycleFixture(async ({ fixture }) => {
     const port = await getFreePort();
     writeIgnoringStopProject(fixture, { name: 'lifecycle-stop-failed', port });
@@ -256,14 +265,20 @@ test('stop --json preserves stop_failed evidence when termination does not compl
 
     const stopped = fixture.runGlobalCliJson(['stop', 'stop-failed:dev'], { timeout: 12_000 });
 
-    assert.equal(stopped.status, 1);
-    assert.equal(errorCode(stopped.json), 'stop_failed');
-    assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stop_failed');
-    assertEventIncludes(fixture.homeDir, {
-      type: 'stop.failed',
-      code: 'stop_failed',
-      runId: started.json.process.runId
-    });
+    if (process.platform === 'win32') {
+      assert.equal(stopped.status, 0, cliFailureMessage(stopped));
+      assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stopped');
+      assert.equal(await canListen(port), true);
+    } else {
+      assert.equal(stopped.status, 1);
+      assert.equal(errorCode(stopped.json), 'stop_failed');
+      assert.equal(runById(fixture.homeDir, started.json.process.runId).status, 'stop_failed');
+      assertEventIncludes(fixture.homeDir, {
+        type: 'stop.failed',
+        code: 'stop_failed',
+        runId: started.json.process.runId
+      });
+    }
   });
 });
 
@@ -557,6 +572,17 @@ function cliFailureMessage(result) {
   ].join('\n');
 }
 
+function detachedRestartFailureMessage(fixture, port, restarted) {
+  const statePath = fixture.path('.launchdeck', 'runtime', 'state.json');
+  const logPath = fixture.path('.launchdeck', 'logs', 'dev.log');
+  return [
+    `Expected restarted listener on port ${port}.`,
+    `restart=${JSON.stringify(restarted.json)}`,
+    `state=${fs.existsSync(statePath) ? fs.readFileSync(statePath, 'utf8').trim() : '<missing>'}`,
+    `log=${fs.existsSync(logPath) ? fs.readFileSync(logPath, 'utf8').trim() : '<missing>'}`
+  ].join('\n');
+}
+
 async function getFreePort() {
   const server = net.createServer();
   const port = await new Promise((resolve, reject) => {
@@ -582,15 +608,19 @@ async function waitForPortFree(port) {
   throw new Error(`Port ${port} did not become available for test setup.`);
 }
 
-async function waitForPortListening(port) {
-  const deadline = Date.now() + 2_000;
+async function waitForPortListening(port, options = {}) {
+  const timeoutMs = options.timeoutMs ?? 2_000;
+  const deadline = Date.now() + timeoutMs;
   while (Date.now() <= deadline) {
     if (await canConnect(port)) {
       return;
     }
     await delay(50);
   }
-  throw new Error(`Port ${port} did not start listening for test setup.`);
+  throw new Error([
+    `Port ${port} did not start listening within ${timeoutMs}ms.`,
+    options.failureDetails
+  ].filter(Boolean).join('\n'));
 }
 
 function canListen(port) {

@@ -2,6 +2,7 @@ import path from 'node:path';
 import {
   getLiveness,
   getProcessEvidence,
+  isProcessDescendant,
   normalizePid
 } from '../adapters/process.js';
 
@@ -58,7 +59,13 @@ export function proveRunOwnership(run, options = {}) {
     .filter((pid) => pid !== undefined);
   const hasListenerWithoutPid = listeners.some((listener) => normalizePid(listener.pid, { allowMissing: true }) === undefined);
   const pidMatchesRun = listenerPids.includes(runPid);
-  const listenerPidMismatch = listenerPids.length > 0 && !pidMatchesRun;
+  const descendantCheck = options.isProcessDescendant ?? isProcessDescendant;
+  const listenerPidsDescendFromRun = listenerPids.length > 0
+    && !pidMatchesRun
+    && listenerPids.every((pid) => safelyCheckDescendant(descendantCheck, pid, runPid));
+  const listenerPidMismatch = listenerPids.length > 0
+    && !pidMatchesRun
+    && !listenerPidsDescendFromRun;
   const processAlive = processEvidence?.alive ?? getLiveness(runPid) === 'running';
   const cwdMatches = comparePathEvidence(processEvidence?.cwd, run.cwd);
   const commandMatches = compareCommandEvidence(processEvidence?.command, run.command);
@@ -75,6 +82,7 @@ export function proveRunOwnership(run, options = {}) {
     return {
       confidence: OWNERSHIP_CONFIDENCE.EXTERNAL,
       pidMatchesRun: false,
+      listenerPidsDescendFromRun: false,
       processAlive,
       cwdMatches,
       commandMatches,
@@ -154,6 +162,25 @@ export function proveRunOwnership(run, options = {}) {
     return {
       confidence: OWNERSHIP_CONFIDENCE.VERIFIED_OWNED,
       pidMatchesRun: true,
+      processAlive,
+      cwdMatches,
+      commandMatches,
+      envMarkerMatches,
+      startTimeMatches,
+      portEvidence,
+      checkedAt,
+      reasons
+    };
+  }
+
+  if (listenerPidsDescendFromRun) {
+    reasons.push('listener_pid_descends_from_run');
+    return {
+      confidence: corroboratedProcessEvidence
+        ? OWNERSHIP_CONFIDENCE.PROBABLE_OWNED
+        : OWNERSHIP_CONFIDENCE.UNKNOWN,
+      pidMatchesRun: false,
+      listenerPidsDescendFromRun: true,
       processAlive,
       cwdMatches,
       commandMatches,
@@ -272,7 +299,11 @@ export function applyTrustedSpawnOwnership(run, observedProof) {
   ) {
     return observedProof;
   }
-  if (!observedProof.processAlive || !observedProof.pidMatchesRun || !isActiveRunStatus(run.status)) {
+  if (
+    !observedProof.processAlive
+    || (!observedProof.pidMatchesRun && !observedProof.listenerPidsDescendFromRun)
+    || !isActiveRunStatus(run.status)
+  ) {
     return observedProof;
   }
 
@@ -441,6 +472,14 @@ function compareValueEvidence(actual, expected) {
 
 function compactWhitespace(value) {
   return String(value).trim().replace(/\s+/g, ' ');
+}
+
+function safelyCheckDescendant(check, descendantPid, ancestorPid) {
+  try {
+    return check(descendantPid, ancestorPid) === true;
+  } catch {
+    return false;
+  }
 }
 
 function trustedSpawnProofMatchesRun(proof, run) {

@@ -130,7 +130,7 @@ test('inspect task:<alias:task> reports a Launchdeck-owned managed run with evid
     const added = fixture.runCliJson(['project', 'add', fixture.projectRoot, '--alias', 'inspect-task-owned']);
     assert.equal(added.status, 0, added.stderr);
     const started = fixture.runCliJson(['start', 'inspect-task-owned:dev']);
-    assert.equal(started.status, 0, started.stderr);
+    assert.equal(started.status, 0, cliFailureMessage(started));
     await delay(250);
 
     const result = fixture.runGlobalCliJson(['inspect', 'task:inspect-task-owned:dev']);

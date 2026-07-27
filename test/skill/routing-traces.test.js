@@ -9,7 +9,9 @@ const mutationOperations = new Set([
   'task.stop',
   'task.restart',
   'task.run',
-  'clean.applySafe'
+  'clean.applySafe',
+  'project.add',
+  'project.register'
 ]);
 
 test('canonical Skill publishes the exact deterministic ordered routing traces', () => {
@@ -87,6 +89,46 @@ test('post-dispatch response loss uses bounded journal recovery and never replay
     assert.ok(correlation.input.limit <= 20, id);
     assert.ok(windowMinutes(correlation.input) <= 15, id);
   }
+});
+
+test('config authoring requires explicit intent and never chains lifecycle mutation', () => {
+  const inspectOnly = scenario('inspect_only_adoption_strong').trace;
+  const authored = scenario('explicit_config_authoring_strong').trace;
+  const ambiguous = scenario('ambiguous_config_authoring').trace;
+  const existing = scenario('existing_config_authoring_refusal').trace;
+
+  assert.deepEqual(callNames(authored), ['capabilities.get', 'project.list']);
+  assert.deepEqual(authored.filter((entry) => entry.kind === 'inspection'), [
+    {
+      kind: 'inspection',
+      surface: 'workspace',
+      operation: 'bounded.read',
+      input: { maxDepth: 4, maxFiles: 200, secretFiles: 'excluded' },
+      outcome: 'strong'
+    }
+  ]);
+  assert.equal(authored.some((entry) => entry.operation === 'adoption.inspect'), false);
+  assert.deepEqual(authored.filter((entry) => entry.kind === 'write'), [
+    { kind: 'write', surface: 'filesystem', path: '.launchdeck.yml', outcome: 'succeeded' }
+  ]);
+  const writeIndex = authored.findIndex((entry) => entry.kind === 'write');
+  assert.deepEqual(authored[writeIndex + 1], {
+    kind: 'validation', surface: 'cli', operation: 'doctor', outcome: 'succeeded'
+  });
+  assert.equal(mutationCalls(authored).length, 0);
+
+  for (const trace of [inspectOnly, ambiguous, existing]) {
+    assert.equal(trace.some((entry) => entry.kind === 'write'), false);
+    assert.equal(trace.some((entry) => entry.kind === 'validation'), false);
+    assert.equal(mutationCalls(trace).length, 0);
+  }
+  for (const trace of [inspectOnly, ambiguous]) {
+    assert.equal(trace.some((entry) => entry.operation === 'adoption.inspect'), false);
+    assert.equal(trace.some((entry) => entry.kind === 'inspection' && entry.surface === 'workspace'), true);
+  }
+  assert.equal(inspectOnly.some((entry) => entry.name === 'config.authoring' && entry.outcome === 'inspection_only'), true);
+  assert.equal(ambiguous.some((entry) => entry.name === 'config.confidence' && entry.outcome === 'weak'), true);
+  assert.equal(existing.some((entry) => entry.name === 'config.authoring' && entry.outcome === 'existing_config_preserved'), true);
 });
 
 function scenario(id) {

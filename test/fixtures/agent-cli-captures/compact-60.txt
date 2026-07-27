@@ -1,0 +1,6 @@
+agent update outcome=succeeded scope=project
+targets=codex:skill,codex:mcp
+build=sha256:aaaaaaaaaaaa...
+effects=complete
+receipt=receipt_22222222222222222222222222222222
+next="launchdeck agent status --json"

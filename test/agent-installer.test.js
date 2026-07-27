@@ -27,7 +27,7 @@ test('agent paths reports canonical source and supported adapter targets', () =>
   }
 });
 
-test('agent doctor validates canonical source and adapter matrix', () => {
+test('agent doctor returns the unified lifecycle diagnostic envelope', () => {
   const fixture = createCliFixture();
 
   try {
@@ -35,11 +35,14 @@ test('agent doctor validates canonical source and adapter matrix', () => {
 
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.json.ok, true);
-    assert.equal(result.json.action, 'doctor');
-    assert.equal(result.json.status, 'ok');
-    assert.equal(result.json.summary.error, 0);
-    assert.ok(result.json.checks.some((check) => check.code === 'canonical_source_exists' && check.status === 'pass'));
-    assert.ok(result.json.checks.some((check) => check.code === 'adapter_matrix_ready' && check.status === 'pass'));
+    assert.equal(result.json.command, 'agent doctor');
+    assert.equal(result.json.result.outcome, 'succeeded');
+    assert.equal(result.json.result.effectCertainty, 'complete');
+    assert.equal(result.json.result.scope, 'project');
+    assert.match(result.json.result.buildIdentity, /^sha256:[a-f0-9]{64}$/);
+    assert.deepEqual(result.json.result.nextActions, [
+      { command: 'launchdeck agent setup' }
+    ]);
   } finally {
     fixture.cleanup();
   }

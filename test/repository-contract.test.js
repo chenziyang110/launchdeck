@@ -8,11 +8,12 @@ test('release metadata keeps system tests deterministic and the npm payload boun
   const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 
   assert.equal(packageJson.scripts.check, 'node scripts/check-syntax.js');
-  assert.equal(packageJson.scripts.test, 'node --test --test-concurrency=1');
+  assert.equal(packageJson.scripts.test, 'node --test --test-concurrency=1 "test/**/*.test.js"');
   assert.deepEqual(packageJson.files, [
     'src/',
     'schema/',
     'agent/compatibility-manifest.json',
+    'agent/installer-payload/',
     '.agents/skills/launchdeck-agent/'
   ]);
   assert.equal(packageJson.repository.url, 'git+https://github.com/chenziyang110/launchdeck.git');
@@ -34,3 +35,20 @@ test('CI runs the repository checks and the maintained lifecycle smoke on every 
   assert.match(workflow, /node scripts\/smoke-lifecycle\.js --mode quick --json/);
   assert.doesNotMatch(workflow, /node -e/);
 });
+
+test('release tests do not depend on workflow feature archives', () => {
+  const forbiddenFeaturePath = ['.specify', 'features'].join('/');
+
+  for (const filePath of listJavaScriptFiles(path.join(repoRoot, 'test'))) {
+    const source = fs.readFileSync(filePath, 'utf8').replaceAll('\\', '/');
+    assert.equal(source.includes(forbiddenFeaturePath), false, path.relative(repoRoot, filePath));
+  }
+});
+
+function listJavaScriptFiles(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) return listJavaScriptFiles(entryPath);
+    return entry.isFile() && entry.name.endsWith('.js') ? [entryPath] : [];
+  });
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "instanceId": "vs2022-community",
+    "installationPathToken": "vs2022-community",
+    "installationVersion": "17.14.8.0",
+    "productId": "Microsoft.VisualStudio.Product.Community",
+    "displayName": "Visual Studio Community 2022",
+    "isComplete": true,
+    "isLaunchable": true,
+    "isPrerelease": false
+  },
+  {
+    "instanceId": "vs2026-preview-184",
+    "installationPathToken": "vs2026-preview-184",
+    "installationVersion": "18.4.2.0",
+    "productId": "Microsoft.VisualStudio.Product.Enterprise",
+    "displayName": "Visual Studio Enterprise 2026 Preview",
+    "isComplete": true,
+    "isLaunchable": true,
+    "isPrerelease": true
+  },
+  {
+    "instanceId": "vs2026-preview-185",
+    "installationPathToken": "vs2026-preview-185",
+    "installationVersion": "18.5.0.0",
+    "productId": "Microsoft.VisualStudio.Product.Enterprise",
+    "displayName": "Visual Studio Enterprise 2026 Preview",
+    "isComplete": true,
+    "isLaunchable": true,
+    "isPrerelease": true
+  },
+  {
+    "instanceId": "build-tools-only",
+    "installationPathToken": "build-tools-only",
+    "installationVersion": "18.5.0.0",
+    "productId": "Microsoft.VisualStudio.Product.BuildTools",
+    "displayName": "Visual Studio Build Tools",
+    "isComplete": true,
+    "isLaunchable": true,
+    "isPrerelease": false
+  },
+  {
+    "instanceId": "incomplete-newer",
+    "installationPathToken": "incomplete-newer",
+    "installationVersion": "18.6.0.0",
+    "productId": "Microsoft.VisualStudio.Product.Community",
+    "displayName": "Incomplete Visual Studio",
+    "isComplete": false,
+    "isLaunchable": false,
+    "isPrerelease": false
+  }
+]

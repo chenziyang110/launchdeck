@@ -1,0 +1,15 @@
+{
+  "launcher": {
+    "absolute": true,
+    "stable": true
+  },
+  "initialize": {
+    "ok": true,
+    "protocolVersion": "2025-06-18"
+  },
+  "capability": {
+    "ok": true,
+    "name": "launchdeck/status"
+  },
+  "buildIdentity": "launchdeck@fixture"
+}

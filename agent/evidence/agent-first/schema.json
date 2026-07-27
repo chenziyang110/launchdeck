@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.local/schemas/agent-first-evidence-cell.schema.json",
+  "title": "Launchdeck Agent-first immutable evidence cell",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "cellId",
+    "status",
+    "identity",
+    "environment",
+    "host",
+    "scope",
+    "component",
+    "scenario",
+    "command",
+    "result",
+    "candidate",
+    "readiness",
+    "evidence",
+    "dependencies",
+    "redaction"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "agent-first-evidence-cell" },
+    "cellId": {
+      "type": "string",
+      "pattern": "^cell_[A-Za-z0-9._-]{16,160}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passed", "failed", "pending", "skipped"]
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buildIdentity",
+        "sourceRevision",
+        "packageDigest",
+        "payloadDigest"
+      ],
+      "properties": {
+        "buildIdentity": { "$ref": "#/$defs/sha256Identity" },
+        "sourceRevision": { "$ref": "#/$defs/nonEmptyString" },
+        "packageDigest": { "$ref": "#/$defs/sha256Identity" },
+        "payloadDigest": { "$ref": "#/$defs/sha256Identity" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "node"],
+      "properties": {
+        "os": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["platform", "version", "arch"],
+          "properties": {
+            "platform": {
+              "type": "string",
+              "enum": ["windows", "macos", "linux"]
+            },
+            "version": { "$ref": "#/$defs/nonEmptyString" },
+            "arch": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        },
+        "node": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version"],
+          "properties": {
+            "version": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "versionEvidenceDigest",
+        "capabilityMatrixRevision"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["codex", "claude-code", "github-copilot", "visual-studio", "none"]
+        },
+        "version": { "$ref": "#/$defs/nonEmptyString" },
+        "versionEvidenceDigest": { "$ref": "#/$defs/sha256Identity" },
+        "capabilityMatrixRevision": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "identity"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["project", "user"]
+        },
+        "identity": {
+          "type": "string",
+          "pattern": "^(?:project|user):sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "component": {
+      "type": "string",
+      "enum": ["runtime", "skill", "mcp", "launcher", "package", "flask", "recovery", "visual"]
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "revision"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "package",
+            "terminal-capture",
+            "multi-host",
+            "managed-lifecycle",
+            "recovery",
+            "flask",
+            "host-smoke",
+            "schema"
+          ]
+        },
+        "revision": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entrypoint", "argv", "cwd"],
+      "properties": {
+        "entrypoint": { "$ref": "#/$defs/nonEmptyString" },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "cwd": { "$ref": "#/$defs/redactedPath" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exitCode",
+        "outcome",
+        "effectCertainty",
+        "stdoutSha256",
+        "stderrSha256"
+      ],
+      "properties": {
+        "exitCode": { "type": "integer", "minimum": 0 },
+        "outcome": { "$ref": "#/$defs/nonEmptyString" },
+        "effectCertainty": {
+          "type": "string",
+          "enum": ["none", "complete", "partial", "unknown"]
+        },
+        "stdoutSha256": { "$ref": "#/$defs/sha256Identity" },
+        "stderrSha256": { "$ref": "#/$defs/sha256Identity" }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "uri",
+        "sha256",
+        "byteLength",
+        "manifestDigest",
+        "immutable",
+        "mutable"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["npm-tarball", "artifact-directory", "receipt", "capture", "scenario"]
+        },
+        "uri": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/sha256Identity" },
+        "byteLength": { "type": "integer", "minimum": 1 },
+        "manifestDigest": { "$ref": "#/$defs/sha256Identity" },
+        "immutable": { "const": true },
+        "mutable": { "const": false }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "source", "inferred", "checks"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "enum": ["ready", "not-ready"]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["observed", "inferred", "generated", "cross-cell"]
+        },
+        "inferred": { "const": false },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "status", "digest"],
+            "properties": {
+              "name": { "$ref": "#/$defs/nonEmptyString" },
+              "status": {
+                "type": "string",
+                "enum": ["passed", "failed", "pending", "skipped"]
+              },
+              "digest": { "$ref": "#/$defs/sha256Identity" }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rawRefs"],
+      "properties": {
+        "rawRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "byteLength"],
+            "properties": {
+              "path": { "$ref": "#/$defs/relativePath" },
+              "sha256": { "$ref": "#/$defs/sha256Identity" },
+              "byteLength": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cellId", "cellSha256", "binds"],
+        "properties": {
+          "cellId": {
+            "type": "string",
+            "pattern": "^cell_[A-Za-z0-9._-]{16,160}$"
+          },
+          "cellSha256": { "$ref": "#/$defs/sha256Identity" },
+          "binds": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["buildIdentity", "hostId", "hostVersion", "osPlatform", "osVersion", "scopeKind", "scopeIdentity", "component"],
+            "properties": {
+              "buildIdentity": { "$ref": "#/$defs/sha256Identity" },
+              "hostId": { "$ref": "#/$defs/nonEmptyString" },
+              "hostVersion": { "$ref": "#/$defs/nonEmptyString" },
+              "osPlatform": { "$ref": "#/$defs/nonEmptyString" },
+              "osVersion": { "$ref": "#/$defs/nonEmptyString" },
+              "scopeKind": { "$ref": "#/$defs/nonEmptyString" },
+              "scopeIdentity": { "$ref": "#/$defs/nonEmptyString" },
+              "component": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "secretsRedacted",
+        "livePathsRedacted",
+        "placeholders"
+      ],
+      "properties": {
+        "secretsRedacted": { "const": true },
+        "livePathsRedacted": { "const": true },
+        "placeholders": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/redactedPath" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256Identity": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!.*\\.\\.)(?!.*\\\\).+"
+    },
+    "redactedPath": {
+      "type": "string",
+      "pattern": "^<[^>]+>(?:[/][A-Za-z0-9._ -]+)*$"
+    }
+  }
+}

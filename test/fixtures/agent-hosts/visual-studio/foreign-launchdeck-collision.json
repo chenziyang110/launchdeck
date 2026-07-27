@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "launchdeck": {
+      "type": "stdio",
+      "command": "foreign-launcher",
+      "args": ["serve-foreign"]
+    },
+    "fixture-tools": {
+      "type": "stdio",
+      "command": "fixture-tool",
+      "args": ["serve"]
+    }
+  }
+}

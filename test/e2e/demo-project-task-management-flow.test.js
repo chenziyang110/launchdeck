@@ -139,7 +139,7 @@ test('a user installs the Codex Skill into a copied real project through the CLI
   try {
     const doctor = fixture.runCliJson(['agent', 'doctor', '--compact']);
     assert.equal(doctor.status, 0, doctor.stderr);
-    assert.equal(doctor.json.status, 'ok');
+    assert.equal(doctor.json.result.outcome, 'succeeded');
 
     const installed = fixture.runCliJson([
       'agent',

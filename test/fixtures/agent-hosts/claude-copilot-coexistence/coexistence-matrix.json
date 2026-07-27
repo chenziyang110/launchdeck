@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "revision": "claude-copilot-coexistence-contract-v1",
+  "enabled": true,
+  "provenPairs": [
+    {
+      "pairId": "claude-1.5.0-copilot-1.4.2-win32-project",
+      "platform": "win32",
+      "scope": "project",
+      "claudeVersion": "1.5.0",
+      "copilotVersion": "1.4.2",
+      "configPath": ".mcp.json",
+      "dialect": "mcpServers.launchdeck",
+      "fixtureRevision": "shared-mcp-contract-v1",
+      "realHostEvidenceRevision": "synthetic-coexistence-v1",
+      "evidenceRevision": "synthetic-coexistence-v1"
+    }
+  ]
+}

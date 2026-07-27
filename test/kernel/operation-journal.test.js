@@ -192,6 +192,56 @@ test('unsupported newer records permit bounded diagnosis but block every write p
   });
 });
 
+test('installer journal accepts the registered Codex TOML ownership boundary', async () => {
+  await withJournal(async ({ journal }) => {
+    const operationId = 'op_codexownershipboundary01';
+    const action = {
+      actionId: 'action_codexmcp00000001',
+      kind: 'write-config',
+      targetId: 'codex:project:mcp',
+      ownershipBoundary: '[mcp_servers.launchdeck]',
+      targetPath: 'C:\\fixture\\.codex\\config.toml',
+      preconditionDigest: digest('0'),
+      desiredDigest: digest('1'),
+      requiresBackup: true
+    };
+    const prepared = await journal.prepare(operationInput(operationId, {
+      operationName: 'agent.setup',
+      installer: {
+        schemaVersion: 1,
+        kind: 'agent-installer',
+        operation: 'setup',
+        planId: 'plan_codexownership01',
+        planDigest: digest('2'),
+        planBindingDigest: digest('3'),
+        scope: 'project',
+        scopeIdentity: 'project:fixture',
+        projectIdentity: 'C:\\fixture',
+        buildIdentity: digest('4'),
+        includeLauncher: false,
+        resourceLocks: [],
+        actions: [action],
+        effects: [],
+        verificationEvidence: [],
+        backupRefs: [],
+        previousBuildPins: [],
+        receiptCandidate: null,
+        receiptRef: null,
+        rollbackEvidence: [],
+        rollbackErrors: [],
+        reconciliationEvidence: null,
+        checkpoints: ['prepared'],
+        terminalResult: null
+      }
+    }));
+
+    assert.equal(
+      prepared.record.installer.actions[0].ownershipBoundary,
+      '[mcp_servers.launchdeck]'
+    );
+  });
+});
+
 function operationInput(operationId, overrides = {}) {
   return {
     operationId,

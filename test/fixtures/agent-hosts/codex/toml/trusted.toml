@@ -1,0 +1,10 @@
+# keep this comment
+[tool.keep]
+enabled = true
+
+[mcp_servers.keep]
+command = "keep-server"
+args = ["--safe"]
+
+[notes]
+message = "leave me alone"

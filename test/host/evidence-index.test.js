@@ -17,7 +17,9 @@ test('evidence index binds every entry to one real cell and its exact candidate 
     const cell = readJson(path.join(evidenceRoot, entry.path));
     assert.equal(cell.cellId, entry.cellId, entry.path);
     assert.ok(['current', 'superseded'].includes(entry.candidateRelation), entry.path);
-    assert.equal(entry.candidateRelation === 'current', cell.buildIdentity === index.candidate.buildIdentity, entry.path);
+    const cellBuildIdentity = cell.buildIdentity ?? cell.identity?.buildIdentity;
+    assert.match(cellBuildIdentity, /^sha256:[0-9a-f]{64}$/, entry.path);
+    assert.equal(entry.candidateRelation === 'current', cellBuildIdentity === index.candidate.buildIdentity, entry.path);
   }
 });
 

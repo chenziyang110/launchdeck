@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://launchdeck.dev/schema/agent-installer-result.schema.json",
+  "title": "Launchdeck Agent Installer Execution Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ok",
+    "command",
+    "result"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "command": {
+      "type": "string",
+      "minLength": 1
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "effectCertainty",
+        "scope",
+        "projectIdentity",
+        "buildIdentity",
+        "operationId",
+        "planDigest",
+        "receiptId",
+        "targets",
+        "health",
+        "effects",
+        "nextActions",
+        "error"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "planned",
+            "cancelled",
+            "noop",
+            "succeeded",
+            "refused",
+            "failed-and-rolled-back",
+            "partial",
+            "indeterminate",
+            "reconciled"
+          ]
+        },
+        "effectCertainty": {
+          "enum": [
+            "none",
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "project",
+            "user"
+          ]
+        },
+        "projectIdentity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "buildIdentity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "operationId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "planDigest": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "receiptId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "targets": {
+          "type": "array"
+        },
+        "health": {
+          "type": "array"
+        },
+        "effects": {
+          "type": "array"
+        },
+        "nextActions": {
+          "type": "array"
+        },
+        "error": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "refused"
+              },
+              "effectCertainty": {
+                "const": "none"
+              },
+              "operationId": {
+                "type": "null"
+              },
+              "receiptId": {
+                "type": "null"
+              },
+              "planDigest": {
+                "type": "null"
+              },
+              "targets": {
+                "maxItems": 0
+              },
+              "effects": {
+                "maxItems": 0
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "buildIdentity": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "planDigest": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "buildIdentity": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "planDigest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
