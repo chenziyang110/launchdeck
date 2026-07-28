@@ -24,9 +24,14 @@ Or install it into another project:
 ```bash
 npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.3.0
 npx launchdeck --help
-npx launchdeck agent setup --host codex --component runtime,skill,mcp --scope project --project . --yes --json
+npx launchdeck agent setup
 npx launchdeck agent status --host codex --scope project --project . --json
 ```
+
+The interactive setup wizard uses arrow keys to move, Space to select one or more
+hosts/components, and Enter to confirm. Installation scope and final approval are
+also selectable prompts; no comma-separated input is required. Scripts and CI can
+continue to pass `--host`, `--component`, `--scope`, `--yes`, and `--json` explicitly.
 
 `--install-links=true` makes npm materialize the packed Git dependency instead of linking its temporary clone, which npm removes after installation on some Windows configurations.
 
