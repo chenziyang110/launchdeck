@@ -13,7 +13,7 @@ Launchdeck requires Node.js 20 or newer. npm registry publication is a separate 
 Install the CLI globally:
 
 ```bash
-npm install --global github:chenziyang110/launchdeck#v0.3.0
+npm install --global --install-links=true github:chenziyang110/launchdeck#v0.3.0
 launchdeck --help
 launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
 launchdeck agent status --host codex --scope user --json
@@ -22,11 +22,13 @@ launchdeck agent status --host codex --scope user --json
 Or install it into another project:
 
 ```bash
-npm install --save-dev github:chenziyang110/launchdeck#v0.3.0
+npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.3.0
 npx launchdeck --help
 npx launchdeck agent setup --host codex --component runtime,skill,mcp --scope project --project . --yes --json
 npx launchdeck agent status --host codex --scope project --project . --json
 ```
+
+`--install-links=true` makes npm materialize the packed Git dependency instead of linking its temporary clone, which npm removes after installation on some Windows configurations.
 
 Run the project-local form from the consuming project. A Launchdeck source checkout does not need to add Launchdeck as its own dependency; use `node src/cli.js ...` there. Host trust or reload may still be required after setup, so confirm readiness with `agent status` or `agent doctor` for the same host, scope, and build.
 
@@ -40,7 +42,7 @@ npm install --global .
 launchdeck --help
 ```
 
-## What v0.2 Covers
+## What v0.3 Covers
 
 - `init` creates a project-local `.launchdeck.yml`.
 - `doctor` inspects config and reports stable findings.
