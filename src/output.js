@@ -22,6 +22,11 @@ export function createSuccessEnvelope(command, payload = {}, context = {}) {
 export function createFailureEnvelope(command, error, context = {}, payload = {}) {
   const errorPayload = toContractErrorPayload(error);
   const { next, agentResult, ...rest } = payload;
+  const publicFailure = {
+    ...rest,
+    availableTasks: rest.availableTasks ?? errorPayload.details?.availableTasks,
+    effect: publicPreDispatchEffect(rest.effect ?? errorPayload.details?.effect, agentResult)
+  };
   const nextActions = normalizeNextActions(
     next ?? error?.next ?? errorPayload.next ?? errorPayload.details?.next,
     errorPayload.code,
@@ -33,10 +38,10 @@ export function createFailureEnvelope(command, error, context = {}, payload = {}
     command,
     status: 'error',
     ...contextFields(context),
-    data: compactEnvelope({ ...rest, agentResult }),
-    ...contractErrorFields(errorPayload, rest),
+    data: compactEnvelope({ ...publicFailure, agentResult }),
+    ...contractErrorFields(errorPayload, publicFailure),
     next: nextActions,
-    ...rest,
+    ...publicFailure,
     error: errorPayload
   });
 }
@@ -119,8 +124,9 @@ export function toCompactJson(value) {
 }
 
 export function writeJson(io, value) {
-  const output = io?.launchdeckJson?.compact ? toCompactJson(value) : value;
-  io.stdout.write(stringifyJson(output));
+  const compact = io?.launchdeckJson?.compact === true;
+  const output = compact ? toCompactJson(value) : value;
+  io.stdout.write(compact ? `${JSON.stringify(output)}\n` : stringifyJson(output));
 }
 
 function contextFields(context) {
@@ -141,6 +147,20 @@ function contractErrorFields(errorPayload, payload) {
     code: payload.code ?? errorPayload.code,
     message: payload.message ?? errorPayload.message,
     details: payload.details ?? errorPayload.details ?? {}
+  };
+}
+
+function publicPreDispatchEffect(effect, agentResult) {
+  if (effect === undefined) return undefined;
+  if (!agentResult?.effects) return effect;
+  const noEffects = agentResult.effects.certainty === 'none'
+    && agentResult.effects.changed === false;
+  return {
+    certainty: agentResult.effects.certainty,
+    changed: agentResult.effects.changed,
+    dispatch: noEffects && effect.dispatch === 'not_dispatched'
+      ? 'not_dispatched'
+      : 'possibly_dispatched'
   };
 }
 
@@ -205,6 +225,11 @@ const ENVELOPE_KEYS = new Set([
 ]);
 
 const SCALAR_KEYS = [
+  'availableTasks',
+  'capabilities',
+  'effect',
+  'filters',
+  'pagination',
   'scope',
   'target',
   'task',
@@ -369,7 +394,7 @@ function compactProcess(processInfo) {
   return pickCompact(
     {
       ...processInfo,
-      project: compactProject(processInfo.project),
+      project: compactProject(processInfo.project) ?? processInfo.projectAlias ?? processInfo.projectId,
       task: processInfo.task ?? processInfo.name
     },
     ['project', 'task', 'status', 'pid', 'ports', 'runId', 'spawned', 'readiness', 'ownership', 'ownerType', 'exitCode']

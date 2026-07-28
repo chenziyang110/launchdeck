@@ -95,7 +95,7 @@ export function normalizeConfig(input, context = {}) {
     throw new LaunchdeckConfigError('Launchdeck config requires at least one task.');
   }
 
-  const project = normalizeProject(input.project, projectRoot);
+  const project = normalizeProject(input.project, projectRoot, tasks);
 
   return {
     version,
@@ -156,16 +156,28 @@ export function normalizeTask(name, value, projectRoot = process.cwd()) {
   };
 }
 
-function normalizeProject(project, projectRoot) {
+function normalizeProject(project, projectRoot, tasks) {
   if (project === undefined) {
     return { name: path.basename(projectRoot) };
   }
   if (!project || typeof project !== 'object' || Array.isArray(project)) {
     throw new LaunchdeckConfigError('`project` must be an object when provided.');
   }
-  return {
+  const normalized = {
     name: optionalString(project.name) ?? path.basename(projectRoot)
   };
+  const defaultTask = optionalString(project.defaultTask);
+  if (defaultTask !== undefined) {
+    if (!Object.hasOwn(tasks, defaultTask)) {
+      throw new LaunchdeckConfigError(
+        `project.defaultTask '${defaultTask}' does not name an existing task.`,
+        'config_invalid',
+        { defaultTask, tasks: Object.keys(tasks) }
+      );
+    }
+    normalized.defaultTask = defaultTask;
+  }
+  return normalized;
 }
 
 function normalizeClean(clean) {

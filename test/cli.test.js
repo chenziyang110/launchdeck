@@ -5,11 +5,21 @@ import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
-import test from 'node:test';
+import test, { after } from 'node:test';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, '..');
 const cliPath = path.join(repoRoot, 'src', 'cli.js');
+const isolatedEnvironmentKeys = new Set([
+  'LAUNCHDECK_HOME',
+  'HOME',
+  'USERPROFILE',
+  'LOCALAPPDATA',
+  'XDG_STATE_HOME'
+]);
+const cliIsolation = createCliIsolation();
+
+after(() => cliIsolation.cleanup());
 
 test('runs the local lifecycle flow end to end', async () => {
   const projectRoot = createTempProject();
@@ -151,6 +161,7 @@ function runCli(args, cwd) {
   return spawnSync(process.execPath, [cliPath, ...args], {
     cwd,
     encoding: 'utf8',
+    env: cliIsolation.env,
     windowsHide: true
   });
 }
@@ -161,6 +172,46 @@ function parseJson(stdout) {
 
 function createTempProject() {
   return canonicalPath(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-cli-')));
+}
+
+function createCliIsolation() {
+  const tempRoot = canonicalPath(os.tmpdir());
+  const ownedRoot = canonicalPath(fs.mkdtempSync(path.join(tempRoot, 'launchdeck-cli-state-')));
+  const env = {
+    ...Object.fromEntries(
+      Object.entries(process.env)
+        .filter(([key]) => !isolatedEnvironmentKeys.has(key.toUpperCase()))
+    ),
+    LAUNCHDECK_HOME: path.join(ownedRoot, 'launchdeck-home'),
+    HOME: path.join(ownedRoot, 'home'),
+    USERPROFILE: path.join(ownedRoot, 'userprofile'),
+    LOCALAPPDATA: path.join(ownedRoot, 'localappdata'),
+    XDG_STATE_HOME: path.join(ownedRoot, 'xdg-state-home')
+  };
+
+  for (const directory of [
+    env.LAUNCHDECK_HOME,
+    env.HOME,
+    env.USERPROFILE,
+    env.LOCALAPPDATA,
+    env.XDG_STATE_HOME
+  ]) {
+    fs.mkdirSync(directory, { recursive: true });
+  }
+
+  return {
+    env,
+    cleanup() {
+      const resolvedRoot = canonicalPath(ownedRoot);
+      if (
+        path.dirname(resolvedRoot) !== tempRoot
+        || !path.basename(resolvedRoot).startsWith('launchdeck-cli-state-')
+      ) {
+        throw new Error(`Refusing to clean non-test CLI state root: ${resolvedRoot}`);
+      }
+      removeWithRetry(resolvedRoot);
+    }
+  };
 }
 
 function removeTempProject(projectRoot) {

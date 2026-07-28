@@ -11,6 +11,31 @@ export function createCapabilitiesHandlers(options = {}) {
     components: {}
   };
   const diagnosticChecks = Object.freeze({ ...(options.diagnosticChecks ?? {}) });
+  const operations = OPERATION_REGISTRY.map((definition) => ({
+    name: definition.name,
+    kind: definition.kind,
+    maxAgentRisk: definition.maxAgentRisk
+  }));
+  const identity = {
+    product: options.identity?.product ?? 'Launchdeck',
+    package: {
+      name: options.identity?.package?.name ?? 'launchdeck',
+      version: options.identity?.package?.version ?? provenance.runtimeVersion
+    },
+    buildIdentity: provenance.buildIdentity
+  };
+  const contracts = options.contracts ?? {
+    agentProtocol: { current: provenance.agentProtocolVersion },
+    cliSchema: { current: provenance.cliSchemaVersion },
+    configSchema: { current: null }
+  };
+  const executable = {
+    kind: provenance.runtimeKind,
+    path: options.executable?.path ?? provenance.runtimePath,
+    runtimePath: options.executable?.runtimePath,
+    runtimeVersion: options.executable?.runtimeVersion ?? provenance.runtimeVersion,
+    buildIdentity: provenance.buildIdentity
+  };
 
   return Object.freeze({
     'capabilities.get': async () => ({
@@ -24,16 +49,26 @@ export function createCapabilitiesHandlers(options = {}) {
         runId: null,
         data: {
           agentOperations: OPERATION_REGISTRY.map((definition) => definition.name),
-          operations: OPERATION_REGISTRY.map((definition) => ({
-            name: definition.name,
-            kind: definition.kind,
-            maxAgentRisk: definition.maxAgentRisk
-          })),
+          operations,
           riskBoundary: 'low-only',
           stateHome: provenance.stateHome,
           agentProtocolVersion: provenance.agentProtocolVersion,
           cliSchemaVersion: provenance.cliSchemaVersion,
           buildIdentity: provenance.buildIdentity,
+          identity,
+          contracts,
+          riskPolicy: {
+            boundary: 'low-only',
+            maxAgentRisk: 'low',
+            mutationOperations: operations
+              .filter((operation) => operation.kind === 'mutation')
+              .map((operation) => operation.name)
+          },
+          state: {
+            scope: options.stateScope ?? 'global',
+            home: provenance.stateHome
+          },
+          executable,
           compatibility: redactObservation(compatibility),
           evidence: redactObservation(options.evidence ?? {})
         }

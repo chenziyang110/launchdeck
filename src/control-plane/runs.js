@@ -127,7 +127,7 @@ export function readRunIndex(env = process.env) {
   return {
     version: parsed.version,
     updatedAt: parsed.updatedAt,
-    runs: parsed.runs
+    runs: deduplicateRuns(parsed.runs)
   };
 }
 
@@ -211,6 +211,7 @@ async function recordGlobalRun(processInfo, runContext, env = process.env) {
     const run = {
       runId: processInfo.runId,
       transactionId: processInfo.transactionId,
+      operationId: runContext.operationId,
       projectId: runContext.projectId,
       projectAlias: runContext.projectAlias,
       projectRoot: runContext.projectRoot,
@@ -228,10 +229,7 @@ async function recordGlobalRun(processInfo, runContext, env = process.env) {
       ownershipConfidence: processInfo.ownershipConfidence,
       ownershipProof: processInfo.ownershipProof
     };
-    const runs = [
-      ...state.runs.filter((candidate) => candidate.runId !== run.runId),
-      run
-    ].sort(compareRuns);
+    const runs = deduplicateRuns([...state.runs, run]).sort(compareRuns);
     atomicWriteJson(paths.runsPath, {
       version: RUN_INDEX_VERSION,
       updatedAt: new Date().toISOString(),
@@ -436,6 +434,90 @@ function makeId(prefix) {
 function compareRuns(left, right) {
   return String(left.projectAlias ?? '').localeCompare(String(right.projectAlias ?? ''))
     || String(left.task ?? '').localeCompare(String(right.task ?? ''));
+}
+
+function deduplicateRuns(runs) {
+  const parents = runs.map((_, index) => index);
+  const ownerByIdentity = new Map();
+
+  for (let index = 0; index < runs.length; index += 1) {
+    for (const identity of runIdentities(runs[index])) {
+      const owner = ownerByIdentity.get(identity);
+      if (owner === undefined) {
+        ownerByIdentity.set(identity, index);
+      } else {
+        unionRunGroups(parents, index, owner);
+      }
+    }
+  }
+
+  const newestByGroup = new Map();
+  for (let index = 0; index < runs.length; index += 1) {
+    const group = findRunGroup(parents, index);
+    const current = newestByGroup.get(group);
+    if (current === undefined || compareRunFreshness(runs[index], index, runs[current], current) > 0) {
+      newestByGroup.set(group, index);
+    }
+  }
+
+  return [...newestByGroup.values()]
+    .sort((left, right) => left - right)
+    .map((index) => runs[index]);
+}
+
+function runIdentities(run) {
+  if (!run || typeof run !== 'object' || Array.isArray(run)) {
+    return [];
+  }
+  const identities = [];
+  if (typeof run.runId === 'string' && run.runId.length > 0) {
+    identities.push(`run:${run.runId}`);
+  }
+  if (typeof run.operationId === 'string' && run.operationId.length > 0) {
+    identities.push(`operation:${run.operationId}`);
+  }
+  if (
+    run.projectId
+    && run.task
+    && Number.isInteger(Number(run.pid))
+    && Number(run.pid) > 0
+    && run.startedAt
+  ) {
+    identities.push(`process:${run.projectId}:${run.task}:${Number(run.pid)}:${run.startedAt}`);
+  }
+  return identities;
+}
+
+function findRunGroup(parents, index) {
+  let root = index;
+  while (parents[root] !== root) {
+    root = parents[root];
+  }
+  while (parents[index] !== index) {
+    const next = parents[index];
+    parents[index] = root;
+    index = next;
+  }
+  return root;
+}
+
+function unionRunGroups(parents, left, right) {
+  const leftRoot = findRunGroup(parents, left);
+  const rightRoot = findRunGroup(parents, right);
+  if (leftRoot !== rightRoot) {
+    parents[rightRoot] = leftRoot;
+  }
+}
+
+function compareRunFreshness(left, leftIndex, right, rightIndex) {
+  return runTimestamp(left) - runTimestamp(right) || leftIndex - rightIndex;
+}
+
+function runTimestamp(run) {
+  const timestamps = [run?.lastObservedAt, run?.updatedAt, run?.startedAt]
+    .map((value) => Date.parse(value ?? ''))
+    .filter((value) => !Number.isNaN(value));
+  return timestamps.length > 0 ? Math.max(...timestamps) : 0;
 }
 
 function hasLaunchdeckOwnedEvidence(run) {

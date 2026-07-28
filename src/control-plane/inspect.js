@@ -16,11 +16,12 @@ import { controlPlanePaths } from './state.js';
 
 export async function buildGlobalStatus(env = process.env) {
   const projects = listRegisteredProjects(env);
-  const runs = listGlobalRuns(env);
-  const processResult = listGlobalProcesses(env);
-  const portResult = await listGlobalPorts(env);
+  const checkedAt = new Date().toISOString();
+  const runs = listGlobalRuns(env, { checkedAt });
+  const processResult = listGlobalProcesses(env, { runs });
+  const portResult = await listGlobalPorts(env, { runs, checkedAt });
   const errors = mergeProjectErrors(processResult.errors, portResult.errors);
-  const conflicts = conflictsFromPorts(portResult.ports);
+  const conflicts = portResult.conflicts;
   const projectEntries = projects.map((project) =>
     globalProjectStatus(project, {
       runs: runs.filter((run) => run.projectId === project.projectId || run.projectId === project.id),
@@ -52,9 +53,9 @@ export async function buildGlobalStatus(env = process.env) {
   };
 }
 
-export function listGlobalRuns(env = process.env) {
+export function listGlobalRuns(env = process.env, options = {}) {
   return readRunIndex(env).runs.map((run) => {
-    const observed = observedRun(run);
+    const observed = observedRun(run, { checkedAt: options.checkedAt });
     return {
       ...observed,
       next: nextActionsForRun(observed)
@@ -65,13 +66,13 @@ export function listGlobalRuns(env = process.env) {
   );
 }
 
-export function listGlobalProcesses(env = process.env) {
+export function listGlobalProcesses(env = process.env, options = {}) {
   const projects = listRegisteredProjects(env);
   const projectById = new Map(projects.flatMap((project) => [
     [project.projectId, project],
     [project.id, project]
   ].filter(([key]) => key)));
-  const processes = listGlobalRuns(env).map((run) =>
+  const processes = (options.runs ?? listGlobalRuns(env)).map((run) =>
     processEntryForRun(run, projectById.get(run.projectId))
   );
 
@@ -81,10 +82,10 @@ export function listGlobalProcesses(env = process.env) {
   };
 }
 
-export async function listGlobalPorts(env = process.env) {
+export async function listGlobalPorts(env = process.env, options = {}) {
   const ports = [];
   const errors = [];
-  const runs = listGlobalRuns(env);
+  const runs = options.runs ?? listGlobalRuns(env, { checkedAt: options.checkedAt });
   const processEvidenceCache = new Map();
   for (const project of listRegisteredProjects(env)) {
     try {
@@ -97,7 +98,11 @@ export async function listGlobalPorts(env = process.env) {
 
         const run = findRunForTask(runs, project, task.name);
         for (const port of task.ports) {
-          const inspection = await inspectPort(port, env, { processEvidenceCache });
+          const inspection = await inspectPort(port, env, {
+            processEvidenceCache,
+            runs,
+            checkedAt: options.checkedAt
+          });
           const declaredOwner = findDeclaredOwnerInspection(inspection.declaredOwners, project, task.name);
           const observedOwnershipProof = declaredOwner?.ownershipProof
             ?? proveRunOwnership(run, { listeners: inspection.listeners, checkedAt: inspection.checkedAt, processEvidenceCache });
@@ -161,7 +166,7 @@ export async function inspectPort(port, env = process.env, options = {}) {
     }];
   }
 
-  const checkedAt = new Date().toISOString();
+  const checkedAt = options.checkedAt ?? new Date().toISOString();
   const declaredOwners = await declaredOwnersForPort(normalizedPort, env, listeners, checkedAt, ownershipOptions);
   const portObservation = buildPortObservation({
     port: normalizedPort,
@@ -542,7 +547,7 @@ function safeListProcesses(projectRoot) {
 
 async function declaredOwnersForPort(port, env, listeners = [], checkedAt = new Date().toISOString(), options = {}) {
   const owners = [];
-  const runs = listGlobalRuns(env);
+  const runs = options.runs ?? listGlobalRuns(env, { checkedAt });
   for (const project of listRegisteredProjects(env)) {
     try {
       const config = loadRegisteredConfig(project);

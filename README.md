@@ -15,6 +15,8 @@ Install the CLI globally:
 ```bash
 npm install --global github:chenziyang110/launchdeck#v0.2.0
 launchdeck --help
+launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
+launchdeck agent status --host codex --scope user --json
 ```
 
 Or install it into another project:
@@ -22,7 +24,11 @@ Or install it into another project:
 ```bash
 npm install --save-dev github:chenziyang110/launchdeck#v0.2.0
 npx launchdeck --help
+npx launchdeck agent setup --host codex --component runtime,skill,mcp --scope project --project . --yes --json
+npx launchdeck agent status --host codex --scope project --project . --json
 ```
+
+Run the project-local form from the consuming project. A Launchdeck source checkout does not need to add Launchdeck as its own dependency; use `node src/cli.js ...` there. Host trust or reload may still be required after setup, so confirm readiness with `agent status` or `agent doctor` for the same host, scope, and build.
 
 To work from a source checkout instead:
 
@@ -301,11 +307,11 @@ The table below documents target paths, not an aggregate support guarantee. A ho
 
 `launchdeck agent install` copies the skill directory into `<target>/launchdeck-agent`. It does not delete target files, and it refuses divergent existing targets unless `--force` is supplied. Use `--dry-run` to preview planned writes. Use `--target <dir>` only when you want an explicit skill-root override, such as an isolated test or manual sync destination.
 
-`agent setup`, `agent update`, `agent repair`, and `agent uninstall` report exact host evidence boundaries: detected host/version, selected component, project or explicit user scope, target path, digest, build identity, receipt ownership, and any host approval/reload/readiness state. A pending host approval or required reload is not the same as runtime readiness. Immutable build receipts pin the launcher and MCP runtime to a verified build identity; update creates a new receipt instead of mutating the meaning of an old one.
+`agent paths`, `agent install`, `agent setup`, `agent status`, and `agent doctor` return structured entrypoint identity for the package CLI module, stable MCP launcher, and pinned runtime, including existence, scope, and build identity. Setup/update/repair/uninstall also report exact host evidence boundaries: detected host/version, selected component, target path, digest, receipt ownership, and any host approval/reload/readiness state. A pending host approval or required reload is not the same as runtime readiness. Immutable build receipts pin the launcher and MCP runtime to a verified build identity; update creates a new receipt instead of mutating the meaning of an old one.
 
 ## Agent And Plugin Surfaces
 
-The canonical Skill is MCP-first: it observes through `capabilities.get` before it selects one declared low-risk operation. Its compatible CLI fallback is limited to pre-dispatch MCP unavailability or an omitted safe capability. Once a mutation may have been dispatched, it recovers by operation ID or a bounded correlation query; it does not repeat the mutation on another surface.
+The canonical Skill resolves one entrypoint deterministically: available Launchdeck MCP, global `launchdeck`, project-local `node_modules/.bin/launchdeck`, then `src/cli.js` only in a verified Launchdeck source checkout. It reuses the handshake winner for the request. Before any mutation dispatch, MCP unavailability may fall back to compatible CLI JSON for capabilities, project listing, and read-only config discovery. Once a mutation may have been dispatched, it recovers by operation ID or a bounded correlation query; it never switches entrypoints or repeats the mutation on another surface.
 
 Adoption inspection remains read-only. MCP `adoption.inspect` is used only for a registered/resolved target; an unregistered missing-config project is inspected through the Agent's bounded workspace read surface because the CLI adoption command also requires an existing config. When a user explicitly asks to create a project-adapted `.launchdeck.yml`, the Skill may write one missing config for exact or strong candidates and validate it with `launchdeck doctor`. It preserves any existing config and never registers, starts, stops, restarts, cleans, or controls processes as a config-authoring side effect.
 

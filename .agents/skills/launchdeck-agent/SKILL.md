@@ -26,7 +26,8 @@ Project scope is the default for setup/install planning. User scope is explicit;
 
 Read only the needed reference:
 
-- `references/intent-routing.md` - decide trigger, non-trigger, and subflow.
+- `references/intent-routing.md` - decide trigger, non-trigger, author-only, lifecycle-only, or explicit configure-validate-launch subflow.
+- `references/entrypoint-discovery.md` - select and pin the installed MCP or CLI entrypoint before any operation.
 - `references/adoption-flow.md` - read-only inspection plus the separate explicit missing-config authoring flow.
 - `references/discovery-rules.md` - evidence and confidence rules for Node, Python, Docker Compose, Make, Just, and Taskfile.
 - `references/command-flows.md` - MCP-first managed start/run/restart/stop and bounded observation.
@@ -36,13 +37,16 @@ Read only the needed reference:
 
 ## Operating Rules
 
-1. Pass the intent gate, then call `capabilities.get` before selecting an operation or fallback surface.
-2. For lifecycle operations, use MCP observation before one low-risk mutation. Let the Kernel decide current scope, risk, ownership, compatibility, locks, and clean digest.
-3. Use compatible CLI JSON fallback for lifecycle operations only when MCP is unavailable before dispatch or omits the required safe operation. Re-check CLI capabilities and observe again before its one mutation.
-4. After any mutation might have been dispatched, never fall back or repeat it. Recover by known operation ID or one bounded `operation.list` correlation followed by get/reconcile.
-5. Treat risk, ownership, scope, compatibility, lock, digest, config, and input refusals as final. Report them without another surface.
-6. Keep adoption inspection read-only. Author one missing `.launchdeck.yml` only through the explicit authoring branch in `adoption-flow.md`; preserve every existing config and never chain registration or lifecycle execution.
-7. Refuse requests to execute force, risky/destructive clean, raw command/env/cwd, external termination, medium-risk, remote/production, or permanent-follow behavior without calling a lifecycle operation.
-8. Use accepted Agent-facing lifecycle aliases when the user asks for the normal webpage/service flow: `up`, `status --all`, `logs <task>`, and `down`. For the Flask demo flow, logs must target `start`, not the default `dev`.
-9. User-facing response should include conclusion, target, outcome, resource status/URL/port when known, evidence, and a safe next action.
-10. Be precise about evidence: deterministic fixtures prove deterministic fixture behavior only. Do not claim unverified real hosts, operating systems, host versions, or extension readiness without a current matching evidence cell.
+1. Pass the intent gate, then follow `entrypoint-discovery.md` exactly. Pin the first usable MCP or CLI entrypoint, its build identity, and scope for the whole request.
+2. Call `capabilities.get` through that entrypoint before selecting an operation.
+3. For lifecycle operations, use MCP observation before one low-risk mutation. Let the Kernel decide current scope, risk, ownership, compatibility, locks, and clean digest.
+4. Use compatible CLI JSON fallback only when MCP is unavailable before dispatch or omits the required safe operation. Read-only discovery may use the bounded fallback in `entrypoint-discovery.md`; lifecycle mutation must re-check CLI capabilities and observe again before its one mutation.
+5. After any mutation might have been dispatched, never fall back, switch entrypoints, or repeat it. Recover by known operation ID or one bounded `operation.list` correlation followed by get/reconcile.
+6. Correct a deterministic task input at most once only when the public CLI refusal proves `effect.certainty: none`, `effect.changed: false`, and `effect.dispatch: not_dispatched`. Choose only from `availableTasks`, honoring `project.defaultTask`; otherwise ask the user instead of guessing.
+7. Treat risk, ownership, scope, compatibility, lock, digest, config, and input refusals as final. Apart from the one proven non-dispatch input correction above, report them without another surface.
+8. Keep adoption inspection read-only. Author one missing `.launchdeck.yml` only through the explicit authoring branch in `adoption-flow.md`; preserve every existing config. Configuration authoring alone stops after validation. Only a current request that explicitly combines missing-config authoring, validation, and launch may continue through the guarded combined-intent branch.
+9. Refuse requests to execute force, risky/destructive clean, raw command/env/cwd, external termination, medium-risk, remote/production, or permanent-follow behavior without calling a lifecycle operation.
+10. Use accepted Agent-facing lifecycle aliases when the user asks for the normal webpage/service flow: `up`, `status --all`, `logs <task>`, and `down`. For the Flask demo flow, logs must target `start`, not the default `dev`.
+11. User-facing response should include conclusion, target, outcome, resource status/URL/port when known, evidence, and a safe next action.
+12. Be precise about evidence: deterministic fixtures prove deterministic fixture behavior only. Do not claim unverified real hosts, operating systems, host versions, or extension readiness without a current matching evidence cell.
+13. In a combined configure-validate-launch request, keep discovery, filesystem authoring, validation, fresh capability/observation, the single lifecycle mutation, and bounded post-start observation as separate operation/effect evidence. Validation failure, scope ambiguity, config collision, non-low risk, or unknown/possibly-dispatched effect stops the flow. Preserve a successfully written user config; never roll it back or replay a lifecycle mutation.

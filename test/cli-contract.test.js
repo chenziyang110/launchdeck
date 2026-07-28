@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
+import YAML from 'yaml';
 import { createCliFixture } from './helpers/cli-fixture.js';
 
 test('help documents the typed inspect target contract', () => {
@@ -15,6 +16,7 @@ test('help documents the typed inspect target contract', () => {
     assert.match(result.stdout, /task:<project:task>/);
     assert.match(result.stdout, /port:<port>/);
     assert.match(result.stdout, /pid:<pid>/);
+    assert.match(result.stdout, /config propose[\s\S]*?--workspace/);
   } finally {
     fixture.cleanup();
   }
@@ -24,6 +26,7 @@ const CONTRACT_ERROR_CODES = new Set([
   'config_not_found',
   'config_exists',
   'config_invalid',
+  'config_changed',
   'unsupported_config_version',
   'project_root_escape',
   'scan_root_not_found',
@@ -79,6 +82,158 @@ test('init --json refuses an existing or ancestor config with config_exists', ()
     assert.equal(result.status, 1);
     assertFailureEnvelope(result.json, 'init', 'config_exists');
     assert.equal(result.json.error.details.configPath, fixture.path('.launchdeck.yml'));
+  });
+});
+
+test('init --nested creates an independent child config without changing the ancestor', () => {
+  withFixture((fixture) => {
+    fixture.writeConfig(validConfig());
+    const ancestorPath = fixture.path('.launchdeck.yml');
+    const ancestorBefore = fs.readFileSync(ancestorPath, 'utf8');
+    const child = fixture.path('packages', 'web');
+    fs.mkdirSync(child, { recursive: true });
+
+    const refused = fixture.runCliJson(['init'], { cwd: child });
+    assert.equal(refused.status, 1);
+    assertFailureEnvelope(refused.json, 'init', 'config_exists');
+    assert.deepEqual(
+      refused.json.error.details.recoveryPaths.map((entry) => entry.kind),
+      ['nested_config', 'workspace_task_cwd']
+    );
+
+    const forced = fixture.runCliJson(['init', '--force'], { cwd: child });
+    assert.equal(forced.status, 1);
+    assertFailureEnvelope(forced.json, 'init', 'config_exists');
+    assert.equal(fs.readFileSync(ancestorPath, 'utf8'), ancestorBefore);
+    assert.equal(fs.existsSync(path.join(child, '.launchdeck.yml')), false);
+
+    const created = fixture.runCliJson(['init', '--nested'], { cwd: child });
+    assert.equal(created.status, 0, created.stderr);
+    assert.equal(created.json.path, path.join(child, '.launchdeck.yml'));
+    assert.equal(fs.readFileSync(ancestorPath, 'utf8'), ancestorBefore);
+    assert.equal(fs.existsSync(path.join(child, '.launchdeck.yml')), true);
+  });
+});
+
+test('config validate is read-only and config propose returns a task-scoped diff without writing', () => {
+  withFixture((fixture) => {
+    fixture.writeConfig(validConfig());
+    const configPath = fixture.path('.launchdeck.yml');
+    const before = fs.readFileSync(configPath, 'utf8');
+
+    const validated = fixture.runCliJson(['config', 'validate']);
+    assert.equal(validated.status, 0, validated.stderr);
+    assertSuccessEnvelope(validated.json, 'config validate');
+
+    const proposed = fixture.runCliJson([
+      'config', 'propose', '--task', 'web', '--command', 'npm run dev', '--cwd', '.', '--long-running'
+    ]);
+    assert.equal(proposed.status, 0, proposed.stderr);
+    assertSuccessEnvelope(proposed.json, 'config propose');
+    assert.equal(proposed.json.operation, 'add');
+    assert.match(proposed.json.diff, /tasks\.web/);
+    assert.equal(fs.readFileSync(configPath, 'utf8'), before);
+  });
+});
+
+test('config patch requires approval and then applies one approved task patch', () => {
+  withFixture((fixture) => {
+    fixture.writeConfig(validConfig());
+    const configPath = fixture.path('.launchdeck.yml');
+    const before = fs.readFileSync(configPath, 'utf8');
+    const args = ['config', 'patch', '--task', 'web', '--command', 'npm run dev', '--long-running'];
+
+    const refused = fixture.runCliJson(args);
+    assert.equal(refused.status, 1);
+    assertFailureEnvelope(refused.json, 'config', 'confirmation_required');
+    assert.equal(fs.readFileSync(configPath, 'utf8'), before);
+
+    const patched = fixture.runCliJson([...args, '--yes']);
+    assert.equal(patched.status, 0, patched.stderr);
+    assertSuccessEnvelope(patched.json, 'config patch');
+    assert.equal(patched.json.changed, true);
+    assert.equal(YAML.parse(fs.readFileSync(configPath, 'utf8')).tasks.web.command, 'npm run dev');
+  });
+});
+
+test('config patch can bind approval to the exact reviewed proposal digest', () => {
+  withFixture((fixture) => {
+    fixture.writeConfig(validConfig());
+    const configPath = fixture.path('.launchdeck.yml');
+    const args = ['--task', 'web', '--command', 'npm run dev', '--long-running'];
+
+    const proposed = fixture.runCliJson(['config', 'propose', ...args]);
+    assert.equal(proposed.status, 0, proposed.stderr);
+    assert.match(proposed.json.currentDigest, /^sha256:[0-9a-f]{64}$/);
+
+    fs.appendFileSync(configPath, '\n# changed after review\n');
+    const changed = fs.readFileSync(configPath, 'utf8');
+    const refused = fixture.runCliJson([
+      'config', 'patch', ...args, '--expected-digest', proposed.json.currentDigest, '--yes'
+    ]);
+    assert.equal(refused.status, 1);
+    assertFailureEnvelope(refused.json, 'config', 'config_changed');
+    assert.equal(fs.readFileSync(configPath, 'utf8'), changed);
+
+    const refreshed = fixture.runCliJson(['config', 'propose', ...args]);
+    const patched = fixture.runCliJson([
+      'config', 'patch', ...args, '--expected-digest', refreshed.json.currentDigest, '--yes'
+    ]);
+    assert.equal(patched.status, 0, patched.stderr);
+    assertSuccessEnvelope(patched.json, 'config patch');
+  });
+});
+
+test('ancestor config authoring requires --workspace and an exact child cwd', () => {
+  withFixture((fixture) => {
+    fixture.writeConfig(validConfig());
+    const configPath = fixture.path('.launchdeck.yml');
+    const before = fs.readFileSync(configPath, 'utf8');
+    const child = fixture.path('packages', 'web');
+    fs.mkdirSync(child, { recursive: true });
+    const taskArgs = [
+      '--task', 'web', '--command', 'npm run dev', '--cwd', 'packages/web', '--long-running'
+    ];
+
+    for (const args of [
+      ['config', 'propose', ...taskArgs],
+      ['config', 'propose', ...taskArgs, '--force'],
+      ['config', 'patch', ...taskArgs],
+      ['config', 'patch', ...taskArgs, '--yes']
+    ]) {
+      const refused = fixture.runCliJson(args, { cwd: child });
+      assert.equal(refused.status, 1);
+      assertFailureEnvelope(refused.json, 'config', 'config_exists');
+      assert.deepEqual(
+        refused.json.error.details.recoveryPaths.map((entry) => entry.kind),
+        ['nested_config', 'workspace_task_cwd']
+      );
+      assert.equal(fs.readFileSync(configPath, 'utf8'), before);
+    }
+
+    for (const cwd of ['.', 'packages', '../outside']) {
+      const refused = fixture.runCliJson([
+        'config', 'propose', '--workspace', '--task', 'web', '--command', 'npm run dev', '--cwd', cwd
+      ], { cwd: child });
+      assert.equal(refused.status, 1);
+      assertFailureEnvelope(refused.json, 'config', 'project_root_escape');
+      assert.equal(fs.readFileSync(configPath, 'utf8'), before);
+    }
+
+    const proposed = fixture.runCliJson([
+      'config', 'propose', '--workspace', ...taskArgs
+    ], { cwd: child });
+    assert.equal(proposed.status, 0, proposed.stderr);
+    assertSuccessEnvelope(proposed.json, 'config propose');
+    assert.equal(fs.readFileSync(configPath, 'utf8'), before);
+
+    const patched = fixture.runCliJson([
+      'config', 'patch', '--workspace', ...taskArgs, '--yes'
+    ], { cwd: child });
+    assert.equal(patched.status, 0, patched.stderr);
+    assertSuccessEnvelope(patched.json, 'config patch');
+    assert.notEqual(fs.readFileSync(configPath, 'utf8'), before);
+    assert.equal(YAML.parse(fs.readFileSync(configPath, 'utf8')).tasks.web.cwd, 'packages/web');
   });
 });
 
