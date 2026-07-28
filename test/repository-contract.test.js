@@ -22,16 +22,16 @@ test('release metadata keeps system tests deterministic and the npm payload boun
 });
 
 test('GitHub dependency install examples materialize the package instead of linking an ephemeral clone', () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
   const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const tag = `v${packageJson.version}`;
 
-  assert.match(
-    readme,
-    /npm install --global --install-links=true github:chenziyang110\/launchdeck#v0\.3\.0/
-  );
-  assert.match(
-    readme,
-    /npm install --save-dev --install-links=true github:chenziyang110\/launchdeck#v0\.3\.0/
-  );
+  for (const installCommand of [
+    `npm install --global --install-links=true github:chenziyang110/launchdeck#${tag}`,
+    `npm install --save-dev --install-links=true github:chenziyang110/launchdeck#${tag}`
+  ]) {
+    assert.equal(readme.includes(installCommand), true, installCommand);
+  }
 });
 
 test('CI runs the repository checks and the maintained lifecycle smoke on every supported OS', () => {
