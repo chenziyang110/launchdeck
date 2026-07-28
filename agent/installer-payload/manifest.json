@@ -1,13 +1,13 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:c3e63a00e2cc305612582ec1191f4964c4b16456796a0b06b3b75473a1afa1c4",
-  "packageVersion": "0.2.0",
+  "buildIdentity": "sha256:871671590e60e9ee76f9d1166dfaa366a0185cbac30140854de8c8117f181832",
+  "packageVersion": "0.3.0",
   "nodeRange": ">=20",
   "files": [
     {
       "path": "compatibility.json",
       "bytes": 4640,
-      "sha256": "sha256:baaee0cef1f60bb10dbee9653e8f293b55585fea2100935ad3744b68b0d8436b"
+      "sha256": "sha256:e4ac7e2b919f00ef7466fd003e75a9267188d04137de96273c5fc1b9cd424426"
     },
     {
       "path": "launcher/launchdeck-mcp",
@@ -26,18 +26,18 @@
     },
     {
       "path": "runtime/launchdeck-mcp.mjs",
-      "bytes": 1676491,
-      "sha256": "sha256:40e073d6bf5898129691b32add53cfa692e6a728fcab61d412618088c94adc65"
+      "bytes": 1681078,
+      "sha256": "sha256:56278b39ce60bf2834f4070a33b7b46933083bed4b390e67d8b5a3ca55fdeb06"
     },
     {
       "path": "skill/launchdeck-agent/SKILL.md",
-      "bytes": 4971,
-      "sha256": "sha256:8ef73d7fc300d0512d1146a7f981c7aedb09f6dcb6c88caae85097daa5a84b34"
+      "bytes": 6363,
+      "sha256": "sha256:e479e84840b8fdededfab4ab1f5e43f11bed3c8fba86ce8e24bff52dec5190fc"
     },
     {
       "path": "skill/launchdeck-agent/references/adoption-flow.md",
-      "bytes": 7963,
-      "sha256": "sha256:b0dfa1593b8688ced07e813b878535e1884e6bc83a41047440cb919ebf91e163"
+      "bytes": 13823,
+      "sha256": "sha256:f2b3838a1bdad50f8f1d01a1cdae7c276736e2008585e2925b1d72defa3a1761"
     },
     {
       "path": "skill/launchdeck-agent/references/clean-safety.md",
@@ -46,23 +46,28 @@
     },
     {
       "path": "skill/launchdeck-agent/references/command-flows.md",
-      "bytes": 3437,
-      "sha256": "sha256:294a7db997f0205b306bc1a72ec82a09eef91431e4736633e2bd1df1cd5b9cfa"
+      "bytes": 5362,
+      "sha256": "sha256:b59361280c17bd1ed587ccef18761d18e628c7f78cd77593e9730bcd9e4b2af0"
     },
     {
       "path": "skill/launchdeck-agent/references/discovery-rules.md",
-      "bytes": 4129,
-      "sha256": "sha256:fb8ae3f34b86891b92a18a2754845cf07be3905358e43b32362a93ef5b9611f0"
+      "bytes": 4816,
+      "sha256": "sha256:1a23e4b9811f99ecbf4ac54aea4a8ac86446e0635baca342924a6e90e8ebd00c"
+    },
+    {
+      "path": "skill/launchdeck-agent/references/entrypoint-discovery.md",
+      "bytes": 2480,
+      "sha256": "sha256:a863b97fc50f87b6727b147a82938fe50b4b62c81a12a0dbda931b0ba301689c"
     },
     {
       "path": "skill/launchdeck-agent/references/eval-prompts.md",
-      "bytes": 17452,
-      "sha256": "sha256:4ddac192981c09112652cab25728d96f713bf97d29a475674e4b2b07c2adb7f7"
+      "bytes": 3815,
+      "sha256": "sha256:a276cb07345bbd94d2ed97ee271329ab0a3799860e2d513b40f3cada0ff89859"
     },
     {
       "path": "skill/launchdeck-agent/references/intent-routing.md",
-      "bytes": 5709,
-      "sha256": "sha256:6288c27599d60d066d51b058f1b6a386091dc6d27a680c5b97d51c54bc7c015d"
+      "bytes": 6970,
+      "sha256": "sha256:a27b434d3dc0550688add575845d8f2ebe1a649508ab7c5dac27dcdd56335576"
     },
     {
       "path": "skill/launchdeck-agent/references/recovery-playbooks.md",

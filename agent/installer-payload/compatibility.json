@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:c3e63a00e2cc305612582ec1191f4964c4b16456796a0b06b3b75473a1afa1c4",
-  "packageVersion": "0.2.0",
+  "buildIdentity": "sha256:871671590e60e9ee76f9d1166dfaa366a0185cbac30140854de8c8117f181832",
+  "packageVersion": "0.3.0",
   "nodeRange": ">=20",
   "versions": {
     "agentProtocol": {
@@ -76,11 +76,11 @@
     }
   },
   "componentDigests": {
-    "runtimeBundle": "sha256:40e073d6bf5898129691b32add53cfa692e6a728fcab61d412618088c94adc65",
+    "runtimeBundle": "sha256:56278b39ce60bf2834f4070a33b7b46933083bed4b390e67d8b5a3ca55fdeb06",
     "operationRegistry": "sha256:2d8c075a4f7b256b60b25fd25a16c298d8fe6a32a6692197bb01d79e47efbe8b",
     "operationSchemas": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
     "agentResultSchema": "sha256:3e89f63695ed8c96ea0c4f9db85067d4abd2a45322ac9d5b853553b30d541207",
-    "canonicalSkillContentManifest": "sha256:2861520abeddd8058d072fe84254c1cfc1ee27b7ed174157c82ad6691accd873",
+    "canonicalSkillContentManifest": "sha256:9fcdfec56bcd2a483fac921e545ccc742216718b0999c4b537ce38e2f85e954f",
     "stableLaunchers": "sha256:c839e4f4cb76b759bb74c5da5b082f0f8e73166a4f890a0e883d77a3423352a6",
     "compatibilitySchema": "sha256:ee802539f92909593c63d4d8109afb4dcaa124dec10c20cd9d254f260f2effa6"
   },
