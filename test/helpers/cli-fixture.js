@@ -9,20 +9,45 @@ const helperDir = path.dirname(fileURLToPath(import.meta.url));
 export const repoRoot = path.resolve(helperDir, '..', '..');
 export const cliPath = path.join(repoRoot, 'src', 'cli.js');
 export const tempProjectPrefix = 'launchdeck-cli-';
+export const tempLaunchdeckHomePrefix = 'launchdeck-cli-home-';
 
 export function createCliFixture(options = {}) {
   const projectRoot = createTempProject(options);
+  const explicitHome = options.env?.LAUNCHDECK_HOME;
+  const ownsLaunchdeckHome = typeof explicitHome !== 'string' || explicitHome.length === 0;
+  const launchdeckHome = ownsLaunchdeckHome
+    ? createTempProject({ prefix: tempLaunchdeckHomePrefix })
+    : canonicalPath(explicitHome);
+  const env = {
+    ...options.env,
+    LAUNCHDECK_HOME: launchdeckHome
+  };
+  let cleaned = false;
 
   return {
     projectRoot,
+    launchdeckHome,
+    env,
     path: (...segments) => path.join(projectRoot, ...segments),
     writeConfig: (config) => writeConfig(projectRoot, config),
     writeFile: (relativePath, content) => writeFile(projectRoot, relativePath, content),
     writeScript: (relativePath, content) => writeScript(projectRoot, relativePath, content),
     mkdir: (relativePath) => fs.mkdirSync(path.join(projectRoot, relativePath), { recursive: true }),
-    runCli: (args = [], runOptions = {}) => runCli(args, { cwd: projectRoot, ...runOptions }),
-    runCliJson: (args = [], runOptions = {}) => runCliJson(args, { cwd: projectRoot, ...runOptions }),
-    cleanup: () => removeTempProject(projectRoot)
+    runCli: (args = [], runOptions = {}) => runCli(args, withFixtureEnv(projectRoot, env, runOptions)),
+    runCliJson: (args = [], runOptions = {}) => runCliJson(args, withFixtureEnv(projectRoot, env, runOptions)),
+    cleanup: () => {
+      if (cleaned) {
+        return;
+      }
+      cleaned = true;
+      try {
+        removeTempProject(projectRoot);
+      } finally {
+        if (ownsLaunchdeckHome) {
+          removeTempProject(launchdeckHome);
+        }
+      }
+    }
   };
 }
 
@@ -116,6 +141,17 @@ function canonicalPath(value) {
 
 function ensureJsonArg(args) {
   return args.includes('--json') ? args : [...args, '--json'];
+}
+
+function withFixtureEnv(projectRoot, fixtureEnv, options) {
+  return {
+    cwd: projectRoot,
+    ...options,
+    env: {
+      ...fixtureEnv,
+      ...options.env
+    }
+  };
 }
 
 function removeWithRetry(targetPath) {

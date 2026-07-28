@@ -34123,16 +34123,7 @@ var Server = class extends Protocol {
     if (!methodSchema) {
       throw new Error("Schema is missing a method literal");
     }
-    let methodValue;
-    if (isZ4Schema(methodSchema)) {
-      const v4Schema = methodSchema;
-      const v4Def = v4Schema._zod?.def;
-      methodValue = v4Def?.value ?? v4Schema.value;
-    } else {
-      const v3Schema = methodSchema;
-      const legacyDef = v3Schema._def;
-      methodValue = legacyDef?.value ?? v3Schema.value;
-    }
+    const methodValue = getLiteralValue(methodSchema);
     if (typeof methodValue !== "string") {
       throw new Error("Schema method literal must be a string");
     }
@@ -34443,8 +34434,17 @@ import process3 from "node:process";
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
 init_define_LAUNCHDECK_AGENT_OPERATIONS_SCHEMA();
+var STDIO_DEFAULT_MAX_BUFFER_SIZE = 10 * 1024 * 1024;
 var ReadBuffer = class {
+  constructor(options) {
+    this._maxBufferSize = options?.maxBufferSize ?? STDIO_DEFAULT_MAX_BUFFER_SIZE;
+  }
   append(chunk) {
+    const newSize = (this._buffer?.length ?? 0) + chunk.length;
+    if (newSize > this._maxBufferSize) {
+      this.clear();
+      throw new Error(`ReadBuffer exceeded maximum size of ${this._maxBufferSize} bytes`);
+    }
     this._buffer = this._buffer ? Buffer.concat([this._buffer, chunk]) : chunk;
   }
   readMessage() {
@@ -34472,18 +34472,24 @@ function serializeMessage(message) {
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 var StdioServerTransport = class {
-  constructor(_stdin = process3.stdin, _stdout = process3.stdout) {
+  constructor(_stdin = process3.stdin, _stdout = process3.stdout, options) {
     this._stdin = _stdin;
     this._stdout = _stdout;
-    this._readBuffer = new ReadBuffer();
     this._started = false;
     this._ondata = (chunk) => {
-      this._readBuffer.append(chunk);
-      this.processReadBuffer();
+      try {
+        this._readBuffer.append(chunk);
+        this.processReadBuffer();
+      } catch (error51) {
+        this.onerror?.(error51);
+        this.close().catch(() => {
+        });
+      }
     };
     this._onerror = (error51) => {
       this.onerror?.(error51);
     };
+    this._readBuffer = new ReadBuffer({ maxBufferSize: options?.maxBufferSize });
   }
   /**
    * Starts listening for messages on stdin.
@@ -34630,7 +34636,7 @@ function normalizeConfig(input, context = {}) {
   if (Object.keys(tasks).length === 0) {
     throw new LaunchdeckConfigError("Launchdeck config requires at least one task.");
   }
-  const project = normalizeProject(input.project, projectRoot);
+  const project = normalizeProject(input.project, projectRoot, tasks);
   return {
     version: version2,
     project,
@@ -34682,16 +34688,28 @@ function normalizeTask(name, value, projectRoot = process.cwd()) {
     log
   };
 }
-function normalizeProject(project, projectRoot) {
+function normalizeProject(project, projectRoot, tasks) {
   if (project === void 0) {
     return { name: path.basename(projectRoot) };
   }
   if (!project || typeof project !== "object" || Array.isArray(project)) {
     throw new LaunchdeckConfigError("`project` must be an object when provided.");
   }
-  return {
+  const normalized = {
     name: optionalString(project.name) ?? path.basename(projectRoot)
   };
+  const defaultTask = optionalString(project.defaultTask);
+  if (defaultTask !== void 0) {
+    if (!Object.hasOwn(tasks, defaultTask)) {
+      throw new LaunchdeckConfigError(
+        `project.defaultTask '${defaultTask}' does not name an existing task.`,
+        "config_invalid",
+        { defaultTask, tasks: Object.keys(tasks) }
+      );
+    }
+    normalized.defaultTask = defaultTask;
+  }
+  return normalized;
 }
 function normalizeClean(clean) {
   if (clean === void 0) {
@@ -38598,7 +38616,7 @@ function readRunIndex(env = process.env) {
   return {
     version: parsed.version,
     updatedAt: parsed.updatedAt,
-    runs: parsed.runs
+    runs: deduplicateRuns(parsed.runs)
   };
 }
 async function updateRunRecord(runId, updater, options = {}) {
@@ -38672,6 +38690,7 @@ async function recordGlobalRun(processInfo, runContext, env = process.env) {
     const run = {
       runId: processInfo.runId,
       transactionId: processInfo.transactionId,
+      operationId: runContext.operationId,
       projectId: runContext.projectId,
       projectAlias: runContext.projectAlias,
       projectRoot: runContext.projectRoot,
@@ -38689,10 +38708,7 @@ async function recordGlobalRun(processInfo, runContext, env = process.env) {
       ownershipConfidence: processInfo.ownershipConfidence,
       ownershipProof: processInfo.ownershipProof
     };
-    const runs = [
-      ...state.runs.filter((candidate) => candidate.runId !== run.runId),
-      run
-    ].sort(compareRuns);
+    const runs = deduplicateRuns([...state.runs, run]).sort(compareRuns);
     atomicWriteJson2(paths.runsPath, {
       version: RUN_INDEX_VERSION2,
       updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
@@ -38876,6 +38892,71 @@ function makeId2(prefix) {
 }
 function compareRuns(left, right) {
   return String(left.projectAlias ?? "").localeCompare(String(right.projectAlias ?? "")) || String(left.task ?? "").localeCompare(String(right.task ?? ""));
+}
+function deduplicateRuns(runs) {
+  const parents = runs.map((_, index) => index);
+  const ownerByIdentity = /* @__PURE__ */ new Map();
+  for (let index = 0; index < runs.length; index += 1) {
+    for (const identity of runIdentities(runs[index])) {
+      const owner = ownerByIdentity.get(identity);
+      if (owner === void 0) {
+        ownerByIdentity.set(identity, index);
+      } else {
+        unionRunGroups(parents, index, owner);
+      }
+    }
+  }
+  const newestByGroup = /* @__PURE__ */ new Map();
+  for (let index = 0; index < runs.length; index += 1) {
+    const group = findRunGroup(parents, index);
+    const current = newestByGroup.get(group);
+    if (current === void 0 || compareRunFreshness2(runs[index], index, runs[current], current) > 0) {
+      newestByGroup.set(group, index);
+    }
+  }
+  return [...newestByGroup.values()].sort((left, right) => left - right).map((index) => runs[index]);
+}
+function runIdentities(run) {
+  if (!run || typeof run !== "object" || Array.isArray(run)) {
+    return [];
+  }
+  const identities = [];
+  if (typeof run.runId === "string" && run.runId.length > 0) {
+    identities.push(`run:${run.runId}`);
+  }
+  if (typeof run.operationId === "string" && run.operationId.length > 0) {
+    identities.push(`operation:${run.operationId}`);
+  }
+  if (run.projectId && run.task && Number.isInteger(Number(run.pid)) && Number(run.pid) > 0 && run.startedAt) {
+    identities.push(`process:${run.projectId}:${run.task}:${Number(run.pid)}:${run.startedAt}`);
+  }
+  return identities;
+}
+function findRunGroup(parents, index) {
+  let root = index;
+  while (parents[root] !== root) {
+    root = parents[root];
+  }
+  while (parents[index] !== index) {
+    const next = parents[index];
+    parents[index] = root;
+    index = next;
+  }
+  return root;
+}
+function unionRunGroups(parents, left, right) {
+  const leftRoot = findRunGroup(parents, left);
+  const rightRoot = findRunGroup(parents, right);
+  if (leftRoot !== rightRoot) {
+    parents[rightRoot] = leftRoot;
+  }
+}
+function compareRunFreshness2(left, leftIndex, right, rightIndex) {
+  return runTimestamp(left) - runTimestamp(right) || leftIndex - rightIndex;
+}
+function runTimestamp(run) {
+  const timestamps = [run?.lastObservedAt, run?.updatedAt, run?.startedAt].map((value) => Date.parse(value ?? "")).filter((value) => !Number.isNaN(value));
+  return timestamps.length > 0 ? Math.max(...timestamps) : 0;
 }
 function hasLaunchdeckOwnedEvidence(run) {
   if (!run || typeof run !== "object") {
@@ -39208,9 +39289,9 @@ function makeActionOperationId() {
 }
 
 // src/control-plane/inspect.js
-function listGlobalRuns(env = process.env) {
+function listGlobalRuns(env = process.env, options = {}) {
   return readRunIndex(env).runs.map((run) => {
-    const observed = observedRun(run);
+    const observed = observedRun(run, { checkedAt: options.checkedAt });
     return {
       ...observed,
       next: nextActionsForRun(observed)
@@ -39219,10 +39300,10 @@ function listGlobalRuns(env = process.env) {
     (left, right) => String(left.projectAlias ?? "").localeCompare(String(right.projectAlias ?? "")) || String(left.task ?? "").localeCompare(String(right.task ?? ""))
   );
 }
-async function listGlobalPorts(env = process.env) {
+async function listGlobalPorts(env = process.env, options = {}) {
   const ports = [];
   const errors = [];
-  const runs = listGlobalRuns(env);
+  const runs = options.runs ?? listGlobalRuns(env, { checkedAt: options.checkedAt });
   const processEvidenceCache = /* @__PURE__ */ new Map();
   for (const project of listRegisteredProjects(env)) {
     try {
@@ -39234,7 +39315,11 @@ async function listGlobalPorts(env = process.env) {
         }
         const run = findRunForTask(runs, project, task.name);
         for (const port of task.ports) {
-          const inspection = await inspectPort(port, env, { processEvidenceCache });
+          const inspection = await inspectPort(port, env, {
+            processEvidenceCache,
+            runs,
+            checkedAt: options.checkedAt
+          });
           const declaredOwner = findDeclaredOwnerInspection(inspection.declaredOwners, project, task.name);
           const observedOwnershipProof = declaredOwner?.ownershipProof ?? proveRunOwnership(run, { listeners: inspection.listeners, checkedAt: inspection.checkedAt, processEvidenceCache });
           const ownershipProof = applyTrustedSpawnOwnership(run, observedOwnershipProof);
@@ -39289,7 +39374,7 @@ async function inspectPort(port, env = process.env, options = {}) {
       source: "bind_probe"
     }];
   }
-  const checkedAt = (/* @__PURE__ */ new Date()).toISOString();
+  const checkedAt = options.checkedAt ?? (/* @__PURE__ */ new Date()).toISOString();
   const declaredOwners = await declaredOwnersForPort(normalizedPort, env, listeners, checkedAt, ownershipOptions);
   const portObservation = buildPortObservation({
     port: normalizedPort,
@@ -39640,7 +39725,7 @@ function safeListProcesses(projectRoot) {
 }
 async function declaredOwnersForPort(port, env, listeners = [], checkedAt = (/* @__PURE__ */ new Date()).toISOString(), options = {}) {
   const owners = [];
-  const runs = listGlobalRuns(env);
+  const runs = options.runs ?? listGlobalRuns(env, { checkedAt });
   for (const project of listRegisteredProjects(env)) {
     try {
       const config2 = loadRegisteredConfig(project);
@@ -42626,6 +42711,31 @@ function createCapabilitiesHandlers(options = {}) {
     components: {}
   };
   const diagnosticChecks2 = Object.freeze({ ...options.diagnosticChecks ?? {} });
+  const operations = OPERATION_REGISTRY.map((definition2) => ({
+    name: definition2.name,
+    kind: definition2.kind,
+    maxAgentRisk: definition2.maxAgentRisk
+  }));
+  const identity = {
+    product: options.identity?.product ?? "Launchdeck",
+    package: {
+      name: options.identity?.package?.name ?? "launchdeck",
+      version: options.identity?.package?.version ?? provenance.runtimeVersion
+    },
+    buildIdentity: provenance.buildIdentity
+  };
+  const contracts = options.contracts ?? {
+    agentProtocol: { current: provenance.agentProtocolVersion },
+    cliSchema: { current: provenance.cliSchemaVersion },
+    configSchema: { current: null }
+  };
+  const executable = {
+    kind: provenance.runtimeKind,
+    path: options.executable?.path ?? provenance.runtimePath,
+    runtimePath: options.executable?.runtimePath,
+    runtimeVersion: options.executable?.runtimeVersion ?? provenance.runtimeVersion,
+    buildIdentity: provenance.buildIdentity
+  };
   return Object.freeze({
     "capabilities.get": async () => ({
       outcome: successOutcome("capabilities_reported", "Launchdeck Agent capabilities are available."),
@@ -42638,16 +42748,24 @@ function createCapabilitiesHandlers(options = {}) {
         runId: null,
         data: {
           agentOperations: OPERATION_REGISTRY.map((definition2) => definition2.name),
-          operations: OPERATION_REGISTRY.map((definition2) => ({
-            name: definition2.name,
-            kind: definition2.kind,
-            maxAgentRisk: definition2.maxAgentRisk
-          })),
+          operations,
           riskBoundary: "low-only",
           stateHome: provenance.stateHome,
           agentProtocolVersion: provenance.agentProtocolVersion,
           cliSchemaVersion: provenance.cliSchemaVersion,
           buildIdentity: provenance.buildIdentity,
+          identity,
+          contracts,
+          riskPolicy: {
+            boundary: "low-only",
+            maxAgentRisk: "low",
+            mutationOperations: operations.filter((operation) => operation.kind === "mutation").map((operation) => operation.name)
+          },
+          state: {
+            scope: options.stateScope ?? "global",
+            home: provenance.stateHome
+          },
+          executable,
           compatibility: redactObservation(compatibility),
           evidence: redactObservation(options.evidence ?? {})
         }
@@ -46284,7 +46402,7 @@ function isObject2(value) {
 // src/mcp/stdio-server.js
 var modulePath = fileURLToPath(import.meta.url);
 var bundledPluginRuntime = true;
-var bundledPackageVersion = true ? "0.2.0" : null;
+var bundledPackageVersion = true ? "0.3.0" : null;
 function createLaunchdeckMcpServer(options = {}) {
   const env = options.env ?? process.env;
   const diagnostics = options.diagnostics ?? createDiagnosticWriter();

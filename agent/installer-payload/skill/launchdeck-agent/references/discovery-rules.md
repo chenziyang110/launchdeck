@@ -11,7 +11,7 @@ Discovery is read-only evidence collection for an unknown local project. It may 
 
 Only `exact` or `strong` candidates may be authored, and only when the user explicitly requested config creation and Launchdeck discovery found no existing config. `weak`, `unknown`, and conflicting candidates remain proposal-only and produce no write.
 
-An existing supported Launchdeck config is not an authoring candidate. Preserve it and stop the authoring branch even when it is invalid, stale, or located in an ancestor directory.
+An existing supported Launchdeck config at the exact target is not a missing-config authoring candidate. Preserve it even when it is invalid or stale. An ancestor-only config triggers the explicit monorepo choice: either an independent child config or one workspace task with a project-relative child `cwd`; neither path may overwrite the ancestor.
 
 ## Evidence Priority
 
@@ -41,5 +41,7 @@ Do not read secret-bearing files such as `.env`, credential stores, private keys
 - If two candidates can both satisfy the same lifecycle request, downgrade to `weak` and ask which target to adopt.
 - If a declared port is already occupied, route to `recovery-playbooks.md` before start.
 - If the project is a monorepo with multiple apps, propose the detected candidates and ask for the target unless the user already named one.
+- Classify an authored task as `low` only with a fixed project-internal `cwd`, a declared local development server or build tool, no remote or production target, no sensitive `env`, and no destructive command or raw shell chain. Otherwise classify it as `medium`, state that the Agent cannot execute it, and do not disguise risk through the task name.
+- Corroborated localhost Flask and Vite development tasks can be `low`; remote binds, deployment targets, shell chains, or secret-bearing environments remain `medium`.
 - If a port is conventional but not explicitly declared in bounded evidence, omit it rather than guessing.
 - If `doctor` fails after an explicit authoring write, report the failing evidence and do not register or run any task.

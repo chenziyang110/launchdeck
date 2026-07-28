@@ -2,6 +2,7 @@
   "version": 1,
   "requiredPublicCommands": [
     "agent setup",
+    "config validate",
     "up",
     "status --all",
     "logs start",
@@ -11,6 +12,7 @@
     "fresh demo copy uses an allowlist and rejects runtime state recursively",
     "installer leaves .launchdeck.yml absent",
     "deterministic installed-Agent fixture process authors .launchdeck.yml from project evidence",
+    "authored config passes public read-only config validation before lifecycle start",
     "parent runner proves it did not author .launchdeck.yml",
     "real MCP stdio capabilities.get and build identity are captured",
     "PYTHONPATH points at the fresh src layout",
@@ -100,6 +102,12 @@
         "readmeSha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
       },
       "configSha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "validation": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "config validate",
+        "outcome": "succeeded"
+      },
       "mcpProof": {
         "ok": true,
         "command": "MCP stdio capabilities.get",
@@ -245,8 +253,8 @@
         "rawRefs": [
           {
             "path": "producer/flask-evidence.json",
-            "sha256": "sha256:485559ac0e518e451b026b18be67e6f621fff96b90df2b908b66a804ccb7090e",
-            "byteLength": 2935
+            "sha256": "sha256:8f0d19b41a48a23147724545ec17c7921a3e02cecf8d86913b677dbaef925366",
+            "byteLength": 3028
           }
         ]
       }

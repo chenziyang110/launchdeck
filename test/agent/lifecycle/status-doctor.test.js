@@ -307,6 +307,11 @@ test('default diagnostics derives the canonical project scope before reading the
   });
 
   assert.equal(status.result.receiptId, 'receipt_scoped');
+  assert.equal(status.result.entrypoints.scope, 'project');
+  assert.equal(status.result.entrypoints.buildIdentity, BUILD);
+  assert.match(status.result.entrypoints.cli.path.replaceAll('\\', '/'), /\/src\/cli\.js$/);
+  assert.deepEqual(status.result.entrypoints.mcp.args, ['mcp', 'serve']);
+  assert.match(status.result.entrypoints.runtime.path, new RegExp(BUILD.slice('sha256:'.length)));
   assert.equal(scopeReference.scope, 'project');
   assert.equal(scopeReference.projectIdentity, process.cwd());
   assert.match(scopeReference.scopeIdentity, /^project:sha256:[0-9a-f]{64}$/);

@@ -74,6 +74,7 @@ project:
 tasks:
   start:
     command: ${projectEvidence.startCommand}
+    risk: low
     longRunning: true
     url: http://127.0.0.1:${port}
     ports:
@@ -84,6 +85,7 @@ tasks:
       PYTHONPATH: src
   test:
     command: python -m pytest
+    risk: low
     env:
       PYTHONPATH: src
 `;

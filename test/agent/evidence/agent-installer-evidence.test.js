@@ -916,6 +916,12 @@ function flaskEvidenceForCell(cell) {
       },
       buildIdentity: cell.identity.buildIdentity,
       configSha256: digest('flask-config'),
+      validation: {
+        schemaVersion: 1,
+        ok: true,
+        command: 'config validate',
+        outcome: 'succeeded'
+      },
       configInputs: {
         files: ['pyproject.toml', 'src/flask_demo/app.py', 'README.md'],
         projectName: 'flask-demo',

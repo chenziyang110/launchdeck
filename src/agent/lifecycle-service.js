@@ -26,6 +26,7 @@ import { createInstallerTransactionCoordinator } from './state/transaction-coord
 import { withInstallerResourceLocks } from './state/resource-locks.js';
 import { createInstallationVerifier } from './verification/index.js';
 import { isCanonicalPublicReconciliationPath } from './state/public-reconciliation.js';
+import { resolveInstallerEntrypoints } from './entrypoints.js';
 
 const COMMAND = 'agent setup';
 const EMPTY_DIGEST = `sha256:${'0'.repeat(64)}`;
@@ -104,34 +105,34 @@ async function setupWithDependencies(dependencies, input) {
   const plan = planFromResult(planResult, input);
 
   if (planResult?.outcome === 'refused') {
-    return envelope(planResult);
+    return setupEnvelope(dependencies, planResult, input, plan);
   }
   if (plan && containsProjectConfigAuthorship(plan)) {
-    return envelope(refusalForPlan({
+    return setupEnvelope(dependencies, refusalForPlan({
       plan,
       code: 'agent_project_config_authorship_forbidden',
       message: 'The installer must not author .launchdeck.yml.'
-    }));
+    }), input, plan);
   }
   if (!plan) {
-    return envelope(refusalForPlanResult(planResult, {
+    return setupEnvelope(dependencies, refusalForPlanResult(planResult, {
       code: 'agent_plan_invalid',
       message: 'Planner did not return an immutable setup plan.'
-    }));
+    }), input, plan);
   }
   if (input.dryRun === true) {
-    return envelope(createDryRunPlanResult({ plan }));
+    return setupEnvelope(dependencies, createDryRunPlanResult({ plan }), input, plan);
   }
   if (planResult?.outcome === 'noop' || plan.actions?.length === 0) {
-    return envelope(createNoopPlanResult({ plan }));
+    return setupEnvelope(dependencies, createNoopPlanResult({ plan }), input, plan);
   }
 
   const approval = await dependencies.approval.authorizePlan({ input, plan });
   if (approval?.outcome === 'refused') {
-    return envelope(approval);
+    return setupEnvelope(dependencies, approval, input, plan);
   }
   if (approval?.approved !== true) {
-    return envelope(cancelledResult({ plan, approval }));
+    return setupEnvelope(dependencies, cancelledResult({ plan, approval }), input, plan);
   }
 
   const operationId = nextOperationId(dependencies.operationIds);
@@ -163,7 +164,7 @@ async function setupWithDependencies(dependencies, input) {
   };
 
   const transactionResult = await dependencies.transaction.execute(request);
-  return envelope(mergeTransactionResult({ plan, transactionResult }));
+  return setupEnvelope(dependencies, mergeTransactionResult({ plan, transactionResult }), input, plan);
 }
 
 async function diagnosticWithDependencies(dependencies, operation, input) {
@@ -171,11 +172,12 @@ async function diagnosticWithDependencies(dependencies, operation, input) {
     operation,
     ...input
   });
-  return envelopeFor(operation, normalizeResultFallbacks({
+  const normalized = normalizeResultFallbacks({
     operation,
     result,
     input
-  }));
+  });
+  return envelopeFor(operation, withInstallerEntrypoints(dependencies, normalized, input));
 }
 
 async function updateWithDependencies(dependencies, input) {
@@ -391,7 +393,9 @@ function createDependencies(options) {
     registry,
     runtimeProvisioner,
     transaction,
-    verifier
+    verifier,
+    resolveEntrypoints: options.resolveEntrypoints
+      ?? ((input) => resolveInstallerEntrypoints({ ...input, env }))
   });
 }
 
@@ -1358,6 +1362,29 @@ function verificationEvidenceFromRegistry({ target, plan, verification }) {
 
 function envelope(result) {
   return createInstallerExecutionEnvelope(COMMAND, result);
+}
+
+function setupEnvelope(dependencies, result, input, plan) {
+  return envelope(withInstallerEntrypoints(dependencies, result, input, plan));
+}
+
+function withInstallerEntrypoints(dependencies, result, input = {}, plan = null) {
+  const scope = result?.scope ?? plan?.scope ?? input.scope ?? 'project';
+  const buildIdentity = [
+    result?.buildIdentity,
+    plan?.buildIdentity,
+    input.buildIdentity,
+    input.desiredBuildIdentity,
+    input.build
+  ].find((candidate) => /^sha256:[0-9a-f]{64}$/.test(String(candidate ?? ''))) ?? null;
+  return {
+    ...result,
+    entrypoints: dependencies.resolveEntrypoints({
+      scope,
+      buildIdentity,
+      projectRoot: input.projectRoot ?? input.projectIdentity ?? null
+    })
+  };
 }
 
 function envelopeFor(operation, result) {

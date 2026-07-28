@@ -108,7 +108,7 @@ export async function runAgentFirstFlaskEvidence(options = {}) {
     throw evidenceError('agent_installer_authored_launchdeck_config', 'Installer authored .launchdeck.yml.');
   }
 
-  const agentAuthored = await runInstalledAgentAuthoring(
+  const authoringEvidence = await runInstalledAgentAuthoring(
     paths,
     env,
     setupJson,
@@ -116,6 +116,17 @@ export async function runAgentFirstFlaskEvidence(options = {}) {
     selectedInstalledSkillPath
   );
   assertAgentAuthoredConfig(paths.projectRoot);
+  const validation = await runCli(['config', 'validate', '--json', '--compact'], {
+    cwd: paths.projectRoot,
+    env,
+    cliPath: selectedCliPath
+  });
+  const validationJson = parseJsonRun(validation, 'config validate');
+  assertPublicConfigValidationSucceeded(validation, validationJson);
+  const agentAuthored = Object.freeze({
+    ...authoringEvidence,
+    validation: summarizeEnvelope(validationJson)
+  });
 
   let upAttempted = false;
   let upJson;
@@ -217,6 +228,8 @@ export function evaluateAgentFirstFlaskEvidence(evidence) {
       && producerEvidence?.agentAuthored?.parentBoundary?.configAbsentBeforeChild === true
       && producerEvidence?.agentAuthored?.installedSkill?.valid === true
       && producerEvidence?.agentAuthored?.parentBoundary?.installedSkill?.valid === true,
+    configValidatedBeforeStart: producerEvidence?.agentAuthored?.validation?.command === 'config validate'
+      && isPublicConfigValidationSuccess(producerEvidence.agentAuthored.validation),
     upSucceeded: producerEvidence?.up?.ok === true,
     statusSucceeded: producerEvidence?.status?.ok === true,
     logsSucceeded: producerEvidence?.logs?.ok === true,
@@ -590,6 +603,29 @@ export function assertPublicSetupSucceeded(result, envelope = parseJsonRun(resul
     );
   }
   return envelope;
+}
+
+export function assertPublicConfigValidationSucceeded(
+  result,
+  envelope = parseJsonRun(result, 'config validate')
+) {
+  const outcome = publicConfigValidationOutcome(envelope);
+  if (result?.status !== 0 || !isPublicConfigValidationSuccess(envelope)) {
+    throw evidenceError(
+      outcome === 'refused' ? 'agent_flask_config_validation_refused' : 'agent_flask_config_validation_failed',
+      `config validate must succeed through the public CLI; observed status=${result?.status ?? 'unknown'}, outcome=${outcome ?? 'missing'}.`
+    );
+  }
+  return envelope;
+}
+
+function isPublicConfigValidationSuccess(envelope) {
+  const outcome = publicConfigValidationOutcome(envelope);
+  return envelope?.ok === true && (outcome === 'ok' || outcome === 'succeeded');
+}
+
+function publicConfigValidationOutcome(envelope) {
+  return envelope?.result?.outcome ?? envelope?.status ?? envelope?.outcome ?? null;
 }
 
 async function waitForHttp(url, timeoutMs) {

@@ -15,7 +15,7 @@ test('canonical Skill content manifest is sorted, path-normalized, and self-veri
 
   assert.equal(manifest.schemaVersion, 1);
   assert.equal(manifest.skillName, 'launchdeck-agent');
-  assert.equal(manifest.files.length, 8);
+  assert.equal(manifest.files.length, 9);
   assert.deepEqual(manifest.files.map((entry) => entry.path), [...manifest.files.map((entry) => entry.path)].sort());
   assert.equal(manifest.files.every((entry) => !entry.path.includes('\\')), true);
   assert.equal(manifest.files.every((entry) => /^sha256:[0-9a-f]{64}$/.test(entry.sha256)), true);

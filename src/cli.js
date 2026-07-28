@@ -11,6 +11,7 @@ import {
   findConfig,
   loadConfig
 } from './config.js';
+import { applyTaskPatch, proposeTaskPatch } from './config-authoring.js';
 import {
   doctorAgentInstaller,
   installAgentSkill,
@@ -78,6 +79,22 @@ const LIFECYCLE_ALIASES = new Set([
   'lint',
   'typecheck'
 ]);
+const DEFAULT_COMPACT_STATUS_LIMIT = 50;
+const ACTIVE_STATUS_VALUES = new Set(['ready', 'running', 'starting']);
+const CERTAIN_PRE_DISPATCH_ERROR_CODES = new Set([
+  'command_usage_error',
+  'config_exists',
+  'config_invalid',
+  'config_not_found',
+  'invalid_arguments',
+  'project_root_escape',
+  'task_not_found',
+  'task_not_managed',
+  'task_required',
+  'unknown_command',
+  'unsupported_config_version',
+  'unsupported_option'
+]);
 
 // Compatibility markers for the alias contract: createSuccessEnvelope('start') / createSuccessEnvelope('stop').
 // Start/stop JSON is still emitted by the existing start/stop helpers; up/down do not add a new output authority.
@@ -108,6 +125,10 @@ export async function main(argv = process.argv.slice(2), io = defaultIo(), depen
 
     if (command === 'init') {
       return initCommand(options, io);
+    }
+
+    if (command === 'config') {
+      return configCommand(positionals, options, io);
     }
 
     if (command === 'capabilities') {
@@ -227,11 +248,13 @@ export async function main(argv = process.argv.slice(2), io = defaultIo(), depen
       command
     });
   } catch (error) {
-    const payload = toErrorPayload(error instanceof Error ? error : new Error(String(error)));
+    const caughtError = error instanceof Error ? error : new Error(String(error));
+    markCertainPreDispatchFailure(caughtError);
+    const payload = toErrorPayload(caughtError);
     if (options.json) {
       writeJson(
         io,
-        failureEnvelope(command, error instanceof Error ? error : new Error(String(error)), contextFromError(error))
+        failureEnvelope(command, caughtError, contextFromError(caughtError))
       );
     } else {
       writeError(io, `launchdeck: [${payload.code}] ${payload.message}\n`);
@@ -245,11 +268,35 @@ function initCommand(options, io) {
   const configPath = path.join(cwd, '.launchdeck.yml');
   const existing = findConfig(cwd);
 
-  if (existing && !options.force) {
+  const existingIsLocal = existing && path.dirname(existing) === cwd;
+  if (existingIsLocal && !options.force) {
     throw new LaunchdeckError(
       'config_exists',
       `Config already exists at ${existing}. Use --force to overwrite .launchdeck.yml.`,
       { configPath: existing }
+    );
+  }
+  if (existing && !existingIsLocal && !options.nested) {
+    const relativeCwd = path.relative(path.dirname(existing), cwd).replaceAll(path.sep, '/');
+    throw new LaunchdeckError(
+      'config_exists',
+      `Ancestor config found at ${existing}. Create an independent child config with \`launchdeck init --nested\`, or add a task there with cwd: ${relativeCwd}.`,
+      {
+        configPath: existing,
+        targetConfigPath: configPath,
+        recoveryPaths: [
+          {
+            kind: 'nested_config',
+            command: 'launchdeck init --nested',
+            configPath
+          },
+          {
+            kind: 'workspace_task_cwd',
+            configPath: existing,
+            cwd: relativeCwd
+          }
+        ]
+      }
     );
   }
 
@@ -273,6 +320,69 @@ function initCommand(options, io) {
   return 0;
 }
 
+function configCommand(positionals, options, io) {
+  const action = positionals[1];
+  if (action === 'validate') {
+    const config = loadConfig(process.cwd());
+    const report = buildDoctorReport(config);
+    if (options.json) {
+      writeJson(io, createSuccessEnvelope('config validate', report, config));
+    } else {
+      write(io, formatDoctorReport(report).replace('Launchdeck doctor:', 'Launchdeck config validate:'));
+    }
+    return report.status === 'error' ? 1 : 0;
+  }
+
+  if (!['propose', 'patch'].includes(action)) {
+    throw new LaunchdeckError(
+      'command_usage_error',
+      '`launchdeck config` requires validate, propose, or patch.'
+    );
+  }
+
+  const taskInput = configTaskInput(options);
+  const result = action === 'propose'
+    ? proposeTaskPatch(process.cwd(), taskInput, { workspace: options.workspace })
+    : applyTaskPatch(process.cwd(), taskInput, {
+        authorized: options.yes,
+        overwrite: options.overwrite,
+        workspace: options.workspace,
+        expectedDigest: options.expectedDigest
+      });
+  const command = `config ${action}`;
+  if (options.json) {
+    writeJson(io, createSuccessEnvelope(command, result, {
+      projectRoot: result.projectRoot,
+      configPath: result.configPath
+    }));
+  } else {
+    write(io, `${command}: ${result.operation} task ${result.task}\n${result.diff}`);
+    if (!result.agentExecutable) {
+      write(io, `Agent execution: blocked (medium risk: ${result.reasons.join(', ')})\n`);
+    }
+  }
+  return 0;
+}
+
+function configTaskInput(options) {
+  if (!options.taskRef || !options.taskCommand) {
+    throw new LaunchdeckError(
+      'command_usage_error',
+      '`config propose` and `config patch` require --task and --command.'
+    );
+  }
+  return omitUndefined({
+    name: options.taskRef,
+    command: options.taskCommand,
+    description: options.description,
+    cwd: options.cwd,
+    longRunning: options.longRunning || undefined,
+    ports: options.ports,
+    risk: options.risk,
+    log: options.log
+  });
+}
+
 function doctorCommand(options, io) {
   const config = loadConfig(process.cwd());
   const report = buildDoctorReport(config);
@@ -290,7 +400,19 @@ async function capabilitiesCommand(options, io) {
     options
   });
   if (options.json) {
-    writeJson(io, createSuccessEnvelope('capabilities', { agentResult }));
+    const data = agentResult.resource.data ?? {};
+    writeJson(io, createSuccessEnvelope('capabilities', {
+      capabilities: {
+        identity: data.identity,
+        contracts: data.contracts,
+        operations: data.operations,
+        riskPolicy: data.riskPolicy,
+        state: data.state,
+        executable: data.executable,
+        compatibility: data.compatibility
+      },
+      agentResult
+    }));
   } else {
     const operations = agentResult.resource.data?.operations ?? [];
     write(io, `Launchdeck Agent capabilities: ${operations.length} operations (${agentResult.resource.data?.riskBoundary ?? 'unknown'} risk boundary)\n`);
@@ -695,7 +817,7 @@ async function statusCommand(options, io) {
     throw new LaunchdeckError('invalid_arguments', '`launchdeck status` currently requires --all.');
   }
 
-  const result = await buildGlobalStatus();
+  const result = projectStatusResult(await buildGlobalStatus(), options);
   if (options.json) {
     writeJson(io, createSuccessEnvelope('status', result));
   } else {
@@ -705,6 +827,138 @@ async function statusCommand(options, io) {
     }
   }
   return result.errors.length > 0 && result.projects.length === 0 ? 1 : 0;
+}
+
+function projectStatusResult(status, options) {
+  const filters = {
+    ...(options.project ? { project: options.project } : {}),
+    ...(options.taskRef ? { task: options.taskRef } : {}),
+    ...(options.active ? { active: true } : {})
+  };
+  const projectById = new Map((status.projects ?? []).flatMap((project) => [
+    [project.id, project],
+    [project.projectId, project]
+  ].filter(([id]) => id)));
+  const filteredRuns = (status.runs ?? []).filter((run) =>
+    matchesStatusProject(run, projectById.get(run.projectId), options.project)
+    && (!options.taskRef || run.task === options.taskRef)
+    && (!options.active || ACTIVE_STATUS_VALUES.has(run.status))
+  );
+  const limit = options.limit ?? ((options.compact || options.cursor !== undefined)
+    ? DEFAULT_COMPACT_STATUS_LIMIT
+    : undefined);
+  const offset = parseStatusCursor(options.cursor, filteredRuns.length);
+  const pageRuns = limit === undefined
+    ? filteredRuns.slice(offset)
+    : filteredRuns.slice(offset, offset + limit);
+  const end = offset + pageRuns.length;
+  const truncated = end < filteredRuns.length;
+  const pageRunIds = new Set(pageRuns.map((run) => run.runId));
+  const filteredProjectIds = new Set(filteredRuns.map((run) => run.projectId));
+  const processes = (status.processes ?? []).filter((entry) => pageRunIds.has(entry.runId));
+  const ports = filterStatusEntries(status.ports, options, projectById, pageRunIds);
+  const conflicts = filterStatusEntries(status.conflicts, options, projectById, pageRunIds);
+  const errors = filterStatusEntries(status.errors, options, projectById);
+  const projects = (status.projects ?? [])
+    .filter((project) => matchesStatusProject(project, project, options.project))
+    .filter((project) => (!options.taskRef && !options.active)
+      || filteredProjectIds.has(project.projectId ?? project.id))
+    .map((project) => ({
+      ...project,
+      runs: (project.runs ?? []).filter((run) => pageRunIds.has(run.runId)),
+      processes: (project.processes ?? []).filter((entry) => pageRunIds.has(entry.runId)),
+      ports: filterStatusEntries(project.ports, options, projectById, pageRunIds),
+      conflicts: filterStatusEntries(project.conflicts, options, projectById, pageRunIds),
+      errors: filterStatusEntries(project.errors, options, projectById)
+    }));
+  const effectiveLimit = limit ?? pageRuns.length;
+
+  return {
+    ...status,
+    summary: summarizeStatusPage({ projects, processes, runs: pageRuns, ports, conflicts, errors }),
+    projects,
+    processes,
+    runs: pageRuns,
+    ports,
+    conflicts,
+    errors,
+    filters,
+    pagination: {
+      cursor: options.cursor ?? null,
+      limit: effectiveLimit,
+      returned: pageRuns.length,
+      total: filteredRuns.length,
+      truncated,
+      nextCursor: truncated ? String(end) : null
+    }
+  };
+}
+
+function parseStatusCursor(cursor, total) {
+  if (cursor === undefined) return 0;
+  if (!/^\d+$/.test(cursor)) {
+    throw new LaunchdeckError('invalid_arguments', '`--cursor` must be a non-negative integer offset.', { cursor });
+  }
+  const offset = Number(cursor);
+  if (!Number.isSafeInteger(offset) || offset > total) {
+    throw new LaunchdeckError('invalid_arguments', '`--cursor` is outside the filtered status result.', {
+      cursor,
+      total
+    });
+  }
+  return offset;
+}
+
+function matchesStatusProject(entry, project, projectRef) {
+  if (!projectRef) return true;
+  const expected = normalizeStatusRef(projectRef);
+  return [
+    entry?.projectId,
+    entry?.projectAlias,
+    entry?.projectRoot,
+    entry?.project?.id,
+    entry?.project?.projectId,
+    entry?.project?.alias,
+    entry?.project?.name,
+    entry?.project?.projectRoot,
+    project?.id,
+    project?.projectId,
+    project?.alias,
+    project?.name,
+    project?.projectRoot
+  ].some((candidate) => normalizeStatusRef(candidate) === expected);
+}
+
+function normalizeStatusRef(value) {
+  return typeof value === 'string'
+    ? (process.platform === 'win32' ? value.toLowerCase() : value)
+    : undefined;
+}
+
+function filterStatusEntries(entries = [], options, projectById, pageRunIds = undefined) {
+  return entries.filter((entry) => {
+    const projectId = entry.projectId ?? entry.project?.projectId ?? entry.project?.id;
+    const runId = entry.runId ?? entry.run?.runId ?? entry.process?.runId;
+    return matchesStatusProject(entry, projectById.get(projectId), options.project)
+      && (!options.taskRef || entry.task === options.taskRef)
+      && (!options.active || (runId && pageRunIds?.has(runId)))
+      && (!pageRunIds || !runId || pageRunIds.has(runId));
+  });
+}
+
+function summarizeStatusPage({ projects, processes, runs, ports, conflicts, errors }) {
+  const countStatuses = (entries, names) => Object.fromEntries([
+    ['total', entries.length],
+    ...names.map((name) => [name, entries.filter((entry) => entry.status === name).length])
+  ]);
+  return {
+    scope: 'page',
+    projects: countStatuses(projects, ['running', 'conflict', 'idle', 'stopped', 'error']),
+    processes: countStatuses(processes, ['ready', 'running', 'starting', 'stopped', 'stale', 'unknown', 'stop_failed']),
+    runs: countStatuses(runs, ['ready', 'running', 'starting', 'stopped', 'stale', 'unknown', 'stop_failed']),
+    ports: { declared: ports.length, conflicts: conflicts.length },
+    errors: errors.length
+  };
 }
 
 async function conflictsCommand(options, io) {
@@ -843,7 +1097,7 @@ async function startCommand(taskName, options, io, commandName = 'start') {
   }
 
   const config = loadConfig(process.cwd());
-  const resolvedTaskName = taskName ?? (config.tasks.start ? 'start' : 'dev');
+  const resolvedTaskName = resolveStartTaskName(config, taskName);
   const task = requireTask(config, resolvedTaskName);
   requireManagedTask(config, resolvedTaskName, task);
   if (isSharedLifecycleTask(task)) {
@@ -2738,6 +2992,8 @@ function requireTask(config, taskName) {
   if (!task) {
     throw new LaunchdeckError('task_not_found', `Task '${taskName}' is not configured in ${config.configPath}.`, {
       task: taskName,
+      availableTasks: availableTaskNames(config),
+      effect: noDispatchEffect(),
       projectRoot: config.projectRoot,
       configPath: config.configPath
     });
@@ -2749,10 +3005,53 @@ function requireManagedTask(config, taskName, task) {
   if (!task.longRunning) {
     throw new LaunchdeckError('task_not_managed', `Task '${taskName}' is not configured as a managed task.`, {
       task: taskName,
+      availableTasks: availableTaskNames(config),
+      effect: noDispatchEffect(),
       projectRoot: config.projectRoot,
       configPath: config.configPath
     });
   }
+}
+
+export function resolveStartTaskName(config, explicitTaskName = undefined) {
+  if (explicitTaskName !== undefined) return explicitTaskName;
+  if (config.project.defaultTask !== undefined) return config.project.defaultTask;
+  if (Object.hasOwn(config.tasks, 'start')) return 'start';
+  if (Object.hasOwn(config.tasks, 'dev')) return 'dev';
+
+  const managedTasks = availableTaskNames(config)
+    .filter((taskName) => config.tasks[taskName]?.longRunning === true);
+  if (managedTasks.length === 1) return managedTasks[0];
+
+  const availableTasks = availableTaskNames(config);
+  throw new LaunchdeckError(
+    'task_not_found',
+    managedTasks.length === 0
+      ? 'No default managed task is configured. Pass an explicit task or set project.defaultTask.'
+      : 'Multiple managed tasks are available. Pass an explicit task or set project.defaultTask.',
+    {
+      availableTasks,
+      effect: noDispatchEffect(),
+      projectRoot: config.projectRoot,
+      configPath: config.configPath
+    }
+  );
+}
+
+function availableTaskNames(config) {
+  return Object.keys(config.tasks).sort((left, right) => left.localeCompare(right));
+}
+
+function noDispatchEffect() {
+  return { certainty: 'none', changed: false, dispatch: 'not_dispatched' };
+}
+
+function markCertainPreDispatchFailure(error) {
+  if (!CERTAIN_PRE_DISPATCH_ERROR_CODES.has(error?.code)) return;
+  error.details = {
+    ...error.details,
+    effect: error.details?.effect ?? noDispatchEffect()
+  };
 }
 
 function isGlobalTaskTarget(value) {
@@ -3160,7 +3459,12 @@ async function executeCliAgentOperation(input) {
     });
   }
   const handlers = {
-    ...createCapabilitiesHandlers({ provenance, compatibility, ...(input.capabilitiesOptions ?? {}) }),
+    ...createCapabilitiesHandlers({
+      provenance,
+      compatibility,
+      ...cliCapabilityMetadata(provenance),
+      ...(input.capabilitiesOptions ?? {})
+    }),
     ...(input.projectHandlers ?? {}),
     ...(input.taskHandlers ?? {}),
     ...(input.adoptionHandlers ?? {}),
@@ -3265,6 +3569,28 @@ function cliAgentProvenance() {
   };
 }
 
+function cliCapabilityMetadata(provenance) {
+  const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(new URL('../agent/compatibility-manifest.json', import.meta.url), 'utf8'));
+  return {
+    identity: {
+      product: 'Launchdeck',
+      package: { name: packageJson.name, version: packageJson.version }
+    },
+    contracts: {
+      agentProtocol: manifest.versions.agentProtocol,
+      cliSchema: manifest.versions.cliSchema,
+      configSchema: manifest.versions.configSchema
+    },
+    stateScope: 'global',
+    executable: {
+      path: provenance.runtimePath,
+      runtimePath: process.execPath,
+      runtimeVersion: process.version
+    }
+  };
+}
+
 function cliCompatibility() {
   return {
     canRead: true,
@@ -3350,8 +3676,12 @@ function commandExists(command) {
 function parseArgs(argv) {
   const options = {
     all: false,
+    active: false,
     alias: undefined,
     config: undefined,
+    cwd: undefined,
+    description: undefined,
+    expectedDigest: undefined,
     force: false,
     forceOwned: false,
     follow: false,
@@ -3376,16 +3706,24 @@ function parseArgs(argv) {
     maxFiles: undefined,
     name: undefined,
     operationName: undefined,
+    overwrite: false,
     path: undefined,
+    ports: undefined,
     runId: undefined,
+    risk: undefined,
     safe: false,
     signals: undefined,
     scope: undefined,
     states: undefined,
     taskRef: undefined,
+    taskCommand: undefined,
     target: undefined,
     windowSeconds: undefined,
-    yes: false
+    nested: false,
+    longRunning: false,
+    log: undefined,
+    yes: false,
+    workspace: false
   };
   const positionals = [];
 
@@ -3393,8 +3731,18 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === '--all') {
       options.all = true;
+    } else if (arg === '--active') {
+      options.active = true;
     } else if (arg === '--force') {
       options.force = true;
+    } else if (arg === '--workspace') {
+      options.workspace = true;
+    } else if (arg === '--nested') {
+      options.nested = true;
+    } else if (arg === '--overwrite') {
+      options.overwrite = true;
+    } else if (arg === '--long-running') {
+      options.longRunning = true;
     } else if (arg === '--force-owned') {
       options.forceOwned = true;
     } else if (arg === '--follow' || arg === '-f') {
@@ -3464,6 +3812,23 @@ function parseArgs(argv) {
       options.windowSeconds = parseIntegerOption(argv[++index], '--window-seconds', 1, 86_400);
     } else if (arg === '--task') {
       options.taskRef = requireOptionValue(argv[++index], '--task');
+    } else if (arg === '--command') {
+      options.taskCommand = requireOptionValue(argv[++index], '--command');
+    } else if (arg === '--cwd') {
+      options.cwd = requireOptionValue(argv[++index], '--cwd');
+    } else if (arg === '--description') {
+      options.description = requireOptionValue(argv[++index], '--description');
+    } else if (arg === '--expected-digest') {
+      options.expectedDigest = requireOptionValue(argv[++index], '--expected-digest');
+    } else if (arg === '--risk') {
+      options.risk = requireOptionValue(argv[++index], '--risk');
+    } else if (arg === '--log') {
+      options.log = requireOptionValue(argv[++index], '--log');
+    } else if (arg === '--port') {
+      options.ports = [
+        ...(options.ports ?? []),
+        parseIntegerOption(argv[++index], '--port', 1, 65_535)
+      ];
     } else if (arg === '--operation-name') {
       options.operationName = requireOptionValue(argv[++index], '--operation-name');
     } else if (arg === '--created-after') {
@@ -3631,7 +3996,10 @@ function helpText() {
   return `Launchdeck
 
 Usage:
-  launchdeck init [--force]
+  launchdeck init [--nested] [--force]
+  launchdeck config validate [--json] [--compact]
+  launchdeck config propose --task name --command command [--cwd dir] [--workspace] [--long-running] [--port number] [--risk low|medium] [--json] [--compact]
+  launchdeck config patch --task name --command command [--cwd dir] [--workspace] [--long-running] [--port number] [--risk low|medium] [--expected-digest sha256:...] [--overwrite] --yes [--json] [--compact]
   launchdeck capabilities [--json] [--compact]
   launchdeck diagnose [--checks runtime,compatibility,...] [--json] [--compact]
   launchdeck doctor [--json] [--compact]
@@ -3644,7 +4012,7 @@ Usage:
   launchdeck agent paths [--json] [--compact]
   launchdeck agent doctor [--json] [--compact]
   launchdeck agent install --agent <${supportedAgents().join('|')}> [--scope project|user] [--dry-run] [--force] [--target dir] [--json] [--compact]
-  launchdeck status --all [--json] [--compact]
+  launchdeck status --all [--project target] [--task task] [--active] [--limit 50] [--cursor offset] [--json] [--compact]
   launchdeck conflicts [--json] [--compact]
   launchdeck setup|build|package|test|lint|typecheck [--json] [--compact]
   launchdeck run <task> [--json] [--compact]

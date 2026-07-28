@@ -6,6 +6,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import {
+  assertPublicConfigValidationSucceeded,
   assertPublicSetupSucceeded,
   copyFreshDemoAllowlist,
   evaluateAgentFirstFlaskEvidence,
@@ -37,6 +38,31 @@ test('Flask producer rejects a parseable refused public setup result', () => {
   );
 });
 
+test('Flask producer accepts both public config-validation success envelopes and fails closed', () => {
+  const exitedZero = { status: 0, stdout: '', stderr: '' };
+  const legacy = { schemaVersion: 1, ok: true, status: 'ok' };
+  const installerStyle = {
+    schemaVersion: 1,
+    ok: true,
+    result: { outcome: 'succeeded' }
+  };
+
+  assert.equal(assertPublicConfigValidationSucceeded(exitedZero, legacy), legacy);
+  assert.equal(assertPublicConfigValidationSucceeded(exitedZero, installerStyle), installerStyle);
+  for (const [run, envelope] of [
+    [{ ...exitedZero, status: 1 }, legacy],
+    [exitedZero, { ...legacy, ok: false }],
+    [exitedZero, { schemaVersion: 1, ok: true, status: 'refused' }],
+    [exitedZero, { schemaVersion: 1, ok: true }]
+  ]) {
+    assert.throws(() => assertPublicConfigValidationSucceeded(run, envelope));
+  }
+
+  const legacyEvidence = structuredClone(contractFixture.sampleEvidence);
+  legacyEvidence.agentAuthored.validation.outcome = 'ok';
+  assert.equal(evaluateAgentFirstFlaskEvidence(legacyEvidence).checks.configValidatedBeforeStart, true);
+});
+
 test('fresh Flask copy excludes existing user config and runtime state by allowlist', (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-flask-copy-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -63,6 +89,7 @@ test('fresh Flask copy excludes existing user config and runtime state by allowl
 test('agent-first Flask evidence contract declares actual public lifecycle proof points', () => {
   assert.deepEqual(contractFixture.requiredPublicCommands, [
     'agent setup',
+    'config validate',
     'up',
     'status --all',
     'logs start',
@@ -72,6 +99,7 @@ test('agent-first Flask evidence contract declares actual public lifecycle proof
     'fresh demo copy uses an allowlist and rejects runtime state recursively',
     'installer leaves .launchdeck.yml absent',
     'deterministic installed-Agent fixture process authors .launchdeck.yml from project evidence',
+    'authored config passes public read-only config validation before lifecycle start',
     'parent runner proves it did not author .launchdeck.yml',
     'real MCP stdio capabilities.get and build identity are captured',
     'PYTHONPATH points at the fresh src layout',
@@ -88,6 +116,7 @@ test('sample evidence evaluator enforces Agent-authored config and webpage lifec
   assert.equal(contract.ok, true);
   assert.equal(contract.checks.installerLeftProjectConfigAbsent, true);
   assert.equal(contract.checks.agentAuthoredConfig, true);
+  assert.equal(contract.checks.configValidatedBeforeStart, true);
   assert.equal(contract.checks.agentMcpAndBuildProof, true);
   assert.equal(contract.checks.upSucceeded, true);
   assert.equal(contract.checks.webpageReached, true);
@@ -115,6 +144,8 @@ test('runner source uses disposable copy and public CLI lifecycle without fake l
     "['down', '--json']",
     'agentAuthorFixturePath',
     'installed-agent-author.js',
+    'configValidatedBeforeStart',
+    'validationJson',
     'deterministic-installed-agent-fixture',
     'parentAuthoredConfig: false',
     'startLogsObserved',

@@ -84,6 +84,10 @@ export function normalizeInstallerResult(input = {}) {
     buildIdentity: prePlanRefusal
       ? normalizeNullableDigest(input.buildIdentity, 'buildIdentity')
       : requireDigest(input.buildIdentity, 'buildIdentity'),
+    entrypoints: normalizeEntrypoints(input.entrypoints, {
+      scope: input.scope,
+      buildIdentity: input.buildIdentity
+    }),
     operationId,
     planDigest: prePlanRefusal
       ? normalizeNullPlanDigest(input.planDigest, 'planDigest')
@@ -96,6 +100,42 @@ export function normalizeInstallerResult(input = {}) {
     error
   };
   return deepFreeze(normalized);
+}
+
+function normalizeEntrypoints(value, expected) {
+  if (value === null || value === undefined) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw resultError('entrypoints must be an object or null.');
+  }
+  if (value.scope !== expected.scope || value.buildIdentity !== expected.buildIdentity) {
+    throw resultError('entrypoints must match the installer scope and build identity.');
+  }
+  for (const key of ['cli', 'mcp']) normalizeEntrypoint(value[key], key, expected.buildIdentity);
+  if (expected.buildIdentity === null) {
+    if (value.runtime !== null) throw resultError('entrypoints.runtime must be null without a build identity.');
+  } else {
+    normalizeEntrypoint(value.runtime, 'runtime', expected.buildIdentity);
+  }
+  return redactInstallerValue(value);
+}
+
+function normalizeEntrypoint(value, label, buildIdentity) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw resultError(`entrypoints.${label} must be an object.`);
+  }
+  requireText(value.path, `entrypoints.${label}.path`);
+  if (value.buildIdentity !== buildIdentity) {
+    throw resultError(`entrypoints.${label}.buildIdentity must match the installer build identity.`);
+  }
+  if (typeof value.exists !== 'boolean') {
+    throw resultError(`entrypoints.${label}.exists must be boolean.`);
+  }
+  if (label !== 'runtime') {
+    requireText(value.command, `entrypoints.${label}.command`);
+    if (!Array.isArray(value.args) || value.args.some((entry) => typeof entry !== 'string')) {
+      throw resultError(`entrypoints.${label}.args must be a string array.`);
+    }
+  }
 }
 
 export function createInstallerExecutionEnvelope(command, input) {

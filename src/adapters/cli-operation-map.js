@@ -123,7 +123,7 @@ export function mapCliInvocation({ positionals = [], options = {}, context = {} 
   }
   if (context.agentEligible === false) return null;
   if (command === 'start' || command === 'up') {
-    return mapped('task.start', taskMutationInput(context, positionals[1] ?? context.taskRef ?? 'dev'));
+    return mapped('task.start', taskMutationInput(context, positionals[1] ?? context.taskRef));
   }
   if (command === 'dev') {
     return mapped('task.start', taskMutationInput(context, 'dev'));

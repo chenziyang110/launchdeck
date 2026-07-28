@@ -21,6 +21,7 @@ test('normalized installer result has one stable typed field set and remains dee
     'scope',
     'projectIdentity',
     'buildIdentity',
+    'entrypoints',
     'operationId',
     'planDigest',
     'receiptId',
@@ -32,6 +33,9 @@ test('normalized installer result has one stable typed field set and remains dee
   ]);
   assert.equal(result.outcome, 'succeeded');
   assert.equal(result.effectCertainty, 'complete');
+  assert.equal(result.entrypoints.scope, 'project');
+  assert.equal(result.entrypoints.buildIdentity, BUILD_IDENTITY);
+  assert.equal(result.entrypoints.cli.path, 'F:/fixture/node_modules/launchdeck/src/cli.js');
   assert.equal(result.error, null);
   assert.equal(Object.isFrozen(result), true);
   assert.equal(Object.isFrozen(result.targets), true);
@@ -80,6 +84,7 @@ test('pre-plan refused results may carry null planDigest and nullable buildIdent
     outcome: 'refused',
     effectCertainty: 'none',
     buildIdentity: null,
+    entrypoints: null,
     operationId: null,
     planDigest: null,
     receiptId: null,
@@ -100,6 +105,7 @@ test('pre-plan refused results may carry null planDigest and nullable buildIdent
     outcome: 'refused',
     effectCertainty: 'none',
     buildIdentity: BUILD_IDENTITY,
+    entrypoints: null,
     operationId: null,
     planDigest: null,
     receiptId: null,
@@ -220,6 +226,29 @@ function resultFixture(overrides = {}) {
     scope: 'project',
     projectIdentity: 'F:/projects/flask-demo',
     buildIdentity: BUILD_IDENTITY,
+    entrypoints: {
+      scope: 'project',
+      buildIdentity: BUILD_IDENTITY,
+      cli: {
+        path: 'F:/fixture/node_modules/launchdeck/src/cli.js',
+        command: 'node',
+        args: ['F:/fixture/node_modules/launchdeck/src/cli.js'],
+        exists: true,
+        buildIdentity: BUILD_IDENTITY
+      },
+      mcp: {
+        path: 'F:/fixture/home/installer/launcher/v1/launchdeck-mcp.cmd',
+        command: 'F:/fixture/home/installer/launcher/v1/launchdeck-mcp.cmd',
+        args: ['mcp', 'serve'],
+        exists: true,
+        buildIdentity: BUILD_IDENTITY
+      },
+      runtime: {
+        path: 'F:/fixture/home/installer/artifacts/v1/sha256/build/runtime/launchdeck-mcp.mjs',
+        exists: true,
+        buildIdentity: BUILD_IDENTITY
+      }
+    },
     operationId: 'op_0123456789abcdef',
     planDigest: PLAN_DIGEST,
     receiptId: 'receipt_0123456789abcdef',

@@ -1,6 +1,6 @@
 {
   "name": "launchdeck",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Universal lifecycle control for local software projects.",
   "keywords": [
     "cli",
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@decimalturn/toml-patch": "2.1.0",
-    "@modelcontextprotocol/sdk": "1.29.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
     "semver": "7.8.5",
     "yaml": "^2.5.1",
     "zod": "4.4.3"

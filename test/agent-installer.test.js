@@ -4,11 +4,15 @@ import path from 'node:path';
 import test from 'node:test';
 import { createCliFixture, repoRoot } from './helpers/cli-fixture.js';
 
+const packagedBuildIdentity = JSON.parse(
+  fs.readFileSync(path.join(repoRoot, 'agent', 'compatibility-manifest.json'), 'utf8')
+).buildIdentity;
+
 test('agent paths reports canonical source and supported adapter targets', () => {
   const fixture = createCliFixture();
 
   try {
-    const result = fixture.runCliJson(['agent', 'paths', '--compact']);
+    const result = fixture.runCliJson(['agent', 'paths']);
 
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.json.ok, true);
@@ -16,6 +20,12 @@ test('agent paths reports canonical source and supported adapter targets', () =>
     assert.equal(result.json.action, 'paths');
     assert.equal(result.json.source.exists, true);
     assert.equal(result.json.source.path, path.join(repoRoot, '.agents', 'skills', 'launchdeck-agent'));
+    assert.equal(result.json.entrypoints.scope, 'project');
+    assert.match(result.json.entrypoints.buildIdentity, /^sha256:[a-f0-9]{64}$/);
+    assert.equal(result.json.entrypoints.cli.path, path.join(repoRoot, 'src', 'cli.js'));
+    assert.equal(result.json.entrypoints.cli.exists, true);
+    assert.deepEqual(result.json.entrypoints.mcp.args, ['mcp', 'serve']);
+    assert.equal(result.json.entrypoints.runtime.buildIdentity, result.json.entrypoints.buildIdentity);
 
     const ids = result.json.targets.map((target) => `${target.agent}:${target.scope}:${target.skillRoot}`);
     assert.ok(ids.includes(`codex:project:${path.join(fixture.projectRoot, '.agents', 'skills')}`));
@@ -39,7 +49,10 @@ test('agent doctor returns the unified lifecycle diagnostic envelope', () => {
     assert.equal(result.json.result.outcome, 'succeeded');
     assert.equal(result.json.result.effectCertainty, 'complete');
     assert.equal(result.json.result.scope, 'project');
-    assert.match(result.json.result.buildIdentity, /^sha256:[a-f0-9]{64}$/);
+    assert.equal(result.json.result.buildIdentity, packagedBuildIdentity);
+    assert.equal(result.json.result.entrypoints.scope, 'project');
+    assert.equal(result.json.result.entrypoints.buildIdentity, result.json.result.buildIdentity);
+    assert.equal(result.json.result.entrypoints.cli.path, path.join(repoRoot, 'src', 'cli.js'));
     assert.deepEqual(result.json.result.nextActions, [
       { command: 'launchdeck agent setup' }
     ]);
@@ -67,6 +80,10 @@ test('agent install dry-run plans copy without mutating the target', () => {
     assert.equal(result.json.ok, true);
     assert.equal(result.json.dryRun, true);
     assert.equal(result.json.result.status, 'planned');
+    assert.equal(result.json.entrypoints.scope, 'project');
+    assert.match(result.json.entrypoints.buildIdentity, /^sha256:[a-f0-9]{64}$/);
+    assert.equal(result.json.entrypoints.cli.path, path.join(repoRoot, 'src', 'cli.js'));
+    assert.equal(result.json.entrypoints.mcp.buildIdentity, result.json.entrypoints.buildIdentity);
     assert.equal(fs.existsSync(path.join(skillRoot, 'launchdeck-agent')), false);
   } finally {
     fixture.cleanup();
@@ -92,9 +109,9 @@ test('agent install compact output summarizes actions without verbose copy paths
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.json.ok, true);
     assert.equal(result.json.result.status, 'planned');
-    assert.equal(result.json.result.actionCount, 10);
+    assert.equal(result.json.result.actionCount, 11);
     assert.equal(result.json.result.actionCounts.mkdir, 2);
-    assert.equal(result.json.result.actionCounts.copy_file, 8);
+    assert.equal(result.json.result.actionCounts.copy_file, 9);
     assert.ok(result.json.result.files.includes('SKILL.md'));
     assert.equal(result.json.result.actions, undefined);
     assert.equal(result.json.target.dir, path.join(skillRoot, 'launchdeck-agent'));
