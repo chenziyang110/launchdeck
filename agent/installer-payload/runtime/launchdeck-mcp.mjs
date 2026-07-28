@@ -35722,10 +35722,10 @@ public static class LaunchdeckStopTree {
   }
   return processIds;
 }
-function runWindowsProcessTreeScript(pwshScript, legacyScript, timeoutMs, acceptsModernResult) {
+function runWindowsProcessTreeScript(pwshScript, legacyScript, timeoutMs, acceptsModernResult, options = {}) {
+  const run = options.spawnSync ?? spawnSync;
   const env = windowsProcessInspectionEnv();
-  const startedAt = Date.now();
-  const modern = spawnSync("pwsh.exe", [
+  const modern = run("pwsh.exe", [
     "-NoProfile",
     "-NonInteractive",
     "-EncodedCommand",
@@ -35739,8 +35739,7 @@ function runWindowsProcessTreeScript(pwshScript, legacyScript, timeoutMs, accept
   if (!modern.error && acceptsModernResult(modern)) {
     return modern;
   }
-  const remainingTimeoutMs = Math.max(1, timeoutMs - (Date.now() - startedAt));
-  return spawnSync("powershell.exe", [
+  return run("powershell.exe", [
     "-NoProfile",
     "-NonInteractive",
     "-EncodedCommand",
@@ -35748,7 +35747,7 @@ function runWindowsProcessTreeScript(pwshScript, legacyScript, timeoutMs, accept
   ], {
     encoding: "utf8",
     env,
-    timeout: remainingTimeoutMs,
+    timeout: timeoutMs,
     windowsHide: true
   });
 }
