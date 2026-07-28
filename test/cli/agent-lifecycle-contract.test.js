@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { LifecyclePromptCancelledError } from '../../src/agent/lifecycle-prompter.js';
+
 import {
   BUILD_IDENTITY,
   assertInstallerEnvelope,
@@ -153,13 +155,13 @@ test('default lifecycle authority receives live host probes and filesystem provi
 test('interactive setup selects host components and scope before separate apply approval', async () => {
   const prompts = [];
   const input = {
-    async selectMany(prompt, choices) {
-      prompts.push({ kind: 'selectMany', prompt, choices });
+    async selectMany(prompt, choices, settings) {
+      prompts.push({ kind: 'selectMany', prompt, choices, settings });
       if (/host/i.test(prompt)) return ['codex'];
       return ['skill', 'mcp'];
     },
-    async select(prompt, choices) {
-      prompts.push({ kind: 'select', prompt, choices });
+    async select(prompt, choices, settings) {
+      prompts.push({ kind: 'select', prompt, choices, settings });
       return 'project';
     },
     async confirm(prompt) {
@@ -186,6 +188,25 @@ test('interactive setup selects host components and scope before separate apply 
     'confirm'
   ]);
   assert.deepEqual(prompts[1].choices, ['runtime', 'skill', 'mcp']);
+  assert.deepEqual(prompts[1].settings, {
+    initialValues: ['runtime', 'skill', 'mcp']
+  });
+  assert.deepEqual(prompts[2].settings, { initialValue: 'project' });
+});
+
+test('Ctrl+C exits interactive setup as cancelled before planning or writes', async () => {
+  const result = await runAgentCli(['agent', 'setup'], {
+    terminal: { isTTY: true },
+    input: {
+      async selectMany() {
+        throw new LifecyclePromptCancelledError();
+      }
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /agent setup: cancelled/i);
+  assert.deepEqual(result.service.calls, []);
 });
 
 test('JSON and non-interactive setup never prompt and preserve missing selections for typed refusal', async () => {

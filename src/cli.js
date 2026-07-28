@@ -4,7 +4,6 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import {
   createSampleConfig,
@@ -19,6 +18,10 @@ import {
   supportedAgents
 } from './agent-installer.js';
 import { createAgentLifecycleService, isAgentLifecycleFailureOutcome } from './agent/index.js';
+import {
+  createLifecyclePrompter,
+  LifecyclePromptCancelledError
+} from './agent/lifecycle-prompter.js';
 import { LaunchdeckError, toErrorPayload } from './errors.js';
 import {
   createFailureEnvelope,
@@ -2532,7 +2535,16 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
     });
   }
 
-  const selection = await lifecycleSelection(operation, options, runtime);
+  let selection;
+  try {
+    selection = await lifecycleSelection(operation, options, runtime);
+  } catch (error) {
+    if (error instanceof LifecyclePromptCancelledError) {
+      if (!error.announced) write(io, `Launchdeck agent ${operation}: cancelled\n`);
+      return 0;
+    }
+    throw error;
+  }
   const input = lifecycleInput(operation, { ...options, ...selection }, io, runtime);
   input.approved = await lifecycleApproval(operation, input, options, runtime);
   const envelope = await service[operation](input);
@@ -2587,19 +2599,26 @@ async function lifecycleSelection(operation, options, runtime) {
   let components = options.components;
   let scope = options.scope;
   if (!hosts && typeof input?.selectMany === 'function') {
+    const availableHosts = availableLifecycleHosts(runtime.env);
     hosts = await input.selectMany(
       'Select available agent host(s)',
-      availableLifecycleHosts(runtime.env)
+      availableHosts,
+      { initialValues: availableHosts.length === 1 ? availableHosts : [] }
     );
   }
   if (!components && typeof input?.selectMany === 'function') {
     components = await input.selectMany(
       'Select component(s)',
-      ['runtime', 'skill', 'mcp']
+      ['runtime', 'skill', 'mcp'],
+      { initialValues: ['runtime', 'skill', 'mcp'] }
     );
   }
   if (!scope && typeof input?.select === 'function') {
-    scope = await input.select('Select installation scope', ['project', 'user']);
+    scope = await input.select(
+      'Select installation scope',
+      ['project', 'user'],
+      { initialValue: 'project' }
+    );
   }
   return { hosts, components, scope, interactive: true };
 }
@@ -2642,32 +2661,10 @@ async function lifecycleApproval(operation, input, options, runtime) {
 }
 
 function createDefaultLifecycleInput(io) {
-  async function question(prompt) {
-    const terminal = createInterface({
-      input: process.stdin,
-      output: io.stdout,
-      terminal: true
-    });
-    try {
-      return await terminal.question(`${prompt}: `);
-    } finally {
-      terminal.close();
-    }
-  }
-  return {
-    async select(prompt, choices) {
-      const answer = (await question(`${prompt} [${choices.join('|')}]`)).trim();
-      return choices.includes(answer) ? answer : undefined;
-    },
-    async selectMany(prompt, choices) {
-      const answer = await question(`${prompt} [comma-separated: ${choices.join('|')}]`);
-      const selected = [...new Set(answer.split(',').map((value) => value.trim()).filter(Boolean))];
-      return selected.every((value) => choices.includes(value)) ? selected : [];
-    },
-    async confirm(prompt) {
-      return /^(?:y|yes)$/i.test((await question(`${prompt} [y/N]`)).trim());
-    }
-  };
+  return createLifecyclePrompter({
+    input: io.stdin ?? process.stdin,
+    output: io.stdout ?? process.stdout
+  });
 }
 
 function createCliHostRegistryOptions(env) {

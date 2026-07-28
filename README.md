@@ -8,12 +8,12 @@ The base feature is daemonless. Launchdeck keeps one authoritative control-plane
 
 ## Install
 
-Launchdeck requires Node.js 20 or newer. npm registry publication is a separate release step; the supported v0.3.0 package can be installed directly from its immutable GitHub tag.
+Launchdeck requires Node.js 20 or newer. npm registry publication is a separate release step; the supported v0.3.1 package can be installed directly from its immutable GitHub tag.
 
 Install the CLI globally:
 
 ```bash
-npm install --global --install-links=true github:chenziyang110/launchdeck#v0.3.0
+npm install --global --install-links=true github:chenziyang110/launchdeck#v0.3.1
 launchdeck --help
 launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
 launchdeck agent status --host codex --scope user --json
@@ -22,11 +22,16 @@ launchdeck agent status --host codex --scope user --json
 Or install it into another project:
 
 ```bash
-npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.3.0
+npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.3.1
 npx launchdeck --help
-npx launchdeck agent setup --host codex --component runtime,skill,mcp --scope project --project . --yes --json
+npx launchdeck agent setup
 npx launchdeck agent status --host codex --scope project --project . --json
 ```
+
+The interactive setup wizard uses arrow keys to move, Space to select one or more
+hosts/components, and Enter to confirm. Installation scope and final approval are
+also selectable prompts; no comma-separated input is required. Scripts and CI can
+continue to pass `--host`, `--component`, `--scope`, `--yes`, and `--json` explicitly.
 
 `--install-links=true` makes npm materialize the packed Git dependency instead of linking its temporary clone, which npm removes after installation on some Windows configurations.
 

@@ -1,6 +1,6 @@
 {
   "name": "launchdeck",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Universal lifecycle control for local software projects.",
   "keywords": [
     "cli",
@@ -38,6 +38,7 @@
     "package:check": "npm pack --dry-run"
   },
   "dependencies": {
+    "@clack/prompts": "1.1.0",
     "@decimalturn/toml-patch": "2.1.0",
     "@modelcontextprotocol/sdk": "1.30.0",
     "semver": "7.8.5",
