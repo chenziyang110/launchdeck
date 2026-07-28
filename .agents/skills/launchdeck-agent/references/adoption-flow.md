@@ -8,16 +8,17 @@ The installer never authors `.launchdeck.yml`. It installs or repairs the runtim
 
 - Read-only inspection: the user asks how the project could be managed, analyzed, onboarded, or adopted without explicitly asking to create a config. Return a proposal only.
 - Explicit configuration authoring: the user asks to create, write, or generate `.launchdeck.yml` for the current/named local project, or explicitly says to configure that project for Launchdeck.
+- Explicit configure-validate-launch combined intent: the current request explicitly asks to create a missing config, validate it, and launch only after validation succeeds.
 
-Authoring requires explicit user intent in the current request. A generic confirmation such as "yes", ordinary lifecycle wording, or an inspection-only adoption request does not authorize a filesystem write.
+Authoring requires explicit user intent in the current request. A generic confirmation such as "yes", ordinary lifecycle wording, or an inspection-only adoption request does not authorize a filesystem write. Authoring-only and combined intent are distinct; never infer launch authority from authoring.
 
 ## Shared Discovery Sequence
 
-1. Call `capabilities.get`, then use `project.list` to determine whether the exact target is already registered and resolvable. Do not infer resolved scope from the working directory alone.
-2. Use the Agent's workspace read-only surface to check the target directory and its ancestors for supported Launchdeck config filenames. If one exists, preserve it and stop the authoring branch. Do not overwrite, merge, migrate, or repair it.
+1. Select and pin an entrypoint through `entrypoint-discovery.md`. Call `capabilities.get`, then use `project.list` to determine whether the exact target is already registered and resolvable. If MCP is unavailable before dispatch, the pinned CLI may use only `launchdeck capabilities --json --compact` and `launchdeck projects --json --compact` for the same read-only discovery. Do not infer resolved scope from the working directory alone.
+2. Use `launchdeck doctor --json --compact` through the pinned CLI when an existing config is loadable, and the Agent's workspace read-only surface to check the target directory and its ancestors for supported Launchdeck config filenames. This config discovery is read-only. If a config exists at the exact target, preserve it. Do not overwrite, merge, migrate, or repair it. If only an ancestor config exists for a monorepo child, use the two-path rule below instead of treating the child as a dead end.
 3. If `project.list` proves the target is registered/resolved and the capability is available, MCP `adoption.inspect` may inspect it with depth no greater than 4 and file count no greater than 200.
 4. For an unregistered project with no supported config, use the Agent's bounded workspace read-only surface over the allowlist in `discovery-rules.md`, with the same depth/file limits and secret exclusions. Do not call MCP `adoption.inspect` for unresolved scope.
-5. Do not use CLI fallback for adoption inspection: `launchdeck adoption inspect` loads an existing config before dispatch and cannot inspect the missing-config target.
+5. Do not use CLI fallback for adoption inspection. Specifically, `launchdeck adoption inspect` loads an existing config before dispatch and cannot inspect the missing-config target. The read-only capabilities, project-list, and config-discovery fallback above remains allowed.
 6. Classify each candidate as `exact`, `strong`, `weak`, or `unknown`. Do not run a task.
 7. Missing secrets or external dependencies remain reported requirements. Never synthesize secrets, tokens, credentials, database values, remote endpoints, or production settings.
 
@@ -30,20 +31,46 @@ For a registered/resolved target, use callable MCP inspection as above. For an u
 Proceed only when all of these are true:
 
 - The user explicitly requested configuration authoring for this local project.
-- Launchdeck discovery found no existing config.
+- Launchdeck discovery found no config at the exact target, or found only an ancestor config and the user explicitly selected an independent child config.
 - The project target is resolved; a monorepo app/service is named or otherwise unambiguous.
 - At least one task candidate is `exact` or `strong` and is backed by machine-readable evidence.
 - No candidate chosen for authoring depends on guessed secrets, remote/production behavior, or conflicting commands.
 
 If any gate fails, report the proposed candidates or refusal reason and write nothing.
 
+### Monorepo Two-Path Rule
+
+When a named monorepo child has only an ancestor config, present both supported choices before writing:
+
+- Independent child config: after the user explicitly selects this boundary, create the nested config with the same safety semantics as `launchdeck init --nested`. The nearest config wins for descendants. The operation must not overwrite the ancestor config.
+- Root workspace task: preserve the workspace config and propose one task whose project-relative `cwd` names the child directory. From that child, use `launchdeck config propose --workspace --cwd <child>` only for the read-only candidate and summary. When the current request already explicitly authorizes that exact task patch, apply only that proposed task-level edit through the normal workspace file-editing surface, preserving unrelated fields, comments, and formatting as far as the editing surface allows. Do not invoke a CLI approval or override route.
+
+If the user has not selected a boundary, return both choices and write nothing. An existing task name is a collision: do not replace it unless the current request explicitly authorizes the exact update; otherwise report the collision and write nothing.
+
 When every gate passes:
 
 1. Create exactly one `.launchdeck.yml` at the resolved project root through the normal workspace file-editing surface. Do not introduce a new MCP/Kernel operation.
 2. Include only `exact` or `strong` tasks. Omit uncertain fields and candidates instead of guessing.
-3. From the project root, run the read-only validation command `launchdeck doctor --json --compact`.
+3. From the project root, run the read-only validation command `launchdeck config validate --json --compact` through the already pinned CLI entrypoint. `launchdeck doctor --json --compact` remains the compatible read-only validation fallback.
 4. Report the authored tasks, confidence and source evidence, omitted candidates/fields, validation result, and the file path.
 5. Stop. Never chain registration, start, run, stop, restart, clean, or raw process control. Config creation does not authorize any lifecycle mutation.
+
+The stop above is mandatory for authoring-only requests. It does not prohibit the separate combined-intent route below when the current request explicitly authorizes all three phases.
+
+## Explicit Configure-Validate-Launch
+
+Enter this route only when the current request explicitly asks to inspect/configure the local project, create a config only if it is missing, validate it, and launch after successful validation. A generic confirmation, a generic "yes", an earlier authoring request, or launch-only wording is insufficient.
+
+1. Complete the Shared Discovery Sequence without writes. Resolve one exact project boundary. Scope ambiguity or ambiguous scope stops the route with a proposal only.
+2. If the exact target has no config, apply the Explicit Configuration Authoring gates and write at most one `.launchdeck.yml`. If an authoring path encounters an existing config collision, ancestor-boundary collision, or task-name collision, preserve it and stop. An already discovered, loadable exact-target config may skip authoring and proceed to validation because no collision or write was attempted.
+3. Validate through the pinned build with `launchdeck config validate --json --compact`; compatible `launchdeck doctor --json --compact` is allowed only as the documented read-only validation fallback. Record validation as its own operation with `effect.certainty: none`, `effect.changed: false`, and `effect.dispatch: not_dispatched`. If validation fails, stop immediately. If this request wrote the config, report partial completion and do not roll back or delete it.
+4. After successful validation, re-run `capabilities.get` and perform a fresh task/status/port observation through the pinned entrypoint. This evidence must prove the exact selected task is declared and currently `risk: low`. Medium or unknown risk, scope ambiguity, ownership uncertainty, compatibility failure, collision, or any other Kernel refusal stops immediately.
+5. Dispatch exactly one low-risk lifecycle mutation: `task.start` for the explicit managed task. The combined route does not guess a task and does not use the deterministic input-correction retry; the authored task name is already exact.
+6. After a succeeded start, collect bounded status, task-specific logs, and readiness evidence. Do not permanently follow logs.
+
+Keep discovery, config write, validation, refreshed capabilities/observation, start, and bounded status/logs/readiness as separate operation/effect evidence. A filesystem write has its own completed effect and never counts as lifecycle dispatch. The start result must retain Kernel `agentResult.effects`; CLI `effect` is only pre-dispatch evidence.
+
+If config authoring succeeded but start was not dispatched, report partial completion: the config remains authored and validated while lifecycle is not started. Do not roll back user configuration. If start effect certainty is unknown, possible, missing, or otherwise possibly dispatched, stop immediately, do not switch surfaces, and do not replay. Recover only by the known operation ID or the bounded correlation rules in `command-flows.md`.
 
 If this flow is exercised by a deterministic fixture, label it as a deterministic installed-Agent fixture and not as an LLM or interactive host. The fixture may prove the authoring algorithm, installed Skill consumption, project evidence reads, MCP `capabilities.get` call, and resulting config hash. It does not prove real host approval, trust, reload, OS behavior, or interactive Agent reasoning.
 
@@ -61,7 +88,7 @@ Author valid v1 YAML using these conservative rules:
 - `cwd`: omit when the project root is correct; otherwise use a normalized project-relative directory proven by the selected manifest. Never escape the project root.
 - `longRunning`: set `true` only for a clearly declared server, watcher, or service; otherwise omit it.
 - `ports`: include only unique numeric ports explicitly declared in bounded evidence. Omit conventional defaults that were not declared.
-- `risk`: default inferred tasks to `medium`; use `low` only when concrete evidence proves the declared command is local, bounded, and non-destructive. Never lower risk from the task name alone.
+- `risk`: author `low` only when all five conditions are proven: a fixed project-internal `cwd`; a declared local development server or build tool; no remote or production target; no sensitive `env`; and no destructive command or raw shell chain. Otherwise author `risk: medium`, explain which condition failed, and the Agent must not execute that task. Never lower risk from the task name alone.
 - `log`: for an authored long-running task, use the project-local `.launchdeck/logs/<task>.log` path.
 - `env`: omit by default. Include only explicitly declared non-sensitive literals; never read a secret file or create placeholder secret values.
 - `clean.safe`: optional; include only project-local cache/build-output paths corroborated by the selected tooling. Omit dependency directories, databases, uploads, Docker state, broad globs, and any uncertain target.
@@ -70,8 +97,8 @@ Do not add unsupported schema keys. Prefer the smallest valid config over a broa
 
 ## Ecosystem Mapping
 
-- Node: map selected `package.json` scripts through the lockfile-backed package-manager wrapper. A framework config can strengthen `dev`/`start`, `longRunning`, cache, and declared-port evidence.
-- Python: prefer explicit `pyproject.toml` scripts, task-file targets, or a framework entrypoint corroborated by dependency/config evidence. A requirements file alone is insufficient.
+- Node: map selected `package.json` scripts through the lockfile-backed package-manager wrapper. A framework config can strengthen `dev`/`start`, `longRunning`, cache, and declared-port evidence. A corroborated Vite command bound to localhost may be `low` when it passes every risk condition above.
+- Python: prefer explicit `pyproject.toml` scripts, task-file targets, or a framework entrypoint corroborated by dependency/config evidence. A requirements file alone is insufficient. A corroborated local Flask module entrypoint may be `low` when it passes every risk condition above.
 - Docker Compose: map an unambiguous named service through `docker compose`; preserve declared ports and treat multi-service choices as ambiguous unless the user selected one.
 - Make, Just, and Taskfile: call only the exact declared target/recipe/task through its standard wrapper; do not inline its shell body.
 

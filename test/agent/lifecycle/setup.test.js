@@ -107,6 +107,9 @@ test('approved setup plans once, binds approval, executes one transaction, verif
   assert.equal(envelope.result.effectCertainty, 'complete');
   assert.equal(envelope.result.scope, 'project');
   assert.equal(envelope.result.buildIdentity, BUILD_IDENTITY);
+  assert.equal(envelope.result.entrypoints.scope, 'project');
+  assert.equal(envelope.result.entrypoints.buildIdentity, BUILD_IDENTITY);
+  assert.deepEqual(envelope.result.entrypoints.mcp.args, ['mcp', 'serve']);
   assert.equal(envelope.result.planDigest, PLAN_DIGEST);
   assert.equal(envelope.result.receiptId, RECEIPT_ID);
   assert.deepEqual(envelope.result.targets.map((target) => target.targetId), [

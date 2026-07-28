@@ -10,6 +10,7 @@
     "skills/launchdeck-agent/references/clean-safety.md",
     "skills/launchdeck-agent/references/command-flows.md",
     "skills/launchdeck-agent/references/discovery-rules.md",
+    "skills/launchdeck-agent/references/entrypoint-discovery.md",
     "skills/launchdeck-agent/references/eval-prompts.md",
     "skills/launchdeck-agent/references/intent-routing.md",
     "skills/launchdeck-agent/references/recovery-playbooks.md"
@@ -25,6 +26,7 @@
     "skills/launchdeck-agent/references/clean-safety.md",
     "skills/launchdeck-agent/references/command-flows.md",
     "skills/launchdeck-agent/references/discovery-rules.md",
+    "skills/launchdeck-agent/references/entrypoint-discovery.md",
     "skills/launchdeck-agent/references/eval-prompts.md",
     "skills/launchdeck-agent/references/intent-routing.md",
     "skills/launchdeck-agent/references/recovery-playbooks.md"

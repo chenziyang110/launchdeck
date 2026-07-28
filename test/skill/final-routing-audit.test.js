@@ -21,6 +21,10 @@ test('canonical Skill and next-action wording preserve the operation gate', () =
     assert.equal(executableCodeSpans(text).some((command) => command.includes(pattern)), false, pattern);
   }
   assert.match(text, /Treat risk, ownership, scope, compatibility, lock, digest, config, and input refusals as final\./);
+  assert.match(text, /explicit configure.*validate.*launch|configure.*validate.*launch.*explicit/is);
+  assert.match(text, /exactly one low-risk lifecycle mutation/i);
+  assert.match(text, /effect (?:certainty )?(?:is )?(?:unknown|possibly dispatched)/i);
+  assert.match(text, /partial completion/i);
 });
 
 test('evidence cells reject broad host labels instead of laundering them through a final audit', () => {

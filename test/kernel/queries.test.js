@@ -8,6 +8,21 @@ import { createTaskHandlers } from '../../src/kernel/operations/task.js';
 test('capabilities reports the exact Agent catalog, low-only mutation boundary, and diagnostic compatibility', async () => {
   const handlers = createCapabilitiesHandlers({
     provenance: provenance(),
+    identity: {
+      product: 'Launchdeck',
+      package: { name: 'launchdeck', version: '0.2.0' }
+    },
+    contracts: {
+      agentProtocol: { current: '1.0.0', readRange: '^1.0.0', writeRange: '^1.0.0' },
+      cliSchema: { current: 1, readRange: '1', writeRange: '1' },
+      configSchema: { current: 1, readRange: '1', writeRange: '1' }
+    },
+    stateScope: 'global',
+    executable: {
+      path: 'F:/runtime/launchdeck-mcp.mjs',
+      runtimePath: 'C:/Program Files/nodejs/node.exe',
+      runtimeVersion: 'v24.0.0'
+    },
     compatibility: {
       canRead: true,
       canWrite: false,
@@ -28,6 +43,34 @@ test('capabilities reports the exact Agent catalog, low-only mutation boundary, 
   assert.equal(result.resource.data.compatibility.diagnosticOnly, true);
   assert.equal(result.resource.data.compatibility.canWrite, false);
   assert.equal(result.resource.data.stateHome, provenance().stateHome);
+  assert.deepEqual(result.resource.data.identity, {
+    product: 'Launchdeck',
+    package: { name: 'launchdeck', version: '0.2.0' },
+    buildIdentity: provenance().buildIdentity
+  });
+  assert.deepEqual(result.resource.data.contracts.configSchema, {
+    current: 1,
+    readRange: '1',
+    writeRange: '1'
+  });
+  assert.deepEqual(result.resource.data.state, {
+    scope: 'global',
+    home: provenance().stateHome
+  });
+  assert.deepEqual(result.resource.data.executable, {
+    kind: provenance().runtimeKind,
+    path: 'F:/runtime/launchdeck-mcp.mjs',
+    runtimePath: 'C:/Program Files/nodejs/node.exe',
+    runtimeVersion: 'v24.0.0',
+    buildIdentity: provenance().buildIdentity
+  });
+  assert.deepEqual(result.resource.data.riskPolicy, {
+    boundary: 'low-only',
+    maxAgentRisk: 'low',
+    mutationOperations: result.resource.data.operations
+      .filter((operation) => operation.kind === 'mutation')
+      .map((operation) => operation.name)
+  });
   assert.deepEqual(result.effects, { certainty: 'none', changed: false, evidenceRefs: [] });
   assert.equal(JSON.stringify(result).includes('adoption.apply'), false);
   assert.equal(JSON.stringify(result).includes('force'), false);

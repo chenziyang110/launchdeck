@@ -12,6 +12,7 @@ Route when the prompt combines local lifecycle intent with local project/service
 - Safe clean: "clean the build cache safely", "clear local generated cache", "安全清理缓存".
 - Adoption inspection: "inspect how this repo could be managed", "analyze this unknown project's lifecycle", "分析这个项目如何接入".
 - Explicit configuration authoring: "create a `.launchdeck.yml` for this repo", "configure this project for Launchdeck", "为这个项目生成 Launchdeck 配置", "给当前项目编写 `.launchdeck.yml`".
+- Explicit configure-validate-launch: "check this project's Launchdeck config, create it only if missing, validate it, then launch the `start` task", "检查配置，缺失则生成，验证成功后启动". The current request must explicitly authorize both the missing-config write and the later lifecycle start.
 
 ## Should Not Trigger
 
@@ -37,9 +38,10 @@ If the local anchor is absent, ask one clarifying question or answer normally ou
 
 ## Subflow Selection
 
-- Explicit configuration authoring for a local project -> `adoption-flow.md`, then `discovery-rules.md`.
+- Combined intent -> only when the current request explicitly says to configure or create a missing config, validate it, and then launch. A generic confirmation, generic "yes", or an earlier proposal does not create combined intent.
+- Authoring-only explicit configuration for a local project -> `adoption-flow.md`, then `discovery-rules.md`; validate and stop.
 - Onboarding, inspection, or a missing lifecycle model without explicit write intent -> the read-only branch in `adoption-flow.md`, then `discovery-rules.md`.
-- Start/dev/run/build/test/package/lint/typecheck -> `command-flows.md`.
+- Lifecycle-only start/dev/run/build/test/package/lint/typecheck -> `command-flows.md`. When the config is missing, report the missing-config state and stop; lifecycle-only intent never authors it.
 - Status, running process list, ports, logs, events, inspect -> `command-flows.md`.
 - Occupied port, conflict, stale record, duplicate risk, stop failure -> `recovery-playbooks.md`.
 - Cache/build-output cleanup -> `clean-safety.md`.
@@ -47,14 +49,15 @@ If the local anchor is absent, ask one clarifying question or answer normally ou
 
 ## Surface State Machine
 
-1. Record an intent-gate decision and distinguish `inspection_only`, `explicit_config_authoring`, and lifecycle intent. Inspection-only adoption wording never authorizes a write; a later generic "yes" is not explicit authoring intent.
+1. Record an intent-gate decision and distinguish `inspection_only`, `explicit_config_authoring`, `lifecycle_only`, and `explicit_config_validate_launch`. Inspection-only adoption wording never authorizes a write; a later generic confirmation or generic "yes" is neither explicit authoring nor combined intent.
 2. Call `capabilities.get` over MCP.
-3. For explicit config authoring, follow `adoption-flow.md`: `project.list` decides whether registered-scope MCP inspection is callable; an unregistered missing-config target uses bounded workspace reads instead. Then allow at most one missing-config filesystem write and read-only validation. Stop without registration or lifecycle execution.
-4. For lifecycle intent, observe with the narrow task/project/log/event operation needed for the request, then send at most one low-risk mutation.
-5. Allow compatible CLI JSON fallback for lifecycle intent only after pre-handshake failure or explicit safe-operation omission and before any mutation dispatch. Re-check capabilities and observation on CLI.
-6. On a Kernel refusal, report and stop. Do not reinterpret host approval or user prose as execution authority.
-7. On post-dispatch transport loss, do not use CLI fallback. Use the known operation ID, or one exact `operation.list` query bounded to 15 minutes and 20 results. Zero or multiple candidates stop unresolved.
-8. Refuse every forbidden intent without a lifecycle call.
+3. For explicit config authoring alone, follow `adoption-flow.md`: `project.list` decides whether registered-scope MCP inspection is callable; an unregistered missing-config target uses bounded workspace reads instead. Then allow at most one missing-config filesystem write and read-only validation. Stop without registration or lifecycle execution.
+4. For lifecycle-only intent, observe with the narrow task/project/log/event operation needed for the request, then send at most one low-risk mutation. Missing config is a final refusal for this route and does not authorize authoring.
+5. For explicit configure-validate-launch combined intent, follow the guarded branch in `adoption-flow.md`. Cross each phase only on its own proven effect: read-only discovery; write only a missing config; successful validation; re-run `capabilities.get` and observe through the pinned entrypoint; exactly one low-risk lifecycle mutation; then bounded status, logs, and readiness observations.
+6. Allow compatible CLI JSON fallback for lifecycle intent only after pre-handshake failure or explicit safe-operation omission and before any mutation dispatch. Re-check capabilities and observation on CLI.
+7. On a Kernel refusal, report and stop. Do not reinterpret host approval or user prose as execution authority.
+8. On post-dispatch transport loss, do not use CLI fallback. Use the known operation ID, or one exact `operation.list` query bounded to 15 minutes and 20 results. Zero or multiple candidates stop unresolved.
+9. Refuse every forbidden intent without a lifecycle call.
 
 ## Evidence Layers
 

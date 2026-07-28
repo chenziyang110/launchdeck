@@ -31,6 +31,9 @@ export function createAgentDiagnostics(options = {}) {
         projectIdentity: input.scope === 'user' ? null : (input.projectRoot ?? input.projectIdentity ?? null),
         buildIdentity: receipt?.buildIdentity
           ?? input.buildIdentity
+          ?? input.desiredBuildIdentity
+          ?? input.build
+          ?? input.packagedBuildIdentity
           ?? digestCanonical({ state: 'not-installed', scope: normalizedScope(input) }),
         operationId: null,
         planDigest: receipt?.receiptDigest

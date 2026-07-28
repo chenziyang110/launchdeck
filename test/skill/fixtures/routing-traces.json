@@ -1,8 +1,51 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "invariants": {
+    "mcpFirst": true,
+    "pinEntrypointForRequest": true,
+    "observeBeforeMutate": true,
+    "maxLifecycleMutations": 1,
+    "replayWhenEffectUnknown": false,
+    "forbidden": [
+      "force",
+      "raw_command",
+      "destructive",
+      "medium_or_unknown_risk",
+      "permanent_follow"
+    ]
+  },
+  "allowedRecoveryBranches": [
+    {
+      "id": "pre_dispatch_cli_fallback",
+      "when": ["mcp_unavailable_before_dispatch", "safe_operation_omitted"],
+      "requires": ["compatible_build", "fresh_capabilities", "fresh_observation"],
+      "maxLifecycleMutations": 1
+    },
+    {
+      "id": "post_dispatch_known_operation",
+      "when": ["response_lost_after_dispatch", "operation_id_known"],
+      "allows": ["operation.get", "operation.reconcile"],
+      "replay": false
+    },
+    {
+      "id": "post_dispatch_bounded_correlation",
+      "when": ["response_lost_after_dispatch", "operation_id_lost"],
+      "allows": ["operation.list", "operation.get", "operation.reconcile"],
+      "windowMinutesMax": 15,
+      "limitMax": 20,
+      "replay": false
+    },
+    {
+      "id": "combined_after_config_validation",
+      "when": ["explicit_combined_intent", "validation_succeeded", "risk_low"],
+      "requires": ["fresh_capabilities", "fresh_observation", "exact_task"],
+      "maxLifecycleMutations": 1
+    }
+  ],
   "scenarios": [
     {
       "id": "healthy_mcp_start",
+      "goal": { "lifecycle": "started", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -13,6 +56,7 @@
     },
     {
       "id": "pre_handshake_cli_fallback",
+      "goal": { "lifecycle": "started", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "transport", "surface": "mcp", "outcome": "unavailable_before_dispatch" },
@@ -25,6 +69,7 @@
     },
     {
       "id": "capability_omission_cli_fallback",
+      "goal": { "lifecycle": "started", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "operation_omitted" },
@@ -47,6 +92,7 @@
         "config_invalid",
         "input_invalid"
       ],
+      "goal": { "lifecycle": "not_dispatched", "outcome": "refused" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -57,6 +103,7 @@
     },
     {
       "id": "response_loss_known_id",
+      "goal": { "lifecycle": "reconciled", "outcome": "recovered" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -68,32 +115,20 @@
     },
     {
       "id": "response_loss_lost_id_unique",
+      "goal": { "lifecycle": "reconciled", "outcome": "recovered" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
         { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
         { "kind": "call", "surface": "mcp", "operation": "task.start", "outcome": "transport_lost_after_dispatch" },
-        {
-          "kind": "call",
-          "surface": "mcp",
-          "operation": "operation.list",
-          "input": {
-            "projectRef": "fixture-project",
-            "operationName": "task.start",
-            "taskRef": "dev",
-            "since": "2026-07-20T00:00:00.000Z",
-            "until": "2026-07-20T00:15:00.000Z",
-            "states": ["prepared", "running", "succeeded", "failed", "indeterminate"],
-            "limit": 20
-          },
-          "outcome": "unique"
-        },
+        { "kind": "call", "surface": "mcp", "operation": "operation.list", "input": { "projectRef": "fixture-project", "operationName": "task.start", "taskRef": "dev", "since": "2026-07-20T00:00:00.000Z", "until": "2026-07-20T00:15:00.000Z", "states": ["prepared", "running", "succeeded", "failed", "indeterminate"], "limit": 20 }, "outcome": "unique" },
         { "kind": "call", "surface": "mcp", "operation": "operation.reconcile", "input": { "operationId": "op_correlated" }, "outcome": "succeeded" },
         { "kind": "report", "outcome": "recovered" }
       ]
     },
     {
       "id": "response_loss_lost_id_zero",
+      "goal": { "lifecycle": "unknown", "outcome": "unresolved" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -105,6 +140,7 @@
     },
     {
       "id": "response_loss_lost_id_ambiguous",
+      "goal": { "lifecycle": "unknown", "outcome": "unresolved" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -116,6 +152,7 @@
     },
     {
       "id": "inspect_only_adoption_strong",
+      "goal": { "config": "proposed_no_write", "lifecycle": "not_requested", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -129,6 +166,7 @@
     },
     {
       "id": "explicit_config_authoring_strong",
+      "goal": { "config": "authored", "validation": "succeeded", "lifecycle": "not_requested", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -143,7 +181,114 @@
       ]
     },
     {
+      "id": "launch_only_missing_config",
+      "goal": { "config": "missing_preserved", "validation": "not_run", "lifecycle": "not_dispatched", "outcome": "refused" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "lifecycle_only" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "inspection", "surface": "workspace", "operation": "config.discovery", "outcome": "missing" },
+        { "kind": "report", "outcome": "refused_no_write" }
+      ]
+    },
+    {
+      "id": "generic_confirmation_after_proposal",
+      "goal": { "config": "proposal_only", "validation": "not_run", "lifecycle": "not_requested", "outcome": "needs_explicit_intent" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "generic_confirmation" },
+        { "kind": "report", "outcome": "needs_explicit_intent" }
+      ]
+    },
+    {
+      "id": "explicit_config_validate_launch",
+      "goal": { "config": "authored", "validation": "succeeded", "lifecycle": "started", "observation": "bounded_complete", "outcome": "succeeded" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "phase": "discovery", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "project.list", "phase": "discovery", "outcome": "succeeded" },
+        { "kind": "inspection", "surface": "workspace", "operation": "bounded.read", "phase": "discovery", "outcome": "strong" },
+        { "kind": "write", "surface": "filesystem", "operation": "config.write", "phase": "authoring", "path": ".launchdeck.yml", "effect": { "certainty": "complete", "changed": true, "dispatch": "not_applicable" }, "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "config.validate", "phase": "validation", "effect": { "certainty": "none", "changed": false, "dispatch": "not_dispatched" }, "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "phase": "pre_start", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "phase": "pre_start", "outcome": "succeeded" },
+        { "kind": "decision", "name": "task.risk", "outcome": "low" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "phase": "start", "effect": { "certainty": "complete", "changed": true, "dispatch": "dispatched" }, "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "phase": "bounded_observation", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.logs.read", "phase": "bounded_observation", "outcome": "succeeded" },
+        { "kind": "observation", "surface": "http", "operation": "readiness.check", "phase": "bounded_observation", "outcome": "succeeded" },
+        { "kind": "report", "outcome": "succeeded" }
+      ]
+    },
+    {
+      "id": "combined_validation_failed",
+      "goal": { "config": "authored", "validation": "failed", "lifecycle": "not_dispatched", "outcome": "partially_completed" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "inspection", "surface": "workspace", "operation": "bounded.read", "outcome": "strong" },
+        { "kind": "write", "surface": "filesystem", "operation": "config.write", "effect": { "certainty": "complete", "changed": true, "dispatch": "not_applicable" }, "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "config.validate", "effect": { "certainty": "none", "changed": false, "dispatch": "not_dispatched" }, "outcome": "failed" },
+        { "kind": "report", "outcome": "partially_completed" }
+      ]
+    },
+    {
+      "id": "combined_risk_not_low",
+      "goal": { "config": "authored", "validation": "succeeded", "lifecycle": "not_dispatched", "outcome": "partially_completed" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "write", "surface": "filesystem", "operation": "config.write", "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "config.validate", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "decision", "name": "task.risk", "outcome": "medium_or_unknown" },
+        { "kind": "report", "outcome": "partially_completed" }
+      ]
+    },
+    {
+      "id": "combined_existing_config_collision",
+      "goal": { "config": "existing_preserved", "validation": "not_run", "lifecycle": "not_dispatched", "outcome": "refused" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "inspection", "surface": "workspace", "operation": "config.discovery", "outcome": "existing_config_collision" },
+        { "kind": "report", "outcome": "refused_no_write" }
+      ]
+    },
+    {
+      "id": "combined_scope_ambiguous",
+      "goal": { "config": "not_authored", "validation": "not_run", "lifecycle": "not_dispatched", "outcome": "needs_scope" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "decision", "name": "project.scope", "outcome": "ambiguous" },
+        { "kind": "report", "outcome": "needs_scope" }
+      ]
+    },
+    {
+      "id": "combined_start_refused_not_dispatched",
+      "goal": { "config": "authored", "validation": "succeeded", "lifecycle": "not_dispatched", "outcome": "partially_completed" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "write", "surface": "filesystem", "operation": "config.write", "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "config.validate", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "effect": { "certainty": "none", "changed": false, "dispatch": "not_dispatched" }, "outcome": "refused" },
+        { "kind": "report", "outcome": "partially_completed" }
+      ]
+    },
+    {
+      "id": "combined_start_effect_unknown",
+      "goal": { "config": "authored", "validation": "succeeded", "lifecycle": "unknown", "outcome": "partially_completed" },
+      "trace": [
+        { "kind": "decision", "name": "intent.gate", "outcome": "explicit_combined_intent" },
+        { "kind": "write", "surface": "filesystem", "operation": "config.write", "outcome": "succeeded" },
+        { "kind": "validation", "surface": "cli", "operation": "config.validate", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.status", "outcome": "succeeded" },
+        { "kind": "call", "surface": "mcp", "operation": "task.start", "effect": { "certainty": "unknown", "changed": null, "dispatch": "possibly_dispatched" }, "outcome": "indeterminate" },
+        { "kind": "report", "outcome": "partially_completed" }
+      ]
+    },
+    {
       "id": "ambiguous_config_authoring",
+      "goal": { "config": "proposal_only", "lifecycle": "not_requested", "outcome": "succeeded" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -157,6 +302,7 @@
     },
     {
       "id": "existing_config_authoring_refusal",
+      "goal": { "config": "existing_preserved", "lifecycle": "not_requested", "outcome": "refused" },
       "trace": [
         { "kind": "decision", "name": "intent.gate", "outcome": "matched" },
         { "kind": "call", "surface": "mcp", "operation": "capabilities.get", "outcome": "succeeded" },
@@ -167,61 +313,13 @@
         { "kind": "report", "outcome": "refused_no_write" }
       ]
     },
-    {
-      "id": "forbidden_force",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_risky_clean",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_raw_command",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_remote_control",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_external_termination",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_adoption_apply",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_medium_risk",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    },
-    {
-      "id": "forbidden_permanent_follow",
-      "trace": [
-        { "kind": "decision", "name": "intent.gate", "outcome": "forbidden" },
-        { "kind": "report", "outcome": "refused" }
-      ]
-    }
+    { "id": "forbidden_force", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_risky_clean", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_raw_command", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_remote_control", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_external_termination", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_adoption_apply", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_medium_risk", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] },
+    { "id": "forbidden_permanent_follow", "trace": [{ "kind": "decision", "name": "intent.gate", "outcome": "forbidden" }, { "kind": "report", "outcome": "refused" }] }
   ]
 }

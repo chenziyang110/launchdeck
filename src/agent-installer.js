@@ -5,6 +5,10 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { LaunchdeckError } from './errors.js';
 import { canonicalDigest } from './kernel/compatibility.js';
+import {
+  packagedAgentBuildIdentity,
+  resolveInstallerEntrypoints
+} from './agent/entrypoints.js';
 
 export const AGENT_SKILL_NAME = 'launchdeck-agent';
 
@@ -42,9 +46,17 @@ export function listAgentTargets(options = {}) {
   const projectRoot = path.resolve(options.projectRoot ?? process.cwd());
   const homeDir = path.resolve(options.homeDir ?? os.homedir());
   const source = validateCanonicalSource(options);
+  const buildIdentity = options.buildIdentity ?? packagedAgentBuildIdentity(options.packageRoot);
 
   return {
     source,
+    entrypoints: resolveInstallerEntrypoints({
+      packageRoot: options.packageRoot,
+      env: options.env,
+      platform: options.platform,
+      scope: options.scope ?? 'project',
+      buildIdentity
+    }),
     targets: ADAPTERS.flatMap((adapter) => ([
       targetDescriptor(adapter, 'project', projectRoot, homeDir),
       targetDescriptor(adapter, 'user', projectRoot, homeDir)
@@ -186,6 +198,13 @@ export function installAgentSkill(options = {}) {
   return {
     agent: agent.id,
     scope,
+    entrypoints: resolveInstallerEntrypoints({
+      packageRoot: options.packageRoot,
+      env: options.env,
+      platform: options.platform,
+      scope,
+      buildIdentity: options.buildIdentity ?? packagedAgentBuildIdentity(options.packageRoot)
+    }),
     dryRun: Boolean(options.dryRun),
     force: Boolean(options.force),
     source,
