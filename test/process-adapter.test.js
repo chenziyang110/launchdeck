@@ -1,7 +1,9 @@
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isPidRunning, isProcessDescendant, stopProcessTreeSync } from '../src/adapters/process.js';
+import * as processAdapter from '../src/adapters/process.js';
+
+const { isPidRunning, isProcessDescendant, stopProcessTreeSync } = processAdapter;
 
 test('isPidRunning treats a terminated POSIX child awaiting reap as stopped', {
   skip: process.platform === 'win32'
@@ -56,6 +58,40 @@ test('isProcessDescendant fails closed for missing, cyclic, or unavailable evide
       throw new Error('unavailable');
     }
   }), false);
+});
+
+test('Windows process-tree fallback receives an independent bounded startup budget', () => {
+  const calls = [];
+  const result = processAdapter.runWindowsProcessTreeScript(
+    'modern-script',
+    'legacy-script',
+    10_000,
+    () => false,
+    {
+      spawnSync(command, args, options) {
+        calls.push({ command, timeout: options.timeout });
+        if (command === 'pwsh.exe') {
+          return {
+            error: Object.assign(new Error('primary timed out'), { code: 'ETIMEDOUT' }),
+            status: null,
+            stdout: '',
+            stderr: ''
+          };
+        }
+        return {
+          status: 0,
+          stdout: '1234',
+          stderr: ''
+        };
+      }
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.deepEqual(calls, [
+    { command: 'pwsh.exe', timeout: 10_000 },
+    { command: 'powershell.exe', timeout: 10_000 }
+  ]);
 });
 
 test('Windows process-tree enumeration has an independent startup budget', {

@@ -88,7 +88,7 @@ test('agent-surface managed task reuses one owned run and one spawn receipt', as
   assert.equal(JSON.parse(receipts[0]).runId, first.json.process.runId);
 
   const stopped = fixture.runCliJson(['stop', 'managed']);
-  assert.equal(stopped.status, 0, stopped.stderr);
+  assert.equal(stopped.status, 0, stopped.stderr || stopped.stdout);
 });
 
 test('agent-surface clean preview preserves safe, risky, state, and evidence files', async (t) => {
