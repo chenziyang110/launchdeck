@@ -8,12 +8,12 @@ The base feature is daemonless. Launchdeck keeps one authoritative control-plane
 
 ## Install
 
-Launchdeck requires Node.js 20 or newer. npm registry publication is a separate release step; the supported v0.3.1 package can be installed directly from its immutable GitHub tag.
+Launchdeck requires Node.js 20 or newer. npm registry publication is a separate release step; the supported v0.4.0 package can be installed directly from its immutable GitHub tag.
 
 Install the CLI globally:
 
 ```bash
-npm install --global --install-links=true github:chenziyang110/launchdeck#v0.3.1
+npm install --global --install-links=true github:chenziyang110/launchdeck#v0.4.0
 launchdeck --help
 launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
 launchdeck agent status --host codex --scope user --json
@@ -22,16 +22,19 @@ launchdeck agent status --host codex --scope user --json
 Or install it into another project:
 
 ```bash
-npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.3.1
+npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.4.0
 npx launchdeck --help
 npx launchdeck agent setup
 npx launchdeck agent status --host codex --scope project --project . --json
 ```
 
 The interactive setup wizard uses arrow keys to move, Space to select one or more
-hosts/components, and Enter to confirm. Installation scope and final approval are
-also selectable prompts; no comma-separated input is required. Scripts and CI can
-continue to pass `--host`, `--component`, `--scope`, `--yes`, and `--json` explicitly.
+items, and Enter to confirm. Select only the Skill component to open the searchable
+catalog of 76 supported Agent targets; runtime and MCP setup remains available for
+Codex, Claude Code, GitHub Copilot, and Visual Studio. Installation scope and final
+approval are selectable prompts, so no comma-separated input is required. Scripts
+and CI can continue to pass `--host`, `--component`, `--scope`, `--yes`, and `--json`
+explicitly.
 
 `--install-links=true` makes npm materialize the packed Git dependency instead of linking its temporary clone, which npm removes after installation on some Windows configurations.
 
@@ -47,7 +50,7 @@ npm install --global .
 launchdeck --help
 ```
 
-## What v0.3 Covers
+## What v0.4 Covers
 
 - `init` creates a project-local `.launchdeck.yml`.
 - `doctor` inspects config and reports stable findings.
@@ -62,6 +65,7 @@ launchdeck --help
 - `clean`, `clean --safe`, and `clean --all --yes` handle safe hygiene only.
 - `agent paths`, `agent doctor`, and `agent install` expose the local Launchdeck agent skill installer.
 - `agent setup`, `agent status`, `agent update`, `agent repair`, and `agent uninstall` manage receipt-owned runtime, Skill, MCP, launcher, and host configuration artifacts.
+- Interactive Skill setup provides searchable multi-select across 76 Agent targets, while preserving the four evidence-backed full runtime/MCP integrations.
 - Codex, Claude Code, GitHub Copilot, and Visual Studio adapters use an exact compatibility matrix and evidence-cell claim boundary instead of broad host-readiness claims.
 - `--json` emits a stable machine-readable envelope with `schemaVersion` and `next` actions.
 - `--json --compact` emits a shorter machine-readable envelope for agents and scripts that need lower-token status checks.

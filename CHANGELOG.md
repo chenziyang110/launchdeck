@@ -2,6 +2,42 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-07-29
+
+### Added
+
+- Searchable multi-select installation for 76 Agent targets derived from the pinned Skills catalog, with clear Full integration and Skill-only labels.
+- Project and user destination resolution for catalog Agents, including supported host-specific environment overrides.
+- End-to-end coverage for first install, receipt persistence, idempotent setup, and receipt-owned uninstall of Skill-only targets.
+
+### Changed
+
+- Made component selection determine whether setup offers the broad searchable Skill catalog or the four full runtime/MCP adapters.
+- Kept detected Agents at the top of search results and deduplicated shared Skill destinations before planning writes.
+
+### Fixed
+
+- Preserved safe cancellation as a successful `cancelled` outcome without invoking planning or installation services.
+- Surfaced structured refusal codes and reasons in terminal output instead of masking project-trust failures.
+- Returned canonical durable effect evidence for catalog installations so the first successful write commits its receipt instead of becoming indeterminate.
+- Included evaluated no-op targets in setup results so idempotent status remains visible.
+
+### Security
+
+- Refused divergent catalog targets unless exact receipt ownership and live digest evidence match.
+- Prevented catalog uninstall from removing targets without matching receipt ownership.
+- Preserved exact project trust boundaries without inheriting trust from parent directories.
+
+## [0.3.1] - 2026-07-28
+
+### Added
+
+- Interactive Agent setup with keyboard multi-select for hosts and components, selectable scope, and explicit final approval.
+
+### Fixed
+
+- Kept immutable GitHub installation examples synchronized with the package version.
+
 ## [0.3.0] - 2026-07-28
 
 ### Added
@@ -60,6 +96,8 @@ All notable changes to Launchdeck are documented in this file. This project foll
 
 - Initial CLI-first lifecycle control plane, global project registry, managed process ownership, logs/events, safe clean, MCP surface, and local Agent Skill installer.
 
+[0.4.0]: https://github.com/chenziyang110/launchdeck/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/chenziyang110/launchdeck/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/chenziyang110/launchdeck/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/chenziyang110/launchdeck/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/chenziyang110/launchdeck/releases/tag/v0.1.0
