@@ -60,7 +60,20 @@ test('human setup plan remains readable at 120 columns without relying on ANSI c
 test('human refusal remains readable at 60 columns and keeps safe next action visible', async () => {
   const result = await runAgentCli(['agent', 'setup', '--yes', '--no-color'], {
     terminal: { columns: 60, noColor: true },
-    serviceOptions: { outcomes: { setup: 'refused' } }
+    serviceOptions: {
+      outcomes: { setup: 'refused' },
+      errors: {
+        setup: {
+          code: 'agent_pending_project_trust',
+          message: 'Target planning refused.',
+          details: {
+            details: {
+              message: 'Project trust approval is required before planning Codex MCP changes.'
+            }
+          }
+        }
+      }
+    }
   });
 
   assert.equal(result.status, 1);
@@ -68,6 +81,11 @@ test('human refusal remains readable at 60 columns and keeps safe next action vi
   assertEveryLineAtMost(result.stdout + result.stderr, 60);
   assert.match(result.stdout + result.stderr, /refused/i);
   assert.match(result.stdout + result.stderr, /effect certainty/i);
+  assert.match(result.stdout + result.stderr, /Error: \[agent_pending_project_trust\]/);
+  assert.match(
+    result.stdout + result.stderr,
+    /Reason: Project trust approval is required before planning Codex MCP changes\./
+  );
   assert.match(result.stdout + result.stderr, /launchdeck agent status --json/);
 });
 
@@ -84,18 +102,17 @@ test('human status keeps drift state and severity visible at 60 columns without 
   assert.match(result.stdout, /warn/i);
 });
 
-test('interactive approval is the only prompt path and a decline returns cancelled with no writes', async () => {
+test('interactive decline wins over a latent pre-plan refusal without calling the lifecycle service', async () => {
   const result = await runAgentCli(['agent', 'setup'], {
     terminal: { isTTY: true, columns: 120 },
     inputAnswers: [false],
-    serviceOptions: { outcomes: { setup: 'cancelled' } }
+    serviceOptions: { outcomes: { setup: 'refused' } }
   });
 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.input.prompts.length, 1);
   assert.match(String(result.input.prompts[0]), /approve|apply|install/i);
-  assert.equal(result.service.calls.length, 1);
-  assert.equal(result.service.calls[0].input.approved, false);
+  assert.equal(result.service.calls.length, 0);
   assert.equal(result.service.writes().length, 0);
   assert.match(result.stdout, /cancelled/i);
   assert.match(result.stdout, /no effects|effect certainty:\s*none/i);

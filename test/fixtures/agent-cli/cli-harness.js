@@ -46,6 +46,7 @@ export async function runAgentCli(args, options = {}) {
 export function createRecordingLifecycleService(options = {}) {
   const calls = [];
   const outcomes = options.outcomes ?? {};
+  const errors = options.errors ?? {};
   const diagnostics = options.diagnostics ?? [];
   const api = {};
 
@@ -56,7 +57,7 @@ export function createRecordingLifecycleService(options = {}) {
         for (const line of diagnostics) input.terminal?.stderr?.write(`${line}\n`);
       }
       const outcome = outcomes[operation] ?? defaultOutcomeFor(operation, input);
-      return envelope(commandFor(operation), installerResult(outcome));
+      return envelope(commandFor(operation), installerResult(outcome, errors[operation]));
     };
   }
 
@@ -205,7 +206,7 @@ function envelope(command, result) {
   };
 }
 
-function installerResult(outcome) {
+function installerResult(outcome, errorOverride = null) {
   const certainty = {
     planned: 'none',
     cancelled: 'none',
@@ -231,6 +232,12 @@ function installerResult(outcome) {
     health: outcome === 'noop' ? [{ targetId: 'codex:project:skill', state: 'drifted', severity: 'warn' }] : [],
     effects: certainty === 'none' ? [] : [{ targetId: 'codex:project:skill', state: outcome }],
     nextActions: [{ command: 'launchdeck agent status --json', risk: 'safe' }],
-    error: failed ? { code: `agent_${outcome.replaceAll('-', '_')}`, message: `Fixture ${outcome}.`, details: {} } : null
+    error: failed
+      ? (errorOverride ?? {
+          code: `agent_${outcome.replaceAll('-', '_')}`,
+          message: `Fixture ${outcome}.`,
+          details: {}
+        })
+      : null
   };
 }
