@@ -166,6 +166,9 @@ test('identical owned target state is an explicit no-op and collisions refuse be
 
   assert.equal(noop.outcome, 'noop');
   assert.equal(noop.effectCertainty, 'none');
+  assert.deepEqual(noop.targetIds, ['codex:project:skill']);
+  assert.equal(noop.targets[0].targetId, 'codex:project:skill');
+  assert.equal(noop.targets[0].path, 'F:\\repo\\project\\.agents\\skills\\launchdeck-agent');
   assert.deepEqual(noop.effects, []);
   assert.equal(noop.receiptId, null);
 

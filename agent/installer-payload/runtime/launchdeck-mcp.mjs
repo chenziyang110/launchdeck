@@ -46401,7 +46401,7 @@ function isObject2(value) {
 // src/mcp/stdio-server.js
 var modulePath = fileURLToPath(import.meta.url);
 var bundledPluginRuntime = true;
-var bundledPackageVersion = true ? "0.3.1" : null;
+var bundledPackageVersion = true ? "0.4.0" : null;
 function createLaunchdeckMcpServer(options = {}) {
   const env = options.env ?? process.env;
   const diagnostics = options.diagnostics ?? createDiagnosticWriter();

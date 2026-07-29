@@ -54,6 +54,17 @@ export function createLifecyclePrompter(options = {}) {
         ...streams
       }));
     },
+    async selectSearchableMany(message, choices, settings = {}) {
+      return guardCancellation(await promptApi.autocompleteMultiselect({
+        message,
+        options: choices.map(promptChoice),
+        initialValues: settings.initialValues,
+        maxItems: settings.maxItems,
+        placeholder: settings.placeholder ?? 'Type to search by name or ID',
+        required: settings.required ?? true,
+        ...streams
+      }));
+    },
     async confirm(message, settings = {}) {
       return guardCancellation(await promptApi.confirm({
         message,

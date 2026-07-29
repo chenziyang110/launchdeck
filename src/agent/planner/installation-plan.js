@@ -46,6 +46,7 @@ export async function createInstallationPlan({ desired, evidence } = {}) {
   assertUnique(targets, 'targetId', 'agent_plan_duplicate_target');
   assertUnique(actions, 'actionId', 'agent_plan_duplicate_action');
   const canonicalTargets = createCanonicalTargets({ targets, actions });
+  const evaluatedTargets = createEvaluatedTargets({ targets, actions, targetPlans });
   const targetIds = canonicalTargets.map((target) => target.targetId);
   const trustedSources = trustedSourcesFromEvidence(evidence);
   const includeLauncher = desired.includeLauncher === true || evidence.includeLauncher === true;
@@ -83,12 +84,13 @@ export async function createInstallationPlan({ desired, evidence } = {}) {
     sourceIdentity: desired.sourceIdentity,
     state: actions.length === 0 ? 'plan-ready' : 'awaiting-approval',
     targets: canonicalTargets,
+    evaluatedTargets,
     requiredHostActions: [],
     trustedSources,
     effectsPreview: {
       effectCertainty: 'none',
       actionCount: actions.length,
-      targetCount: canonicalTargets.length
+      targetCount: evaluatedTargets.length
     }
   });
 }
@@ -141,8 +143,8 @@ function resultForPlan(plan, overrides = {}) {
     planDigest: plan.planDigest,
     planBindingDigest: plan.planBindingDigest,
     receiptId: null,
-    targetIds: cloneJson(plan.targetIds),
-    targets: cloneJson(plan.targets),
+    targetIds: cloneJson((plan.evaluatedTargets ?? plan.targets).map((target) => target.targetId)),
+    targets: cloneJson(plan.evaluatedTargets ?? plan.targets),
     health: [],
     effects: [],
     nextActions: overrides.nextActions ?? [],
@@ -195,6 +197,42 @@ function createCanonicalTargets({ targets, actions }) {
     );
   }
   return canonicalTargets.sort(compareBy('targetId'));
+}
+
+function createEvaluatedTargets({ targets, actions, targetPlans = [] }) {
+  const canonicalTargets = createCanonicalTargets({ targets, actions });
+  const canonicalByTargetId = new Map(canonicalTargets.map((target) => [target.targetId, target]));
+  const plansByTargetId = new Map(targetPlans.map((targetPlan) => [targetPlan.targetId, targetPlan]));
+  const evaluated = [];
+  for (const target of targets) {
+    const canonical = canonicalByTargetId.get(target.targetId);
+    if (canonical) {
+      evaluated.push(canonical);
+      continue;
+    }
+    const targetPlan = plansByTargetId.get(target.targetId);
+    const liveDigest = target.liveDigest
+      ?? target.preconditionDigest
+      ?? targetPlan?.liveDigest
+      ?? targetPlan?.contentDigest
+      ?? targetPlan?.desiredDigest;
+    const desiredDigest = target.desiredDigest
+      ?? targetPlan?.desiredDigest
+      ?? liveDigest;
+    if (!liveDigest || !desiredDigest) continue;
+    evaluated.push(normalizeCanonicalTransactionTargetDescription({
+      targetId: target.targetId,
+      hostId: target.hostId,
+      scope: target.scope,
+      component: target.component,
+      path: target.path,
+      ownershipBoundary: target.ownershipBoundary,
+      ownership: target.ownership,
+      liveDigest,
+      desiredDigest
+    }));
+  }
+  return evaluated.sort(compareBy('targetId'));
 }
 
 function normalizeObject(value, code) {
