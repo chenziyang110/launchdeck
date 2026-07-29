@@ -141,6 +141,7 @@ test('operation reconcile uses the universal journal dispatcher without construc
 });
 
 test('default lifecycle factory receives the catalog-extended provider registry', async () => {
+  const projectRoot = path.resolve('workspace', 'demo');
   const result = await runAgentCli(
     ['agent', 'status', '--json'],
     { useLifecycleFactory: true }
@@ -160,13 +161,13 @@ test('default lifecycle factory receives the catalog-extended provider registry'
 
   const resolved = await registry.get('cursor').resolveTargets({
     scope: 'project',
-    projectRoot: 'F:\\workspace\\demo',
+    projectRoot,
     components: ['skill']
   });
   assert.equal(resolved[0]?.targetId, 'cursor:project:skill');
   assert.equal(
     resolved[0]?.path,
-    path.join('F:\\workspace\\demo', '.agents', 'skills', 'launchdeck-agent')
+    path.join(projectRoot, '.agents', 'skills', 'launchdeck-agent')
   );
 });
 

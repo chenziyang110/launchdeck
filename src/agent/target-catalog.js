@@ -352,10 +352,26 @@ function createSkillOnlyAdapter(record, registryOptions = {}) {
 
 function hasMatchingReceiptOwnership(receiptOwnership, observation, resolved) {
   if (receiptOwnership?.owned !== true || receiptOwnership?.liveDigestMatches !== true) return false;
-  if (receiptOwnership.path && path.resolve(receiptOwnership.path) !== path.resolve(resolved.path)) return false;
+  if (receiptOwnership.path && !sameCatalogPath(receiptOwnership.path, resolved.path)) return false;
   if (receiptOwnership.ownershipBoundary
     && receiptOwnership.ownershipBoundary !== resolved.ownershipBoundary) return false;
   return receiptOwnership.liveDigest === observation.contentDigest;
+}
+
+function sameCatalogPath(left, right) {
+  const canonical = (value) => {
+    const resolved = path.resolve(value);
+    try {
+      return fs.realpathSync.native(resolved);
+    } catch {
+      return resolved;
+    }
+  };
+  const leftPath = canonical(left);
+  const rightPath = canonical(right);
+  return process.platform === 'win32'
+    ? leftPath.toLowerCase() === rightPath.toLowerCase()
+    : leftPath === rightPath;
 }
 
 function resolvedSkillTarget(target, scope, targetPath) {

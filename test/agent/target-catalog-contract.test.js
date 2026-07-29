@@ -11,6 +11,10 @@ import {
   listAgentTargetCatalog
 } from '../../src/agent/target-catalog.js';
 
+const FIXTURE_PROJECT_ROOT = path.resolve('workspace', 'demo');
+const FIXTURE_HOME = path.resolve('users', 'alice');
+const FIXTURE_ENV_ROOT = path.resolve('env');
+
 const EXPECTED_UPSTREAM_AGENT_IDS = [
   'aider-desk',
   'amp',
@@ -91,8 +95,8 @@ const EXPECTED_UPSTREAM_AGENT_IDS = [
 
 test('catalog tracks exactly 75 upstream Agent IDs and adds Launchdeck Visual Studio separately', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
   const ids = catalog.targets.map((target) => target.id);
 
@@ -106,8 +110,8 @@ test('catalog tracks exactly 75 upstream Agent IDs and adds Launchdeck Visual St
 
 test('catalog keeps the four Launchdeck full runtime adapter IDs distinct from Skill-only entries', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
   const full = catalog.targets.filter((target) => target.integration === 'full');
   const skillOnly = catalog.targets.filter((target) => target.integration === 'skill-only');
@@ -125,8 +129,8 @@ test('catalog keeps the four Launchdeck full runtime adapter IDs distinct from S
 
 test('catalog entries expose scope-independent project and user destinations', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
 
   for (const target of catalog.targets) {
@@ -145,8 +149,8 @@ test('catalog entries expose scope-independent project and user destinations', (
 
 test('catalog destinations are absolute paths or explicit unsupported nulls', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
 
   for (const target of catalog.targets) {
@@ -154,7 +158,7 @@ test('catalog destinations are absolute paths or explicit unsupported nulls', ()
       assert.equal(destination === null || path.isAbsolute(destination), true, target.id);
       if (destination !== null) {
         assert.equal(
-          destination.startsWith('F:\\workspace\\demo') || destination.startsWith('F:\\users\\alice'),
+          destination.startsWith(FIXTURE_PROJECT_ROOT) || destination.startsWith(FIXTURE_HOME),
           true,
           `${target.id}: ${destination}`
         );
@@ -165,42 +169,42 @@ test('catalog destinations are absolute paths or explicit unsupported nulls', ()
 
 test('catalog preserves representative special shared and unsupported destinations', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
   const byId = new Map(catalog.targets.map((target) => [target.id, target]));
 
-  assert.equal(byId.get('codex')?.destinations.project, path.join('F:\\workspace\\demo', '.agents', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('github-copilot')?.destinations.project, path.join('F:\\workspace\\demo', '.agents', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('claude-code')?.destinations.project, path.join('F:\\workspace\\demo', '.claude', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('codex')?.destinations.project, path.join(FIXTURE_PROJECT_ROOT, '.agents', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('github-copilot')?.destinations.project, path.join(FIXTURE_PROJECT_ROOT, '.agents', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('claude-code')?.destinations.project, path.join(FIXTURE_PROJECT_ROOT, '.claude', 'skills', 'launchdeck-agent'));
   assert.equal(byId.get('eve')?.destinations.user, null);
   assert.equal(byId.get('promptscript')?.destinations.user, null);
-  assert.equal(byId.get('openclaw')?.destinations.user?.startsWith('F:\\users\\alice'), true);
+  assert.equal(byId.get('openclaw')?.destinations.user?.startsWith(FIXTURE_HOME), true);
 });
 
 test('catalog resolves pinned user destination env overrides and null unsupported scopes', () => {
   const catalog = listAgentTargetCatalog({
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice',
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME,
     env: {
-      CODEX_HOME: 'F:\\env\\codex',
-      CLAUDE_CONFIG_DIR: 'F:\\env\\claude',
-      XDG_CONFIG_HOME: 'F:\\env\\config',
-      AUTOHAND_HOME: 'F:\\env\\autohand',
-      GROK_HOME: 'F:\\env\\grok',
-      HERMES_HOME: 'F:\\env\\hermes',
-      VIBE_HOME: 'F:\\env\\vibe'
+      CODEX_HOME: path.join(FIXTURE_ENV_ROOT, 'codex'),
+      CLAUDE_CONFIG_DIR: path.join(FIXTURE_ENV_ROOT, 'claude'),
+      XDG_CONFIG_HOME: path.join(FIXTURE_ENV_ROOT, 'config'),
+      AUTOHAND_HOME: path.join(FIXTURE_ENV_ROOT, 'autohand'),
+      GROK_HOME: path.join(FIXTURE_ENV_ROOT, 'grok'),
+      HERMES_HOME: path.join(FIXTURE_ENV_ROOT, 'hermes'),
+      VIBE_HOME: path.join(FIXTURE_ENV_ROOT, 'vibe')
     }
   });
   const byId = new Map(catalog.targets.map((target) => [target.id, target]));
 
-  assert.equal(byId.get('codex')?.destinations.user, path.join('F:\\env\\codex', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('claude-code')?.destinations.user, path.join('F:\\env\\claude', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('amp')?.destinations.user, path.join('F:\\env\\config', 'agents', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('autohand-code')?.destinations.user, path.join('F:\\env\\autohand', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('grok')?.destinations.user, path.join('F:\\env\\grok', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('hermes-agent')?.destinations.user, path.join('F:\\env\\hermes', 'skills', 'launchdeck-agent'));
-  assert.equal(byId.get('mistral-vibe')?.destinations.user, path.join('F:\\env\\vibe', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('codex')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'codex', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('claude-code')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'claude', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('amp')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'config', 'agents', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('autohand-code')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'autohand', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('grok')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'grok', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('hermes-agent')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'hermes', 'skills', 'launchdeck-agent'));
+  assert.equal(byId.get('mistral-vibe')?.destinations.user, path.join(FIXTURE_ENV_ROOT, 'vibe', 'skills', 'launchdeck-agent'));
   assert.equal(byId.get('eve')?.destinations.user, null);
   assert.equal(byId.get('promptscript')?.destinations.user, null);
 });
@@ -208,8 +212,8 @@ test('catalog resolves pinned user destination env overrides and null unsupporte
 test('catalog skill registry exposes skill-only targets without expanding the full adapter list', async () => {
   const base = fakeFullRegistry();
   const registry = createCatalogSkillHostRegistry(base, {
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
 
   assert.deepEqual(base.list().map((entry) => entry.id), FULL_RUNTIME_ADAPTER_IDS);
@@ -225,8 +229,8 @@ test('catalog skill registry exposes skill-only targets without expanding the fu
 
 test('catalog skill registry refuses unsupported user destinations explicitly', async () => {
   const registry = createCatalogSkillHostRegistry(fakeFullRegistry(), {
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
 
   const capabilities = await registry.get('eve').capabilities([], 'user');
@@ -256,8 +260,8 @@ test('catalog Skill-only adapter refuses divergent content instead of overwritin
 
 test('catalog Skill-only adapter refuses uninstall without receipt ownership', async () => {
   const registry = createCatalogSkillHostRegistry(fakeFullRegistry(), {
-    projectRoot: 'F:\\workspace\\demo',
-    homeDir: 'F:\\users\\alice'
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
   });
   const adapter = registry.get('cursor');
   const [target] = await adapter.resolveTargets({ scope: 'project', components: ['skill'] });

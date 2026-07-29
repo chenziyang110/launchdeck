@@ -40,7 +40,7 @@ test('real CLI plans cursor project skill setup under the explicit project root'
   assert.ok(cursorTarget, 'expected cursor project skill target in dry-run plan');
   assert.equal(
     cursorTarget.path,
-    path.join(projectRoot, '.agents', 'skills', 'launchdeck-agent')
+    path.join(fs.realpathSync.native(projectRoot), '.agents', 'skills', 'launchdeck-agent')
   );
 });
 
