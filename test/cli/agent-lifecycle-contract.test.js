@@ -34,8 +34,8 @@ test('agent help discovers every lifecycle command and lifecycle selection flag'
     '--json',
     '--compact',
     '--force',
-    'Searchable skill targets: 76',
-    'Full runtime/MCP: codex|claude-code|github-copilot|visual-studio'
+    'Searchable Agent targets: 76',
+    'Full Runtime/Skill/MCP integrations: codex|claude-code|github-copilot|visual-studio'
   ]) {
     assert.match(result.stdout, escapePattern(expected));
   }
@@ -171,7 +171,7 @@ test('default lifecycle factory receives the catalog-extended provider registry'
   );
 });
 
-test('interactive setup selects components searchable Skill targets and scope before approval', async () => {
+test('interactive setup selects searchable Agent targets then valid components scope and approval', async () => {
   const prompts = [];
   const input = {
     async selectMany(prompt, choices, settings) {
@@ -204,18 +204,63 @@ test('interactive setup selects components searchable Skill targets and scope be
   assert.equal(result.service.calls[0].input.interactive, true);
   assert.equal(result.service.calls[0].input.approved, true);
   assert.deepEqual(prompts.map(({ kind }) => kind), [
-    'selectMany',
     'selectSearchableMany',
+    'selectMany',
     'select',
     'confirm'
   ]);
-  assert.deepEqual(prompts[0].choices, ['runtime', 'skill', 'mcp']);
-  assert.deepEqual(prompts[0].settings, {
-    initialValues: ['runtime', 'skill', 'mcp']
-  });
-  assert.equal(prompts[1].choices.some((choice) => choice.value === 'cursor'), true);
-  assert.deepEqual(prompts[1].settings, { initialValues: [] });
+  assert.equal(prompts[0].choices.some((choice) => choice.value === 'cursor'), true);
+  assert.match(prompts[0].choices.find((choice) => choice.value === 'cursor').hint, /Skill installable/);
+  assert.doesNotMatch(prompts[0].choices.find((choice) => choice.value === 'cursor').hint, /Skill-only/);
+  assert.deepEqual(prompts[0].settings, { initialValues: [] });
+  assert.deepEqual(prompts[1].choices, ['skill']);
+  assert.deepEqual(prompts[1].settings, { initialValues: ['skill'] });
   assert.deepEqual(prompts[2].settings, { initialValue: 'project' });
+});
+
+test('mixed Agent selection only offers components installable for every selected target', async () => {
+  const prompts = [];
+  const result = await runAgentCli(['agent', 'setup'], {
+    terminal: { isTTY: true },
+    input: {
+      async selectSearchableMany() {
+        return ['cursor', 'claude-code'];
+      },
+      async selectMany(prompt, choices, settings) {
+        prompts.push({ prompt, choices, settings });
+        return ['skill'];
+      },
+      async select() {
+        return 'project';
+      },
+      async confirm() {
+        return true;
+      }
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(prompts[0], {
+    prompt: 'Select component(s)',
+    choices: ['skill'],
+    settings: { initialValues: ['skill'] }
+  });
+  assert.deepEqual(result.service.calls[0].input.hosts, ['cursor', 'claude-code']);
+});
+
+test('empty Agent selection cancels before planning or writes', async () => {
+  const result = await runAgentCli(['agent', 'setup'], {
+    terminal: { isTTY: true },
+    input: {
+      async selectSearchableMany() {
+        return [];
+      }
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /agent setup: cancelled/i);
+  assert.deepEqual(result.service.calls, []);
 });
 
 test('Skill-only host aliases sharing one destination are planned once', async () => {
@@ -242,6 +287,9 @@ test('Ctrl+C exits interactive setup as cancelled before planning or writes', as
     terminal: { isTTY: true },
     input: {
       async selectMany() {
+        throw new LifecyclePromptCancelledError();
+      },
+      async selectSearchableMany() {
         throw new LifecyclePromptCancelledError();
       }
     }

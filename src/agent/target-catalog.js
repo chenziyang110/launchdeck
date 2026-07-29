@@ -194,14 +194,13 @@ export function listAgentTargetCatalog(options = {}) {
       id,
       label,
       integration: FULL_RUNTIME_ADAPTER_IDS.includes(id) ? 'full' : 'skill-only',
-      capabilities: FULL_RUNTIME_ADAPTER_IDS.includes(id)
-        ? ['runtime', 'skill', 'mcp']
-        : ['skill'],
       destinations: {
         project: destination(context, projectParts, 'project'),
         user: userParts ? destination(context, userParts, 'user') : null
       }
     };
+    entry.capabilities = targetCapabilityRecords(id, entry.destinations);
+    entry.capabilitySummary = capabilitySummary(entry.capabilities);
     if (detectedIds.has(id)) entry.detected = true;
     return Object.freeze(entry);
   }).sort((left, right) => catalogOrder(left.id) - catalogOrder(right.id) || left.id.localeCompare(right.id));
@@ -405,6 +404,74 @@ function capabilityRow(target, component, supportState, scope) {
     fixtureRevision: 'e173b8c88f2581cfdaa1b6767c6519a08155790e',
     realHostEvidenceRevision: 'e173b8c88f2581cfdaa1b6767c6519a08155790e'
   });
+}
+
+function targetCapabilityRecords(id, destinations = {}) {
+  const fullAdapter = FULL_RUNTIME_ADAPTER_IDS.includes(id);
+  const skillScopes = destinationScopes(destinations);
+  return Object.freeze([
+    ...['runtime', 'skill', 'mcp'].map((component) => Object.freeze({
+      component,
+      supportState: fullAdapter || component === 'skill' ? 'supported' : 'unsupported',
+      installable: fullAdapter || component === 'skill',
+      scopes: Object.freeze(
+        component === 'skill'
+          ? skillScopes
+          : fullAdapter ? ['project', 'user'] : []
+      )
+    })),
+    Object.freeze({
+      component: 'cli',
+      supportState: 'supported',
+      installable: false,
+      scopes: Object.freeze(['project'])
+    })
+  ]);
+}
+
+function destinationScopes(destinations) {
+  const scopes = [];
+  if (destinations.project !== null && destinations.project !== undefined) scopes.push('project');
+  if (destinations.user !== null && destinations.user !== undefined) scopes.push('user');
+  return scopes;
+}
+
+export function installableComponentsForTargets(targets, options = {}) {
+  const requested = Array.isArray(targets) ? targets.map(String) : [];
+  if (requested.length === 0) return [];
+  const catalog = listAgentTargetCatalog(options);
+  const byId = new Map(catalog.targets.map((target) => [target.id, target]));
+  let intersection = null;
+  for (const id of requested) {
+    const target = byId.get(id);
+    if (!target) return [];
+    const current = new Set(target.capabilities
+      .filter((capability) => capability.supportState === 'supported' && capability.installable === true)
+      .map((capability) => capability.component));
+    intersection = intersection === null
+      ? current
+      : new Set([...intersection].filter((component) => current.has(component)));
+  }
+  return ['runtime', 'skill', 'mcp'].filter((component) => intersection?.has(component));
+}
+
+function capabilitySummary(capabilities) {
+  const installable = capabilities
+    .filter((capability) => capability.installable)
+    .map((capability) => displayComponent(capability.component));
+  const mcp = capabilities.find((capability) => capability.component === 'mcp');
+  const summary = [`${installable.join(', ')} installable`];
+  if (mcp?.supportState !== 'supported') summary.push('MCP unavailable');
+  summary.push('project-local CLI fallback');
+  return summary.join('; ');
+}
+
+function displayComponent(component) {
+  return component === 'mcp'
+    ? 'MCP'
+    : component === 'cli'
+      ? 'CLI'
+      : `${component.slice(0, 1).toUpperCase()}${component.slice(1)}`;
 }
 
 function resolveRecordDestination(record, scope, selection, registryOptions) {

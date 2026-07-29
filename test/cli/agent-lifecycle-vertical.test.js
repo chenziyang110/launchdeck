@@ -44,6 +44,43 @@ test('real CLI plans cursor project skill setup under the explicit project root'
   );
 });
 
+test('real CLI preserves a typed refusal when setup omits component selection', () => {
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-missing-component-'));
+  const launchdeckHome = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-home-'));
+  try {
+    const result = spawnSync(process.execPath, [
+      'src/cli.js',
+      'agent',
+      'setup',
+      '--host',
+      'cursor',
+      '--scope',
+      'project',
+      '--project',
+      projectRoot,
+      '--dry-run',
+      '--json',
+      '--yes'
+    ], {
+      cwd: path.resolve('.'),
+      env: {
+        ...process.env,
+        LAUNCHDECK_HOME: launchdeckHome
+      },
+      encoding: 'utf8'
+    });
+
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    const payload = JSON.parse(result.stdout);
+    assert.equal(payload.result.outcome, 'refused');
+    assert.equal(payload.result.error.code, 'agent_component_selection_required');
+    assert.equal(payload.result.buildIdentity, null);
+  } finally {
+    fs.rmSync(projectRoot, { recursive: true, force: true });
+    fs.rmSync(launchdeckHome, { recursive: true, force: true });
+  }
+});
+
 test('real CLI installs a catalog-only skill target and persists a receipt on the first run', () => {
   const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-catalog-project-'));
   const launchdeckHome = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-catalog-home-'));
