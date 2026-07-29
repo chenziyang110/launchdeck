@@ -96,7 +96,8 @@ const EXPECTED_UPSTREAM_AGENT_IDS = [
 test('catalog tracks exactly 75 upstream Agent IDs and adds Launchdeck Visual Studio separately', () => {
   const catalog = listAgentTargetCatalog({
     projectRoot: FIXTURE_PROJECT_ROOT,
-    homeDir: FIXTURE_HOME
+    homeDir: FIXTURE_HOME,
+    env: {}
   });
   const ids = catalog.targets.map((target) => target.id);
 
@@ -111,7 +112,8 @@ test('catalog tracks exactly 75 upstream Agent IDs and adds Launchdeck Visual St
 test('catalog keeps the four Launchdeck full runtime adapter IDs distinct from Skill-only entries', () => {
   const catalog = listAgentTargetCatalog({
     projectRoot: FIXTURE_PROJECT_ROOT,
-    homeDir: FIXTURE_HOME
+    homeDir: FIXTURE_HOME,
+    env: {}
   });
   const full = catalog.targets.filter((target) => target.integration === 'full');
   const skillOnly = catalog.targets.filter((target) => target.integration === 'skill-only');
@@ -150,7 +152,8 @@ test('catalog entries expose scope-independent project and user destinations', (
 test('catalog destinations are absolute paths or explicit unsupported nulls', () => {
   const catalog = listAgentTargetCatalog({
     projectRoot: FIXTURE_PROJECT_ROOT,
-    homeDir: FIXTURE_HOME
+    homeDir: FIXTURE_HOME,
+    env: {}
   });
 
   for (const target of catalog.targets) {
@@ -170,7 +173,8 @@ test('catalog destinations are absolute paths or explicit unsupported nulls', ()
 test('catalog preserves representative special shared and unsupported destinations', () => {
   const catalog = listAgentTargetCatalog({
     projectRoot: FIXTURE_PROJECT_ROOT,
-    homeDir: FIXTURE_HOME
+    homeDir: FIXTURE_HOME,
+    env: {}
   });
   const byId = new Map(catalog.targets.map((target) => [target.id, target]));
 
