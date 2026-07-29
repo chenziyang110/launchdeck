@@ -62,8 +62,8 @@ test('lifecycle prompter uses searchable multi-select for the broad Agent catalo
     }
   });
   const choices = [
-    { value: 'cursor', label: 'Cursor', hint: 'Skill-only' },
-    { value: 'windsurf', label: 'Windsurf', hint: 'Skill-only' }
+    { value: 'cursor', label: 'Cursor', hint: 'Skill installable; MCP unavailable; project-local CLI fallback' },
+    { value: 'windsurf', label: 'Windsurf', hint: 'Skill installable; MCP unavailable; project-local CLI fallback' }
   ];
 
   const selected = await prompter.selectSearchableMany(

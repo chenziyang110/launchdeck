@@ -147,7 +147,33 @@ test('explicit-selection setup refuses omitted host component or scope without d
   });
 
   assert.equal(result.outcome, 'refused');
-  assert.equal(result.error.code, 'agent_selection_ambiguous');
+  assert.equal(result.error.code, 'agent_component_selection_required');
+  assert.equal(registry.calls.detect, 0);
+  assert.equal(registry.calls.resolveTargets, 0);
+});
+
+test('explicit-selection setup reports a dedicated missing-component refusal', async (t) => {
+  const workspace = createWorkspace(t, 'explicit-component-selection');
+  const registry = createRegistry({
+    codex: supportedHost('codex', ['skill'])
+  });
+  const { discoverDesiredInstallation } = await loadDesiredInstallationModule();
+
+  const result = await discoverDesiredInstallation({
+    operation: 'setup',
+    projectRoot: workspace.projectRoot,
+    homeDir: workspace.homeDir,
+    hosts: ['codex'],
+    scope: 'project',
+    desiredBuildIdentity: BUILD_IDENTITY,
+    sourceIdentity: 'packaged',
+    interactive: false,
+    requireExplicitSelection: true,
+    registry
+  });
+
+  assert.equal(result.outcome, 'refused');
+  assert.equal(result.error.code, 'agent_component_selection_required');
   assert.equal(registry.calls.detect, 0);
   assert.equal(registry.calls.resolveTargets, 0);
 });

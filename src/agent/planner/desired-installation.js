@@ -373,7 +373,14 @@ export async function normalizeDesiredInstallationSelection(input = {}) {
 
 function assertExplicitSelection(input) {
   if (input.operation !== 'setup' || input.requireExplicitSelection !== true) return;
-  const components = normalizeComponents(input.components ?? input.component);
+  const rawComponents = input.components ?? input.component;
+  if (emptySelection(rawComponents)) {
+    throw plannerError(
+      'agent_component_selection_required',
+      'Setup requires explicit component selection.'
+    );
+  }
+  const components = normalizeComponents(rawComponents);
   const requiresHost = components.some((component) => HOST_COMPONENTS.has(component));
   if (
     (requiresHost && emptySelection(input.hostIds ?? input.hosts ?? input.host))

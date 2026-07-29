@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   createCatalogSkillHostRegistry,
   FULL_RUNTIME_ADAPTER_IDS,
+  installableComponentsForTargets,
   UPSTREAM_AGENT_IDS,
   listAgentTargetCatalog
 } from '../../src/agent/target-catalog.js';
@@ -109,14 +110,13 @@ test('catalog tracks exactly 75 upstream Agent IDs and adds Launchdeck Visual St
   assert.equal(ids.length, 76);
 });
 
-test('catalog keeps the four Launchdeck full runtime adapter IDs distinct from Skill-only entries', () => {
+test('catalog exposes explicit capability truth for every Agent target', () => {
   const catalog = listAgentTargetCatalog({
     projectRoot: FIXTURE_PROJECT_ROOT,
     homeDir: FIXTURE_HOME,
     env: {}
   });
-  const full = catalog.targets.filter((target) => target.integration === 'full');
-  const skillOnly = catalog.targets.filter((target) => target.integration === 'skill-only');
+  const byId = new Map(catalog.targets.map((target) => [target.id, target]));
 
   assert.deepEqual(FULL_RUNTIME_ADAPTER_IDS, [
     'codex',
@@ -124,9 +124,39 @@ test('catalog keeps the four Launchdeck full runtime adapter IDs distinct from S
     'github-copilot',
     'visual-studio'
   ]);
-  assert.deepEqual(full.map((target) => target.id), FULL_RUNTIME_ADAPTER_IDS);
-  assert.equal(skillOnly.length, 72);
-  assert.equal(skillOnly.every((target) => target.capabilities.join(',') === 'skill'), true);
+  for (const target of catalog.targets) {
+    assert.deepEqual(target.capabilities.map((capability) => capability.component), [
+      'runtime',
+      'skill',
+      'mcp',
+      'cli'
+    ]);
+  }
+
+  assert.deepEqual(byId.get('codex')?.capabilities, [
+    { component: 'runtime', supportState: 'supported', installable: true, scopes: ['project', 'user'] },
+    { component: 'skill', supportState: 'supported', installable: true, scopes: ['project', 'user'] },
+    { component: 'mcp', supportState: 'supported', installable: true, scopes: ['project', 'user'] },
+    { component: 'cli', supportState: 'supported', installable: false, scopes: ['project'] }
+  ]);
+  assert.deepEqual(byId.get('cursor')?.capabilities, [
+    { component: 'runtime', supportState: 'unsupported', installable: false, scopes: [] },
+    { component: 'skill', supportState: 'supported', installable: true, scopes: ['project', 'user'] },
+    { component: 'mcp', supportState: 'unsupported', installable: false, scopes: [] },
+    { component: 'cli', supportState: 'supported', installable: false, scopes: ['project'] }
+  ]);
+  assert.equal(byId.get('cursor')?.capabilitySummary, 'Skill installable; MCP unavailable; project-local CLI fallback');
+  assert.equal(byId.get('codex')?.capabilitySummary, 'Runtime, Skill, MCP installable; project-local CLI fallback');
+  assert.equal(catalog.targets.some((target) => /skill-only|full integration/i.test(target.capabilitySummary)), false);
+});
+
+test('component choices are the safe installable intersection for selected Agent targets', () => {
+  const options = { projectRoot: FIXTURE_PROJECT_ROOT, homeDir: FIXTURE_HOME, env: {} };
+
+  assert.deepEqual(installableComponentsForTargets(['cursor'], options), ['skill']);
+  assert.deepEqual(installableComponentsForTargets(['codex'], options), ['runtime', 'skill', 'mcp']);
+  assert.deepEqual(installableComponentsForTargets(['cursor', 'codex'], options), ['skill']);
+  assert.deepEqual(installableComponentsForTargets(['unknown'], options), []);
 });
 
 test('catalog entries expose scope-independent project and user destinations', () => {
@@ -138,6 +168,7 @@ test('catalog entries expose scope-independent project and user destinations', (
   for (const target of catalog.targets) {
     assert.deepEqual(Object.keys(target).sort(), [
       'capabilities',
+      'capabilitySummary',
       'destinations',
       'id',
       'integration',

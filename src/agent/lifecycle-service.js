@@ -1370,13 +1370,15 @@ function setupEnvelope(dependencies, result, input, plan) {
 
 function withInstallerEntrypoints(dependencies, result, input = {}, plan = null) {
   const scope = result?.scope ?? plan?.scope ?? input.scope ?? 'project';
-  const buildIdentity = [
-    result?.buildIdentity,
-    plan?.buildIdentity,
-    input.buildIdentity,
-    input.desiredBuildIdentity,
-    input.build
-  ].find((candidate) => /^sha256:[0-9a-f]{64}$/.test(String(candidate ?? ''))) ?? null;
+  const resultOwnsBuildIdentity = Object.hasOwn(result ?? {}, 'buildIdentity');
+  const buildIdentity = resultOwnsBuildIdentity
+    ? (/^sha256:[0-9a-f]{64}$/.test(String(result.buildIdentity ?? '')) ? result.buildIdentity : null)
+    : ([
+        plan?.buildIdentity,
+        input.buildIdentity,
+        input.desiredBuildIdentity,
+        input.build
+      ].find((candidate) => /^sha256:[0-9a-f]{64}$/.test(String(candidate ?? ''))) ?? null);
   return {
     ...result,
     entrypoints: dependencies.resolveEntrypoints({

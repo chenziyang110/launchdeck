@@ -76,6 +76,7 @@ import { readCodexProjectTrust } from './agent/hosts/codex/trust.js';
 import { createHostRegistry } from './agent/hosts/index.js';
 import {
   createCatalogSkillHostRegistry,
+  installableComponentsForTargets,
   listAgentTargetCatalog
 } from './agent/target-catalog.js';
 
@@ -2623,37 +2624,35 @@ async function lifecycleSelection(operation, options, runtime) {
   let hosts = options.hosts;
   let components = options.components;
   let scope = options.scope;
+  const catalogOptions = {
+    projectRoot: options.project ?? runtime.cwd,
+    homeDir: cliHomeDir(runtime.env),
+    env: runtime.env
+  };
+  if (!hosts && typeof input?.selectSearchableMany === 'function') {
+    const catalog = listAgentTargetCatalog({
+      ...catalogOptions,
+      detectedIds: availableLifecycleHosts(runtime.env)
+    });
+    hosts = await input.selectSearchableMany(
+      'Search and select Agent target(s)',
+      catalogPromptChoices(catalog.targets),
+      { initialValues: [] }
+    );
+    if (!Array.isArray(hosts) || hosts.length === 0) {
+      throw new LifecyclePromptCancelledError();
+    }
+  }
   if (!components && typeof input?.selectMany === 'function') {
+    const installableComponents = installableComponentsForTargets(hosts, catalogOptions);
+    const choices = installableComponents.length > 0
+      ? installableComponents
+      : ['runtime', 'skill', 'mcp'];
     components = await input.selectMany(
       'Select component(s)',
-      ['runtime', 'skill', 'mcp'],
-      { initialValues: ['runtime', 'skill', 'mcp'] }
+      choices,
+      { initialValues: choices }
     );
-  }
-  const selectedComponents = Array.isArray(components) ? components : [];
-  const skillOnlySelection = selectedComponents.length === 1 && selectedComponents[0] === 'skill';
-  if (!hosts) {
-    if (skillOnlySelection && typeof input?.selectSearchableMany === 'function') {
-      const detectedIds = availableLifecycleHosts(runtime.env);
-      const catalog = listAgentTargetCatalog({
-        projectRoot: runtime.cwd,
-        homeDir: cliHomeDir(runtime.env),
-        env: runtime.env,
-        detectedIds
-      });
-      hosts = await input.selectSearchableMany(
-        'Search and select Agent target(s)',
-        catalogPromptChoices(catalog.targets),
-        { initialValues: [] }
-      );
-    } else if (typeof input?.selectMany === 'function') {
-      const availableHosts = availableLifecycleHosts(runtime.env);
-      hosts = await input.selectMany(
-        'Select available agent host(s)',
-        availableHosts,
-        { initialValues: availableHosts.length === 1 ? availableHosts : [] }
-      );
-    }
   }
   if (!scope && typeof input?.select === 'function') {
     scope = await input.select(
@@ -2680,7 +2679,7 @@ function catalogPromptChoices(targets) {
     .map((target) => ({
       value: target.id,
       label: target.label,
-      hint: `${target.detected === true ? 'Detected · ' : ''}${target.integration === 'full' ? 'Full integration' : 'Skill-only'}`
+      hint: `${target.detected === true ? 'Detected · ' : ''}${target.capabilitySummary}`
     }));
 }
 
@@ -4179,9 +4178,9 @@ Compatibility:
   launchdeck agent doctor --compat [--json] [--compact]
 
 Targets:
-  Searchable skill targets: ${listAgentTargetCatalog().targets.length} (interactive setup: select only the Skill component and omit --host)
-  Full runtime/MCP: codex|claude-code|github-copilot|visual-studio
-  All other Agent IDs are Skill-only.
+  Searchable Agent targets: ${listAgentTargetCatalog().targets.length} (interactive setup selects Agent targets first)
+  Every target supports Skill installation and a project-local CLI fallback.
+  Full Runtime/Skill/MCP integrations: codex|claude-code|github-copilot|visual-studio
 `;
 }
 
