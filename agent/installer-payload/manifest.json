@@ -1,13 +1,13 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:954e30d6be8240ce9b25c2c21b87a25d9137672e76fc6bbaabe92293c79f4811",
-  "packageVersion": "0.4.0",
+  "buildIdentity": "sha256:ef6302440877942509f3ef344d953af2ff88c5153da1722dfa9fe2f969268c70",
+  "packageVersion": "0.5.0",
   "nodeRange": ">=20",
   "files": [
     {
       "path": "compatibility.json",
       "bytes": 4640,
-      "sha256": "sha256:fb45cd739b2314b3438ce4b624df183b8348632c98cd3a5f58e88f73a6d46fa3"
+      "sha256": "sha256:a89c56c7828ebed00e203e82206aba4c3f92b0b6962aed71a20e498222389ef3"
     },
     {
       "path": "launcher/launchdeck-mcp",
@@ -27,7 +27,7 @@
     {
       "path": "runtime/launchdeck-mcp.mjs",
       "bytes": 1681005,
-      "sha256": "sha256:5cfe050bec2c1c2fd3982ac582989395a5dccce6db61f5c3573782ee0d38b528"
+      "sha256": "sha256:64a8d0e00583c90c55b1e261c9ff742159cf2c53eaebba7f47570447bb4a8462"
     },
     {
       "path": "skill/launchdeck-agent/SKILL.md",

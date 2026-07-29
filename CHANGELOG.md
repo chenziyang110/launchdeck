@@ -2,6 +2,29 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-07-29
+
+### Added
+
+- Agent-first searchable multi-select across all 76 catalog targets before component and scope selection.
+- Explicit Runtime, Skill, MCP, and CLI capability records for every Agent target, including support state, installability, and valid scopes.
+
+### Changed
+
+- Limited component choices to the safe installable intersection of all selected Agent targets.
+- Replaced ambiguous Full integration and Skill-only labels with concrete capability summaries in the setup wizard and help output.
+- Kept CLI fallback visible as informational project-local availability instead of presenting it as an installer component.
+
+### Fixed
+
+- Returned `agent_component_selection_required` when non-interactive setup omits the component selection.
+- Preserved the refusal-owned null build identity instead of allowing request input to invalidate the result envelope.
+- Treated an empty interactive Agent selection as a successful cancellation before planning or writes.
+
+### Security
+
+- Prevented unsupported component combinations from being offered for mixed Agent selections while preserving existing ownership and collision checks.
+
 ## [0.4.0] - 2026-07-29
 
 ### Added
@@ -96,6 +119,7 @@ All notable changes to Launchdeck are documented in this file. This project foll
 
 - Initial CLI-first lifecycle control plane, global project registry, managed process ownership, logs/events, safe clean, MCP surface, and local Agent Skill installer.
 
+[0.5.0]: https://github.com/chenziyang110/launchdeck/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/chenziyang110/launchdeck/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/chenziyang110/launchdeck/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/chenziyang110/launchdeck/compare/v0.2.0...v0.3.0
