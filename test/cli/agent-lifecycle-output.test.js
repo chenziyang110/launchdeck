@@ -84,7 +84,7 @@ test('human refusal remains readable at 60 columns and keeps safe next action vi
   assert.match(result.stdout + result.stderr, /Error: \[agent_pending_project_trust\]/);
   assert.match(
     result.stdout + result.stderr,
-    /Reason: Project trust approval is required before planning Codex MCP changes\./
+    /Reason:\s+Project trust approval is required before planning\s+Codex MCP changes\./
   );
   assert.match(result.stdout + result.stderr, /launchdeck agent status --json/);
 });

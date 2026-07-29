@@ -2547,6 +2547,10 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
   }
   const input = lifecycleInput(operation, { ...options, ...selection }, io, runtime);
   input.approved = await lifecycleApproval(operation, input, options, runtime);
+  if (input.approved === false) {
+    writeLifecycleHuman(lifecycleCancellationDisplay(operation, input), io, runtime.terminal);
+    return 0;
+  }
   const envelope = await service[operation](input);
 
   if (options.json) {
@@ -2940,6 +2944,13 @@ function writeLifecycleHuman(envelope, io, terminal) {
       lines.push(`- ${identity}: ${state}${severity}`);
     }
   }
+  if (result.error && typeof result.error === 'object') {
+    const code = lifecycleOutputText(result.error.code) ?? 'agent_lifecycle_error';
+    const message = lifecycleOutputText(result.error.message) ?? 'Lifecycle operation failed.';
+    lines.push(`Error: [${code}] ${message}`);
+    const reason = lifecycleErrorReason(result.error, message);
+    if (reason) lines.push(`Reason: ${reason}`);
+  }
   if (Array.isArray(result.effects) && result.effects.length === 0) {
     lines.push('No effects.');
   }
@@ -2953,6 +2964,41 @@ function writeLifecycleHuman(envelope, io, terminal) {
   for (const line of lines) {
     write(io, `${wrapPlainLine(line, columns).join('\n')}\n`);
   }
+}
+
+function lifecycleCancellationDisplay(operation, input) {
+  return {
+    command: `agent ${operation}`,
+    ok: true,
+    result: {
+      outcome: 'cancelled',
+      scope: input.scope ?? 'project',
+      projectIdentity: input.scope === 'user' ? null : (input.projectIdentity ?? input.projectRoot ?? null),
+      buildIdentity: input.buildIdentity ?? input.desiredBuildIdentity ?? input.build ?? null,
+      effectCertainty: 'none',
+      targets: [],
+      health: [],
+      effects: [],
+      nextActions: [{ command: `launchdeck agent ${operation} --dry-run` }],
+      error: null
+    }
+  };
+}
+
+function lifecycleErrorReason(error, message) {
+  const candidates = [
+    error.details?.details?.message,
+    error.details?.message
+  ];
+  return candidates
+    .map(lifecycleOutputText)
+    .find((candidate) => candidate && candidate !== message) ?? null;
+}
+
+function lifecycleOutputText(value) {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().replace(/\s+/g, ' ');
+  return normalized || null;
 }
 
 function wrapPlainLine(line, columns) {

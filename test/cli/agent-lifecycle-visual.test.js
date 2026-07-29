@@ -163,7 +163,7 @@ test('real CLI approval prompt decline and interrupt outputs expose effect certa
   assert.equal(approval.status, 0, approval.stderr);
   assert.equal(approval.input.prompts.length, 1);
   assert.match(String(approval.input.prompts[0]), /Approve and apply Launchdeck agent setup\?/);
-  assert.equal(approval.service.calls[0].input.approved, false);
+  assert.equal(approval.service.calls.length, 0);
 
   assert.equal(decline.status, 0, decline.stderr);
   assertCliNoAnsi(decline.stdout);
