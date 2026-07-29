@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import test from 'node:test';
 
 import { LifecyclePromptCancelledError } from '../../src/agent/lifecycle-prompter.js';
@@ -23,7 +24,7 @@ test('agent help discovers every lifecycle command and lifecycle selection flag'
     'agent uninstall',
     'agent paths',
     'agent install',
-    '--host <codex|claude|copilot|visual-studio>',
+    '--host <agent-id[,agent-id...]>',
     '--component <runtime|skill|mcp>',
     '--scope <project|user>',
     '--project <path>',
@@ -32,7 +33,9 @@ test('agent help discovers every lifecycle command and lifecycle selection flag'
     '--yes',
     '--json',
     '--compact',
-    '--force'
+    '--force',
+    'Searchable skill targets: 76',
+    'Full runtime/MCP: codex|claude-code|github-copilot|visual-studio'
   ]) {
     assert.match(result.stdout, escapePattern(expected));
   }
@@ -137,28 +140,46 @@ test('operation reconcile uses the universal journal dispatcher without construc
   assert.equal(payload.data.agentResult.outcome.code, 'operation_record_missing_or_expired');
 });
 
-test('default lifecycle authority receives live host probes and filesystem providers', async () => {
+test('default lifecycle factory receives the catalog-extended provider registry', async () => {
   const result = await runAgentCli(
     ['agent', 'status', '--json'],
     { useLifecycleFactory: true }
   );
 
   assert.equal(result.factoryCalls.length, 1);
-  const adapterOptions = result.factoryCalls[0].hostRegistry?.adapterOptions;
-  assert.equal(adapterOptions?.codex?.fs?.existsSync instanceof Function, true);
-  assert.equal(typeof adapterOptions?.codex?.probes?.version, 'string');
-  assert.equal(adapterOptions?.['claude-code']?.fs?.readFileSync instanceof Function, true);
-  assert.equal(typeof adapterOptions?.['github-copilot']?.probe, 'function');
-  assert.equal(adapterOptions?.['visual-studio']?.fs?.writeFileSync instanceof Function, true);
+  const registry = result.factoryCalls[0].registry;
+  assert.equal(typeof registry?.list, 'function');
+  assert.equal(typeof registry?.get, 'function');
+  assert.deepEqual(registry.list().slice(0, 4).map((entry) => entry.id), [
+    'codex',
+    'claude-code',
+    'github-copilot',
+    'visual-studio'
+  ]);
+  assert.equal(registry.get('cursor')?.id, 'cursor');
+
+  const resolved = await registry.get('cursor').resolveTargets({
+    scope: 'project',
+    projectRoot: 'F:\\workspace\\demo',
+    components: ['skill']
+  });
+  assert.equal(resolved[0]?.targetId, 'cursor:project:skill');
+  assert.equal(
+    resolved[0]?.path,
+    path.join('F:\\workspace\\demo', '.agents', 'skills', 'launchdeck-agent')
+  );
 });
 
-test('interactive setup selects host components and scope before separate apply approval', async () => {
+test('interactive setup selects components searchable Skill targets and scope before approval', async () => {
   const prompts = [];
   const input = {
     async selectMany(prompt, choices, settings) {
       prompts.push({ kind: 'selectMany', prompt, choices, settings });
-      if (/host/i.test(prompt)) return ['codex'];
-      return ['skill', 'mcp'];
+      return ['skill'];
+    },
+    async selectSearchableMany(prompt, choices, settings) {
+      prompts.push({ kind: 'selectSearchableMany', prompt, choices, settings });
+      return ['cursor'];
     },
     async select(prompt, choices, settings) {
       prompts.push({ kind: 'select', prompt, choices, settings });
@@ -176,22 +197,43 @@ test('interactive setup selects host components and scope before separate apply 
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.deepEqual(result.service.calls[0].input.hosts, ['codex']);
-  assert.deepEqual(result.service.calls[0].input.components, ['skill', 'mcp']);
+  assert.deepEqual(result.service.calls[0].input.hosts, ['cursor']);
+  assert.deepEqual(result.service.calls[0].input.components, ['skill']);
   assert.equal(result.service.calls[0].input.scope, 'project');
   assert.equal(result.service.calls[0].input.interactive, true);
   assert.equal(result.service.calls[0].input.approved, true);
   assert.deepEqual(prompts.map(({ kind }) => kind), [
     'selectMany',
-    'selectMany',
+    'selectSearchableMany',
     'select',
     'confirm'
   ]);
-  assert.deepEqual(prompts[1].choices, ['runtime', 'skill', 'mcp']);
-  assert.deepEqual(prompts[1].settings, {
+  assert.deepEqual(prompts[0].choices, ['runtime', 'skill', 'mcp']);
+  assert.deepEqual(prompts[0].settings, {
     initialValues: ['runtime', 'skill', 'mcp']
   });
+  assert.equal(prompts[1].choices.some((choice) => choice.value === 'cursor'), true);
+  assert.deepEqual(prompts[1].settings, { initialValues: [] });
   assert.deepEqual(prompts[2].settings, { initialValue: 'project' });
+});
+
+test('Skill-only host aliases sharing one destination are planned once', async () => {
+  const result = await runAgentCli([
+    'agent',
+    'setup',
+    '--host',
+    'cursor,cline',
+    '--component',
+    'skill',
+    '--scope',
+    'project',
+    '--dry-run',
+    '--json',
+    '--yes'
+  ], { cwd: 'F:\\workspace\\demo' });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(result.service.calls[0].input.hosts, ['cursor']);
 });
 
 test('Ctrl+C exits interactive setup as cancelled before planning or writes', async () => {

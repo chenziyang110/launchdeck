@@ -73,6 +73,11 @@ import { createCleanHandlers } from './kernel/operations/clean.js';
 import { createOperationJournal } from './control-plane/operation-journal.js';
 import { createPublicInstallerReconciler } from './agent/state/public-reconciliation.js';
 import { readCodexProjectTrust } from './agent/hosts/codex/trust.js';
+import { createHostRegistry } from './agent/hosts/index.js';
+import {
+  createCatalogSkillHostRegistry,
+  listAgentTargetCatalog
+} from './agent/target-catalog.js';
 
 const LIFECYCLE_ALIASES = new Set([
   'setup',
@@ -2487,7 +2492,8 @@ function createCliRuntime(dependencies, io) {
     ?? createDefaultCliAgentLifecycleService({
       env,
       factory: dependencies.agentLifecycleServiceFactory,
-      hostRegistry: dependencies.hostRegistry
+      hostRegistry: dependencies.hostRegistry,
+      cwd
     });
   return {
     agentLifecycleService,
@@ -2508,18 +2514,25 @@ function createCliRuntime(dependencies, io) {
 function createDefaultCliAgentLifecycleService({
   env,
   factory = createAgentLifecycleService,
-  hostRegistry
+  hostRegistry,
+  cwd = process.cwd()
 }) {
   const journal = createOperationJournal({ env });
   const reconciler = createPublicInstallerReconciler({
     env,
     journal
   });
+  const fullRegistry = createHostRegistry(hostRegistry ?? createCliHostRegistryOptions(env));
+  const registry = createCatalogSkillHostRegistry(fullRegistry, {
+    env,
+    projectRoot: cwd,
+    homeDir: cliHomeDir(env)
+  });
   return factory({
     env,
     journal,
     reconciler,
-    hostRegistry: hostRegistry ?? createCliHostRegistryOptions(env)
+    registry
   });
 }
 
@@ -2564,14 +2577,22 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
 function lifecycleInput(operation, options, io, runtime) {
   const projectRoot = options.project ?? runtime.cwd;
   const setup = operation === 'setup';
+  const scope = setup ? options.scope : (options.scope ?? 'project');
   return {
     operation,
-    hosts: options.hosts,
+    hosts: normalizeCatalogHostSelection({
+      hosts: options.hosts,
+      components: options.components,
+      scope,
+      projectRoot,
+      homeDir: cliHomeDir(runtime.env),
+      env: runtime.env
+    }),
     components: options.components,
-    scope: setup ? options.scope : (options.scope ?? 'project'),
+    scope,
     projectRoot,
     project: options.project,
-    homeDir: os.homedir(),
+    homeDir: cliHomeDir(runtime.env),
     build: options.build ?? runtime.packageBuildIdentity,
     desiredBuildIdentity: options.build ?? runtime.packageBuildIdentity,
     packagedBuildIdentity: runtime.packageBuildIdentity,
@@ -2583,7 +2604,7 @@ function lifecycleInput(operation, options, io, runtime) {
     force: options.force === true,
     entrypoint: runtime.entrypoint,
     cwd: runtime.cwd,
-    env: {},
+    env: runtime.env,
     terminal: lifecycleTerminal(io, runtime.terminal, options),
     operationId: options.operationId,
     interactive: options.interactive === true,
@@ -2602,20 +2623,37 @@ async function lifecycleSelection(operation, options, runtime) {
   let hosts = options.hosts;
   let components = options.components;
   let scope = options.scope;
-  if (!hosts && typeof input?.selectMany === 'function') {
-    const availableHosts = availableLifecycleHosts(runtime.env);
-    hosts = await input.selectMany(
-      'Select available agent host(s)',
-      availableHosts,
-      { initialValues: availableHosts.length === 1 ? availableHosts : [] }
-    );
-  }
   if (!components && typeof input?.selectMany === 'function') {
     components = await input.selectMany(
       'Select component(s)',
       ['runtime', 'skill', 'mcp'],
       { initialValues: ['runtime', 'skill', 'mcp'] }
     );
+  }
+  const selectedComponents = Array.isArray(components) ? components : [];
+  const skillOnlySelection = selectedComponents.length === 1 && selectedComponents[0] === 'skill';
+  if (!hosts) {
+    if (skillOnlySelection && typeof input?.selectSearchableMany === 'function') {
+      const detectedIds = availableLifecycleHosts(runtime.env);
+      const catalog = listAgentTargetCatalog({
+        projectRoot: runtime.cwd,
+        homeDir: cliHomeDir(runtime.env),
+        env: runtime.env,
+        detectedIds
+      });
+      hosts = await input.selectSearchableMany(
+        'Search and select Agent target(s)',
+        catalogPromptChoices(catalog.targets),
+        { initialValues: [] }
+      );
+    } else if (typeof input?.selectMany === 'function') {
+      const availableHosts = availableLifecycleHosts(runtime.env);
+      hosts = await input.selectMany(
+        'Select available agent host(s)',
+        availableHosts,
+        { initialValues: availableHosts.length === 1 ? availableHosts : [] }
+      );
+    }
   }
   if (!scope && typeof input?.select === 'function') {
     scope = await input.select(
@@ -2634,6 +2672,46 @@ function availableLifecycleHosts(env) {
   if (commandExists('copilot')) hosts.push('github-copilot');
   if (resolveVswherePath(env)) hosts.push('visual-studio');
   return hosts;
+}
+
+function catalogPromptChoices(targets) {
+  return [...targets]
+    .sort((left, right) => Number(right.detected === true) - Number(left.detected === true))
+    .map((target) => ({
+      value: target.id,
+      label: target.label,
+      hint: `${target.detected === true ? 'Detected · ' : ''}${target.integration === 'full' ? 'Full integration' : 'Skill-only'}`
+    }));
+}
+
+function normalizeCatalogHostSelection({ hosts, components, scope, projectRoot, homeDir, env }) {
+  if (!Array.isArray(hosts)
+    || hosts.length < 2
+    || !Array.isArray(components)
+    || components.length !== 1
+    || components[0] !== 'skill'
+    || !['project', 'user'].includes(scope)) {
+    return hosts;
+  }
+  const catalog = listAgentTargetCatalog({ projectRoot, homeDir, env }).targets;
+  const byId = new Map(catalog.map((target) => [target.id, target]));
+  const destinationKeys = new Set();
+  const normalized = [];
+  for (const hostId of hosts) {
+    const destination = byId.get(hostId)?.destinations?.[scope];
+    const key = destination
+      ? (process.platform === 'win32' ? path.resolve(destination).toLowerCase() : path.resolve(destination))
+      : `unsupported:${hostId}`;
+    if (destinationKeys.has(key)) continue;
+    destinationKeys.add(key);
+    normalized.push(hostId);
+  }
+  return normalized;
+}
+
+function cliHomeDir(env = process.env) {
+  const value = env?.HOME ?? env?.USERPROFILE;
+  return value && String(value).trim() ? path.resolve(String(value)) : os.homedir();
 }
 
 function lifecycleTerminal(io, terminal, options) {
@@ -4088,17 +4166,22 @@ function agentHelpText() {
   return `Launchdeck Agent
 
 Usage:
-  launchdeck agent setup [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
-  launchdeck agent status [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
-  launchdeck agent doctor [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
-  launchdeck agent update [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
-  launchdeck agent repair [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
-  launchdeck agent uninstall [--host <codex|claude|copilot|visual-studio>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent setup [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent status [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
+  launchdeck agent doctor [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--json] [--compact]
+  launchdeck agent update [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--build <sha256:...|packaged>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent repair [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
+  launchdeck agent uninstall [--host <agent-id[,agent-id...]>] [--component <runtime|skill|mcp>] [--scope <project|user>] [--project <path>] [--dry-run] [--yes] [--json] [--compact] [--force]
   launchdeck agent paths [--json] [--compact]
   launchdeck agent install --agent <${supportedAgents().join('|')}> [--scope <project|user>] [--dry-run] [--force] [--target dir] [--json] [--compact]
 
 Compatibility:
   launchdeck agent doctor --compat [--json] [--compact]
+
+Targets:
+  Searchable skill targets: ${listAgentTargetCatalog().targets.length} (interactive setup: select only the Skill component and omit --host)
+  Full runtime/MCP: codex|claude-code|github-copilot|visual-studio
+  All other Agent IDs are Skill-only.
 `;
 }
 

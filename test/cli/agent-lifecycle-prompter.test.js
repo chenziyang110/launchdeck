@@ -44,6 +44,44 @@ test('lifecycle prompter renders labeled keyboard multi-select choices', async (
   ]);
 });
 
+test('lifecycle prompter uses searchable multi-select for the broad Agent catalog', async () => {
+  const calls = [];
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const prompter = createLifecyclePrompter({
+    input,
+    output,
+    promptApi: {
+      async autocompleteMultiselect(options) {
+        calls.push(options);
+        return ['cursor', 'windsurf'];
+      },
+      isCancel() {
+        return false;
+      }
+    }
+  });
+  const choices = [
+    { value: 'cursor', label: 'Cursor', hint: 'Skill-only' },
+    { value: 'windsurf', label: 'Windsurf', hint: 'Skill-only' }
+  ];
+
+  const selected = await prompter.selectSearchableMany(
+    'Search and select Agent target(s)',
+    choices,
+    { initialValues: ['cursor'], maxItems: 12 }
+  );
+
+  assert.deepEqual(selected, ['cursor', 'windsurf']);
+  assert.equal(calls.length, 1);
+  assert.deepEqual(calls[0].options, choices);
+  assert.deepEqual(calls[0].initialValues, ['cursor']);
+  assert.equal(calls[0].maxItems, 12);
+  assert.equal(calls[0].required, true);
+  assert.equal(calls[0].input, input);
+  assert.equal(calls[0].output, output);
+});
+
 test('lifecycle prompter uses single-select and choice-based confirmation defaults', async () => {
   const calls = [];
   const input = new PassThrough();
