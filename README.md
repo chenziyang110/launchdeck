@@ -8,12 +8,12 @@ The base feature is daemonless. Launchdeck keeps one authoritative control-plane
 
 ## Install
 
-Launchdeck requires Node.js 20 or newer. Install the supported v0.5.2 package from npm, or pin the matching immutable GitHub tag when source provenance must be explicit.
+Launchdeck requires Node.js 20 or newer. Install the supported v0.5.3 package from npm, or pin the matching immutable GitHub tag when source provenance must be explicit.
 
 Install the CLI globally:
 
 ```bash
-npm install --global launchdeck@0.5.2
+npm install --global launchdeck@0.5.3
 launchdeck --help
 launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
 launchdeck agent status --host codex --scope user --json
@@ -22,7 +22,7 @@ launchdeck agent status --host codex --scope user --json
 Or install it into another project:
 
 ```bash
-npm install --save-dev launchdeck@0.5.2
+npm install --save-dev launchdeck@0.5.3
 npx launchdeck --help
 npx launchdeck agent setup
 npx launchdeck agent status --host codex --scope project --project . --json
@@ -31,8 +31,8 @@ npx launchdeck agent status --host codex --scope project --project . --json
 Immutable GitHub-tag alternative:
 
 ```bash
-npm install --global --install-links=true github:chenziyang110/launchdeck#v0.5.2
-npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.5.2
+npm install --global --install-links=true github:chenziyang110/launchdeck#v0.5.3
+npm install --save-dev --install-links=true github:chenziyang110/launchdeck#v0.5.3
 ```
 
 The interactive setup wizard first opens a searchable catalog of all 76 Agent
