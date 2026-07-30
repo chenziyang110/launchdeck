@@ -77,16 +77,18 @@ test('human refusal remains readable at 60 columns and keeps safe next action vi
   });
 
   assert.equal(result.status, 1);
-  assertNoAnsi(result.stdout + result.stderr);
-  assertEveryLineAtMost(result.stdout + result.stderr, 60);
-  assert.match(result.stdout + result.stderr, /refused/i);
-  assert.match(result.stdout + result.stderr, /effect certainty/i);
-  assert.match(result.stdout + result.stderr, /Error: \[agent_pending_project_trust\]/);
+  const output = result.stdout + result.stderr;
+  const readableOutput = output.replace(/[│]/g, ' ').replace(/\s+/g, ' ');
+  assertNoAnsi(output);
+  assertEveryLineAtMost(output, 60);
+  assert.match(output, /refused/i);
+  assert.match(output, /effect certainty/i);
+  assert.match(output, /Error: \[agent_pending_project_trust\]/);
   assert.match(
-    result.stdout + result.stderr,
-    /Reason:\s+Project trust approval is required before planning\s+Codex MCP changes\./
+    readableOutput,
+    /Reason: Project trust approval is required before planning Codex MCP changes\./
   );
-  assert.match(result.stdout + result.stderr, /launchdeck agent status --json/);
+  assert.match(output, /launchdeck agent status --json/);
 });
 
 test('human status keeps drift state and severity visible at 60 columns without color', async () => {

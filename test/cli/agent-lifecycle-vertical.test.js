@@ -126,6 +126,15 @@ test('real CLI installs a catalog-only skill target and persists a receipt on th
     assert.equal(secondPayload.result.outcome, 'noop');
     assert.equal(secondPayload.result.effectCertainty, 'none');
 
+    const humanArgs = [...args.filter((value) => value !== '--json'), '--no-color'];
+    const human = spawnSync(process.execPath, humanArgs, options);
+    assert.equal(human.status, 0, human.stderr || human.stdout);
+    assert.match(human.stdout, /Launchdeck is ready/);
+    assert.match(human.stdout, /Already up to date/);
+    assert.match(human.stdout, /Agent skill\s+Ready/);
+    assert.match(human.stdout, /Outcome: noop/);
+    assert.doesNotMatch(human.stdout, /\x1B\[/);
+
     const uninstallArgs = args.map((value) => value === 'setup' ? 'uninstall' : value);
     const uninstall = spawnSync(process.execPath, uninstallArgs, options);
     assert.equal(uninstall.status, 0, uninstall.stderr || uninstall.stdout);
