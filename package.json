@@ -1,6 +1,6 @@
 {
   "name": "launchdeck",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Universal lifecycle control for local software projects.",
   "keywords": [
     "cli",

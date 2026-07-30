@@ -375,6 +375,57 @@ test('mixed runtime and Host components bind launcher provisioning separately', 
   assert.equal(registry.calls.lastDesiredBuild.skillDigest, skill.contentDigest);
 });
 
+test('mixed setup retains an unchanged runtime target for post-install verification', async (t) => {
+  const workspace = createWorkspace(t, 'runtime-noop-host-verification');
+  const registry = createRegistry({
+    codex: supportedHost('codex', ['skill', 'mcp'])
+  });
+  const launcherRoot = path.join(
+    workspace.homeDir,
+    '.launchdeck',
+    'installer',
+    'launcher',
+    'v1'
+  );
+  fs.cpSync(
+    path.join(repoRoot, 'agent', 'installer-payload', 'launcher'),
+    launcherRoot,
+    { recursive: true }
+  );
+  const { discoverDesiredInstallation } = await loadDesiredInstallationModule();
+
+  const result = await discoverDesiredInstallation({
+    operation: 'setup',
+    scope: 'project',
+    projectRoot: workspace.projectRoot,
+    homeDir: workspace.homeDir,
+    hosts: ['codex'],
+    components: ['runtime', 'skill', 'mcp'],
+    desiredBuildIdentity: PACKAGED_BUILD_IDENTITY,
+    sourceIdentity: 'packaged',
+    interactive: false,
+    registry
+  });
+
+  assert.equal(result.outcome, 'planned');
+  assert.deepEqual(
+    result.evaluatedTargets.map((target) => target.component).sort(),
+    ['mcp', 'runtime', 'skill']
+  );
+  assert.equal(
+    result.actions.some((action) => action.targetId === 'launchdeck:project:runtime'),
+    true
+  );
+  assert.equal(
+    result.actions.find((action) => action.targetId === 'launchdeck:project:runtime')?.kind,
+    'install-stable-launcher'
+  );
+  assert.equal(
+    result.evaluatedTargets.find((target) => target.component === 'runtime')?.path,
+    launcherRoot
+  );
+});
+
 test('runtime-only explicit setup does not require or probe a Host', async (t) => {
   const workspace = createWorkspace(t, 'runtime-only-explicit');
   const registry = createRegistry({

@@ -37,6 +37,45 @@ export function launcherPaths(env = process.env) {
   });
 }
 
+export function resolveStableLauncherVerification({
+  env = process.env,
+  buildIdentity
+} = {}) {
+  const resolved = resolvePinnedRuntime({ env, buildIdentity });
+  const manifest = readManifest(path.join(resolved.artifactPath, 'manifest.json'));
+  const files = manifest.files
+    .filter((entry) => typeof entry?.path === 'string' && entry.path.startsWith('launcher/'))
+    .map((entry) => ({
+      path: entry.path.slice('launcher/'.length),
+      bytes: entry.bytes,
+      sha256: entry.sha256
+    }))
+    .sort((left, right) => compareStrings(left.path, right.path));
+  const requiredPaths = [...REQUIRED_LAUNCHER_FILES].sort(compareStrings);
+  if (
+    files.length !== requiredPaths.length
+    || files.some((entry, index) => entry.path !== requiredPaths[index])
+  ) {
+    throw launcherError(
+      'agent_launcher_source_invalid',
+      'Verified build does not declare the complete stable launcher.'
+    );
+  }
+  const paths = launcherPaths(env);
+  return deepFreeze({
+    buildIdentity: resolved.buildIdentity,
+    root: paths.root,
+    posix: paths.posix,
+    windows: paths.windows,
+    node: paths.node,
+    contentDigest: digestCanonical({
+      schemaVersion: 1,
+      skillName: path.basename(paths.root),
+      files
+    })
+  });
+}
+
 export function installStableLauncher({
   env = process.env,
   buildIdentity

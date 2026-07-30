@@ -2,6 +2,18 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.2] - 2026-07-30
+
+### Fixed
+
+- Provisioned the exact build-bound runtime artifact even when the stable launcher bytes were already unchanged from an earlier release.
+- Preserved the Runtime verification dependency through mixed Runtime, Skill, and MCP setup transaction normalization.
+- Prevented valid Codex project installations from rolling back with `agent_launcher_path_invalid` during an upgrade or installation into an additional project.
+
+### Security
+
+- Limited no-op Runtime verification fallback to an existing, digest-verified artifact for the exact approved build; PATH lookup and unpinned latest-version fallback remain disallowed.
+
 ## [0.5.1] - 2026-07-30
 
 ### Changed

@@ -86,6 +86,90 @@ test('default Host verification receives the target desired digest for a fresh S
   assert.equal(desired.skill.contentDigest, target.desiredDigest);
 });
 
+test('Codex verification resolves an unchanged runtime dependency after transaction normalization', async (t) => {
+  const mod = await loadLifecycleModule();
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-runtime-dependency-'));
+  const launchdeckHome = path.join(root, 'launchdeck-home');
+  const artifactRoot = path.join(
+    launchdeckHome,
+    'installer',
+    'artifacts',
+    'v1',
+    'sha256',
+    PACKAGED_BUILD_IDENTITY.slice('sha256:'.length)
+  );
+  const launcherRoot = path.join(launchdeckHome, 'installer', 'launcher', 'v1');
+  fs.cpSync(path.join(repoRoot, 'agent', 'installer-payload'), artifactRoot, { recursive: true });
+  fs.cpSync(path.join(repoRoot, 'agent', 'installer-payload', 'launcher'), launcherRoot, {
+    recursive: true
+  });
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const mcpAction = actionFixture(
+    'codex:project:mcp',
+    'patch-owned-entry',
+    '[mcp_servers.launchdeck]'
+  );
+  const skillAction = actionFixture(
+    'codex:project:skill',
+    'copy-skill',
+    'launchdeck-agent'
+  );
+  const mcpTarget = {
+    targetId: mcpAction.targetId,
+    hostId: 'codex',
+    scope: 'project',
+    component: 'mcp',
+    path: mcpAction.targetPath,
+    ownershipBoundary: mcpAction.ownershipBoundary,
+    ownership: 'launchdeck-owned',
+    liveDigest: mcpAction.preconditionDigest,
+    desiredDigest: mcpAction.desiredDigest
+  };
+  const skillTarget = {
+    targetId: 'codex:project:skill',
+    hostId: 'codex',
+    scope: 'project',
+    component: 'skill',
+    path: path.join(repoRoot, '.tmp-skill'),
+    ownershipBoundary: 'launchdeck-agent',
+    ownership: 'launchdeck-owned',
+    liveDigest: skillAction.preconditionDigest,
+    desiredDigest: skillAction.desiredDigest
+  };
+  const plan = planFixture({
+    actions: [mcpAction, skillAction],
+    targets: [mcpTarget, skillTarget]
+  });
+  plan.buildIdentity = PACKAGED_BUILD_IDENTITY;
+
+  const request = mod.createCodexVerificationRequest({
+    target: mcpTarget,
+    plan,
+    effects: effectEvidence(plan),
+    receiptCandidate: {
+      receiptId: RECEIPT_ID,
+      targets: [{
+        targetId: mcpTarget.targetId,
+        ownershipBoundary: mcpTarget.ownershipBoundary,
+        desiredDigest: mcpTarget.desiredDigest
+      }]
+    },
+    env: { ...process.env, LAUNCHDECK_HOME: launchdeckHome }
+  });
+
+  assert.equal(
+    request.target.launcherPath,
+    path.join(
+      launcherRoot,
+      process.platform === 'win32' ? 'launchdeck-mcp.cmd' : 'launchdeck-mcp'
+    )
+  );
+  assert.equal(request.target.runtimePath, launcherRoot);
+  assert.match(request.expected.runtimeDigest, /^sha256:[0-9a-f]{64}$/);
+  assert.equal(request.observed.runtimeDigest, request.expected.runtimeDigest);
+  assert.equal(request.target.skillPath, skillTarget.path);
+});
+
 test('approved setup plans once, binds approval, executes one transaction, verifies, then returns schemaVersion 1', async () => {
   const { createAgentLifecycleService } = await loadLifecycleModule();
   const deps = lifecycleDependencies();
