@@ -1,7 +1,37 @@
 {
   "schemaVersion": 1,
-  "revision": "agent-host-matrix-v2",
+  "revision": "agent-host-matrix-v3",
   "rows": [
+    {
+      "rowId": "codex-0.146.0-win32-skill-project",
+      "host": "codex",
+      "exactVersion": "0.146.0",
+      "platform": "win32",
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".agents/skills/launchdeck-agent",
+      "dialect": "skill-directory",
+      "probe": "codex --version",
+      "approvalBoundary": "none",
+      "fixtureRevision": "codex-contract-v1",
+      "realHostEvidenceRevision": "codex-0.146.0-win32-real-host-2026-07-30-v1",
+      "supportState": "supported"
+    },
+    {
+      "rowId": "codex-0.146.0-win32-mcp-project",
+      "host": "codex",
+      "exactVersion": "0.146.0",
+      "platform": "win32",
+      "component": "mcp",
+      "scope": "project",
+      "relativePath": ".codex/config.toml",
+      "dialect": "[mcp_servers.launchdeck]",
+      "probe": "codex mcp list",
+      "approvalBoundary": "project-trust",
+      "fixtureRevision": "codex-contract-v1",
+      "realHostEvidenceRevision": "codex-0.146.0-win32-real-host-2026-07-30-v1",
+      "supportState": "supported"
+    },
     {
       "rowId": "codex-0.145.0-win32-skill-project",
       "host": "codex",

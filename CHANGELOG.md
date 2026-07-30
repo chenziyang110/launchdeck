@@ -2,6 +2,22 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.3] - 2026-07-30
+
+### Added
+
+- Added exact Windows project-scope Skill and MCP compatibility evidence for Codex CLI `0.146.0`.
+
+### Fixed
+
+- Allowed receipt-owned Codex MCP upgrades when unrelated TOML content changed after installation, while preserving that unrelated content.
+- Kept MCP ownership validation scoped to the exact prior managed entry instead of treating the entire Codex configuration file as the ownership boundary.
+
+### Security
+
+- Continued to require exact host version, platform, component, and scope evidence; nearby Codex versions are not inferred as supported.
+- Refused upgrades when the managed MCP command, arguments, environment, build identity, or ownership marker differs from the receipt-bound entry.
+
 ## [0.5.2] - 2026-07-30
 
 ### Fixed

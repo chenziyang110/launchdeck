@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "revision": "codex-0.146.0-win32-real-host-2026-07-30-v1",
+  "capturedAt": "2026-07-30",
+  "host": "codex",
+  "exactVersion": "0.146.0",
+  "platform": "win32",
+  "architecture": "x64",
+  "probes": [
+    {
+      "command": "codex --version",
+      "exitCode": 0,
+      "stdout": "codex-cli 0.146.0"
+    },
+    {
+      "command": "codex mcp list",
+      "exitCode": 0,
+      "assertion": "Codex loaded its MCP configuration without a schema error."
+    },
+    {
+      "command": "codex mcp get launchdeck",
+      "exitCode": 0,
+      "assertion": "Codex exposed the installed launchdeck stdio server with an absolute Windows command and redacted environment values."
+    }
+  ],
+  "components": [
+    {
+      "component": "skill",
+      "scope": "project",
+      "relativePath": ".agents/skills/launchdeck-agent",
+      "dialect": "skill-directory",
+      "observed": true,
+      "assertion": "The project Skill was discovered by the real Codex 0.146.0 session that captured this evidence.",
+      "entrypointSha256": "e479e84840b8fdededfab4ab1f5e43f11bed3c8fba86ce8e24bff52dec5190fc"
+    },
+    {
+      "component": "mcp",
+      "scope": "project",
+      "relativePath": ".codex/config.toml",
+      "dialect": "[mcp_servers.launchdeck]",
+      "observed": true,
+      "assertion": "The real Codex 0.146.0 CLI parsed and exposed the installed launchdeck stdio server from the supported TOML dialect."
+    }
+  ],
+  "privacy": {
+    "containsHomePath": false,
+    "containsCredentials": false,
+    "containsEnvironmentValues": false
+  }
+}

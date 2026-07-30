@@ -892,6 +892,7 @@ function buildReceiptOwnership(receipt, receiptTarget, observation, resolvedTarg
   const digestMatches = Boolean(observedDigest && expectedDigest && observedDigest === expectedDigest);
   return {
     receiptId: receipt?.receiptId ?? null,
+    buildIdentity: receipt?.buildIdentity ?? null,
     owned: receiptTarget.ownership === 'launchdeck' || receiptTarget.ownership === undefined,
     owner: 'launchdeck-agent-installer',
     component: receiptTarget.component ?? resolvedTarget?.component,

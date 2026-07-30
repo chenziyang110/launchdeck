@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
@@ -73,12 +74,14 @@ test('Skill-only agent install identical content remains noop without requiring 
   assert.equal(payload.result.actions.length, 0);
 });
 
-test('lifecycle and compatibility commands preserve explicit paths and do not normalize them through cwd', async () => {
+test('lifecycle and compatibility commands preserve platform-native absolute paths', async () => {
+  const projectRoot = path.resolve('workspace', 'demo');
+  const skillTarget = path.join(projectRoot, '.agents', 'skills');
   const lifecycle = await runAgentCli([
     'agent',
     'setup',
     '--project',
-    'F:\\workspace\\demo',
+    projectRoot,
     '--json',
     '--yes'
   ]);
@@ -88,13 +91,13 @@ test('lifecycle and compatibility commands preserve explicit paths and do not no
     '--agent',
     'codex',
     '--target',
-    'F:\\workspace\\demo\\.agents\\skills',
+    skillTarget,
     '--dry-run',
     '--json'
   ]);
 
-  assert.equal(lifecycle.service.calls[0].input.projectRoot, 'F:\\workspace\\demo');
-  assert.equal(compatibility.compatibility.calls[0].input.target, 'F:\\workspace\\demo\\.agents\\skills');
+  assert.equal(lifecycle.service.calls[0].input.projectRoot, projectRoot);
+  assert.equal(compatibility.compatibility.calls[0].input.target, skillTarget);
   assert.equal(lifecycle.status, 0, lifecycle.stderr);
   assert.equal(compatibility.status, 0, compatibility.stderr);
 });

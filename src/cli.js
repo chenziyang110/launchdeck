@@ -2576,7 +2576,7 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
 }
 
 function lifecycleInput(operation, options, io, runtime) {
-  const projectRoot = options.project ?? runtime.cwd;
+  const projectRoot = path.resolve(runtime.cwd, options.project ?? '.');
   const setup = operation === 'setup';
   const scope = setup ? options.scope : (options.scope ?? 'project');
   return {
