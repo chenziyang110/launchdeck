@@ -149,6 +149,81 @@ test('registered target resolution is exact-scope, matrix-bound, and non-forgeab
   assert.notEqual(approvedVerification.kind, 'refusal');
 });
 
+test('registered adapters can revalidate a planned no-op target without accepting forged targets', async (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-registered-noop-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const projectRoot = path.join(root, 'project');
+  const homeDir = path.join(root, 'home');
+  const skillSource = path.join(
+    path.dirname(fixtureRoot),
+    '..',
+    '..',
+    '..',
+    'agent',
+    'installer-payload',
+    'skill',
+    'launchdeck-agent'
+  );
+  const targetPath = path.join(projectRoot, '.agents', 'skills', 'launchdeck-agent');
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  fs.mkdirSync(homeDir, { recursive: true });
+  fs.cpSync(skillSource, targetPath, { recursive: true });
+
+  const registry = createHostRegistry({
+    matrix: fixture('exact-rows.json'),
+    adapterOptions: {
+      codex: {
+        fs,
+        probes: {
+          version: 'codex-cli 0.96.0',
+          mcpList: 'No MCP servers configured'
+        }
+      }
+    }
+  });
+  const codex = registry.get('codex');
+  const target = (await codex.resolveTargets({
+    scope: 'project',
+    components: ['skill'],
+    projectRoot,
+    homeDir,
+    evidence: { version: '0.96.0', platform: 'win32' },
+    platform: 'win32'
+  }))[0];
+  const desiredBuild = {
+    buildIdentity: `sha256:${'a'.repeat(64)}`,
+    skill: {
+      sourceDir: skillSource,
+      contentDigest: skillTreeDigest(skillSource)
+    },
+    receiptOwnership: {
+      owned: true,
+      owner: 'launchdeck-agent-installer',
+      component: 'skill',
+      ownershipBoundary: 'launchdeck-agent',
+      path: target.path,
+      liveDigest: skillTreeDigest(skillSource),
+      liveDigestMatches: true
+    }
+  };
+
+  const plan = await codex.plan(target, desiredBuild);
+  assert.equal(plan.kind, 'actions');
+  assert.equal(plan.status, 'noop');
+  assert.deepEqual(plan.actions, []);
+
+  const observation = await codex.inspectPlanned({ ...target });
+  assert.notEqual(observation.kind, 'refusal');
+  assert.equal(observation.path, target.path);
+
+  const forged = await codex.inspectPlanned({
+    ...target,
+    path: path.join(projectRoot, 'forged', 'launchdeck-agent')
+  });
+  assert.equal(forged.kind, 'refusal');
+  assert.equal(forged.code, 'host_target_unregistered');
+});
+
 test('planner preserves registered target identity through host planning', async (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-registered-planner-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

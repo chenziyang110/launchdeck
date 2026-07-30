@@ -51,6 +51,12 @@ export async function discoverDesiredInstallation(input = {}) {
     : desired.hostIds.length > 0
       ? desired.hostIds
       : normalizeDiscoveredHosts(registry);
+  const hostComponents = setupHostComponentMap({
+    desired,
+    selectedHosts,
+    requestedHostComponents,
+    receiptTargets
+  });
   if (requestedHostComponents.length > 0
     && selectedHosts.length !== 1
     && input.interactive !== true) {
@@ -62,16 +68,19 @@ export async function discoverDesiredInstallation(input = {}) {
     });
   }
 
+  const includeRuntimeTarget = desired.components.includes('runtime')
+    || setupRetainsRuntime(desired, receiptTargets);
   const evidence = {
     matrixRevision: registry.matrixRevision ?? registry.matrix?.revision ?? null,
     hostEvidence: [],
     capabilities: [],
     targets: [],
     targetPlans: [],
-    includeLauncher: input.includeLauncher === true || desired.components.includes('runtime'),
-    previousBuildPins: desired.previousBuildPins
+    includeLauncher: input.includeLauncher === true || includeRuntimeTarget,
+    previousBuildPins: desired.previousBuildPins,
+    supersedesReceiptId: desired.operation === 'setup' ? input.receipt?.receiptId ?? null : null
   };
-  if (desired.components.includes('runtime')) {
+  if (includeRuntimeTarget) {
     const runtime = resolveRuntimeProvisioningContract({
       input,
       desired
@@ -91,11 +100,32 @@ export async function discoverDesiredInstallation(input = {}) {
         )
       });
     }
+    const receiptRuntimeTarget = receiptTargets.find((target) => (
+      target.hostId === 'launchdeck'
+      && target.scope === desired.scope
+      && target.component === 'runtime'
+    ));
+    if (
+      receiptRuntimeTarget
+      && (
+        receiptRuntimeTarget.ownershipBoundary !== runtime.target.ownershipBoundary
+        || receiptRuntimeTarget.desiredDigest !== runtime.target.liveDigest
+      )
+    ) {
+      return refuseDesiredInstallation({
+        desired,
+        error: plannerError(
+          'agent_target_ownership_unverified',
+          'Stable launcher does not match the selected receipt.',
+          { targetId: runtime.target.targetId }
+        )
+      });
+    }
     evidence.targets.push(runtime.target);
     evidence.targetPlans.push(runtime.targetPlan);
   }
 
-  for (const hostId of selectedHosts) {
+  for (const [hostId, requestedComponents] of hostComponents) {
     const adapter = adapterFor(registry, hostId);
     const detected = asArray(await adapter.detect({
       scope: desired.scope,
@@ -118,7 +148,7 @@ export async function discoverDesiredInstallation(input = {}) {
       projectIdentity: desired.projectIdentity
     }));
     const selectedCapabilities = capabilities.filter((capability) =>
-      requestedHostComponents.includes(capability?.component)
+      requestedComponents.includes(capability?.component)
     );
     evidence.capabilities.push(...selectedCapabilities);
     const ambiguous = selectedCapabilities.find((capability) => capability?.supportState === 'ambiguous');
@@ -133,7 +163,7 @@ export async function discoverDesiredInstallation(input = {}) {
       });
     }
     const unsupported = selectedCapabilities.find((capability) => capability?.supportState !== 'supported');
-    if (unsupported || selectedCapabilities.length !== requestedHostComponents.length) {
+    if (unsupported || selectedCapabilities.length !== requestedComponents.length) {
       return refuseDesiredInstallation({
         desired,
         error: plannerError('agent_component_unsupported', 'Requested component is unsupported by the selected host.', {
@@ -149,7 +179,7 @@ export async function discoverDesiredInstallation(input = {}) {
       projectRoot: desired.projectIdentity,
       homeDir: input.homeDir,
       projectIdentity: desired.projectIdentity,
-      components: requestedHostComponents,
+      components: requestedComponents,
       hostEvidence: detected,
       evidence: detected
     });
@@ -168,11 +198,12 @@ export async function discoverDesiredInstallation(input = {}) {
       hostId,
       scope: desired.scope,
       resolvedTargets: asArray(targets).filter((target) =>
-        requestedHostComponents.includes(target?.component)
+        requestedComponents.includes(target?.component)
       ),
-      receiptTargets
+      receiptTargets,
+      operation: desired.operation
     });
-    if (receiptTargets.length > 0 && boundedTargets.length === 0) {
+    if (desired.operation !== 'setup' && receiptTargets.length > 0 && boundedTargets.length === 0) {
       return refuseDesiredInstallation({
         desired,
         error: plannerError(
@@ -250,6 +281,7 @@ export async function discoverDesiredInstallation(input = {}) {
   }
 
   try {
+    retainOwnedSetupTargets(desired, evidence, receiptTargets);
     retainOwnedRepairTargets(desired, evidence);
     const plan = await createInstallationPlan({ desired, evidence });
     return deepFreeze({
@@ -267,6 +299,7 @@ export async function discoverDesiredInstallation(input = {}) {
       targets: plan.targets,
       actions: plan.actions,
       includeLauncher: plan.includeLauncher,
+      supersedesReceiptId: plan.supersedesReceiptId,
       trustedSources: plan.trustedSources,
       effects: [],
       receiptId: null
@@ -277,6 +310,65 @@ export async function discoverDesiredInstallation(input = {}) {
       error
     });
   }
+}
+
+function setupHostComponentMap({ desired, selectedHosts, requestedHostComponents, receiptTargets }) {
+  const hostComponents = new Map(selectedHosts.map((hostId) => [hostId, new Set(requestedHostComponents)]));
+  if (desired.operation === 'setup') {
+    for (const target of receiptTargets) {
+      if (target.scope !== desired.scope || !HOST_COMPONENTS.has(target.component)) continue;
+      if (!hostComponents.has(target.hostId)) hostComponents.set(target.hostId, new Set());
+      hostComponents.get(target.hostId).add(target.component);
+    }
+  }
+  return new Map([...hostComponents.entries()].map(([hostId, components]) => [
+    hostId,
+    [...components].sort(compareStrings)
+  ]));
+}
+
+function setupRetainsRuntime(desired, receiptTargets) {
+  return desired.operation === 'setup' && receiptTargets.some((target) => (
+    target.hostId === 'launchdeck'
+    && target.scope === desired.scope
+    && target.component === 'runtime'
+  ));
+}
+
+function retainOwnedSetupTargets(desired, evidence, receiptTargets) {
+  if (desired.operation !== 'setup' || receiptTargets.length === 0) return;
+  const hasSetupEffect = evidence.targetPlans.some((targetPlan) =>
+    targetPlan.status === 'planned' && (targetPlan.actions ?? []).length > 0
+  );
+  if (!hasSetupEffect) return;
+  const receiptIds = new Set(receiptTargets.map((target) => target.targetId));
+  const targetsById = new Map(evidence.targets.map((target) => [target.targetId, target]));
+  evidence.targetPlans = evidence.targetPlans.map((targetPlan) => {
+    if (
+      !receiptIds.has(targetPlan.targetId)
+      || !['noop', 'no-op'].includes(targetPlan.status)
+      || (targetPlan.actions ?? []).length > 0
+    ) {
+      return targetPlan;
+    }
+    const target = targetsById.get(targetPlan.targetId);
+    const retainedDigest = target?.liveDigest;
+    if (!target || !isDigest(retainedDigest)) return targetPlan;
+    return {
+      ...targetPlan,
+      status: 'planned',
+      actions: [{
+        actionId: `retain-${target.targetId}`,
+        targetId: target.targetId,
+        kind: 'retain-owned-target',
+        targetPath: target.path,
+        ownershipBoundary: target.ownershipBoundary,
+        preconditionDigest: retainedDigest,
+        desiredDigest: retainedDigest,
+        requiresBackup: false
+      }]
+    };
+  });
 }
 
 function retainOwnedRepairTargets(desired, evidence) {
@@ -708,10 +800,15 @@ function normalizeList(value, label) {
 function normalizeReceiptTargets(value) {
   if (!Array.isArray(value)) return [];
   return value.filter((target) => target && typeof target === 'object')
-    .map((target) => ({
-      ...target,
-      hostId: target.hostId ?? String(target.targetId ?? '').split(':')[0]
-    }));
+    .map((target) => {
+      const [hostId, scope, component] = String(target.targetId ?? '').split(':');
+      return {
+        ...target,
+        hostId: target.hostId ?? hostId,
+        scope: target.scope ?? scope,
+        component: target.component ?? component
+      };
+    });
 }
 
 function hostIdsFromTargets(value) {
@@ -722,9 +819,9 @@ function componentsFromTargets(value) {
   return normalizeReceiptTargets(value).map((target) => target.component).filter(Boolean);
 }
 
-function bindResolvedTargets({ hostId, scope, resolvedTargets, receiptTargets }) {
+function bindResolvedTargets({ hostId, scope, resolvedTargets, receiptTargets, operation }) {
   const normalized = resolvedTargets.map((target) => normalizeResolvedTarget(hostId, scope, target));
-  if (receiptTargets.length === 0) return normalized;
+  if (receiptTargets.length === 0 || operation === 'setup') return normalized;
   const receiptIds = new Set(receiptTargets.map((target) => target.targetId));
   return normalized.filter((target) => receiptIds.has(target.targetId));
 }

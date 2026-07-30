@@ -4180,7 +4180,7 @@ Compatibility:
 Targets:
   Searchable Agent targets: ${listAgentTargetCatalog().targets.length} (interactive setup selects Agent targets first)
   Every target supports Skill installation and a project-local CLI fallback.
-  Full Runtime/Skill/MCP integrations: codex|claude-code|github-copilot|visual-studio
+  Full Runtime/Skill/MCP integration: codex
 `;
 }
 

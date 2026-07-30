@@ -149,6 +149,7 @@ export { normalizeRegistryTargets } from './shared-skill.js';
 function createRegisteredAdapter(id, rawAdapter, matrix) {
   const managedTargets = new WeakSet();
   const plannedActions = new Map();
+  const plannedTargets = new Map();
 
   async function capabilities(evidence, scope, context = {}) {
     const exactVersion = exactVersionFromEvidence(id, evidence);
@@ -231,15 +232,11 @@ function createRegisteredAdapter(id, rawAdapter, matrix) {
   }
 
   function plannedTarget(target) {
+    const registered = plannedTargets.get(target?.targetId);
+    if (samePlannedTarget(registered, target)) return registered;
     for (const record of plannedActions.values()) {
       const candidate = record.target;
-      if (candidate?.targetId === target?.targetId
-        && candidate?.path === target?.path
-        && candidate?.scope === target?.scope
-        && candidate?.component === target?.component
-        && candidate?.ownershipBoundary === target?.ownershipBoundary) {
-        return candidate;
-      }
+      if (samePlannedTarget(candidate, target)) return candidate;
     }
     return null;
   }
@@ -271,7 +268,7 @@ function createRegisteredAdapter(id, rawAdapter, matrix) {
             id,
             target,
             await rawAdapter.plan(target, rawContext),
-            { observation, plannedActions, desiredBuild }
+            { observation, plannedActions, plannedTargets, desiredBuild }
           );
         }
         if (id === 'visual-studio') {
@@ -282,14 +279,14 @@ function createRegisteredAdapter(id, rawAdapter, matrix) {
             id,
             target,
             await rawAdapter.plan(visualTarget, context),
-            { observation, plannedActions, desiredBuild }
+            { observation, plannedActions, plannedTargets, desiredBuild }
           );
         }
         return normalizeRegisteredActionResult(
           id,
           target,
           await rawAdapter.plan(target, desiredBuild, context),
-          { observation, plannedActions, desiredBuild }
+          { observation, plannedActions, plannedTargets, desiredBuild }
         );
       },
     backup: async (action, transaction, context = {}) => {
@@ -367,7 +364,7 @@ function createRegisteredAdapter(id, rawAdapter, matrix) {
           id,
           target,
           await rawAdapter.uninstall(target, receiptOwnership, context),
-          { observation, plannedActions }
+          { observation, plannedActions, plannedTargets }
         );
       }
     });
@@ -609,6 +606,7 @@ function normalizeRegisteredRefusal(id, target, result = {}) {
 }
 
 function actionEnvelope(id, target, status, actions, metadata = {}, context = {}) {
+  context.plannedTargets?.set(target.targetId, target);
   const normalizedActions = actions.map((action, index) =>
     normalizeRegisteredAction(
       id,
@@ -640,6 +638,14 @@ function actionEnvelope(id, target, status, actions, metadata = {}, context = {}
     buildIdentity: metadata.buildIdentity ?? null,
     ownershipBoundary: metadata.ownershipBoundary ?? null
   });
+}
+
+function samePlannedTarget(candidate, target) {
+  return candidate?.targetId === target?.targetId
+    && candidate?.path === target?.path
+    && candidate?.scope === target?.scope
+    && candidate?.component === target?.component
+    && candidate?.ownershipBoundary === target?.ownershipBoundary;
 }
 
 function normalizeRegisteredAction(

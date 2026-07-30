@@ -31,8 +31,8 @@ npx launchdeck agent status --host codex --scope project --project . --json
 The interactive setup wizard first opens a searchable catalog of all 76 Agent
 targets. Use arrow keys to move, Space to select one or more items, and Enter to
 confirm. The next prompt only offers components that every selected Agent can
-install. All targets support Skill installation; Codex, Claude Code, GitHub Copilot,
-and Visual Studio also support the full Runtime and MCP integration. Installation
+install. All targets support Skill installation; Codex also supports the full
+Runtime and MCP integration. Installation
 scope and final approval are selectable prompts, so no comma-separated input is
 required. Scripts and CI can continue to pass `--host`, `--component`, `--scope`,
 `--yes`, and `--json` explicitly.
@@ -67,8 +67,8 @@ launchdeck --help
 - `agent paths`, `agent doctor`, and `agent install` expose the local Launchdeck agent skill installer.
 - `agent setup`, `agent status`, `agent update`, `agent repair`, and `agent uninstall` manage receipt-owned runtime, Skill, MCP, launcher, and host configuration artifacts.
 - Interactive setup starts with searchable multi-select across 76 Agent targets, then offers only their jointly installable components.
-- Every catalog target reports explicit Runtime, Skill, MCP, and project-local CLI capability truth; the four evidence-backed adapters expose full Runtime/Skill/MCP installation.
-- Codex, Claude Code, GitHub Copilot, and Visual Studio adapters use an exact compatibility matrix and evidence-cell claim boundary instead of broad host-readiness claims.
+- Every catalog target reports explicit Runtime, Skill, MCP, and project-local CLI capability truth; Codex exposes full Runtime/Skill/MCP installation.
+- Claude Code, GitHub Copilot, Visual Studio, and the remaining catalog targets use the safe Skill installer until full integration evidence is maintained for their exact host versions.
 - `--json` emits a stable machine-readable envelope with `schemaVersion` and `next` actions.
 - `--json --compact` emits a shorter machine-readable envelope for agents and scripts that need lower-token status checks.
 
