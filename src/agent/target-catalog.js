@@ -21,10 +21,7 @@ const PACKAGED_SKILL_ROOT = path.resolve(
 );
 
 export const FULL_RUNTIME_ADAPTER_IDS = Object.freeze([
-  'codex',
-  'claude-code',
-  'github-copilot',
-  'visual-studio'
+  'codex'
 ]);
 
 export const UPSTREAM_AGENT_IDS = Object.freeze([
@@ -211,33 +208,30 @@ export function listAgentTargetCatalog(options = {}) {
 }
 
 export function createCatalogSkillHostRegistry(baseRegistry, options = {}) {
-  const baseIds = new Set(typeof baseRegistry?.list === 'function'
-    ? baseRegistry.list().map((entry) => entry.id)
-    : []);
+  const baseEntries = typeof baseRegistry?.list === 'function' ? baseRegistry.list() : [];
+  const baseIds = new Set(baseEntries.map((entry) => entry.id));
   const catalogAdapters = new Map(CATALOG_RECORDS
-    .filter(([id]) => !baseIds.has(id))
+    .filter(([id]) => !FULL_RUNTIME_ADAPTER_IDS.includes(id) || !baseIds.has(id))
     .map((record) => [record[0], createSkillOnlyAdapter(record, options)]));
+  const registrations = Object.freeze([
+    ...baseEntries.map((entry) => catalogAdapters.has(entry.id)
+      ? Object.freeze({ id: entry.id, adapter: catalogAdapters.get(entry.id) })
+      : entry),
+    ...[...catalogAdapters.entries()]
+      .filter(([id]) => !baseIds.has(id))
+      .map(([id, adapter]) => Object.freeze({ id, adapter }))
+  ]);
 
   return Object.freeze({
     ...baseRegistry,
-    list: () => Object.freeze([
-      ...(typeof baseRegistry?.list === 'function' ? baseRegistry.list() : []),
-      ...[...catalogAdapters.entries()].map(([id, adapter]) => Object.freeze({ id, adapter }))
-    ]),
-    listHosts: () => [
-      ...(typeof baseRegistry?.listHosts === 'function'
-        ? baseRegistry.listHosts()
-        : typeof baseRegistry?.list === 'function'
-          ? baseRegistry.list().map((entry) => entry.id)
-          : []),
-      ...catalogAdapters.keys()
-    ],
-    get: (hostId) => (typeof baseRegistry?.get === 'function' ? baseRegistry.get(hostId) : null)
-      ?? catalogAdapters.get(hostId)
-      ?? null,
-    adapterFor: (hostId) => (typeof baseRegistry?.adapterFor === 'function' ? baseRegistry.adapterFor(hostId) : null)
+    list: () => registrations,
+    listHosts: () => registrations.map((entry) => entry.id),
+    get: (hostId) => catalogAdapters.get(hostId)
       ?? (typeof baseRegistry?.get === 'function' ? baseRegistry.get(hostId) : null)
-      ?? catalogAdapters.get(hostId)
+      ?? null,
+    adapterFor: (hostId) => catalogAdapters.get(hostId)
+      ?? (typeof baseRegistry?.adapterFor === 'function' ? baseRegistry.adapterFor(hostId) : null)
+      ?? (typeof baseRegistry?.get === 'function' ? baseRegistry.get(hostId) : null)
       ?? null
   });
 }

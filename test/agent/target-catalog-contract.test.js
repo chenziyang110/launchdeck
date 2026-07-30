@@ -11,6 +11,7 @@ import {
   UPSTREAM_AGENT_IDS,
   listAgentTargetCatalog
 } from '../../src/agent/target-catalog.js';
+import { createHostRegistry } from '../../src/agent/hosts/index.js';
 
 const FIXTURE_PROJECT_ROOT = path.resolve('workspace', 'demo');
 const FIXTURE_HOME = path.resolve('users', 'alice');
@@ -119,10 +120,7 @@ test('catalog exposes explicit capability truth for every Agent target', () => {
   const byId = new Map(catalog.targets.map((target) => [target.id, target]));
 
   assert.deepEqual(FULL_RUNTIME_ADAPTER_IDS, [
-    'codex',
-    'claude-code',
-    'github-copilot',
-    'visual-studio'
+    'codex'
   ]);
   for (const target of catalog.targets) {
     assert.deepEqual(target.capabilities.map((capability) => capability.component), [
@@ -155,6 +153,9 @@ test('component choices are the safe installable intersection for selected Agent
 
   assert.deepEqual(installableComponentsForTargets(['cursor'], options), ['skill']);
   assert.deepEqual(installableComponentsForTargets(['codex'], options), ['runtime', 'skill', 'mcp']);
+  assert.deepEqual(installableComponentsForTargets(['claude-code'], options), ['skill']);
+  assert.deepEqual(installableComponentsForTargets(['github-copilot'], options), ['skill']);
+  assert.deepEqual(installableComponentsForTargets(['visual-studio'], options), ['skill']);
   assert.deepEqual(installableComponentsForTargets(['cursor', 'codex'], options), ['skill']);
   assert.deepEqual(installableComponentsForTargets(['unknown'], options), []);
 });
@@ -252,7 +253,10 @@ test('catalog skill registry exposes skill-only targets without expanding the fu
   });
 
   assert.deepEqual(base.list().map((entry) => entry.id), FULL_RUNTIME_ADAPTER_IDS);
-  assert.deepEqual(registry.list().slice(0, 4).map((entry) => entry.id), FULL_RUNTIME_ADAPTER_IDS);
+  assert.deepEqual(
+    registry.list().slice(0, FULL_RUNTIME_ADAPTER_IDS.length).map((entry) => entry.id),
+    FULL_RUNTIME_ADAPTER_IDS
+  );
   assert.equal(registry.get('cursor')?.id, 'cursor');
   assert.equal(registry.get('cursor'), registry.adapterFor('cursor'));
 
@@ -260,6 +264,21 @@ test('catalog skill registry exposes skill-only targets without expanding the fu
   assert.equal(capabilities.find((row) => row.component === 'skill')?.supportState, 'supported');
   assert.equal(capabilities.find((row) => row.component === 'skill')?.scope, 'project');
   assert.equal(capabilities.find((row) => row.component === 'mcp')?.supportState, 'unsupported');
+});
+
+test('registered targets without maintained full-integration evidence use the safe catalog Skill adapter', async () => {
+  const base = createHostRegistry();
+  const registry = createCatalogSkillHostRegistry(base, {
+    projectRoot: FIXTURE_PROJECT_ROOT,
+    homeDir: FIXTURE_HOME
+  });
+
+  for (const id of ['claude-code', 'github-copilot', 'visual-studio']) {
+    assert.notEqual(registry.get(id), base.get(id));
+    const capabilities = await registry.get(id).capabilities([], 'project');
+    assert.equal(capabilities.find((row) => row.component === 'skill')?.supportState, 'supported');
+    assert.equal(capabilities.find((row) => row.component === 'mcp')?.supportState, 'unsupported');
+  }
 });
 
 test('catalog skill registry refuses unsupported user destinations explicitly', async () => {

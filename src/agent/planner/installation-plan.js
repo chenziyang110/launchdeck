@@ -85,6 +85,7 @@ export async function createInstallationPlan({ desired, evidence } = {}) {
     state: actions.length === 0 ? 'plan-ready' : 'awaiting-approval',
     targets: canonicalTargets,
     evaluatedTargets,
+    supersedesReceiptId: evidence.supersedesReceiptId ?? null,
     requiredHostActions: [],
     trustedSources,
     effectsPreview: {

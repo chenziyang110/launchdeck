@@ -241,6 +241,58 @@ test('receipt-bounded uninstall preserves operation and calls adapter uninstall 
   assert.equal(calls[0].ownership.owned, true);
 });
 
+test('setup expands an existing receipt additively and retains previously owned targets', async (t) => {
+  const workspace = createWorkspace(t, 'setup-receipt-expansion');
+  const receiptTarget = {
+    targetId: 'codex:project:skill',
+    ownershipBoundary: 'launchdeck-agent',
+    desiredDigest: BUILD_IDENTITY
+  };
+  const receipt = {
+    receiptId: 'receipt_existing_setup_expansion',
+    buildIdentity: BUILD_IDENTITY,
+    targets: [receiptTarget]
+  };
+  const codex = supportedHost('codex', ['skill']);
+  codex.plan = () => ({
+    status: 'noop',
+    desiredDigest: BUILD_IDENTITY,
+    actions: []
+  });
+  const registry = createRegistry({
+    codex,
+    'claude-code': supportedHost('claude-code', ['skill'])
+  });
+  const { discoverDesiredInstallation } = await loadDesiredInstallationModule();
+
+  const result = await discoverDesiredInstallation({
+    operation: 'setup',
+    scope: 'project',
+    projectRoot: workspace.projectRoot,
+    homeDir: workspace.homeDir,
+    hosts: ['claude-code'],
+    components: ['skill'],
+    desiredBuildIdentity: BUILD_IDENTITY,
+    sourceIdentity: 'packaged',
+    interactive: true,
+    requireExplicitSelection: true,
+    receipt,
+    targets: receipt.targets,
+    registry
+  });
+
+  assert.equal(result.outcome, 'planned');
+  assert.deepEqual(result.targetIds, [
+    'claude-code:project:skill',
+    'codex:project:skill'
+  ]);
+  assert.deepEqual(result.actions.map((action) => action.kind).sort(), [
+    'copy-skill',
+    'retain-owned-target'
+  ]);
+  assert.equal(result.supersedesReceiptId, receipt.receiptId);
+});
+
 test('runtime provisioning bypasses Host capabilities while ambiguous Host evidence still refuses', async (t) => {
   const workspace = createWorkspace(t, 'unsupported-evidence');
   const registry = createRegistry({
