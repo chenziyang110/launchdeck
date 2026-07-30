@@ -16,7 +16,10 @@ import { digestCanonical } from './digests.js';
 import { createAgentDiagnostics } from './diagnostics.js';
 import { createHostRegistry } from './hosts/index.js';
 import { createArtifactStore } from './artifacts/store.js';
-import { installStableLauncher } from './artifacts/launcher.js';
+import {
+  installStableLauncher,
+  resolveStableLauncherVerification
+} from './artifacts/launcher.js';
 import { createOperationJournal } from '../control-plane/operation-journal.js';
 import { createBackupStore } from './state/backup-store.js';
 import { createReceiptStore } from './state/receipt-store.js';
@@ -473,7 +476,7 @@ function createDefaultVerifier({ registry, env }) {
           continue;
         }
         if (adapter?.id === 'codex' && target.component === 'mcp') {
-          const skillTarget = (plan.targets ?? []).find((candidate) => (
+          const skillTarget = verificationDependencies(plan).find((candidate) => (
             candidate.hostId === 'codex' && candidate.component === 'skill'
           ));
           const skillObservation = skillTarget && typeof adapter.inspectPlanned === 'function'
@@ -568,22 +571,32 @@ export function createCodexVerificationRequest({
   env = process.env,
   skillObservation = null
 }) {
-  const skillTarget = (plan.targets ?? []).find((candidate) => (
+  const dependencies = verificationDependencies(plan);
+  const skillTarget = dependencies.find((candidate) => (
     candidate.hostId === 'codex' && candidate.component === 'skill'
   ));
-  const runtimeTarget = (plan.targets ?? []).find((candidate) => (
+  const runtimeTarget = dependencies.find((candidate) => (
     candidate.hostId === 'launchdeck' && candidate.component === 'runtime'
   ));
+  const runtimeDependency = resolveRuntimeVerificationDependency({
+    runtimeTarget,
+    plan,
+    env
+  });
   const launcherFile = process.platform === 'win32' ? 'launchdeck-mcp.cmd' : 'launchdeck-mcp';
-  const launcherPath = runtimeTarget ? path.join(runtimeTarget.path, launcherFile) : null;
-  const launchdeckHome = runtimeTarget
-    ? path.resolve(runtimeTarget.path, '..', '..', '..')
+  const launcherPath = runtimeDependency
+    ? path.join(runtimeDependency.path, launcherFile)
+    : null;
+  const launchdeckHome = runtimeDependency
+    ? path.resolve(runtimeDependency.path, '..', '..', '..')
     : path.resolve(String(env.LAUNCHDECK_HOME ?? ''));
   const configDigest = digestFileOrEmpty(target.path);
   const skillDigest = skillObservation?.contentDigest
     ?? skillObservation?.observedDigest
     ?? (skillTarget ? digestOwnedDirectoryOrEmpty(skillTarget.path) : null);
-  const runtimeDigest = runtimeTarget ? digestOwnedDirectoryOrEmpty(runtimeTarget.path) : null;
+  const runtimeDigest = runtimeDependency
+    ? digestOwnedDirectoryOrEmpty(runtimeDependency.path)
+    : null;
   const effect = effects.find((candidate) => candidate.targetId === target.targetId);
 
   return {
@@ -592,7 +605,7 @@ export function createCodexVerificationRequest({
       configPath: target.path,
       skillPath: skillTarget?.path,
       launcherPath,
-      runtimePath: runtimeTarget?.path
+      runtimePath: runtimeDependency?.path
     },
     expected: {
       buildIdentity: plan.buildIdentity,
@@ -602,7 +615,7 @@ export function createCodexVerificationRequest({
       desiredDigest: target.desiredDigest,
       configDigest: target.desiredDigest,
       skillDigest: skillTarget?.desiredDigest,
-      runtimeDigest: runtimeTarget?.desiredDigest
+      runtimeDigest: runtimeDependency?.desiredDigest
     },
     observed: {
       skillDigest,
@@ -615,10 +628,10 @@ export function createCodexVerificationRequest({
       launcherResolved: typeof launcherPath === 'string' && fs.existsSync(launcherPath),
       launcherPath,
       runtimeDigest,
-      runtimePath: runtimeTarget?.path,
+      runtimePath: runtimeDependency?.path,
       verificationCommand: process.platform === 'win32' ? process.execPath : launcherPath,
-      verificationArgs: process.platform === 'win32' && runtimeTarget
-        ? [path.join(runtimeTarget.path, 'launcher.js')]
+      verificationArgs: process.platform === 'win32' && runtimeDependency
+        ? [path.join(runtimeDependency.path, 'launcher.js')]
         : [],
       env: {
         ...env,
@@ -630,6 +643,31 @@ export function createCodexVerificationRequest({
     },
     receiptCandidate
   };
+}
+
+function verificationDependencies(plan) {
+  return plan.evaluatedTargets ?? plan.targets ?? [];
+}
+
+function resolveRuntimeVerificationDependency({ runtimeTarget, plan, env }) {
+  if (runtimeTarget) {
+    return {
+      path: runtimeTarget.path,
+      desiredDigest: runtimeTarget.desiredDigest
+    };
+  }
+  try {
+    const stable = resolveStableLauncherVerification({
+      env,
+      buildIdentity: plan.buildIdentity
+    });
+    return {
+      path: stable.root,
+      desiredDigest: stable.contentDigest
+    };
+  } catch {
+    return null;
+  }
 }
 
 function digestFileOrEmpty(filePath) {

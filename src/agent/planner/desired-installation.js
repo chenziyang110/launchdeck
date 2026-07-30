@@ -297,6 +297,7 @@ export async function discoverDesiredInstallation(input = {}) {
       desiredInstallationDigest: desired.inputDigest,
       targetIds: plan.targetIds,
       targets: plan.targets,
+      evaluatedTargets: plan.evaluatedTargets,
       actions: plan.actions,
       includeLauncher: plan.includeLauncher,
       supersedesReceiptId: plan.supersedesReceiptId,
@@ -526,6 +527,11 @@ function resolveRuntimeProvisioningContract({ input, desired }) {
       skillName: path.basename(targetPath),
       files: launcherEntries
     });
+    const artifactVerified = runtimeArtifactVerified(
+      input.artifactStore,
+      desired.desiredBuildIdentity
+    );
+    const provisioningRequired = liveDigest !== desiredDigest || !artifactVerified;
     const targetId = `launchdeck:${desired.scope}:runtime`;
     const target = {
       targetId,
@@ -575,8 +581,8 @@ function resolveRuntimeProvisioningContract({ input, desired }) {
       target,
       targetPlan: {
         targetId,
-        status: liveDigest === desiredDigest ? 'noop' : 'planned',
-        actions: liveDigest === desiredDigest ? [] : [{
+        status: provisioningRequired ? 'planned' : 'noop',
+        actions: provisioningRequired ? [{
           actionId: `install-${targetId}`,
           targetId,
           kind: 'install-stable-launcher',
@@ -585,11 +591,20 @@ function resolveRuntimeProvisioningContract({ input, desired }) {
           preconditionDigest: liveDigest,
           desiredDigest,
           requiresBackup: liveDigest !== EMPTY_DIGEST
-        }]
+        }] : []
       }
     };
   } catch {
     return null;
+  }
+}
+
+function runtimeArtifactVerified(artifactStore, buildIdentity) {
+  if (typeof artifactStore?.inspect !== 'function') return false;
+  try {
+    return artifactStore.inspect(buildIdentity)?.state === 'verified';
+  } catch {
+    return false;
   }
 }
 
