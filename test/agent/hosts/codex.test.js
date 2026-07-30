@@ -219,6 +219,60 @@ test('Codex TOML planning preserves unrelated content and refuses collisions or 
     assert.equal(repeatedPlan.status, 'no-op');
     assert.deepEqual(repeatedPlan.actions, []);
 
+    const unrelatedEditedText = `${trustedText}\n[notifications]\nenabled = true\n`;
+    fs.writeFileSync(trustedTarget.configPath, unrelatedEditedText, 'utf8');
+    const upgradedPlan = await adapter.plan(trustedTarget, {
+      buildIdentity: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      trust: { project: true },
+      fs,
+      projectRoot: trustedWorkspace.projectRoot,
+      homeDir: trustedWorkspace.homeDir,
+      launcherPath: path.join(trustedWorkspace.root, 'launcher', 'launchdeck-mcp.cmd'),
+      launchdeckHome: path.join(trustedWorkspace.root, 'launchdeck-home'),
+      receiptOwnership: {
+        owned: true,
+        component: 'mcp',
+        path: trustedTarget.configPath,
+        buildIdentity: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        liveDigest: trustedPlan.actions[0].desiredDigest,
+        liveDigestMatches: false
+      }
+    });
+    assert.equal(upgradedPlan.status, 'planned');
+    assert.match(renderLikeText(upgradedPlan), /\[notifications\]\r?\nenabled = true/);
+    assert.equal(
+      parse(renderLikeText(upgradedPlan)).mcp_servers.launchdeck.env.LAUNCHDECK_BUILD_ID,
+      'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+    );
+
+    fs.writeFileSync(
+      trustedTarget.configPath,
+      unrelatedEditedText.replace(
+        'LAUNCHDECK_MANAGED_BY = "launchdeck-agent-installer"',
+        'LAUNCHDECK_MANAGED_BY = "foreign-installer"'
+      ),
+      'utf8'
+    );
+    const tamperedManagedEntry = await adapter.plan(trustedTarget, {
+      buildIdentity: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      trust: { project: true },
+      fs,
+      projectRoot: trustedWorkspace.projectRoot,
+      homeDir: trustedWorkspace.homeDir,
+      launcherPath: path.join(trustedWorkspace.root, 'launcher', 'launchdeck-mcp.cmd'),
+      launchdeckHome: path.join(trustedWorkspace.root, 'launchdeck-home'),
+      receiptOwnership: {
+        owned: true,
+        component: 'mcp',
+        path: trustedTarget.configPath,
+        buildIdentity: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        liveDigest: trustedPlan.actions[0].desiredDigest,
+        liveDigestMatches: false
+      }
+    });
+    assert.equal(tamperedManagedEntry.status, 'refused');
+    assert.equal(tamperedManagedEntry.code, 'ownership-collision');
+
     const emptyConfigPath = path.join(emptyWorkspace.projectRoot, '.codex', 'config.toml');
     fs.writeFileSync(emptyConfigPath, '# preserve comment-only config\n');
     const emptyPlan = await adapter.plan({

@@ -15,6 +15,9 @@ const productionMatrix = JSON.parse(
 const codexRealHostEvidence = JSON.parse(
   fs.readFileSync(new URL('../../../src/agent/hosts/evidence/codex-0.145.0-win32.json', import.meta.url), 'utf8')
 );
+const codex146RealHostEvidence = JSON.parse(
+  fs.readFileSync(new URL('../../../src/agent/hosts/evidence/codex-0.146.0-win32.json', import.meta.url), 'utf8')
+);
 
 function fixture(name) {
   return JSON.parse(fs.readFileSync(path.join(fixtureRoot, name), 'utf8'));
@@ -146,6 +149,36 @@ test('production Codex support is bound to maintained exact-version real-host ev
     });
     assert.equal(result.supportState, 'supported');
     assert.equal(result.realHostEvidenceRevision, codexRealHostEvidence.revision);
+    assert.equal(result.relativePath, evidence.relativePath);
+    assert.equal(result.dialect, evidence.dialect);
+  }
+});
+
+test('production Codex 0.146.0 support is bound to exact Windows project evidence', () => {
+  assert.equal(codex146RealHostEvidence.exactVersion, '0.146.0');
+  assert.equal(codex146RealHostEvidence.platform, 'win32');
+  assert.equal(codex146RealHostEvidence.privacy.containsHomePath, false);
+  assert.equal(codex146RealHostEvidence.privacy.containsCredentials, false);
+  assert.equal(codex146RealHostEvidence.privacy.containsEnvironmentValues, false);
+
+  for (const component of ['skill', 'mcp']) {
+    const evidence = codex146RealHostEvidence.components.find(
+      (entry) => entry.component === component && entry.scope === 'project'
+    );
+    assert.equal(evidence?.observed, true);
+    const result = evaluateHostCapability(productionMatrix, {
+      host: 'codex',
+      exactVersion: codex146RealHostEvidence.exactVersion,
+      platform: 'win32',
+      component,
+      scope: 'project'
+    });
+
+    assert.equal(result.supportState, 'supported');
+    assert.equal(
+      result.realHostEvidenceRevision,
+      codex146RealHostEvidence.revision
+    );
     assert.equal(result.relativePath, evidence.relativePath);
     assert.equal(result.dialect, evidence.dialect);
   }

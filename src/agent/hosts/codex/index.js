@@ -197,7 +197,7 @@ export function planCodexTarget(target, context = {}) {
 
   const hadMcpServers = document.mcp_servers !== undefined;
   const existing = document.mcp_servers?.launchdeck;
-  if (existing && !receiptOwnsEntry(existing, configPath, context.receiptOwnership)) {
+  if (existing && !receiptOwnsEntry(existing, configPath, context.receiptOwnership, context)) {
     return refusal('ownership-collision', 'The existing mcp_servers.launchdeck table is not receipt-owned by Launchdeck.');
   }
 
@@ -471,7 +471,7 @@ export function planCodexUninstall(target, receiptOwnership, context = {}) {
   const configPath = targetPathOf(target);
   const source = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf8') : '';
   const document = source.trim() === '' ? {} : parse(source);
-  if (!receiptOwnsEntry(document.mcp_servers?.launchdeck, configPath, receiptOwnership)) {
+  if (!receiptOwnsEntry(document.mcp_servers?.launchdeck, configPath, receiptOwnership, context)) {
     return refusal('ownership-mismatch', 'Live Codex MCP entry is not Launchdeck-owned.');
   }
   delete document.mcp_servers.launchdeck;
@@ -516,12 +516,31 @@ function refusal(code, message) {
   return { host: HOST_ID, status: 'refused', code, message, actions: [] };
 }
 
-function receiptOwnsEntry(entry, configPath, receiptOwnership) {
+function receiptOwnsEntry(entry, configPath, receiptOwnership, context = {}) {
   if (!entry || !receiptOwnership?.owned) return false;
-  return receiptOwnership.component === 'mcp'
+  const bounded = receiptOwnership.component === 'mcp'
     && receiptOwnership.path === configPath
-    && receiptOwnership.liveDigestMatches === true
     && entry?.env?.LAUNCHDECK_MANAGED_BY === 'launchdeck-agent-installer';
+  if (!bounded) return false;
+  if (receiptOwnership.liveDigestMatches === true) return true;
+
+  const launcherPath = context.launcherPath;
+  const launchdeckHome = context.launchdeckHome;
+  const buildIdentity = receiptOwnership.buildIdentity;
+  if (!path.isAbsolute(launcherPath ?? '')
+    || !path.isAbsolute(launchdeckHome ?? '')
+    || typeof buildIdentity !== 'string') {
+    return false;
+  }
+  return digestCanonicalEntry(entry) === digestCanonicalEntry({
+    command: launcherPath,
+    args: ['mcp', 'serve'],
+    env: {
+      LAUNCHDECK_HOME: launchdeckHome,
+      LAUNCHDECK_BUILD_ID: buildIdentity,
+      LAUNCHDECK_MANAGED_BY: 'launchdeck-agent-installer'
+    }
+  });
 }
 
 function receiptOwnsSkill(receiptOwnership, observation) {

@@ -126,6 +126,18 @@ test('status doctor update repair and uninstall delegate to the shared lifecycle
   }
 });
 
+test('lifecycle commands resolve a relative project path against the invocation cwd', async () => {
+  const cwd = 'F:\\workspace\\demo';
+  const result = await runAgentCli(
+    ['agent', 'status', '--project', '.', '--json'],
+    { cwd }
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.service.calls.length, 1);
+  assert.equal(result.service.calls[0].input.projectRoot, path.resolve(cwd));
+});
+
 test('operation reconcile uses the universal journal dispatcher without constructing a lifecycle authority', async () => {
   const result = await runAgentCli(
     ['operation', 'reconcile', 'op_fixture_factory_0001', '--json'],
