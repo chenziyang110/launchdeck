@@ -64,4 +64,6 @@ Maintainers should protect `main`, require the `Verify` matrix and package audit
 
 ## Releases
 
-Release versions follow Semantic Versioning. A release requires a clean `main`, green cross-platform CI, a reviewed changelog, an annotated `vMAJOR.MINOR.PATCH` tag, and a GitHub release. npm publication is a separate explicit step.
+Release versions follow Semantic Versioning. A release requires a clean `main`, green cross-platform CI, a reviewed changelog, an annotated `vMAJOR.MINOR.PATCH` tag, a GitHub Release, and—whenever the package version changes—the matching public npm package.
+
+Agents and maintainers must follow the mandatory [Agent Release Process](docs/agent-release-process.md). A release with a changed package version is partial until GitHub and npm both expose and verify the same immutable version.

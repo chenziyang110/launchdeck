@@ -33,6 +33,20 @@ JavaScript ESM on Node.js `>=20`: Follow existing repository conventions and kee
 - Initial Spec Kit Plus scaffolding
 
 <!-- MANUAL ADDITIONS START -->
+## Mandatory Release Workflow
+
+- `[AGENT]` For every version bump, Git tag, GitHub Release, or npm publication,
+  read and follow [`docs/agent-release-process.md`](docs/agent-release-process.md)
+  as the release authority.
+- `[AGENT]` A changed package version is not fully released until the same version
+  is verified on merged `main`, an annotated GitHub tag/Release, and the public npm
+  registry. Authentication or registry failures must be reported as a partial,
+  blocked release rather than success.
+- `[AGENT]` Run npm authentication and version-existence checks during preflight,
+  never expose credentials, never move an existing tag, and never overwrite or
+  republish an immutable npm version.
+- `[AGENT]` Do not publish npm when `package.json` did not change. When it did
+  change, npm publication is mandatory unless the user explicitly excludes it.
 <!-- MANUAL ADDITIONS END -->
 
 <!-- SPEC-KIT:BEGIN -->
