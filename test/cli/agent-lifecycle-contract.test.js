@@ -35,7 +35,7 @@ test('agent help discovers every lifecycle command and lifecycle selection flag'
     '--compact',
     '--force',
     'Searchable Agent targets: 76',
-    'Full Runtime/Skill/MCP integrations: codex|claude-code|github-copilot|visual-studio'
+    'Full Runtime/Skill/MCP integration: codex'
   ]) {
     assert.match(result.stdout, escapePattern(expected));
   }
