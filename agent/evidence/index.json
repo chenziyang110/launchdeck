@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "candidate": {
-    "buildIdentity": "sha256:8f694999b0908cde3d0271f50fae11428cf70f2bd95f0988bc9d40953e0621e9",
+    "buildIdentity": "sha256:2bb33aea2996f60d1d54203ab871eb3eb2ad71048729d2824e0b6ba30ff87069",
     "compatibilityManifest": "agent/compatibility-manifest.json"
   },
   "claimBoundary": "Each entry is an exact evidence-cell reference. An entry whose candidateRelation is superseded cannot support a claim about the candidate above. This index has no aggregate host-release conclusion.",

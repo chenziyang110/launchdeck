@@ -261,8 +261,8 @@ test('mixed Agent selection only offers components installable for every selecte
   assert.deepEqual(result.service.calls[0].input.hosts, ['cursor', 'claude-code']);
 });
 
-test('empty Agent selection cancels before planning or writes', async () => {
-  const result = await runAgentCli(['agent', 'setup'], {
+test('empty Agent selection renders a no-color cancellation receipt before planning or writes', async () => {
+  const result = await runAgentCli(['agent', 'setup', '--no-color'], {
     terminal: { isTTY: true },
     input: {
       async selectSearchableMany() {
@@ -272,7 +272,11 @@ test('empty Agent selection cancels before planning or writes', async () => {
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /agent setup: cancelled/i);
+  assert.doesNotMatch(result.stdout, /\x1B\[/);
+  assert.match(result.stdout, /Setup cancelled/);
+  assert.match(result.stdout, /Outcome: cancelled/);
+  assert.match(result.stdout, /Scope: unknown/);
+  assert.match(result.stdout, /No changes were applied\./);
   assert.deepEqual(result.service.calls, []);
 });
 
@@ -295,7 +299,7 @@ test('Skill-only host aliases sharing one destination are planned once', async (
   assert.deepEqual(result.service.calls[0].input.hosts, ['cursor']);
 });
 
-test('Ctrl+C exits interactive setup as cancelled before planning or writes', async () => {
+test('Ctrl+C exits interactive setup with a colored cancellation receipt before planning or writes', async () => {
   const result = await runAgentCli(['agent', 'setup'], {
     terminal: { isTTY: true },
     input: {
@@ -309,7 +313,11 @@ test('Ctrl+C exits interactive setup as cancelled before planning or writes', as
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /agent setup: cancelled/i);
+  assert.match(result.stdout, /\x1B\[/);
+  assert.match(result.stdout, /Setup cancelled/);
+  assert.match(result.stdout, /Outcome: cancelled/);
+  assert.match(result.stdout, /Effect certainty: none/);
+  assert.match(result.stdout, /Scope: unknown/);
   assert.deepEqual(result.service.calls, []);
 });
 

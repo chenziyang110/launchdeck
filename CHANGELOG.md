@@ -2,6 +2,27 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.4] - 2026-07-30
+
+### Added
+
+- Added a colored, state-aware installation receipt for interactive `launchdeck agent setup` results.
+- Added distinct success, already-ready, cancellation, refusal, rollback, partial, and indeterminate presentations with component, scope, project, build, and effect-certainty evidence.
+
+### Changed
+
+- Adapted the setup receipt to terminal width and disabled ANSI styling for non-TTY output, `--no-color`, and `NO_COLOR` environments.
+- Kept text labels and symbols authoritative so every setup outcome remains understandable without color.
+
+### Fixed
+
+- Replaced ambiguous flat noop and cancellation output with explicit outcomes and explanations.
+- Preserved the full build digest across narrow-terminal wrapping and rendered pre-selection cancellation without dispatching the lifecycle service.
+
+### Security
+
+- Kept JSON output, installer decisions, effect certainty, refusal reasons, ownership rules, and exit-code semantics unchanged.
+
 ## [0.5.3] - 2026-07-30
 
 ### Added

@@ -159,10 +159,13 @@ function createTerminal(options = {}) {
   const stdout = [];
   const stderr = [];
   return {
-    columns: options.columns ?? 120,
+    columns: options.columns === null ? undefined : (options.columns ?? 120),
     isTTY: options.isTTY ?? true,
     noColor: options.noColor ?? false,
-    stdout: { write: (value) => stdout.push(String(value)) },
+    stdout: {
+      columns: options.stdoutColumns,
+      write: (value) => stdout.push(String(value))
+    },
     stderr: { write: (value) => stderr.push(String(value)) },
     stdoutText: () => stdout.join(''),
     stderrText: () => stderr.join('')

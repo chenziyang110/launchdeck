@@ -142,6 +142,114 @@ test('real CLI compact JSON is one parseable schemaVersion 1 object without prom
   assert.doesNotMatch(result.stdout, /Approve|Applying|Verifying|progress/i);
 });
 
+test('setup final results render a distinct, colored and width-bounded receipt without changing JSON', async () => {
+  const targets = [
+    { targetId: 'launchdeck:project:runtime', hostId: 'launchdeck', component: 'runtime' },
+    { targetId: 'codex:project:skill', hostId: 'codex', component: 'skill' },
+    { targetId: 'codex:project:mcp', hostId: 'codex', component: 'mcp' }
+  ];
+  const cases = [
+    ['succeeded', 'Setup complete', 'Launchdeck was installed successfully.', 'Ready'],
+    ['noop', 'Launchdeck is ready', 'Already up to date — no changes needed.', 'Ready'],
+    ['cancelled', 'Setup cancelled', 'No changes were applied.', 'Not changed'],
+    ['refused', 'Setup refused', 'No changes were applied.', 'Not changed'],
+    ['failed-and-rolled-back', 'Setup failed', 'Changes were rolled back safely.', 'Rolled back'],
+    ['partial', 'Setup incomplete', 'Some changes may have been applied.', 'Check required'],
+    ['indeterminate', 'Setup needs attention', 'The final installation state is unknown.', 'Unknown']
+  ];
+
+  for (const [outcome, title, interpretation, targetState] of cases) {
+    const result = await runVisualCli(['agent', 'setup', '--yes'], {
+      terminal: { columns: 72, isTTY: true },
+      outcomes: { setup: outcome },
+      targets: { setup: targets },
+      errors: outcome === 'refused'
+        ? { setup: { code: 'agent_exact_refusal', message: 'Setup was refused.', details: { message: 'Exact refusal reason.' } } }
+        : undefined
+    });
+
+    assert.match(result.stdout, /\x1B\[/, `${outcome} should use color on a TTY`);
+    assert.match(result.stdout, new RegExp(escapePattern(title)));
+    assert.match(result.stdout, new RegExp(escapePattern(interpretation)));
+    assert.match(result.stdout, /Outcome:\s+(?:\x1B\[[0-9;]*m)*\w/);
+    assert.match(stripAnsi(result.stdout), new RegExp(`Runtime\\s+${escapePattern(targetState)}`));
+    assert.match(stripAnsi(result.stdout), new RegExp(`Agent skill\\s+${escapePattern(targetState)}`));
+    assert.match(stripAnsi(result.stdout), new RegExp(`MCP integration\\s+${escapePattern(targetState)}`));
+    const plain = stripAnsi(result.stdout);
+    assert.match(plain, /Project:\s+<PROJECT>/);
+    const buildLines = receiptContentLines(plain).filter((line) => line.includes('Build:') || /^ {7}[a-f]+$/.test(line));
+    assert.match(buildLines[0], /^Build: sha256:[a-f]+$/, 'Build label must share its first line with the digest');
+    assert.match(buildLines[1], /^ {7}[a-f]+$/, 'Build continuation must align under the digest value');
+    assert.equal(plain.replace(/[╭╮╰╯│─\s]/g, '').includes(`Build:${BUILD_IDENTITY}`), true);
+    assertCliEveryLineAtMost(plain, 72);
+    if (['refused', 'failed-and-rolled-back', 'partial', 'indeterminate'].includes(outcome)) {
+      if (outcome === 'refused') {
+        assert.match(result.stdout, /\[agent_exact_refusal\] Setup was refused\./);
+        assert.match(result.stdout, /Reason: Exact refusal reason\./);
+      } else {
+        assert.match(result.stdout, new RegExp(`\[agent_${outcome.replaceAll('-', '_')}\]`));
+        assert.match(result.stdout, /Fixture/);
+      }
+    }
+  }
+
+  const noColor = await runVisualCli(['agent', 'setup', '--yes', '--no-color'], {
+    terminal: { columns: 48, isTTY: true },
+    outcomes: { setup: 'noop' },
+    targets: { setup: targets }
+  });
+  assertCliNoAnsi(noColor.stdout);
+  assertCliEveryLineAtMost(noColor.stdout, 48);
+  assert.match(noColor.stdout, /Launchdeck is ready/);
+  assert.match(noColor.stdout, /Already up to date/);
+  const narrowBuildLines = receiptContentLines(noColor.stdout)
+    .filter((line) => line.includes('Build:') || /^ {7}[a-f]+$/.test(line));
+  assert.match(narrowBuildLines[0], /^Build: sha256:[a-f]+$/);
+  assert.match(narrowBuildLines[1], /^ {7}[a-f]+$/);
+
+  const envNoColor = await runVisualCli(['agent', 'setup', '--yes'], {
+    env: { NO_COLOR: '1' },
+    terminal: { columns: 72, isTTY: true },
+    outcomes: { setup: 'noop' },
+    targets: { setup: targets }
+  });
+  assertCliNoAnsi(envNoColor.stdout);
+
+  const nonTty = await runVisualCli(['agent', 'setup', '--yes'], {
+    terminal: { columns: 48, isTTY: false },
+    outcomes: { setup: 'noop' },
+    targets: { setup: targets }
+  });
+  assertCliNoAnsi(nonTty.stdout);
+  assertCliEveryLineAtMost(nonTty.stdout, 48);
+
+  const stdoutSized = await runAgentCli(['agent', 'setup', '--yes'], {
+    service: createVisualLifecycleService({ outcomes: { setup: 'noop' }, targets: { setup: targets } }),
+    terminal: { columns: null, stdoutColumns: 48, isTTY: false }
+  });
+  assertCliNoAnsi(stdoutSized.stdout);
+  assertCliEveryLineAtMost(stdoutSized.stdout, 48);
+
+  const json = await runVisualCli(['agent', 'setup', '--yes', '--json', '--compact'], {
+    terminal: { columns: 72, isTTY: true },
+    outcomes: { setup: 'noop' },
+    targets: { setup: targets }
+  });
+  const payload = parseSingleJsonObject(json.stdout);
+  assertCliNoAnsi(json.stdout);
+  assert.equal(payload.result.outcome, 'noop');
+  assert.deepEqual(payload.result.targets, targets.map((target) => ({ ...target, state: 'noop' })));
+});
+
+test('planned setup retains its non-installation meaning', async () => {
+  const planned = await runVisualCli(['agent', 'setup', '--dry-run', '--no-color'], {
+    outcomes: { setup: 'planned' }
+  });
+
+  assert.match(planned.stdout, /agent setup: planned/);
+  assert.match(planned.stdout, /No effects\./);
+});
+
 test('real CLI approval prompt decline and interrupt outputs expose effect certainty and safe actions', async () => {
   const approval = await runVisualCli(['agent', 'setup'], {
     terminal: { isTTY: true, columns: 120 },
@@ -168,9 +276,10 @@ test('real CLI approval prompt decline and interrupt outputs expose effect certa
   assert.equal(decline.status, 0, decline.stderr);
   assertCliNoAnsi(decline.stdout);
   assertCliEveryLineAtMost(decline.stdout, 60);
-  assert.match(decline.stdout, /agent setup: cancelled/);
+  assert.match(decline.stdout, /Setup cancelled/);
+  assert.match(decline.stdout, /Outcome: cancelled/);
   assert.match(decline.stdout, /Effect certainty: none/);
-  assert.match(decline.stdout, /No effects\./);
+  assert.match(decline.stdout, /Effects: none/);
   assert.match(decline.stdout, /launchdeck agent setup --dry-run/);
 
   assert.equal(interrupt.status, 1);
@@ -329,7 +438,7 @@ async function runVisualCli(args, options = {}) {
   const service = createVisualLifecycleService(options);
   return runAgentCli(args, {
     cwd: '<PROJECT>',
-    env: {},
+    env: options.env ?? {},
     inputAnswers: options.inputAnswers,
     service,
     terminal: {
@@ -390,15 +499,16 @@ function resultFor(operation, outcome, options) {
     operationId: outcome === 'indeterminate' ? 'op_3333333333333333' : null,
     planDigest: PLAN_DIGEST,
     receiptId: outcome === 'succeeded' ? 'receipt_22222222222222222222222222222222' : null,
-    targets: [
-      { targetId: 'codex:project:skill', hostId: 'codex', component: 'skill', state: outcome },
-      { targetId: 'codex:project:mcp', hostId: 'codex', component: 'mcp', state: outcome }
-    ],
+    targets: (options.targets?.[operation] ?? [
+      { targetId: 'codex:project:skill', hostId: 'codex', component: 'skill' },
+      { targetId: 'codex:project:mcp', hostId: 'codex', component: 'mcp' }
+    ]).map((target) => ({ ...target, state: target.state ?? outcome })),
     health: options.health?.[operation] ?? [],
     effects,
     nextActions: options.nextActions?.[operation] ?? defaultNextActions(operation, outcome),
     error: ['refused', 'failed-and-rolled-back', 'partial', 'indeterminate'].includes(outcome)
-      ? { code: `agent_${outcome.replaceAll('-', '_')}`, message: `Fixture ${outcome}.`, details: {} }
+      ? (options.errors?.[operation]
+        ?? { code: `agent_${outcome.replaceAll('-', '_')}`, message: `Fixture ${outcome}.`, details: {} })
       : null
   };
 }
@@ -430,4 +540,15 @@ function assertOutputSharesFixtureContract(output, fixture) {
 
 function escapePattern(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function stripAnsi(value) {
+  return value.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+}
+
+function receiptContentLines(value) {
+  return stripAnsi(value)
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith('│ '))
+    .map((line) => line.slice(2, -2).trimEnd());
 }

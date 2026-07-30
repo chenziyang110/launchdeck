@@ -2501,9 +2501,11 @@ function createCliRuntime(dependencies, io) {
     agentCompatibilityFacade: dependencies.agentCompatibilityFacade,
     input: dependencies.input ?? createDefaultLifecycleInput(io),
     terminal: {
-      columns: Number.isInteger(io.columns) ? io.columns : 120,
+      columns: Number.isInteger(io.columns)
+        ? io.columns
+        : (Number.isInteger(io.stdout?.columns) ? io.stdout.columns : 120),
       isTTY: io.isTTY ?? io.stdout?.isTTY ?? false,
-      noColor: Boolean(io.noColor)
+      noColor: Boolean(io.noColor || env.NO_COLOR !== undefined)
     },
     entrypoint: dependencies.entrypoint ?? 'installed',
     cwd,
@@ -2554,7 +2556,24 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
     selection = await lifecycleSelection(operation, options, runtime);
   } catch (error) {
     if (error instanceof LifecyclePromptCancelledError) {
-      if (!error.announced) write(io, `Launchdeck agent ${operation}: cancelled\n`);
+      if (operation === 'setup') {
+        const projectRoot = path.resolve(runtime.cwd, options.project ?? '.');
+        const cancelledInput = {
+          scope: options.scope ?? 'unknown',
+          projectRoot,
+          projectIdentity: options.scope === 'user' ? null : projectRoot,
+          buildIdentity: options.build ?? runtime.packageBuildIdentity,
+          desiredBuildIdentity: options.build ?? runtime.packageBuildIdentity,
+          terminal: lifecycleTerminal(io, runtime.terminal, options)
+        };
+        writeLifecycleHuman(
+          lifecycleCancellationDisplay(operation, cancelledInput),
+          io,
+          cancelledInput.terminal
+        );
+      } else if (!error.announced) {
+        write(io, `Launchdeck agent ${operation}: cancelled\n`);
+      }
       return 0;
     }
     throw error;
@@ -2562,7 +2581,7 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
   const input = lifecycleInput(operation, { ...options, ...selection }, io, runtime);
   input.approved = await lifecycleApproval(operation, input, options, runtime);
   if (input.approved === false) {
-    writeLifecycleHuman(lifecycleCancellationDisplay(operation, input), io, runtime.terminal);
+    writeLifecycleHuman(lifecycleCancellationDisplay(operation, input), io, input.terminal);
     return 0;
   }
   const envelope = await service[operation](input);
@@ -2570,7 +2589,7 @@ async function agentLifecycleCommand(operation, options, io, runtime) {
   if (options.json) {
     writeLifecycleJson(io, options.compact ? compactLifecycleEnvelope(envelope) : envelope, options);
   } else {
-    writeLifecycleHuman(envelope, io, runtime.terminal);
+    writeLifecycleHuman(envelope, io, input.terminal);
   }
   return lifecycleExitCode(envelope);
 }
@@ -2999,6 +3018,10 @@ function writeLifecycleJson(io, envelope, options) {
 
 function writeLifecycleHuman(envelope, io, terminal) {
   const result = envelope?.result ?? {};
+  if (envelope?.command === 'agent setup' && result.outcome !== 'planned') {
+    writeSetupReceipt(result, io, terminal);
+    return;
+  }
   const lines = [
     `${envelope.command}: ${result.outcome ?? (envelope.ok ? 'ok' : 'error')}`,
     `Scope: ${result.scope ?? 'unknown'}`,
@@ -3041,6 +3064,173 @@ function writeLifecycleHuman(envelope, io, terminal) {
   for (const line of lines) {
     write(io, `${wrapPlainLine(line, columns).join('\n')}\n`);
   }
+}
+
+const SETUP_RECEIPT_PRESENTATION = Object.freeze({
+  succeeded: {
+    symbol: '✓',
+    title: 'Setup complete',
+    interpretation: 'Launchdeck was installed successfully.',
+    tone: 'green',
+    targetState: 'Ready'
+  },
+  noop: {
+    symbol: '✓',
+    title: 'Launchdeck is ready',
+    interpretation: 'Already up to date — no changes needed.',
+    tone: 'green',
+    targetState: 'Ready'
+  },
+  cancelled: {
+    symbol: '○',
+    title: 'Setup cancelled',
+    interpretation: 'No changes were applied.',
+    tone: 'gray',
+    targetState: 'Not changed'
+  },
+  refused: {
+    symbol: '!',
+    title: 'Setup refused',
+    interpretation: 'No changes were applied.',
+    tone: 'yellow',
+    targetState: 'Not changed'
+  },
+  'failed-and-rolled-back': {
+    symbol: '×',
+    title: 'Setup failed',
+    interpretation: 'Changes were rolled back safely.',
+    tone: 'red',
+    targetState: 'Rolled back'
+  },
+  partial: {
+    symbol: '×',
+    title: 'Setup incomplete',
+    interpretation: 'Some changes may have been applied.',
+    tone: 'red',
+    targetState: 'Check required'
+  },
+  indeterminate: {
+    symbol: '?',
+    title: 'Setup needs attention',
+    interpretation: 'The final installation state is unknown.',
+    tone: 'red',
+    targetState: 'Unknown'
+  }
+});
+
+const SETUP_RECEIPT_COLORS = Object.freeze({
+  green: '\x1B[32m',
+  yellow: '\x1B[33m',
+  red: '\x1B[31m',
+  gray: '\x1B[90m',
+  cyan: '\x1B[36m',
+  bold: '\x1B[1m',
+  reset: '\x1B[0m'
+});
+
+function writeSetupReceipt(result, io, terminal) {
+  const presentation = SETUP_RECEIPT_PRESENTATION[result.outcome]
+    ?? {
+      symbol: '?',
+      title: 'Setup result',
+      interpretation: 'Review the installation details below.',
+      tone: 'yellow',
+      targetState: 'Unknown'
+    };
+  const columns = Math.max(40, Math.min(terminal.columns ?? 120, 88));
+  const innerColumns = columns - 4;
+  const useColor = terminal.isTTY === true && terminal.noColor !== true;
+  const lines = [];
+  const add = (text = '', tone = null, bold = false) => {
+    if (text === '') {
+      lines.push({ text: '', tone, bold });
+      return;
+    }
+    for (const wrapped of wrapPlainLine(text, innerColumns)) {
+      lines.push({ text: wrapped, tone, bold });
+    }
+  };
+  const addField = (label, value, tone = null) => {
+    const prefix = `${label}: `;
+    const continuation = ' '.repeat(prefix.length);
+    const valueLines = wrapPlainLine(String(value), innerColumns - prefix.length);
+    lines.push({ text: `${prefix}${valueLines[0] ?? ''}`, tone, bold: false });
+    for (const wrapped of valueLines.slice(1)) {
+      lines.push({ text: `${continuation}${wrapped}`, tone, bold: false });
+    }
+  };
+
+  add(`${presentation.symbol} ${presentation.title}`, presentation.tone, true);
+  add(presentation.interpretation);
+  add();
+
+  if (Array.isArray(result.targets) && result.targets.length > 0) {
+    add('Components', 'cyan', true);
+    for (const target of result.targets) {
+      const component = setupComponentLabel(target);
+      const identity = target.targetId ?? target.hostId ?? 'target';
+      add(`${setupTargetSymbol(result.outcome)} ${component}  ${presentation.targetState}  (${identity})`, presentation.tone);
+    }
+    add();
+  }
+
+  addField('Outcome', result.outcome ?? 'unknown', presentation.tone);
+  addField('Effect certainty', result.effectCertainty ?? 'unknown');
+  addField('Scope', result.scope ?? 'unknown');
+  addField('Project', result.projectIdentity ?? 'none');
+  addField('Build', result.buildIdentity ?? 'unknown');
+
+  if (result.error && typeof result.error === 'object') {
+    const code = lifecycleOutputText(result.error.code) ?? 'agent_lifecycle_error';
+    const message = lifecycleOutputText(result.error.message) ?? 'Lifecycle operation failed.';
+    add();
+    add(`Error: [${code}] ${message}`, presentation.tone, true);
+    const reason = lifecycleErrorReason(result.error, message);
+    if (reason) add(`Reason: ${reason}`, presentation.tone);
+  }
+
+  if (Array.isArray(result.effects) && result.effects.length === 0) {
+    add('Effects: none');
+  }
+  if (Array.isArray(result.nextActions) && result.nextActions.length > 0) {
+    add();
+    add('Next action', 'cyan', true);
+    for (const action of result.nextActions) {
+      add(`› ${action.command ?? action.label ?? action}`);
+    }
+  }
+
+  const border = '─'.repeat(columns - 2);
+  write(io, `${setupReceiptColor(`╭${border}╮`, presentation.tone, useColor)}\n`);
+  for (const line of lines) {
+    const content = line.text.padEnd(innerColumns);
+    const styled = setupReceiptColor(content, line.tone, useColor, line.bold);
+    write(io, `${setupReceiptColor('│', presentation.tone, useColor)} ${styled} ${setupReceiptColor('│', presentation.tone, useColor)}\n`);
+  }
+  write(io, `${setupReceiptColor(`╰${border}╯`, presentation.tone, useColor)}\n`);
+}
+
+function setupComponentLabel(target) {
+  const component = target?.component ?? String(target?.targetId ?? '').split(':').at(-1);
+  return {
+    runtime: 'Runtime',
+    skill: 'Agent skill',
+    mcp: 'MCP integration'
+  }[component] ?? String(component ?? 'Component');
+}
+
+function setupTargetSymbol(outcome) {
+  if (['succeeded', 'noop'].includes(outcome)) return '✓';
+  if (['cancelled', 'refused'].includes(outcome)) return '○';
+  if (outcome === 'indeterminate') return '?';
+  return '×';
+}
+
+function setupReceiptColor(value, tone, enabled, bold = false) {
+  if (!enabled || (!tone && !bold)) return value;
+  const color = SETUP_RECEIPT_COLORS[tone] ?? '';
+  const emphasis = bold ? SETUP_RECEIPT_COLORS.bold : '';
+  return `${emphasis}${color}${value}${SETUP_RECEIPT_COLORS.reset}`;
 }
 
 function lifecycleCancellationDisplay(operation, input) {
