@@ -2,6 +2,23 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] - 2026-07-30
+
+### Changed
+
+- Routed Agent targets without maintained full-integration evidence through the safe Skill installer and made the CLI help and README report that capability boundary accurately.
+
+### Fixed
+
+- Made repeated `agent setup` additive so a new Agent target can be installed without dropping targets owned by the current receipt.
+- Preserved receipt-owned Runtime, Skill, and MCP targets in the successor receipt during incremental setup.
+- Registered planned no-op Host targets for exact lock-time revalidation, preventing `agent_plan_precondition_missing` after a valid additive plan.
+- Prevented valid new targets from being rejected as `agent_receipt_target_unresolved` solely because an earlier receipt already existed.
+
+### Security
+
+- Kept retained targets bound to their exact target ID, path, scope, component, ownership boundary, and live digest; forged target paths remain refused.
+
 ## [0.5.0] - 2026-07-29
 
 ### Added
@@ -119,6 +136,7 @@ All notable changes to Launchdeck are documented in this file. This project foll
 
 - Initial CLI-first lifecycle control plane, global project registry, managed process ownership, logs/events, safe clean, MCP surface, and local Agent Skill installer.
 
+[0.5.1]: https://github.com/chenziyang110/launchdeck/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/chenziyang110/launchdeck/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/chenziyang110/launchdeck/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/chenziyang110/launchdeck/compare/v0.3.0...v0.3.1
