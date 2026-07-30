@@ -42,6 +42,7 @@ test('agent help discovers every lifecycle command and lifecycle selection flag'
 });
 
 test('setup from npx and installed entrypoints route to the same shared lifecycle service input', async () => {
+  const projectRoot = path.resolve('workspace', 'demo');
   const installed = await runAgentCli([
     'agent',
     'setup',
@@ -56,7 +57,7 @@ test('setup from npx and installed entrypoints route to the same shared lifecycl
     '--scope',
     'user',
     '--project',
-    'F:\\workspace\\demo',
+    projectRoot,
     '--build',
     BUILD_IDENTITY,
     '--dry-run',
@@ -77,7 +78,7 @@ test('setup from npx and installed entrypoints route to the same shared lifecycl
     '--scope',
     'user',
     '--project',
-    'F:\\workspace\\demo',
+    projectRoot,
     '--build',
     BUILD_IDENTITY,
     '--dry-run',
@@ -98,7 +99,7 @@ test('setup from npx and installed entrypoints route to the same shared lifecycl
   assert.deepEqual(installed.service.calls[0].input.hosts, ['codex', 'claude', 'visual-studio']);
   assert.deepEqual(installed.service.calls[0].input.components, ['skill', 'mcp', 'runtime']);
   assert.equal(installed.service.calls[0].input.scope, 'user');
-  assert.equal(installed.service.calls[0].input.projectRoot, 'F:\\workspace\\demo');
+  assert.equal(installed.service.calls[0].input.projectRoot, projectRoot);
   assert.equal(installed.service.calls[0].input.build, BUILD_IDENTITY);
   assert.equal(installed.service.calls[0].input.dryRun, true);
   assert.equal(installed.service.calls[0].input.json, true);
@@ -127,7 +128,7 @@ test('status doctor update repair and uninstall delegate to the shared lifecycle
 });
 
 test('lifecycle commands resolve a relative project path against the invocation cwd', async () => {
-  const cwd = 'F:\\workspace\\demo';
+  const cwd = path.resolve('workspace', 'demo');
   const result = await runAgentCli(
     ['agent', 'status', '--project', '.', '--json'],
     { cwd }
