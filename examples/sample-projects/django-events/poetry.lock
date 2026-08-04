@@ -1,0 +1,32 @@
+# This file is generated from pyproject.toml and keeps the sample's native
+# application dependencies reproducible.
+
+[[package]]
+name = "asgiref"
+version = "3.8.1"
+description = "ASGI is a standard for Python synchronous and asynchronous apps."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+
+[[package]]
+name = "django"
+version = "5.2.0"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+dependencies = { asgiref = ">=3.8.1", sqlparse = ">=0.3.1" }
+
+[[package]]
+name = "sqlparse"
+version = "0.5.3"
+description = "A non-validating SQL parser."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+
+[metadata]
+lock-version = "2.1"
+python-versions = ">=3.11,<3.14"
+content-hash = "92f2b377744cfab03323c4a41e52014d81957c4ad7de9d08d9e1eceb5341b873"

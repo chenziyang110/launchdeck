@@ -1,0 +1,327 @@
+{
+  "acceptance_evidence": [],
+  "blockers": [],
+  "changed_files": [],
+  "concerns": [],
+  "consequence_evidence": [],
+  "consumer_evidence": [],
+  "failed_assumptions": [],
+  "findings": [
+    {
+      "detail": "`plan-contract.json#/implementation_sequence` is valid as a phase narrative, but if copied directly into tasks it will collide on shared write sets: wave 2 collapses ten isolated sample trees plus catalog coupling, and wave 3 collapses router, output, error, selector, and copy-state changes that must join on shared surfaces. The task graph must refine these waves into isolated lanes plus explicit join points before any `[P]` marking is safe.",
+      "id": "FIND-TDS-001",
+      "refs": [
+        ".specify/features/2026-08-03-deliver-ten-standalone/plan-contract.json#/implementation_sequence/1",
+        ".specify/features/2026-08-03-deliver-ten-standalone/plan-contract.json#/implementation_sequence/2",
+        "ARCH-001",
+        "ARCH-002",
+        "ARCH-003",
+        "ARCH-004",
+        "OBS-003",
+        "OBS-004"
+      ],
+      "severity": "high",
+      "title": "The current implementation waves are too coarse to use as executable task batches"
+    },
+    {
+      "detail": "The accepted plan and handoffs define `AC-001`..`AC-012`, `CA-001`..`CA-004`, `MP-001`..`MP-010`, and OCD stop/reopen rules, but there is no existing task-layer guarantee yet that each acceptance ref will receive one dedicated system-review witness and a non-empty Human Acceptance Universe. This is a task-generation gap, not a scope defect, and must be resolved before task finalization.",
+      "id": "FIND-TDS-002",
+      "refs": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006",
+        "AC-007",
+        "AC-008",
+        "AC-009",
+        "AC-010",
+        "AC-011",
+        "AC-012",
+        "CA-001",
+        "CA-002",
+        "CA-003",
+        "CA-004",
+        "MP-001",
+        "MP-002",
+        "MP-003",
+        "MP-004",
+        "MP-005",
+        "MP-006",
+        "MP-007",
+        "MP-008",
+        "MP-009",
+        "MP-010"
+      ],
+      "severity": "medium",
+      "title": "Coverage obligations are defined upstream but not yet materialized into task-layer witnesses"
+    },
+    {
+      "detail": "`GAP-002` means `docker-compose-helpdesk` cannot be silently passed. The final task graph needs an explicit prerequisite or fail-closed CI gate for Docker-backed lifecycle evidence; otherwise the Windows/Linux denominator can be undercounted while appearing green.",
+      "id": "FIND-TDS-003",
+      "refs": [
+        "GAP-002",
+        "OBS-006",
+        "OBS-007",
+        "OBS-009",
+        "CA-002",
+        "AC-003",
+        "AC-008",
+        "AC-009",
+        "AC-012"
+      ],
+      "severity": "medium",
+      "title": "Docker runner capability remains a release-critical prerequisite gap"
+    },
+    {
+      "detail": "`GAP-003` and the accepted `validation-scenarios` handoff show the clean worktree does not currently have the installed dependencies needed for CLI-spawn tests. Task validation should schedule `npm ci` before install-dependent checks and reopen design only if the targeted contracts still fail after dependency materialization.",
+      "id": "FIND-TDS-004",
+      "refs": [
+        "GAP-003",
+        "validation-scenarios.json#/findings/3",
+        "package.json:40",
+        "package.json:47",
+        "src/agent/lifecycle-prompter.js:1",
+        "test/helpers/cli-fixture.js:89",
+        "test/helpers/cli-fixture.js:99"
+      ],
+      "severity": "medium",
+      "title": "Fresh CLI-spawn verification is environment-blocked until dependencies are materialized"
+    }
+  ],
+  "manual_evidence": [],
+  "must_preserve_evidence": [],
+  "obligation_ids": [],
+  "observations": [
+    {
+      "detail": "Do not mark tasks touching `src/cli.js`, `src/output.js`, `src/errors.js`, `examples/sample-projects/catalog.json`, `package.json`, `README.md`, `.github/workflows/ci.yml`, or shared test contract files as `[P]`. These surfaces are shared coordination points for IF-001, IF-002, IF-003, IF-004, IF-005, and IF-006 and must be stabilized sequentially before downstream lanes consume them.",
+      "id": "OBS-TDS-001",
+      "join_point": "JP-01 foundation-contract-freeze",
+      "pass_condition": "Catalog schema, CLI grammar, output-envelope, and public error-code contracts are stable enough that downstream sample, copy, and package lanes no longer need to edit shared router/output/error surfaces in parallel.",
+      "recovery": "If JP-01 fails, keep all sample, package, and lifecycle work blocked; repair the shared contract surfaces first and rerun the same targeted contract tests.",
+      "refs": [
+        "IF-001",
+        "IF-002",
+        "IF-003",
+        "IF-004",
+        "IF-005",
+        "IF-006",
+        "ARCH-001",
+        "ARCH-002",
+        "ARCH-003",
+        "ARCH-004",
+        "ARCH-006",
+        ".specify/features/2026-08-03-deliver-ten-standalone/plan-contract.json#/implementation_sequence/0"
+      ],
+      "title": "Serialize shared write sets before any parallel fan-out",
+      "validation_command": "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-control-plane-contract.test.js test/cli-contract.test.js"
+    },
+    {
+      "detail": "After ARCH-007 exact inventory is frozen, parallelism is safe only at the per-sample directory boundary: each lane writes one `examples/sample-projects/\u003cid\u003e` tree plus its sample-local tests/assets and does not touch `catalog.json`, package files, shared docs, or shared CI. A single join task must then update `examples/sample-projects/catalog.json` and reconcile repository contract expectations against the authored trees.",
+      "id": "OBS-TDS-002",
+      "join_point": "JP-02 sample-inventory-freeze",
+      "pass_condition": "Exactly ten approved IDs exist, every source directory is present exactly once, catalog fields are allowlisted, ports are unique, and forbidden Launchdeck/evaluation/runtime artifacts are absent from all sample roots.",
+      "recovery": "Repair any sample-local drift in the affected sample lane; if IDs, stacks, or themes need to change, stop and reopen per OBS-010 and ARCH-007 instead of mutating scope inside tasks.",
+      "refs": [
+        "ARCH-007",
+        "AC-001",
+        "AC-002",
+        "OBS-001",
+        "OBS-002",
+        "MP-001",
+        "MP-002",
+        "MP-003"
+      ],
+      "title": "Safe parallel batch: ten standalone sample directories only after ID freeze",
+      "validation_command": "node --test --test-concurrency=1 test/repository-contract.test.js"
+    },
+    {
+      "detail": "`src/examples/catalog.js`, `src/examples/list.js`, and `src/examples/copy.js` can be separate implementation lanes only if the router/output/error contract from JP-01 is already frozen and each lane stays out of `src/cli.js`, `src/output.js`, and `src/errors.js`. The join task owns `src/examples/index.js`, final router wiring, stable error-code exposure, and any output-envelope adaptations required by OUT-EX-LIST-OK through OUT-EX-RENAME-FAIL.",
+      "id": "OBS-TDS-003",
+      "join_point": "JP-03 example-entrypoint-outcome-freeze",
+      "pass_condition": "The real entrypoints `launchdeck example list [--json] [--compact] [--no-color]` and `launchdeck example copy [\u003cid\u003e] [\u003cdestination\u003e]` emit stable schemaVersion 1 envelopes, typed recoverable outcomes, and no prompt or mutation outside the allowed TTY omitted-ID path.",
+      "recovery": "If any outcome is unstable or normalizes to `internal_error`, keep packaging and lifecycle tasks blocked, repair router/error/output ownership, and rerun the targeted CLI contract suite before resuming.",
+      "refs": [
+        "ARCH-001",
+        "ARCH-002",
+        "ARCH-003",
+        "ARCH-004",
+        "OCD-001",
+        "OCD-002",
+        "OCD-003",
+        "OCD-004",
+        "OCD-005",
+        "OCD-006",
+        "OCD-007",
+        "OCD-008",
+        "OCD-009",
+        "OCD-010",
+        "OCD-011",
+        "OCD-012",
+        "CA-003",
+        "CA-004"
+      ],
+      "title": "Safe parallel batch: internal example modules, then one router/output join",
+      "validation_command": "node --test --test-concurrency=1 test/cli-control-plane-contract.test.js test/cli-contract.test.js"
+    },
+    {
+      "detail": "Do not jump directly from authored samples to the full Windows/Linux native and Launchdeck matrix. First stabilize one representative end-to-end path using `fastapi-inventory` exactly as `quickstart.md` defines, including native install/test/start/health/stop and external `.launchdeck.yml` lifecycle proof in an isolated copy. Only after that gate passes should tasks fan out to the ten-sample-by-two-OS native and Launchdeck matrices.",
+      "id": "OBS-TDS-004",
+      "join_point": "JP-04 representative-lifecycle-proof",
+      "pass_condition": "The copied tree matches packaged source, native health succeeds, Launchdeck owns and cleans its process, the source sample stays Launchdeck-neutral, and evidence is sufficient to template the remaining matrix without changing product behavior.",
+      "recovery": "If representative lifecycle proof fails, reopen the lifecycle harness or sample-specific task before scheduling the full matrix; do not debug forty matrix cells concurrently.",
+      "refs": [
+        "quickstart.md",
+        "OBS-006",
+        "OBS-007",
+        "OBS-008",
+        "IF-005",
+        "CAP-003",
+        "CAP-006",
+        "CA-002"
+      ],
+      "title": "Insert a representative lifecycle gate before full matrix fan-out",
+      "validation_command": "Use the `quickstart.md` scenario exactly, then run the first isolated native plus Launchdeck fixture validation for `fastapi-inventory` on one supported OS."
+    },
+    {
+      "detail": "The task graph should create one dedicated required system-review scenario for each `spec-contract.json#/acceptance_criteria/0..11`, plus a separate Human Acceptance Universe limited to human-exercisable journeys. Minimum human-required journeys are: list human view success, explicit copy success, TTY omitted-ID search-select success, TTY no-match/edit path, TTY cancel, destination-conflict refusal, and the representative quickstart user path. Package size gates, digest parity, and full Windows/Linux matrices are required system-review evidence, not human-acceptance substitutes.",
+      "id": "OBS-TDS-005",
+      "join_point": "JP-05 coverage-freeze",
+      "pass_condition": "Zero uncovered `acceptance_refs`, zero uncovered required human obligations, and no scenario relies on broad regression coverage as the sole witness for an acceptance ref.",
+      "recovery": "If any acceptance ref or human journey is uncovered, add or split review tasks before finalizing the task graph; do not defer coverage repair to implementation or review.",
+      "refs": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006",
+        "AC-007",
+        "AC-008",
+        "AC-009",
+        "AC-010",
+        "AC-011",
+        "AC-012",
+        "IF-001",
+        "IF-002",
+        "IF-004",
+        "IF-005",
+        "quickstart.md",
+        "OCD-001",
+        "OCD-002",
+        "OCD-005",
+        "OCD-006",
+        "OCD-007",
+        "OCD-008",
+        "OCD-009"
+      ],
+      "title": "Tasks must materialize dedicated system-review and human-acceptance coverage",
+      "validation_command": "Task synthesis review: prove every acceptance ref has a dedicated required system-review witness and every human-required journey maps to at least one linked review scenario with an official entrypoint."
+    },
+    {
+      "detail": "High-risk joins must inherit the explicit stop/reopen conditions already defined in OCD-001..OCD-012 and OBS-010. In practice that means tasks must fail closed on non-atomic publish, overwrite/merge behavior, unstable error codes, catalog drift, generated Launchdeck artifacts entering sources, package size overrun, silent CI skip, and unrepaired Windows/Linux lifecycle failures. GAP-002, GAP-003, and GAP-004 are advisory constraints that must remain visible in validation and reopen logic.",
+      "id": "OBS-TDS-006",
+      "join_point": "JP-06 delivery-gate",
+      "pass_condition": "All acceptance, MP, CA, package, and lifecycle obligations are evidenced with no silent skip, no residue after failure/cancel, and no source/copy/tarball mismatch.",
+      "recovery": "Reopen the exact failing task or prerequisite gate; do not shrink the ten-project denominator, relax Windows/Linux requirements, or reinterpret failure as deferred scope.",
+      "refs": [
+        "OCD-001",
+        "OCD-002",
+        "OCD-003",
+        "OCD-004",
+        "OCD-005",
+        "OCD-006",
+        "OCD-007",
+        "OCD-008",
+        "OCD-009",
+        "OCD-010",
+        "OCD-011",
+        "OCD-012",
+        "OBS-010",
+        "GAP-002",
+        "GAP-003",
+        "GAP-004",
+        "CA-001",
+        "CA-002",
+        "CA-003",
+        "CA-004"
+      ],
+      "title": "Carry stop/reopen and recovery rules into every high-risk join",
+      "validation_command": "npm run check \u0026\u0026 npm test \u0026\u0026 npm audit \u0026\u0026 the explicit package/native/Launchdeck matrix commands defined by the final task graph"
+    }
+  ],
+  "packet_id": "",
+  "reported_status": "success",
+  "rule_acknowledgement": {
+    "context_bundle_read": true,
+    "critical_notes": [
+      "Worked only in F:/github/launchdeck/.tmp/worktrees/sample-project-gallery.",
+      "No product source, tests, package files, README, CI, or canonical artifacts were edited directly by this lane.",
+      "Canonical plan inputs were read through .\\.specify\\bin\\specify-runtime.exe artifact show.",
+      "Accepted planning handoffs were read through the runtime-owned artifact paths exposed by planning/lane-manifest.json."
+    ],
+    "forbidden_drift_respected": true,
+    "paths_read": [],
+    "required_references_read": true
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "summary": "Dependency-safety lane recommends serializing shared CLI/catalog/package surfaces, parallelizing only isolated sample and post-foundation validation lanes, and carrying explicit join-point recovery plus dedicated acceptance/system-review/human-acceptance coverage into the canonical task graph.",
+  "task_id": "",
+  "ui_evidence": [],
+  "ui_verification": {
+    "accepted_deviations": [],
+    "approved_handoff_ref": "",
+    "approved_handoff_sha256": "",
+    "approved_manifest_sha256": "",
+    "approved_preview_sha256": "",
+    "approved_visual_ref": "",
+    "comparison_report_ref": "",
+    "comparison_report_sha256": "",
+    "comparison_tolerance": {},
+    "contract_check": "not-run",
+    "covered_decision_ids": [],
+    "covered_handoff_contract_ids": [],
+    "fidelity_status": "not-applicable",
+    "implementation_capture_refs": [],
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "structural_differences": [],
+    "visual_comparison": "unavailable",
+    "visual_differences": []
+  },
+  "validation_results": [
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe workflow show --feature-dir .specify/features/2026-08-03-deliver-ten-standalone --format json",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe artifact show --path .specify/features/2026-08-03-deliver-ten-standalone/plan-contract.json --json-pointer /acceptance_refs --format json",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe artifact show --path .specify/features/2026-08-03-deliver-ten-standalone/planning/lane-manifest.json --view full --format json",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe artifact show --path .specify/features/2026-08-03-deliver-ten-standalone/spec-contract.json --json-pointer /entrypoint_outcome_contract --format json",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe cognition status --format json",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": ".\\.specify\\bin\\specify-runtime.exe api show result.submit --format json",
+      "output": "",
+      "status": "passed"
+    }
+  ],
+  "wave": ""
+}

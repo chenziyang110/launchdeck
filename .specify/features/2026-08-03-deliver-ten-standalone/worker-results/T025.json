@@ -1,0 +1,76 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/fixtures/gallery-launchdeck-matrix.js",
+    "test/gallery-launchdeck-matrix.test.js"
+  ],
+  "concerns": [
+    "The delegated lane did not return its final message after the test process exited, so the parent stopped the lane and independently reran all syntax, lifecycle, process, and residue checks. Full platform-native execution remains CI-owned."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "test/gallery-launchdeck-matrix.test.js",
+      "consumer": "external Launchdeck Windows/Linux CI lanes",
+      "entrypoint": "node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "kind": "real_entrypoint",
+      "producer": "catalog-driven 10 x 2 external Launchdeck matrix",
+      "transformer": "runGalleryLaunchdeckCell",
+      "validation": "20 labeled matrix cells invoked the real Launchdeck doctor CLI, all seven lifecycle phases passed, 0 skipped, isolated homes/configs were removed, and source remained unchanged."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "Each candidate config and LAUNCHDECK_HOME lived under an owned temporary root; source digests and residue scans stayed clean.",
+      "obligation": "Launchdeck config and runtime state never enter packaged sample sources."
+    },
+    {
+      "evidence": "Twenty catalog-derived cells completed and the explicit OS mismatch path rejected with gallery_platform_mismatch instead of skip.",
+      "obligation": "No required OS/sample cell can silently skip."
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "The worker test run initially did not return promptly. The parent observed the process exit, stopped further lane edits, independently reran the focused suite to a natural exit, and verified no matching Node process or temporary fixture remained."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T025",
+  "testImpact": {
+    "affectedTests": [
+      "test/gallery-launchdeck-matrix.test.js"
+    ],
+    "changedBehavior": "Adds an isolated catalog-derived 20-cell external Launchdeck lifecycle harness and receipt contract.",
+    "expectedRegressionScope": "External doctor/setup/build/test/start/health/stop accounting, config/home isolation, source purity, and fail-closed platform mismatch.",
+    "requiredHeavyGates": [
+      "Actual Windows and Linux toolchain execution remains in CI and the final JP-06 delivery gate."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "node --check test/fixtures/gallery-launchdeck-matrix.js",
+      "evidence": "Fixture syntax passed in the parent takeover verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check test/gallery-launchdeck-matrix.test.js",
+      "evidence": "Test syntax passed in the parent takeover verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "evidence": "22/22 tests passed, 0 skipped, and the process exited naturally in 30.3 seconds.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only test/fixtures/gallery-launchdeck-matrix.js and test/gallery-launchdeck-matrix.test.js were added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Every matrix cell invoked the real external Launchdeck doctor CLI in an isolated copy/home, recorded deterministic setup/build/test/start/health/stop evidence, then proved source purity and zero residue.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "ord-1001",
+    "customer": "Acme Coffee",
+    "status": "PAID",
+    "totalCents": 12900,
+    "createdAt": "2026-01-15T10:00:00Z"
+  },
+  {
+    "id": "ord-1002",
+    "customer": "Northwind Bakery",
+    "status": "PACKING",
+    "totalCents": 4850,
+    "createdAt": "2026-01-16T11:30:00Z"
+  },
+  {
+    "id": "ord-1003",
+    "customer": "Contoso Books",
+    "status": "SHIPPED",
+    "totalCents": 7399,
+    "createdAt": "2026-01-17T09:15:00Z"
+  }
+]

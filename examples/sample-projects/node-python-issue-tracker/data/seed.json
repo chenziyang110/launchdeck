@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ISSUE-1001",
+    "title": "Add keyboard shortcut for quick capture",
+    "description": "Let users press N to open the new issue form without leaving the list.",
+    "status": "open",
+    "labels": ["frontend", "accessibility"],
+    "assignee": "alex",
+    "createdAt": "2025-01-15T09:00:00Z"
+  },
+  {
+    "id": "ISSUE-1002",
+    "title": "Keep filters in the browser URL",
+    "description": "Persist status and label filters so a shared link opens the same view.",
+    "status": "in_progress",
+    "labels": ["frontend", "navigation"],
+    "assignee": "morgan",
+    "createdAt": "2025-01-16T10:30:00Z"
+  },
+  {
+    "id": "ISSUE-1003",
+    "title": "Document the local API contract",
+    "description": "Publish examples for creating, updating, and listing issues from scripts.",
+    "status": "closed",
+    "labels": ["documentation", "api"],
+    "assignee": "sam",
+    "createdAt": "2025-01-17T14:15:00Z"
+  }
+]
+

@@ -1,0 +1,87 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "examples/sample-projects/nestjs-url-shortener/.gitignore",
+    "examples/sample-projects/nestjs-url-shortener/LICENSE",
+    "examples/sample-projects/nestjs-url-shortener/README.md",
+    "examples/sample-projects/nestjs-url-shortener/data/seed.json",
+    "examples/sample-projects/nestjs-url-shortener/jest.config.cjs",
+    "examples/sample-projects/nestjs-url-shortener/nest-cli.json",
+    "examples/sample-projects/nestjs-url-shortener/package-lock.json",
+    "examples/sample-projects/nestjs-url-shortener/package.json",
+    "examples/sample-projects/nestjs-url-shortener/src/app.module.ts",
+    "examples/sample-projects/nestjs-url-shortener/src/health.controller.ts",
+    "examples/sample-projects/nestjs-url-shortener/src/main.ts",
+    "examples/sample-projects/nestjs-url-shortener/src/storage/url-store.service.ts",
+    "examples/sample-projects/nestjs-url-shortener/src/urls/url.controller.ts",
+    "examples/sample-projects/nestjs-url-shortener/src/urls/url.types.ts",
+    "examples/sample-projects/nestjs-url-shortener/test/url-shortener.spec.ts",
+    "examples/sample-projects/nestjs-url-shortener/tsconfig.build.json",
+    "examples/sample-projects/nestjs-url-shortener/tsconfig.json"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Standalone NestJS source includes native manifest/lockfile, MIT license, deterministic seed, file-backed persistence, HTTP API, health endpoint, and native tests.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "No Launchdeck configuration, runtime state, scoring, evaluation, answers, telemetry, or generated runtime files were added.",
+      "ref": "CA-002"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Run npm ci, npm test, npm run build, and the documented PORT/health/stop lifecycle in a separate approved validation lane."
+    ]
+  },
+  "result_ref": "worker-results/T004.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T004",
+  "task_ref": "task-index.json#/tasks/3",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "npm ci --dry-run --ignore-scripts --no-audit --no-fund",
+      "output": "Lockfile validated; no files installed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check examples/sample-projects/nestjs-url-shortener/jest.config.cjs",
+      "output": "JavaScript syntax valid.",
+      "status": "passed"
+    },
+    {
+      "command": "Static manifest, seed, and purity audit",
+      "output": "MIT license, Node \u003e=20, native scripts, deterministic seed, persistence/health source, and no forbidden artifacts detected.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed files are inside the T004 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Manifest/lockfile invocations and side-effect absence recorded; heavy lifecycle deferred to leader validation.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

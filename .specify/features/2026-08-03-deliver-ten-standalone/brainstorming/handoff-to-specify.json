@@ -1,0 +1,19 @@
+{
+  "blockers": [],
+  "discussion_slug": "discussion",
+  "entry_source": "sp-discussion",
+  "next_action": "/sp.plan",
+  "recovery": null,
+  "required_refs": [
+    "spec-contract.json",
+    "spec.md",
+    "alignment.md",
+    "context.md",
+    "ui-brief.md"
+  ],
+  "review_digest": "e7e620fe1f707a44a1ad5a8cdeb62732114d146467f00a34b6da6ff233dadb26",
+  "semantic_delta": [],
+  "source_contract": ".specify/discussions/discussion/handoff-to-specify.json",
+  "status": "ready",
+  "version": 3
+}

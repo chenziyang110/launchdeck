@@ -1,0 +1,122 @@
+[
+  {
+    "id": "vite-react-habit-tracker",
+    "title": "Daymark — Habit Tracker",
+    "stack": "Vite + React",
+    "theme": "habit tracking",
+    "requirements": [
+      "Node.js 20 or newer",
+      "npm 10 or newer"
+    ],
+    "ports": [4173],
+    "sourcePath": "examples/sample-projects/vite-react-habit-tracker"
+  },
+  {
+    "id": "nextjs-blog-manager",
+    "title": "Next.js Blog Manager",
+    "stack": "Next.js",
+    "theme": "blog management",
+    "requirements": [
+      "Node.js 20 or newer",
+      "npm 10 or newer"
+    ],
+    "ports": [3402],
+    "sourcePath": "examples/sample-projects/nextjs-blog-manager"
+  },
+  {
+    "id": "nestjs-url-shortener",
+    "title": "NestJS URL Shortener",
+    "stack": "NestJS",
+    "theme": "URL shortening",
+    "requirements": [
+      "Node.js 20 or newer",
+      "npm 10 or newer"
+    ],
+    "ports": [4013],
+    "sourcePath": "examples/sample-projects/nestjs-url-shortener"
+  },
+  {
+    "id": "fastapi-inventory",
+    "title": "FastAPI Inventory",
+    "stack": "FastAPI",
+    "theme": "inventory",
+    "requirements": [
+      "Python 3.11, 3.12, or 3.13",
+      "Poetry 2.x"
+    ],
+    "ports": [8104],
+    "sourcePath": "examples/sample-projects/fastapi-inventory"
+  },
+  {
+    "id": "django-events",
+    "title": "Django Events",
+    "stack": "Django",
+    "theme": "events",
+    "requirements": [
+      "Python 3.11, 3.12, or 3.13",
+      "Poetry 2.x"
+    ],
+    "ports": [8105],
+    "sourcePath": "examples/sample-projects/django-events"
+  },
+  {
+    "id": "go-webhook-inbox",
+    "title": "Go Webhook Inbox",
+    "stack": "Go",
+    "theme": "webhook inbox",
+    "requirements": [
+      "Go 1.22 or newer"
+    ],
+    "ports": [8106],
+    "sourcePath": "examples/sample-projects/go-webhook-inbox"
+  },
+  {
+    "id": "spring-boot-orders",
+    "title": "Spring Boot Orders",
+    "stack": "Spring Boot",
+    "theme": "orders",
+    "requirements": [
+      "Java 17 or newer",
+      "Maven 3.9 or newer"
+    ],
+    "ports": [8107],
+    "sourcePath": "examples/sample-projects/spring-boot-orders"
+  },
+  {
+    "id": "aspnet-library-catalog",
+    "title": "ASP.NET Library Catalog",
+    "stack": "ASP.NET Core",
+    "theme": "library catalog",
+    "requirements": [
+      ".NET 8 SDK or newer",
+      "curl for optional API examples"
+    ],
+    "ports": [5217],
+    "sourcePath": "examples/sample-projects/aspnet-library-catalog"
+  },
+  {
+    "id": "docker-compose-helpdesk",
+    "title": "Docker Compose Helpdesk",
+    "stack": "Docker Compose",
+    "theme": "helpdesk",
+    "requirements": [
+      "Docker Engine with Docker Compose v2",
+      "Node.js 20 or newer for the optional host-native test command"
+    ],
+    "ports": [8110],
+    "sourcePath": "examples/sample-projects/docker-compose-helpdesk"
+  },
+  {
+    "id": "node-python-issue-tracker",
+    "title": "Node.js + Python Issue Tracker",
+    "stack": "Node.js + Python monorepo",
+    "theme": "issue tracking",
+    "requirements": [
+      "Node.js 20 or newer and npm 10 or newer",
+      "Python 3.11, 3.12, or 3.13",
+      "Poetry 2.x"
+    ],
+    "ports": [4821, 5821],
+    "sourcePath": "examples/sample-projects/node-python-issue-tracker"
+  }
+]

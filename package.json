@@ -25,8 +25,10 @@
     "src/",
     "schema/",
     "agent/compatibility-manifest.json",
+    "agent/evidence/index.json",
     "agent/installer-payload/",
-    ".agents/skills/launchdeck-agent/"
+    ".agents/skills/launchdeck-agent/",
+    "examples/sample-projects/"
   ],
   "scripts": {
     "check": "node scripts/check-syntax.js",
@@ -35,7 +37,7 @@
     "agent:build": "node scripts/build-agent-plugins.js",
     "prepack": "node scripts/build-agent-plugins.js --installer-payload",
     "smoke": "node scripts/smoke-lifecycle.js --mode quick --json",
-    "package:check": "npm pack --dry-run"
+    "package:check": "node -e \"const fs=require('node:fs');const path=require('node:path');const pkg=require('./package.json');const roots=['package.json','README.md','LICENSE',...pkg.files];const required=['src/cli.js','src/mcp/stdio-server.js','agent/compatibility-manifest.json','agent/evidence/index.json','agent/installer-payload/manifest.json','examples/sample-projects/catalog.json'];const missingRoots=roots.filter((entry)=>!fs.existsSync(path.join(process.cwd(),entry)));const files=[];function walk(rel){const full=path.join(process.cwd(),rel);const stat=fs.statSync(full);if(stat.isDirectory()){for(const name of fs.readdirSync(full).sort())walk(path.posix.join(rel.replace(/\\\\/g,'/').replace(/\\/$/,''),name));return;}files.push({path:rel.replace(/\\\\/g,'/'),size:stat.size});}for(const entry of roots){if(fs.existsSync(path.join(process.cwd(),entry)))walk(entry.replace(/\\/$/,''));}const included=new Set(files.map((file)=>file.path));const missingRequired=required.filter((entry)=>!included.has(entry));const ok=missingRoots.length===0&&missingRequired.length===0;const output={ok,package:pkg.name,version:pkg.version,checkedRoots:roots,fileCount:files.length,unpackedSize:files.reduce((total,file)=>total+file.size,0),missingRoots,missingRequired};if(process.argv.includes('--json'))console.log(JSON.stringify(output,null,2));else if(ok)console.log(`${pkg.name}@${pkg.version} package inventory check passed (${files.length} files).`);else console.error(JSON.stringify(output,null,2));process.exit(ok?0:1);\" --"
   },
   "dependencies": {
     "@clack/prompts": "1.1.0",

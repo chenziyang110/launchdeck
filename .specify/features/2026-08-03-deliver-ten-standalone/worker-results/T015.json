@@ -1,0 +1,40 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "src/examples/copy.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Bounded copy module implementation is isolated to copy.js; atomic/safety behavior will be covered by integrated tests.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run deferred copy filesystem fault-matrix tests during integration."
+  ],
+  "task_id": "T015",
+  "validation_results": [
+    {
+      "command": "node --check src/examples/copy.js",
+      "output": "Syntax check passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Module import",
+      "output": "Module import passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only copy.js changed inside the T015 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Copy module imported without side effects; integrated filesystem fault matrix deferred to leader validation.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

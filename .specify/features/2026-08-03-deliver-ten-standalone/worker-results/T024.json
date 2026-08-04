@@ -1,0 +1,76 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/fixtures/gallery-native-matrix.js",
+    "test/gallery-native-matrix.test.js"
+  ],
+  "concerns": [
+    "Real ten-stack dependency installation and lifecycle execution remain CI responsibilities; the focused contract harness performs no network installation and proves fail-closed prerequisite accounting."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "test/gallery-native-matrix.test.js",
+      "consumer": "Windows/Linux native lifecycle CI lanes",
+      "entrypoint": "node --test --test-concurrency=1 test/gallery-native-matrix.test.js",
+      "kind": "real_entrypoint",
+      "producer": "catalog-driven 10 x 2 native matrix",
+      "transformer": "runGalleryNativeMatrix",
+      "validation": "20 receipts, 0 skipped, prerequisites and cleanup accounted for every cell, source unchanged, fixture roots removed."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "Every receipt is passed or failed; injected Docker prerequisite failure remains failed and total skipped is zero.",
+      "obligation": "No required OS/sample cell can silently skip."
+    },
+    {
+      "evidence": "Source digests remained unchanged and all owned temporary fixture roots were removed.",
+      "obligation": "Sample sources remain standalone and free of runtime residue."
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "TDD RED first failed with ERR_MODULE_NOT_FOUND for the missing matrix fixture; implementation then reached GREEN without network installation."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T024",
+  "testImpact": {
+    "affectedTests": [
+      "test/gallery-native-matrix.test.js"
+    ],
+    "changedBehavior": "Adds a catalog-derived 20-cell Windows/Linux native lifecycle contract harness with explicit prerequisite and cleanup accounting.",
+    "expectedRegressionScope": "Catalog denominator, native phase accounting, prerequisite fail-closed semantics, source purity, and temporary fixture cleanup.",
+    "requiredHeavyGates": [
+      "Actual toolchain execution remains in the CI matrix and final JP-06 delivery gate."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "node --check test/fixtures/gallery-native-matrix.js",
+      "evidence": "Fixture syntax passed in the parent verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check test/gallery-native-matrix.test.js",
+      "evidence": "Test syntax passed in the parent verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-native-matrix.test.js",
+      "evidence": "2/2 passed, 0 skipped; 20 cells accounted, one injected prerequisite failure, cleanup 20/20 with no residue.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only test/fixtures/gallery-native-matrix.js and test/gallery-native-matrix.test.js were added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "runGalleryNativeMatrix emitted invocation, Node/PID/cwd/home/port diagnostics, exact denominator, source digest, fixture removal, and empty residue evidence.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

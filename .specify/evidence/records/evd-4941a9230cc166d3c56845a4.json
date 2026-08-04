@@ -1,0 +1,14 @@
+{
+  "schema_version": "spec-kit-evidence-v1",
+  "evidence_id": "evd-4941a9230cc166d3c56845a4",
+  "status": "ready",
+  "sha256": "18b3ad0d1ce078eca35fc27ab721757452e6d7a98997ad6f663e33640c365414",
+  "size": 66,
+  "mime": "text/plain",
+  "scope": "integrated",
+  "source": "",
+  "provenance": "",
+  "object_ref": ".specify/evidence/objects/sha256/18/18b3ad0d1ce078eca35fc27ab721757452e6d7a98997ad6f663e33640c365414",
+  "record_ref": ".specify/evidence/records/evd-4941a9230cc166d3c56845a4.json",
+  "created_at": "2026-08-04T07:02:51Z"
+}

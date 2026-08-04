@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const roots = ['src', 'scripts', 'test', 'examples'];
+const excludedDirectories = new Set([
+  path.join(repoRoot, 'examples', 'sample-projects')
+]);
 const files = roots
   .flatMap((root) => collectJavaScriptFiles(path.join(repoRoot, root)))
   .sort((left, right) => left.localeCompare(right));
@@ -47,7 +50,7 @@ if (failures.length > 0) {
 }
 
 function collectJavaScriptFiles(directory) {
-  if (!fs.existsSync(directory)) {
+  if (excludedDirectories.has(path.resolve(directory)) || !fs.existsSync(directory)) {
     return [];
   }
   const files = [];

@@ -1,0 +1,35 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "src/examples/selector.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Selector source is isolated to selector.js and preserves TTY/non-TTY boundary for the real consumer.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run focused selector contracts in the integrated worktree."
+  ],
+  "task_id": "T016",
+  "validation_results": [
+    {
+      "command": "node --check src/examples/selector.js",
+      "output": "Syntax check passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only selector.js changed inside the T016 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Selector implementation has no filesystem side effects; focused consumer tests are reserved for integrated CLI validation.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

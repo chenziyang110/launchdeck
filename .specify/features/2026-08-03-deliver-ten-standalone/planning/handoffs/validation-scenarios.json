@@ -1,0 +1,421 @@
+{
+  "acceptance_evidence": [],
+  "blockers": [],
+  "changed_files": [],
+  "concerns": [
+    "Preserve audit history: the earlier blocked result was correct before the authoritative spec section repair; this result supersedes it with status success.",
+    "Do not make macOS sample compatibility claims; existing macos-latest CI is unrelated evidence unless a future explicit macOS lane is approved.",
+    "Exclude Launchdeck config, evaluation, scoring, telemetry, Launchdeck-only wrappers, generated answers, and Launchdeck dependencies from all sample contents and tarball sample directories.",
+    "Implement tests before feature code where possible: catalog exact-matrix tests should fail first, then source/catalog/CLI/package/lifecycle work should make them pass."
+  ],
+  "consequence_evidence": [],
+  "consumer_evidence": [],
+  "failed_assumptions": [],
+  "findings": [
+    {
+      "id": "FIND-001",
+      "recommendation": "Plan tasks should start with catalog/source creation tests because live rg found no launchdeck example command, no examples/sample-projects directory, and current README examples list only existing demo assets.",
+      "refs": [
+        "README.md:411",
+        "README.md:414",
+        "src/cli.js:111",
+        "src/cli.js:256",
+        "src/cli.js:4305",
+        "src/cli.js:4347"
+      ],
+      "severity": "high",
+      "title": "Current worktree has no implemented gallery surface yet"
+    },
+    {
+      "id": "FIND-002",
+      "recommendation": "Update package files allowlist only after tests assert complete gallery inclusion, forbidden sample exclusions, and size gates from actual npm pack output. Preserve root non-workspace install.",
+      "refs": [
+        "package.json:24",
+        "package.json:30",
+        "package-lock.json:7",
+        "package-lock.json:28",
+        "test/repository-contract.test.js:13",
+        "test/repository-contract.test.js:19"
+      ],
+      "severity": "high",
+      "title": "Existing package allowlist must be expanded and re-contracted"
+    },
+    {
+      "id": "FIND-003",
+      "recommendation": "Add explicit sample jobs for windows-latest and ubuntu-latest and label macOS as out of scope for this feature; do not remove or reinterpret unrelated existing macOS CI without owner decision.",
+      "refs": [
+        ".github/workflows/ci.yml:25",
+        ".github/workflows/ci.yml:28",
+        "spec.md#Confirmed Scope *(mandatory)*"
+      ],
+      "severity": "medium",
+      "title": "Existing CI has macOS but sample evidence must be Windows/Linux only"
+    },
+    {
+      "id": "FIND-004",
+      "recommendation": "Fresh verification must run after npm ci or equivalent dependency materialization. The current read-only lane could not install node_modules, and CLI-spawn tests fail before reaching product behavior when @clack/prompts is absent.",
+      "refs": [
+        "package.json:40",
+        "package.json:47",
+        "src/agent/lifecycle-prompter.js:1",
+        "test/helpers/cli-fixture.js:89",
+        "test/helpers/cli-fixture.js:99"
+      ],
+      "severity": "medium",
+      "title": "Test environment needs install before CLI-spawn verification"
+    }
+  ],
+  "manual_evidence": [],
+  "must_preserve_evidence": [],
+  "obligation_ids": [],
+  "observations": [
+    {
+      "details": "Each row is mandatory; no sample may be skipped, renamed, replaced, merged, or deferred. Catalog fields must be limited to id,title,stack,theme,requirements,ports,sourcePath and must drive list, copy, README index, package inventory, and validation matrices.",
+      "id": "OBS-001",
+      "matrix": [
+        {
+          "id": "vite-react-habit-tracker",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/vite-react-habit-tracker",
+          "stack": "Vite + React",
+          "theme": "habit tracking",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "npm/native install build test",
+            "HTTP page health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "nextjs-blog-manager",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/nextjs-blog-manager",
+          "stack": "Next.js",
+          "theme": "blog management",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "npm/native install build test",
+            "HTTP page health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "nestjs-url-shortener",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/nestjs-url-shortener",
+          "stack": "NestJS",
+          "theme": "URL shortening",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "npm/native install build test",
+            "API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "fastapi-inventory",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/fastapi-inventory",
+          "stack": "FastAPI",
+          "theme": "inventory",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "python/native install test",
+            "API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "django-events",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/django-events",
+          "stack": "Django",
+          "theme": "events",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "python/native install test",
+            "HTTP page/API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "go-webhook-inbox",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/go-webhook-inbox",
+          "stack": "Go",
+          "theme": "webhook inbox",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "go test/build",
+            "API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "spring-boot-orders",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/spring-boot-orders",
+          "stack": "Spring Boot",
+          "theme": "orders",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "maven-or-gradle native test/package",
+            "HTTP/API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "aspnet-library-catalog",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/aspnet-library-catalog",
+          "stack": "ASP.NET Core",
+          "theme": "library catalog",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "dotnet restore/build/test",
+            "HTTP/API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "docker-compose-helpdesk",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/docker-compose-helpdesk",
+          "stack": "Docker Compose",
+          "theme": "helpdesk",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "compose config/build/test-or-health",
+            "HTTP/API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        },
+        {
+          "id": "node-python-issue-tracker",
+          "owner": "sample-gallery-validation",
+          "source": "examples/sample-projects/node-python-issue-tracker",
+          "stack": "Node.js + Python monorepo",
+          "theme": "issue tracking",
+          "validations": [
+            "catalog row and unique port",
+            "standalone purity",
+            "npm and python native tests",
+            "HTTP/API health",
+            "Launchdeck isolated lifecycle",
+            "npm pack snapshot"
+          ]
+        }
+      ],
+      "refs": [
+        "spec.md#Confirmed Scope *(mandatory)*",
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/constraints/3"
+      ],
+      "title": "Exact ten-project coverage matrix"
+    },
+    {
+      "details": "For every sample directory, add one focused test per behavior: directory exists; LICENSE exists and is MIT; lock file exists for the native package manager; deterministic seed fixture exists and produces stable snapshot; stack-native persistence exists; native test entry exists; page/API health endpoint exists; declared port is unique and overridable; forbidden files/strings are absent: .launchdeck.yml, Launchdeck dependency/import, Launchdeck questionnaire/answers, scoring, evaluation, telemetry, node_modules, virtualenv, build output, runtime DB/logs, binary vendoring.",
+      "id": "OBS-002",
+      "refs": [
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/scope/out/0",
+        "spec-contract.json#/constraints/2"
+      ],
+      "title": "Static standalone purity checks"
+    },
+    {
+      "details": "Add catalog-contract tests for exact ten IDs, uniqueness, field allowlist, source path containment under examples/sample-projects, real source directory existence, unique ports, and no handwritten duplicate inventory. Add CLI tests for launchdeck example list human output at 60 and 120 columns, --no-color, --json single schemaVersion 1 object, --json --compact single compact object, non-TTY no prompt, catalog invalid/missing/duplicate/path-escape failures, and help text grammar.",
+      "id": "OBS-003",
+      "refs": [
+        "src/output.js:8",
+        "src/output.js:47",
+        "src/output.js:80",
+        "src/output.js:130",
+        "src/cli.js:4305",
+        "src/cli.js:4347",
+        "test/cli-control-plane-contract.test.js:237",
+        "test/cli-control-plane-contract.test.js:244"
+      ],
+      "title": "Deterministic list tests"
+    },
+    {
+      "details": "Add one behavior per test: explicit ID to default ./\u003cid\u003e succeeds without prompt; explicit ID plus destination succeeds; copied tree matches source snapshot and excludes Launchdeck config/artifacts; success receipt includes id, source, absolute destination, file count/digest and no implicit install/run next action; unknown ID returns stable typed failure; omitted ID in non-TTY and JSON returns command_usage_error and never prompts; TTY omitted ID opens searchable selector; TTY search select succeeds; TTY no-match preserves no-mutation state; TTY cancel leaves no target/staging. Destination/error paths: existing file, existing empty dir, existing nonempty dir, symlink/junction target, parent missing, parent is file, staging-name collision, catalog source missing, source path escape, copy fault, rename fault, cleanup fault. Assertions: staging is created in destination parent only, atomic rename is final publish, failures remove target and staging when publish did not succeed, and retry after correction is explicit.",
+      "id": "OBS-004",
+      "refs": [
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/entrypoint_outcome_contract/outcome_dispositions",
+        "test/helpers/cli-fixture.js:54",
+        "test/helpers/cli-fixture.js:62"
+      ],
+      "title": "Deterministic copy success and failure matrix"
+    },
+    {
+      "details": "Package plan: package.json files must include the complete gallery root and catalog, while root install must not include sample dependencies or workspaces. Gate uses actual npm pack evidence, not static assumptions: run prepack, pack to temp, parse pack JSON/tar inventory, assert exact ten sample directories and catalog are included, existing agent payload remains included, no forbidden sample artifacts are present, repository source/copy/tarball digests agree, packedSize\u003c=5*1024*1024 and unpackedSize\u003c=20*1024*1024, and any drift blocks release.",
+      "id": "OBS-005",
+      "refs": [
+        "package.json:24",
+        "package.json:38",
+        "package-lock.json:7",
+        "package-lock.json:28",
+        "test/repository-contract.test.js:7",
+        "test/repository-contract.test.js:19"
+      ],
+      "title": "npm pack allowlist inventory and size gates"
+    },
+    {
+      "details": "For each sample and each OS in windows-latest and ubuntu-latest: copy sample to an isolated temp directory; install native dependencies using the sample lock file; run native compile/build where applicable; run native tests; start service with catalog port override; poll declared HTTP/API health with bounded retries; stop through the native process owner; assert port released, process exited, no runtime files/logs/database artifacts remain in source, and temp copy cleanup succeeds in finally. Docker sample requires docker compose config/build/up health/down -v and skip only if runner lacks Docker with explicit CI failure or separate prerequisite gate, not silent pass.",
+      "id": "OBS-006",
+      "refs": [
+        "spec-contract.json#/acceptance_criteria/7",
+        ".github/workflows/ci.yml:19",
+        ".github/workflows/ci.yml:28",
+        "test/helpers/cli-fixture.js:118",
+        "test/helpers/cli-fixture.js:130"
+      ],
+      "title": "Windows/Linux native lifecycle matrix"
+    },
+    {
+      "details": "For each sample and each OS in windows-latest and ubuntu-latest: create a fresh temp copy from source and a separate LAUNCHDECK_HOME; external fixture authors a reviewable candidate .launchdeck.yml only in the temp copy; run launchdeck doctor --json, tasks --json, setup/build/test aliases or run equivalents, start/up with port override, HTTP-or-API health, logs/status/ps evidence, stop/down in finally, reconcile if stale, and clean only against temp copy. Assert original sample source remains free of .launchdeck.yml and Launchdeck runtime artifacts.",
+      "id": "OBS-007",
+      "refs": [
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/8",
+        "README.md:262",
+        "README.md:288",
+        "test/helpers/cli-fixture.js:14",
+        "test/helpers/cli-fixture.js:24"
+      ],
+      "title": "Windows/Linux Launchdeck compatibility lifecycle matrix"
+    },
+    {
+      "details": "Quickstart scenario owner: quickstart-validation. Use fastapi-inventory because it exercises API health and Python dependency isolation. Steps: launchdeck example list --json; verify fastapi-inventory row; launchdeck example copy fastapi-inventory \u003ctemp\u003e/fastapi-inventory --json; inspect copied LICENSE/lock/tests/seed/API; run native install/test/start with port override; stop; externally author candidate .launchdeck.yml in temp copy; launchdeck doctor --json; launchdeck test --json; launchdeck start --json; poll /health or documented API endpoint; launchdeck stop --json in finally; compare evidence receipts. Expected: schemaVersion 1 list/copy receipts, native tests pass, health 2xx, Launchdeck-owned process stops, source remains pure. Recovery: unknown ID rerun explicit ID; destination conflict choose empty path; copy/rename failure verify no residue then retry; port conflict choose override; health timeout collect logs/status then stop/reopen lifecycle task.",
+      "id": "OBS-008",
+      "refs": [
+        "spec.md#Confirmed Scope *(mandatory)*",
+        "README.md:159",
+        "README.md:170",
+        "src/output.js:126",
+        "src/output.js:130"
+      ],
+      "title": "Representative quickstart scenario"
+    },
+    {
+      "details": "Partition fast deterministic contracts under npm test; package inventory/size under package-gallery on Ubuntu; sample-native matrix by OS and sample with fail-fast false and per-sample timeout; launchdeck-compat matrix by OS and sample with isolated temp copies and finally cleanup. Controls: unique port allocation from catalog plus override offset per worker, serial lifecycle inside each sample, bounded health polling instead of sleeps, no network during copy, npm/pip/go/maven/dotnet caches only at install layers, artifact upload for receipts/logs on failure, process cleanup trap/finally, no hidden macOS assertion.",
+      "id": "OBS-009",
+      "refs": [
+        ".github/workflows/ci.yml:21",
+        ".github/workflows/ci.yml:23",
+        ".github/workflows/ci.yml:40",
+        ".github/workflows/ci.yml:50",
+        "scripts/run-tests.js:15",
+        "scripts/run-tests.js:35"
+      ],
+      "title": "CI partitioning and flakiness controls"
+    },
+    {
+      "details": "Review risks: sample rows copied into README/tests instead of deriving from catalog; generated Launchdeck configs leak into sample source or tarball; root package begins installing sample dependencies; CI silently skips a sample/platform; Docker prerequisite ambiguity; package size drifts over gates; copy rollback masks cleanup failures; macOS evidence is implied from existing CI. Stop/reopen if any exact ID/stack/theme changes, a sample needs non-LTS tooling or external services, copy requires install/network/git/config, package exceeds 5MiB/20MiB, Launchdeck evaluation/scoring enters sample content, or Windows/Linux lifecycle cannot be made deterministic.",
+      "id": "OBS-010",
+      "refs": [
+        "spec-contract.json#/scope/out",
+        "spec-contract.json#/acceptance_criteria/11",
+        "README.md:411",
+        "README.md:414"
+      ],
+      "title": "Review risks and stop/reopen conditions"
+    }
+  ],
+  "packet_id": "",
+  "reported_status": "success",
+  "rule_acknowledgement": {
+    "context_bundle_read": true,
+    "critical_notes": [
+      "Read-only lane honored; no files edited, created, deleted, moved, formatted, or reverted directly.",
+      "Canonical spec artifacts were queried only through specify-runtime artifact show.",
+      "The only write in this resume is the runtime-owned result submit replacing the lane handoff.",
+      "Working tree already contains untracked runtime/spec files owned outside this lane; they were not modified directly."
+    ],
+    "forbidden_drift_respected": true,
+    "paths_read": [
+      "F:/github/launchdeck/.codex/skills/sp-plan/SKILL.md",
+      ".specify/features/2026-08-03-deliver-ten-standalone/spec.md#Confirmed Scope *(mandatory)* via artifact show only",
+      ".specify/features/2026-08-03-deliver-ten-standalone/spec-contract.json via prior artifact show only",
+      "package.json",
+      "package-lock.json",
+      ".github/workflows/ci.yml",
+      "README.md",
+      "test/repository-contract.test.js",
+      "test/cli-control-plane-contract.test.js",
+      "test/cli-contract.test.js",
+      "test/helpers/cli-fixture.js",
+      "scripts/run-tests.js",
+      "src/cli.js",
+      "src/output.js",
+      "src/errors.js",
+      "src/agent/lifecycle-prompter.js"
+    ],
+    "required_references_read": true
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "summary": "Validation-scenarios lane repaired and completed. The previous blocked result is retained as audit history conceptually; this replacement uses spec.md#Confirmed Scope *(mandatory)* as the authoritative ten-project source and provides implementation-ready verification design for catalog, standalone purity, list/copy behavior, package inventory/size gates, Windows/Linux native and Launchdeck lifecycle, quickstart evidence, CI partitioning, flakiness controls, review risks, and stop/reopen conditions.",
+  "task_id": "validation-scenarios",
+  "ui_evidence": [],
+  "ui_verification": {
+    "accepted_deviations": [],
+    "approved_handoff_ref": "",
+    "approved_handoff_sha256": "",
+    "approved_manifest_sha256": "",
+    "approved_preview_sha256": "",
+    "approved_visual_ref": "",
+    "comparison_report_ref": "",
+    "comparison_report_sha256": "",
+    "comparison_tolerance": {},
+    "contract_check": "not-run",
+    "covered_decision_ids": [],
+    "covered_handoff_contract_ids": [],
+    "fidelity_status": "not-applicable",
+    "implementation_capture_refs": [],
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "structural_differences": [],
+    "visual_comparison": "unavailable",
+    "visual_differences": []
+  },
+  "validation_results": [
+    {
+      "command": ".\\\\.specify\\\\bin\\\\specify-runtime.exe artifact show --path .specify/features/2026-08-03-deliver-ten-standalone/spec.md --section 'Confirmed Scope *(mandatory)*' --view full",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": "Test-Path node_modules/@clack/prompts/package.json; Test-Path examples/sample-projects; rg launchdeck example/sample-projects/gallery/workspaces over authorized live files",
+      "output": "",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-control-plane-contract.test.js test/cli-contract.test.js",
+      "output": "",
+      "status": "failed"
+    }
+  ],
+  "wave": ""
+}

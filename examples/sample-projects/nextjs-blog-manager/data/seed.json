@@ -1,0 +1,38 @@
+[
+  {
+    "id": "post-001",
+    "slug": "a-small-editorial-workflow",
+    "title": "A Small Editorial Workflow",
+    "excerpt": "A calm workflow for turning a rough idea into a useful post.",
+    "body": "Good publishing tools make the next useful action obvious. Start with a small outline, give the draft a clear owner, and publish only when the reader can take something away.\n\nThis sample keeps that loop visible: drafts are editable, published posts are readable, and every change is stored locally.",
+    "author": "Maya Chen",
+    "status": "published",
+    "tags": ["workflow", "writing"],
+    "publishedAt": "2026-01-12T09:00:00.000Z",
+    "updatedAt": "2026-01-12T09:00:00.000Z"
+  },
+  {
+    "id": "post-002",
+    "slug": "designing-for-the-reading-moment",
+    "title": "Designing for the Reading Moment",
+    "excerpt": "A few practical choices that keep an article easy to follow.",
+    "body": "Readers arrive with limited attention and a question in mind. Short sections, descriptive headings, and concrete examples help them orient themselves without making the writing feel busy.\n\nThe best interface detail is often the one that lets the words stay in charge.",
+    "author": "Jon Bell",
+    "status": "published",
+    "tags": ["design", "content"],
+    "publishedAt": "2026-02-03T14:30:00.000Z",
+    "updatedAt": "2026-02-03T14:30:00.000Z"
+  },
+  {
+    "id": "post-003",
+    "slug": "notes-on-the-next-release",
+    "title": "Notes on the Next Release",
+    "excerpt": "A draft checklist for a thoughtful, low-drama release.",
+    "body": "Before a release, make the change easy to explain. Verify the behavior people rely on, write down the known edges, and leave a small path back if the rollout needs to pause.\n\nThis is a draft for the editorial desk to refine.",
+    "author": "Maya Chen",
+    "status": "draft",
+    "tags": ["releases", "draft"],
+    "publishedAt": null,
+    "updatedAt": "2026-02-18T11:15:00.000Z"
+  }
+]

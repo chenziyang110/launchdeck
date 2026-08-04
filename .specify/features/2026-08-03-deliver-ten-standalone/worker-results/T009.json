@@ -1,0 +1,55 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/aspnet-library-catalog/.gitignore",
+    "examples/sample-projects/aspnet-library-catalog/LICENSE",
+    "examples/sample-projects/aspnet-library-catalog/LibraryBook.cs",
+    "examples/sample-projects/aspnet-library-catalog/LibraryCatalog.csproj",
+    "examples/sample-projects/aspnet-library-catalog/LibraryStore.cs",
+    "examples/sample-projects/aspnet-library-catalog/Program.cs",
+    "examples/sample-projects/aspnet-library-catalog/README.md",
+    "examples/sample-projects/aspnet-library-catalog/data/seed.json",
+    "examples/sample-projects/aspnet-library-catalog/packages.lock.json",
+    "examples/sample-projects/aspnet-library-catalog/tests/LibraryCatalog.Tests.csproj",
+    "examples/sample-projects/aspnet-library-catalog/tests/Program.cs",
+    "examples/sample-projects/aspnet-library-catalog/tests/packages.lock.json"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "ASP.NET Core 8 minimal API with JSON-file persistence, health/routes, deterministic seed, MIT license, native test harness, and README.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "Native lifecycle deferred to owner-managed matrix; no process or generated artifacts created.",
+      "ref": "native lifecycle matrix"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the owner-managed Windows/Linux native lifecycle matrix including locked restore, tests, startup, health checks, and cleanup."
+  ],
+  "task_id": "T009",
+  "validation_results": [
+    {
+      "check": "Check changed files stay inside expected_write_scope.",
+      "evidence": "All changed files are under the T009 sample scope.",
+      "status": "passed"
+    },
+    {
+      "check": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Static project evaluation, locked-package properties, no generated artifacts, and no Launchdeck artifacts recorded.",
+      "status": "passed"
+    },
+    {
+      "check": "Project and JSON syntax.",
+      "evidence": "Project XML and lock/seed JSON parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "check": "Standalone purity and required assets.",
+      "evidence": "MIT license, native manifests/locks, seed, local persistence, health/routes, overridable port, tests, and README are present.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

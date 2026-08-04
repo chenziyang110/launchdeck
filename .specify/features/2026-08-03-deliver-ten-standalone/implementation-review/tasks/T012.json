@@ -1,0 +1,77 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "examples/sample-projects/catalog.json",
+    "src/examples/catalog.js",
+    "src/examples/index.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Catalog and source inventory contain exactly ten approved IDs.",
+      "id": "AC-001"
+    },
+    {
+      "evidence": "Catalog fields are strictly allowlisted and loader output is immutable.",
+      "id": "AC-007"
+    },
+    {
+      "evidence": "Source paths are contained, directories exist, ports are unique, and forbidden evaluation metadata is rejected.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Run focused catalog/repository tests during integration."
+    ]
+  },
+  "result_ref": "worker-results/T012.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T012",
+  "task_ref": "task-index.json#/tasks/11",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check catalog loader and index",
+      "output": "Syntax checks passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Static exact-ten catalog check",
+      "output": "10 entries, 10 directories, 11 unique ports, exact allowed fields.",
+      "status": "passed"
+    },
+    {
+      "command": "Strict loader consumer invocation",
+      "output": "Loaded 10 entries; source tree snapshot unchanged.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only assigned artifacts are present in worker scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "loadCatalog invoked through src/examples/index.js; no filesystem side effects.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

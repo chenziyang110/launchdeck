@@ -1,0 +1,52 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "package.json"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Root package allowlist includes examples/sample-projects and preserves size/inventory testing.",
+      "id": "CA-001"
+    },
+    {
+      "evidence": "Published source parity is preserved after removing npm-excluded sample metadata.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T021",
+  "validation_results": [
+    {
+      "command": "Parse package.json and package-lock.json",
+      "output": "Both package files parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "Root install boundary audit",
+      "output": "Root scripts and dependencies preserved; package-lock.json unchanged and sample dependencies remain outside root dependencies.",
+      "status": "passed"
+    },
+    {
+      "command": "Package allowlist audit",
+      "output": "Added examples/sample-projects/ to the npm files allowlist.",
+      "status": "passed"
+    },
+    {
+      "command": "npm pack dry-run --ignore-scripts",
+      "output": "Package dry-run completed; leader removed npm-excluded sample .gitignore metadata to preserve exact published source parity.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Package change is within T021 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Npm allowlist now publishes catalog and sample trees without adding sample dependencies to root install.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

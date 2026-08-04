@@ -1,0 +1,108 @@
+{
+  "blockers": [],
+  "changed_files": [],
+  "concerns": [
+    "Nominal T030 scope is empty; validation-triggered changes to syntax/package contracts, dependency lock data, generated Agent payloads, and evidence identity are disclosed integration/release repairs, not hidden sample scope.",
+    "Hosted Windows/Linux CI remains external Review evidence; local Windows matrices and fail-closed workflow contracts passed, and macOS remains explicitly deferred.",
+    "Poetry is unavailable locally; its dedicated smoke is explicitly skipped, while the frozen 40-cell release denominator has no skip path."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "Serialized tests, real child processes, npm dry-run pack, CI contracts",
+      "consumer": "Developer copying and running a sample",
+      "entrypoint": "npm run check; npm test; npm audit --omit=dev --audit-level=high --json; npm run package:check",
+      "kind": "real_entrypoint",
+      "producer": "Ten standalone samples, catalog, CLI list/copy, generated Launchdeck configs, package payload",
+      "transformer": "Root runner and native/Launchdeck matrix harnesses",
+      "validation": "V2-A5 passed at fingerprint 789053b2446fd71923434482a0bc68b4dff353ac858cc9dfb1aa306c37ce204e."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "Ten projects and exact 40-cell denominator are fixed and no-skip.",
+      "obligation": "MP-001..MP-004"
+    },
+    {
+      "evidence": "Standalone source purity, no Launchdeck state/scoring/telemetry/root deps/network prompts.",
+      "obligation": "MP-005..MP-008"
+    },
+    {
+      "evidence": "Windows/Linux CI fail-closed; macOS explicitly deferred.",
+      "obligation": "MP-009..MP-010"
+    },
+    {
+      "evidence": "Outcomes, diagnostics, side effects, cleanup, package boundary, and platform limits have concrete evidence.",
+      "obligation": "CA-001..CA-004"
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "Repaired syntax/package integration, vulnerable transitives, and stale post-prepack evidence identity before V2-A5 passed."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T030",
+  "testImpact": {
+    "affectedTests": [
+      "test/repository-contract.test.js",
+      "test/host/evidence-index.test.js",
+      "test/gallery-native-matrix.test.js",
+      "test/gallery-launchdeck-matrix.test.js",
+      "test/release/gallery-denominator.test.js",
+      "test/release/acceptance-coverage.test.js"
+    ],
+    "changedBehavior": "No new T030 behavior; validates integration and repairs release-gate defects.",
+    "expectedRegressionScope": "Syntax, package, security, build identity, denominator, cleanup, list/copy.",
+    "requiredHeavyGates": [
+      "V2-A5 passed; Review owns V3 and hosted CI."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "npm run check",
+      "evidence": "263 files passed.",
+      "status": "passed"
+    },
+    {
+      "command": "npm test",
+      "evidence": "807 tests: 803 passed, 0 failed, 4 explicit platform/prerequisite skips; 507.3s.",
+      "status": "passed"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high --json",
+      "evidence": "Zero production vulnerabilities.",
+      "status": "passed"
+    },
+    {
+      "command": "npm run package:check",
+      "evidence": "npm pack --dry-run: launchdeck@0.5.4, 274 files, 750.4 kB packed, 3.7 MB unpacked.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-native-matrix.test.js",
+      "evidence": "T024: 20 native cells, no silent skip, fail-closed prerequisites, cleanup 20/20.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "evidence": "T025: 22/22 passed, no skip, natural exit, no matching residue.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/host/evidence-index.test.js test/release/agent-release-process-doc.test.js",
+      "evidence": "5/5 passed; candidate identity matches and all 31 older cells remain superseded.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "T030 owns no planned product file; all validation-triggered integration/generated surfaces are explicitly disclosed and no sample source was mutated by the release gate.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "V2-A5 plus T024/T025 record real invocations, process diagnostics, audit, pack, identity, cleanup, and exact denominator evidence.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

@@ -13,7 +13,23 @@
   "must_preserve_refs": [],
   "consequence_obligation_refs": [],
   "fidelity_refs": [],
+  "official_entrypoints": [],
+  "system_review_scenarios": [],
+  "review_obligations": [],
+  "human_acceptance_contract_schema_refs": {
+    "obligations": ".specify/templates/review-state-schema.json#/properties/human_acceptance_obligations",
+    "scenarios": ".specify/templates/review-state-schema.json#/properties/human_acceptance_scenarios"
+  },
+  "human_acceptance_obligations": [],
+  "human_acceptance_scenarios": [],
   "ui_contract_schema_ref": ".specify/templates/task-packet-template.json#/ui_contract",
+  "validation_policy": {
+    "mode": "feature_epochs",
+    "max_epochs": 3,
+    "budget_scope": "implement-review",
+    "budget_ref": "implementation-review/validation-runs.json",
+    "heavy_gate_owner": "leader"
+  },
   "tasks": [],
   "parallel_batches": [],
   "join_points": [],

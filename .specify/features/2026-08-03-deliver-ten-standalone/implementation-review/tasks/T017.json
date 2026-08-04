@@ -1,0 +1,63 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "src/errors.js",
+    "src/output.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Typed copy outcome codes are registered centrally for downstream filesystem outcomes.",
+      "id": "CA-003"
+    },
+    {
+      "evidence": "Central output envelope preserves catalog-derived entries for JSON and compact consumers.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T017.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T017",
+  "task_ref": "task-index.json#/tasks/16",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check src/errors.js src/output.js src/examples/list.js src/examples/copy.js src/examples/selector.js src/examples/catalog.js src/examples/index.js",
+      "output": "All shared error/output/example modules passed syntax checks.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js",
+      "output": "27 tests passed, 0 failed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only src/errors.js and src/output.js changed within T017 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Example-specific public errors normalize through the central registry and compact example list entries remain in the schemaVersion 1 envelope.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

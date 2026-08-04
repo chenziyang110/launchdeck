@@ -1,0 +1,76 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T030.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T030",
+  "task_ref": "task-index.json#/tasks/29",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "npm run check",
+      "evidence": "263 files passed.",
+      "status": "passed"
+    },
+    {
+      "command": "npm test",
+      "evidence": "807 tests: 803 passed, 0 failed, 4 explicit platform/prerequisite skips; 507.3s.",
+      "status": "passed"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high --json",
+      "evidence": "Zero production vulnerabilities.",
+      "status": "passed"
+    },
+    {
+      "command": "npm run package:check",
+      "evidence": "npm pack --dry-run: launchdeck@0.5.4, 274 files, 750.4 kB packed, 3.7 MB unpacked.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-native-matrix.test.js",
+      "evidence": "T024: 20 native cells, no silent skip, fail-closed prerequisites, cleanup 20/20.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "evidence": "T025: 22/22 passed, no skip, natural exit, no matching residue.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/host/evidence-index.test.js test/release/agent-release-process-doc.test.js",
+      "evidence": "5/5 passed; candidate identity matches and all 31 older cells remain superseded.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "T030 owns no planned product file; all validation-triggered integration/generated surfaces are explicitly disclosed and no sample source was mutated by the release gate.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "V2-A5 plus T024/T025 record real invocations, process diagnostics, audit, pack, identity, cleanup, and exact denominator evidence.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

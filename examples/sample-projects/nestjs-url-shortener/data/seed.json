@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "docs",
+    "url": "https://docs.nestjs.com/",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "clicks": 0
+  },
+  {
+    "slug": "homepage",
+    "url": "https://example.com/",
+    "createdAt": "2026-01-02T00:00:00.000Z",
+    "clicks": 0
+  },
+  {
+    "slug": "status",
+    "url": "https://status.example.com/",
+    "createdAt": "2026-01-03T00:00:00.000Z",
+    "clicks": 0
+  }
+]

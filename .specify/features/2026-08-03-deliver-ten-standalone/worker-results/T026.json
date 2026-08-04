@@ -1,0 +1,79 @@
+{
+  "blockers": [],
+  "changed_files": [
+    ".github/workflows/ci.yml"
+  ],
+  "concerns": [
+    "The full repository-contract suite currently has one pre-existing integration failure because package.json includes examples/sample-projects/ while its old allowlist assertion does not; the CI-specific contract passes and this out-of-scope mismatch is deferred to the release join."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": ".github/workflows/ci.yml",
+      "consumer": "pull request and main-branch CI",
+      "entrypoint": "node --test --test-concurrency=1 test/gallery-native-matrix.test.js; node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "kind": "real_entrypoint",
+      "producer": "GitHub Actions gallery job",
+      "transformer": "windows-latest/ubuntu-latest matrix with Docker prerequisite",
+      "validation": "YAML/static contract proved OS denominator, prerequisite ordering, no bypass, and preservation of generic macOS plus package/audit jobs."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "gallery.strategy.matrix.os contains only windows-latest and ubuntu-latest; existing unrelated generic macOS verify remains unchanged.",
+      "obligation": "Gallery compatibility claims exclude macOS."
+    },
+    {
+      "evidence": "docker version, docker info, and docker compose version run without condition, continue-on-error, or skip before both matrix tests.",
+      "obligation": "Docker absence cannot silently pass."
+    }
+  ],
+  "recovery": {
+    "attempted": false,
+    "notes": "No T026 repair was required after the RED static contract; an unrelated package allowlist test mismatch is recorded for the release join."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Update the stale package.files repository assertion in the owning integration/release task before T030."
+  ],
+  "task_id": "T026",
+  "testImpact": {
+    "affectedTests": [
+      "test/gallery-native-matrix.test.js",
+      "test/gallery-launchdeck-matrix.test.js",
+      "test/repository-contract.test.js"
+    ],
+    "changedBehavior": "GitHub Actions now runs explicit Windows/Linux gallery compatibility lanes with a fail-closed Docker prerequisite.",
+    "expectedRegressionScope": "CI OS matrix, Docker prerequisite ordering, matrix invocation, and preservation of unrelated verify/package jobs.",
+    "requiredHeavyGates": [
+      "Actual GitHub-hosted Windows/Linux execution remains external CI evidence."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "YAML parse and static gallery CI contract",
+      "evidence": "gallery job has exact windows-latest/ubuntu-latest matrix, Docker fail-closed prerequisite step before both matrix commands, and no gallery macOS entry.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=CI runs the repository checks test/repository-contract.test.js",
+      "evidence": "The CI-specific repository contract passed 1/1.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- .github/workflows/ci.yml",
+      "evidence": "CI patch has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only .github/workflows/ci.yml changed for T026.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "CI invokes serialized native and Launchdeck matrix tests after explicit docker version/info/compose checks; their contracts enforce source unchanged and residue-free cleanup.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

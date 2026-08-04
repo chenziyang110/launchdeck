@@ -1,0 +1,71 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/go-webhook-inbox/.gitignore",
+    "examples/sample-projects/go-webhook-inbox/LICENSE",
+    "examples/sample-projects/go-webhook-inbox/README.md",
+    "examples/sample-projects/go-webhook-inbox/cmd/inbox/main.go",
+    "examples/sample-projects/go-webhook-inbox/go.mod",
+    "examples/sample-projects/go-webhook-inbox/go.sum",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/handler.go",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/handler_test.go",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/model.go",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/seed.go",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/seed.json",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/store.go",
+    "examples/sample-projects/go-webhook-inbox/internal/inbox/store_test.go"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Standalone Go source includes go.mod/go.sum, MIT license, deterministic embedded seed, JSON-file persistence, native tests, health/API routes, and no prohibited artifacts.",
+      "id": "AC-002"
+    },
+    {
+      "evidence": "Native lifecycle instructions and evidence surfaces authored; full runtime lifecycle deferred downstream.",
+      "id": "CA-002"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the catalog-driven native Go test and lifecycle matrix on Windows/Linux in the leader validation lane."
+  ],
+  "task_id": "T007",
+  "validation_results": [
+    {
+      "command": "gofmt -d Go sources",
+      "output": "No formatting differences.",
+      "status": "passed"
+    },
+    {
+      "command": "Parse deterministic seed JSON",
+      "output": "Three unique seed events parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "go list -e -json ./...",
+      "output": "Package discovery completed without reported errors; no build or tests run.",
+      "status": "passed"
+    },
+    {
+      "command": "go mod verify",
+      "output": "Manifest and lockfile accepted.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity audit",
+      "output": "No forbidden Launchdeck, scoring, evaluation, answers, telemetry, or runtime artifacts/content found.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed files are under the T007 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "README and source document install, test, run, health/API, port override, persistence, and cleanup; live lifecycle deferred.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

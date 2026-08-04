@@ -1,0 +1,56 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/repository-contract.test.js",
+    "test/examples/catalog.test.js",
+    "test/examples/purity.test.js",
+    "test/cli-example-contract.test.js",
+    "test/cli-example-outcomes.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "The foundation contract keeps shared write surfaces serialized.",
+      "id": "CA-003"
+    },
+    {
+      "evidence": "The foundation contract preserves the full acceptance denominator.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T001.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T001",
+  "task_ref": "task-index.json#/tasks/0",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "Check shared write surfaces are serialized.",
+      "output": "Shared catalog, CLI, package, output, error, and CI surfaces remain assigned to serialized tasks in the frozen task graph.",
+      "status": "passed"
+    },
+    {
+      "command": "Check acceptance refs remain in plan order.",
+      "output": "T001 acceptance refs preserve the frozen plan order and denominator.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

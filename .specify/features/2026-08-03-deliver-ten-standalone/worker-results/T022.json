@@ -1,0 +1,45 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/fixtures/gallery-fastapi-native.js",
+    "test/gallery-fastapi-native.test.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Representative fixture defines native locked install/test/seed/start/health/stop/cleanup phases with no source mutation or residue.",
+      "id": "CA-002"
+    },
+    {
+      "evidence": "Fresh copy digest and catalog-derived source path are checked before lifecycle execution.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the full T022 native lifecycle in a Poetry-enabled Windows/Linux matrix; local Poetry prerequisite is unavailable."
+  ],
+  "task_id": "T022",
+  "validation_results": [
+    {
+      "command": "node --check test/fixtures/gallery-fastapi-native.js test/gallery-fastapi-native.test.js",
+      "output": "Representative FastAPI fixture and test passed syntax checks.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern='contract is catalog-derived' test/gallery-fastapi-native.test.js",
+      "output": "Catalog-derived external-isolation contract passed; complete lifecycle is reserved for Poetry-enabled matrix environments.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only the two T022 fixture/test files changed.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Fixture copies fastapi-inventory to an isolated temp root, keeps external fixture/config outside source, records source/copy digests, and defines bounded install/test/seed/start/health/stop/cleanup receipts.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

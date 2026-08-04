@@ -1,0 +1,1282 @@
+{
+  "acceptance_evidence": [],
+  "blockers": [],
+  "changed_files": [],
+  "concerns": [],
+  "consequence_evidence": [],
+  "consumer_evidence": [],
+  "failed_assumptions": [],
+  "findings": [
+    {
+      "id": "RISK-TD-001",
+      "refs": [
+        "GAP-002",
+        "CA-002"
+      ],
+      "severity": "high",
+      "summary": "Docker availability must be explicit for docker-compose-helpdesk; no silent skip"
+    },
+    {
+      "id": "RISK-TD-002",
+      "refs": [
+        "dispatch_hints"
+      ],
+      "severity": "medium",
+      "summary": "Parallel sample lanes must not edit shared catalog/package/README/CI/CLI surfaces"
+    },
+    {
+      "id": "RISK-TD-003",
+      "refs": [
+        "CA-001",
+        "complete_first_scope_preservation"
+      ],
+      "severity": "medium",
+      "summary": "Package size pressure cannot reduce exact ten sample scope"
+    }
+  ],
+  "manual_evidence": [],
+  "must_preserve_evidence": [],
+  "obligation_ids": [],
+  "observations": [
+    {
+      "id": "OBS-TD-001",
+      "refs": [
+        "plan-contract.json targeted pointers",
+        "spec-contract.json acceptance/capability/outcome/scope",
+        "data-model.md",
+        "contracts/example-cli-contract.md",
+        "quickstart.md"
+      ],
+      "type": "inputs"
+    },
+    {
+      "execution_mode": "heavy",
+      "id": "OBS-TD-002",
+      "tasks": [
+        {
+          "accept": "failing tests define exact-ten catalog, strict fields, source containment, unique ports, purity and no removals",
+          "deps": [],
+          "desc": "add repository/catalog/purity contract tests",
+          "id": "T001",
+          "join": "JP-CONTRACT-BASELINE",
+          "p": false,
+          "packet": "delegated",
+          "phase": "Setup",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-007",
+            "CAP-001",
+            "CAP-002",
+            "ARCH-001",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": null,
+          "verify": [
+            "npm test focused repository/catalog/purity suites"
+          ],
+          "writes": [
+            "test/repository-contract.test.js",
+            "test/examples/catalog.test.js",
+            "test/examples/purity.test.js"
+          ]
+        },
+        {
+          "accept": "tests cover human/json/compact/tty/non-tty and all 12 outcomes",
+          "deps": [],
+          "desc": "add CLI example grammar/output/outcome contract tests",
+          "id": "T002",
+          "join": "JP-CLI-CONTRACT",
+          "p": true,
+          "packet": "delegated",
+          "phase": "Setup",
+          "refs": [
+            "AC-004",
+            "AC-010",
+            "AC-011",
+            "IF-001",
+            "IF-002",
+            "IF-006",
+            "CAP-004",
+            "CAP-005",
+            "OUT-EX-LIST-OK",
+            "OUT-EX-COPY-OK",
+            "OUT-EX-USAGE",
+            "OUT-EX-CATALOG-INVALID",
+            "OUT-EX-UNKNOWN-ID",
+            "OUT-EX-NO-TTY-ID",
+            "OUT-EX-NO-MATCH",
+            "OUT-EX-CANCEL",
+            "OUT-EX-DEST-CONFLICT",
+            "OUT-EX-SOURCE-MISSING",
+            "OUT-EX-COPY-FAIL",
+            "OUT-EX-RENAME-FAIL",
+            "CA-003",
+            "CA-004"
+          ],
+          "story": null,
+          "verify": [
+            "npm test focused CLI/output/filesystem suites"
+          ],
+          "writes": [
+            "test/cli-example-contract.test.js",
+            "test/cli-example-outcomes.test.js"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample vite-react-habit-tracker",
+          "id": "T003",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for vite-react-habit-tracker"
+          ],
+          "writes": [
+            "examples/sample-projects/vite-react-habit-tracker/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample nextjs-blog-manager",
+          "id": "T004",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for nextjs-blog-manager"
+          ],
+          "writes": [
+            "examples/sample-projects/nextjs-blog-manager/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample nestjs-url-shortener",
+          "id": "T005",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for nestjs-url-shortener"
+          ],
+          "writes": [
+            "examples/sample-projects/nestjs-url-shortener/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample fastapi-inventory",
+          "id": "T006",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002",
+            "quickstart.md"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for fastapi-inventory"
+          ],
+          "writes": [
+            "examples/sample-projects/fastapi-inventory/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample django-events",
+          "id": "T007",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for django-events"
+          ],
+          "writes": [
+            "examples/sample-projects/django-events/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample go-webhook-inbox",
+          "id": "T008",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for go-webhook-inbox"
+          ],
+          "writes": [
+            "examples/sample-projects/go-webhook-inbox/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample spring-boot-orders",
+          "id": "T009",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for spring-boot-orders"
+          ],
+          "writes": [
+            "examples/sample-projects/spring-boot-orders/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample aspnet-library-catalog",
+          "id": "T010",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for aspnet-library-catalog"
+          ],
+          "writes": [
+            "examples/sample-projects/aspnet-library-catalog/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample docker-compose-helpdesk",
+          "id": "T011",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002",
+            "GAP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for docker-compose-helpdesk"
+          ],
+          "writes": [
+            "examples/sample-projects/docker-compose-helpdesk/**"
+          ]
+        },
+        {
+          "accept": "MIT license, lockfile, deterministic seed/test, stack-native persistence, page/API, unique overridable port, no Launchdeck artifacts/answers/scoring/telemetry",
+          "deps": [
+            "T001"
+          ],
+          "desc": "implement standalone sample node-python-issue-tracker",
+          "id": "T012",
+          "join": "JP-STATIC-CONTRACT",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-008",
+            "CAP-002",
+            "ARCH-007",
+            "MP-001",
+            "MP-002"
+          ],
+          "story": "US1",
+          "verify": [
+            "static purity and native lifecycle for node-python-issue-tracker"
+          ],
+          "writes": [
+            "examples/sample-projects/node-python-issue-tracker/**"
+          ]
+        },
+        {
+          "accept": "catalog is sole inventory authority with exact fields and contained source paths",
+          "deps": [
+            "T003",
+            "T004",
+            "T005",
+            "T006",
+            "T007",
+            "T008",
+            "T009",
+            "T010",
+            "T011",
+            "T012"
+          ],
+          "desc": "create exact-ten catalog and loader",
+          "id": "T013",
+          "join": "JP-STATIC-CONTRACT",
+          "p": false,
+          "packet": "delegated",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-007",
+            "IF-003",
+            "CAP-001",
+            "ARCH-001",
+            "ARCH-007",
+            "CA-004",
+            "MP-001",
+            "MP-003"
+          ],
+          "story": "US1",
+          "verify": [
+            "npm test catalog/repository contracts"
+          ],
+          "writes": [
+            "examples/sample-projects/catalog.json",
+            "src/examples/catalog.js",
+            "src/examples/index.js"
+          ]
+        },
+        {
+          "accept": "zero missing/extra samples and zero forbidden artifacts",
+          "deps": [
+            "T013"
+          ],
+          "desc": "run and repair static gallery purity denominator",
+          "id": "T014",
+          "join": "JP-STATIC-CONTRACT",
+          "p": false,
+          "packet": "leader-direct",
+          "phase": "US1-gallery-and-samples",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-007",
+            "AC-008",
+            "CAP-001",
+            "CAP-002",
+            "CA-004",
+            "MP-001",
+            "MP-002",
+            "MP-003"
+          ],
+          "story": "US1",
+          "verify": [
+            "npm test repository/catalog/purity"
+          ],
+          "writes": [
+            "examples/sample-projects/**",
+            "test/examples/purity.test.js"
+          ]
+        },
+        {
+          "accept": "human/json/compact/no-color 60/120-column list from catalog with one schemaVersion 1 object",
+          "deps": [
+            "T002",
+            "T013"
+          ],
+          "desc": "implement example list routing and presentation",
+          "id": "T015",
+          "join": "JP-CLI-CONTRACT",
+          "p": true,
+          "packet": "delegated",
+          "phase": "US2-list-and-copy",
+          "refs": [
+            "AC-004",
+            "AC-010",
+            "IF-001",
+            "CAP-004",
+            "OUT-EX-LIST-OK",
+            "OUT-EX-CATALOG-INVALID",
+            "CA-004",
+            "MP-004",
+            "MP-005"
+          ],
+          "story": "US2",
+          "verify": [
+            "npm test cli example list contracts"
+          ],
+          "writes": [
+            "src/cli.js",
+            "src/examples/list.js",
+            "test/cli-example-contract.test.js"
+          ]
+        },
+        {
+          "accept": "stable example_* or command_usage_error codes; no internal_error drift",
+          "deps": [
+            "T002"
+          ],
+          "desc": "add additive example error codes and output mappings",
+          "id": "T016",
+          "join": "JP-CLI-CONTRACT",
+          "p": true,
+          "packet": "delegated",
+          "phase": "US2-list-and-copy",
+          "refs": [
+            "AC-004",
+            "AC-011",
+            "IF-006",
+            "OUT-EX-LIST-OK",
+            "OUT-EX-COPY-OK",
+            "OUT-EX-USAGE",
+            "OUT-EX-CATALOG-INVALID",
+            "OUT-EX-UNKNOWN-ID",
+            "OUT-EX-NO-TTY-ID",
+            "OUT-EX-NO-MATCH",
+            "OUT-EX-CANCEL",
+            "OUT-EX-DEST-CONFLICT",
+            "OUT-EX-SOURCE-MISSING",
+            "OUT-EX-COPY-FAIL",
+            "OUT-EX-RENAME-FAIL",
+            "CA-003",
+            "CA-004",
+            "MP-005"
+          ],
+          "story": "US2",
+          "verify": [
+            "npm test outcome and schema regression"
+          ],
+          "writes": [
+            "src/errors.js",
+            "src/output.js",
+            "test/cli-example-outcomes.test.js"
+          ]
+        },
+        {
+          "accept": "explicit ID never prompts; only human TTY may search; no-match edit/cancel no mutation",
+          "deps": [
+            "T002",
+            "T013",
+            "T016"
+          ],
+          "desc": "implement omitted-ID TTY selector adapter",
+          "id": "T017",
+          "join": "JP-CLI-CONTRACT",
+          "p": false,
+          "packet": "delegated",
+          "phase": "US2-list-and-copy",
+          "refs": [
+            "AC-004",
+            "AC-011",
+            "IF-002",
+            "OUT-EX-NO-TTY-ID",
+            "OUT-EX-NO-MATCH",
+            "OUT-EX-CANCEL",
+            "CAP-005",
+            "CA-003",
+            "MP-004",
+            "MP-005"
+          ],
+          "story": "US2",
+          "verify": [
+            "npm test tty/non-tty selector contracts"
+          ],
+          "writes": [
+            "src/examples/selector.js",
+            "src/cli.js",
+            "test/cli-example-contract.test.js",
+            "test/cli-example-outcomes.test.js"
+          ]
+        },
+        {
+          "accept": "same-parent staging, atomic rename, no overwrite, cleanup on copy/rename/cancel failure, no install/run/git/network/Launchdeck mutation",
+          "deps": [
+            "T013",
+            "T016",
+            "T017"
+          ],
+          "desc": "implement atomic copy transaction and CLI integration",
+          "id": "T018",
+          "join": "JP-CLI-CONTRACT",
+          "p": false,
+          "packet": "parallel-high-risk",
+          "phase": "US2-list-and-copy",
+          "refs": [
+            "AC-005",
+            "AC-011",
+            "IF-002",
+            "CAP-005",
+            "ARCH-003",
+            "ARCH-004",
+            "OUT-EX-COPY-OK",
+            "OUT-EX-UNKNOWN-ID",
+            "OUT-EX-DEST-CONFLICT",
+            "OUT-EX-SOURCE-MISSING",
+            "OUT-EX-COPY-FAIL",
+            "OUT-EX-RENAME-FAIL",
+            "CA-003",
+            "CA-004",
+            "MP-005",
+            "MP-006"
+          ],
+          "story": "US2",
+          "verify": [
+            "npm test copy filesystem fault matrix"
+          ],
+          "writes": [
+            "src/examples/copy.js",
+            "src/cli.js",
+            "test/examples/copy-filesystem.test.js",
+            "test/cli-example-outcomes.test.js"
+          ]
+        },
+        {
+          "accept": "all outcomes pass through real entrypoints with no partial JSON, hidden prompts, or residue",
+          "deps": [
+            "T015",
+            "T016",
+            "T017",
+            "T018"
+          ],
+          "desc": "CLI contract join for list/copy and 12 outcomes",
+          "id": "T019",
+          "join": "JP-CLI-CONTRACT",
+          "p": false,
+          "packet": "leader-direct",
+          "phase": "US2-list-and-copy",
+          "refs": [
+            "AC-004",
+            "AC-005",
+            "AC-010",
+            "AC-011",
+            "IF-001",
+            "IF-002",
+            "IF-006",
+            "CAP-004",
+            "CAP-005",
+            "CA-003",
+            "CA-004",
+            "OUT-EX-LIST-OK",
+            "OUT-EX-COPY-OK",
+            "OUT-EX-USAGE",
+            "OUT-EX-CATALOG-INVALID",
+            "OUT-EX-UNKNOWN-ID",
+            "OUT-EX-NO-TTY-ID",
+            "OUT-EX-NO-MATCH",
+            "OUT-EX-CANCEL",
+            "OUT-EX-DEST-CONFLICT",
+            "OUT-EX-SOURCE-MISSING",
+            "OUT-EX-COPY-FAIL",
+            "OUT-EX-RENAME-FAIL"
+          ],
+          "story": "US2",
+          "verify": [
+            "npm test focused CLI/output/filesystem suites"
+          ],
+          "writes": [
+            "src/examples/**",
+            "src/cli.js",
+            "src/errors.js",
+            "src/output.js",
+            "test/cli-example-*.test.js",
+            "test/examples/copy-filesystem.test.js"
+          ]
+        },
+        {
+          "accept": "actual npm pack exact-ten inventory, forbidden-artifact absence, digest parity, 5/20 MiB caps",
+          "deps": [
+            "T014",
+            "T019"
+          ],
+          "desc": "add npm package inventory/digest/size tests",
+          "id": "T020",
+          "join": "JP-PACKAGE",
+          "p": true,
+          "packet": "delegated",
+          "phase": "US3-package-and-docs",
+          "refs": [
+            "AC-006",
+            "AC-007",
+            "AC-012",
+            "IF-004",
+            "CAP-006",
+            "CA-001",
+            "CA-004",
+            "MP-007",
+            "MP-008"
+          ],
+          "story": "US3",
+          "verify": [
+            "npm test packaging gallery",
+            "npm pack --json to temp"
+          ],
+          "writes": [
+            "test/packaging/gallery-package.test.js"
+          ]
+        },
+        {
+          "accept": "tarball includes gallery plus existing payload and root install excludes sample dependencies",
+          "deps": [
+            "T020"
+          ],
+          "desc": "update npm package allowlist and package checks",
+          "id": "T021",
+          "join": "JP-PACKAGE",
+          "p": false,
+          "packet": "delegated",
+          "phase": "US3-package-and-docs",
+          "refs": [
+            "AC-006",
+            "AC-012",
+            "IF-004",
+            "CAP-006",
+            "CA-001",
+            "CA-004",
+            "MP-007"
+          ],
+          "story": "US3",
+          "verify": [
+            "npm run package:check",
+            "npm pack --json to temp"
+          ],
+          "writes": [
+            "package.json",
+            "package-lock.json"
+          ]
+        },
+        {
+          "accept": "docs derive from catalog, no score/eval claims, macOS deferral preserved",
+          "deps": [
+            "T013",
+            "T015",
+            "T021"
+          ],
+          "desc": "update catalog-derived README/help and docs checks",
+          "id": "T022",
+          "join": "JP-PACKAGE",
+          "p": false,
+          "packet": "delegated",
+          "phase": "US3-package-and-docs",
+          "refs": [
+            "AC-007",
+            "AC-010",
+            "AC-012",
+            "CAP-004",
+            "CAP-006",
+            "CA-004",
+            "MP-009",
+            "GAP-001"
+          ],
+          "story": "US3",
+          "verify": [
+            "npm test docs gallery"
+          ],
+          "writes": [
+            "README.md",
+            "test/docs-gallery.test.js"
+          ]
+        },
+        {
+          "accept": "package/docs join proves inventory, digest parity, size caps and exact-ten docs",
+          "deps": [
+            "T020",
+            "T021",
+            "T022"
+          ],
+          "desc": "package/docs join and tarball drift repair",
+          "id": "T023",
+          "join": "JP-PACKAGE",
+          "p": false,
+          "packet": "leader-direct",
+          "phase": "US3-package-and-docs",
+          "refs": [
+            "AC-006",
+            "AC-007",
+            "AC-012",
+            "IF-004",
+            "CAP-006",
+            "CA-001",
+            "CA-004",
+            "MP-007",
+            "MP-008",
+            "MP-009"
+          ],
+          "story": "US3",
+          "verify": [
+            "npm run package:check",
+            "npm test packaging/docs"
+          ],
+          "writes": [
+            "package.json",
+            "package-lock.json",
+            "README.md",
+            "test/packaging/gallery-package.test.js",
+            "test/docs-gallery.test.js"
+          ]
+        },
+        {
+          "accept": "20 native cells with bounded health, port release, cleanup, no skip success",
+          "deps": [
+            "T014",
+            "T023"
+          ],
+          "desc": "build Windows/Linux native validation harness",
+          "id": "T024",
+          "join": "JP-CROSS-PLATFORM",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US4-cross-platform-evidence",
+          "refs": [
+            "AC-002",
+            "AC-006",
+            "AC-008",
+            "IF-005",
+            "CAP-002",
+            "CAP-006",
+            "CA-002",
+            "CA-004",
+            "MP-010",
+            "GAP-002"
+          ],
+          "story": "US4",
+          "verify": [
+            "catalog-driven native matrix"
+          ],
+          "writes": [
+            "test/fixtures/gallery-native-matrix.js",
+            "test/gallery-native-matrix.test.js"
+          ]
+        },
+        {
+          "accept": "20 Launchdeck cells on isolated copies/home, reviewable config, source purity, cleanup",
+          "deps": [
+            "T014",
+            "T019",
+            "T023"
+          ],
+          "desc": "build external Launchdeck compatibility fixture and receipts",
+          "id": "T025",
+          "join": "JP-CROSS-PLATFORM",
+          "p": true,
+          "packet": "parallel-high-risk",
+          "phase": "US4-cross-platform-evidence",
+          "refs": [
+            "AC-003",
+            "AC-009",
+            "IF-005",
+            "CAP-003",
+            "CA-002",
+            "CA-004",
+            "MP-010",
+            "GAP-002"
+          ],
+          "story": "US4",
+          "verify": [
+            "Launchdeck lifecycle matrix"
+          ],
+          "writes": [
+            "test/fixtures/gallery-launchdeck-matrix.js",
+            "test/gallery-launchdeck-matrix.test.js"
+          ]
+        },
+        {
+          "accept": "CI requires 20 native plus 20 Launchdeck cells, explicit Docker prerequisite, no macOS claim",
+          "deps": [
+            "T024",
+            "T025"
+          ],
+          "desc": "wire Windows/Linux native and Launchdeck matrices into CI",
+          "id": "T026",
+          "join": "JP-CROSS-PLATFORM",
+          "p": false,
+          "packet": "delegated",
+          "phase": "US4-cross-platform-evidence",
+          "refs": [
+            "AC-003",
+            "AC-006",
+            "AC-008",
+            "AC-009",
+            "AC-012",
+            "IF-005",
+            "CAP-003",
+            "CAP-006",
+            "CA-002",
+            "CA-004",
+            "GAP-001",
+            "GAP-002"
+          ],
+          "story": "US4",
+          "verify": [
+            "CI workflow static contract check"
+          ],
+          "writes": [
+            ".github/workflows/ci.yml"
+          ]
+        },
+        {
+          "accept": "all ten samples have native and Launchdeck Windows/Linux evidence with no skip/source mutation",
+          "deps": [
+            "T024",
+            "T025",
+            "T026"
+          ],
+          "desc": "cross-platform join and denominator repair",
+          "id": "T027",
+          "join": "JP-CROSS-PLATFORM",
+          "p": false,
+          "packet": "leader-direct",
+          "phase": "US4-cross-platform-evidence",
+          "refs": [
+            "AC-003",
+            "AC-006",
+            "AC-008",
+            "AC-009",
+            "AC-012",
+            "IF-005",
+            "CAP-003",
+            "CAP-006",
+            "CA-002",
+            "CA-004",
+            "MP-010"
+          ],
+          "story": "US4",
+          "verify": [
+            "native-matrix gate",
+            "launchdeck-matrix gate"
+          ],
+          "writes": [
+            "test/fixtures/gallery-*-matrix.js",
+            "test/gallery-*-matrix.test.js",
+            ".github/workflows/ci.yml"
+          ]
+        },
+        {
+          "accept": "quickstart proves list/copy/native/Launchdeck for fastapi-inventory; human acceptance universe covers every AC",
+          "deps": [
+            "T006",
+            "T019",
+            "T023",
+            "T027"
+          ],
+          "desc": "implement fastapi quickstart evidence and human acceptance projections",
+          "id": "T028",
+          "join": "JP-RELEASE",
+          "p": false,
+          "packet": "delegated",
+          "phase": "Polish-release",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-003",
+            "AC-004",
+            "AC-005",
+            "AC-006",
+            "AC-007",
+            "AC-008",
+            "AC-009",
+            "AC-010",
+            "AC-011",
+            "AC-012",
+            "quickstart.md",
+            "CAP-001",
+            "CAP-002",
+            "CAP-003",
+            "CAP-004",
+            "CAP-005",
+            "CAP-006",
+            "CA-001",
+            "CA-002",
+            "CA-003",
+            "CA-004"
+          ],
+          "story": null,
+          "verify": [
+            "npm test quickstart",
+            "task-index review obligation coverage"
+          ],
+          "writes": [
+            "test/quickstart-gallery.test.js",
+            "task-index human acceptance via tasks runtime"
+          ]
+        },
+        {
+          "accept": "zero uncovered acceptance, MP, CAP, CA, outcome, package, docs, matrix, and macOS-deferral obligations",
+          "deps": [
+            "T028"
+          ],
+          "desc": "run release closeout gates and repair uncovered denominator",
+          "id": "T029",
+          "join": "JP-RELEASE",
+          "p": false,
+          "packet": "leader-direct",
+          "phase": "Polish-release",
+          "refs": [
+            "AC-001",
+            "AC-002",
+            "AC-003",
+            "AC-004",
+            "AC-005",
+            "AC-006",
+            "AC-007",
+            "AC-008",
+            "AC-009",
+            "AC-010",
+            "AC-011",
+            "AC-012",
+            "MP-001",
+            "MP-002",
+            "MP-003",
+            "MP-004",
+            "MP-005",
+            "MP-006",
+            "MP-007",
+            "MP-008",
+            "MP-009",
+            "MP-010",
+            "CA-001",
+            "CA-002",
+            "CA-003",
+            "CA-004",
+            "OUT-EX-LIST-OK",
+            "OUT-EX-COPY-OK",
+            "OUT-EX-USAGE",
+            "OUT-EX-CATALOG-INVALID",
+            "OUT-EX-UNKNOWN-ID",
+            "OUT-EX-NO-TTY-ID",
+            "OUT-EX-NO-MATCH",
+            "OUT-EX-CANCEL",
+            "OUT-EX-DEST-CONFLICT",
+            "OUT-EX-SOURCE-MISSING",
+            "OUT-EX-COPY-FAIL",
+            "OUT-EX-RENAME-FAIL"
+          ],
+          "story": null,
+          "verify": [
+            "npm run check",
+            "npm test",
+            "npm audit",
+            "npm run package:check",
+            "npm pack",
+            "native/Launchdeck matrices"
+          ],
+          "writes": [
+            "all changed feature paths needed for gate repair"
+          ]
+        }
+      ],
+      "type": "tasks"
+    },
+    {
+      "id": "OBS-TD-003",
+      "items": [
+        "JP-CONTRACT-BASELINE",
+        "JP-STATIC-CONTRACT",
+        "JP-CLI-CONTRACT",
+        "JP-PACKAGE",
+        "JP-CROSS-PLATFORM",
+        "JP-RELEASE"
+      ],
+      "type": "join_points"
+    },
+    {
+      "id": "OBS-TD-004",
+      "items": [
+        {
+          "ca": [
+            "CA-004"
+          ],
+          "outcome": "OUT-EX-LIST-OK",
+          "tasks": [
+            "T015",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-COPY-OK",
+          "tasks": [
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003",
+            "CA-004"
+          ],
+          "outcome": "OUT-EX-USAGE",
+          "tasks": [
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-004"
+          ],
+          "outcome": "OUT-EX-CATALOG-INVALID",
+          "tasks": [
+            "T013",
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-UNKNOWN-ID",
+          "tasks": [
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-NO-TTY-ID",
+          "tasks": [
+            "T017",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-NO-MATCH",
+          "tasks": [
+            "T017",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-CANCEL",
+          "tasks": [
+            "T017",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-DEST-CONFLICT",
+          "tasks": [
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-004"
+          ],
+          "outcome": "OUT-EX-SOURCE-MISSING",
+          "tasks": [
+            "T013",
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-COPY-FAIL",
+          "tasks": [
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        },
+        {
+          "ca": [
+            "CA-003"
+          ],
+          "outcome": "OUT-EX-RENAME-FAIL",
+          "tasks": [
+            "T016",
+            "T018",
+            "T019",
+            "T029"
+          ]
+        }
+      ],
+      "type": "outcome_ca_mapping"
+    },
+    {
+      "human_acceptance": "required human scenarios for list, explicit copy, TTY selector/no-match/cancel, conflict/fault recovery, package review, fastapi quickstart",
+      "id": "OBS-TD-005",
+      "official_entrypoints": [
+        "EP-EXAMPLE-LIST",
+        "EP-EXAMPLE-COPY",
+        "EP-PACKAGE",
+        "EP-NATIVE-MATRIX",
+        "EP-LAUNCHDECK-MATRIX"
+      ],
+      "system_review": "dedicated required scenario for each AC-001..AC-012 plus broad CAP/MP/CA/outcome/package/docs/matrix scenarios",
+      "type": "review_guidance"
+    }
+  ],
+  "packet_id": "",
+  "reported_status": "success",
+  "rule_acknowledgement": {
+    "context_bundle_read": true,
+    "critical_notes": [],
+    "forbidden_drift_respected": true,
+    "paths_read": [],
+    "required_references_read": true
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "summary": "",
+  "task_id": "",
+  "ui_evidence": [],
+  "ui_verification": {
+    "accepted_deviations": [],
+    "approved_handoff_ref": "",
+    "approved_handoff_sha256": "",
+    "approved_manifest_sha256": "",
+    "approved_preview_sha256": "",
+    "approved_visual_ref": "",
+    "comparison_report_ref": "",
+    "comparison_report_sha256": "",
+    "comparison_tolerance": {},
+    "contract_check": "not-run",
+    "covered_decision_ids": [],
+    "covered_handoff_contract_ids": [],
+    "fidelity_status": "not-applicable",
+    "implementation_capture_refs": [],
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "structural_differences": [],
+    "visual_comparison": "unavailable",
+    "visual_differences": []
+  },
+  "validation_results": [],
+  "wave": ""
+}

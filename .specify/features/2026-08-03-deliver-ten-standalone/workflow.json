@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "feature_id": "2026-08-03-deliver-ten-standalone",
+  "revision": 20,
+  "stage": "review",
+  "status": "blocked",
+  "summary": "Review delivery validation remains unproven: the terminal V3-A5 full npm test command returned exit 1, and the bounded follow-up diagnostic exceeded the normal runner window without yielding a stable first failing assertion. The live cross-platform matrix also cannot be completed in this Windows environment.",
+  "blocker": {
+    "affected_scope": [
+      "Review delivery validation V3",
+      "Full npm test release gate",
+      "Native Windows/Linux gallery real lifecycle proof",
+      "External Launchdeck Windows/Linux gallery real lifecycle proof",
+      "Review scenario evidence and final obligation coverage",
+      "Review closeout and acceptance handoff"
+    ],
+    "attempted_recovery": [
+      {
+        "action": "Repaired native live lifecycle execution",
+        "result": "Fixed healthPaths/healthUrls mismatch, passed actual ChildProcess into Windows process-tree cleanup, added bounded taskkill tree termination, and verified a real Go cell plus Vite, ASP.NET, and Docker native cells."
+      },
+      {
+        "action": "Repaired gallery sample prerequisites and project boundaries",
+        "result": "Windows prerequisite checks now resolve npm.cmd through the platform shell; regenerated ASP.NET lock data, excluded tests/**/*.cs from the root project, and verified locked restore/build/test/start/health/stop."
+      },
+      {
+        "action": "Refreshed generated installer payload",
+        "result": "npm run agent:build and npm run prepack completed; the standalone package evidence test and agent/e2e groups passed afterward."
+      },
+      {
+        "action": "Ran bounded full-suite diagnosis",
+        "result": "The terminal full npm test still failed; a subsequent spec-reporter diagnostic remained alive for about 14 minutes with only its own test runner and was terminated with exact process-tree cleanup."
+      }
+    ],
+    "blocker_id": "workflow-review-technical-failure-r20",
+    "can_continue": false,
+    "category": "technical-failure",
+    "details": "Review delivery validation remains unproven: the terminal V3-A5 full npm test command returned exit 1, and the bounded follow-up diagnostic exceeded the normal runner window without yielding a stable first failing assertion. The live cross-platform matrix also cannot be completed in this Windows environment.",
+    "evidence": [
+      "Review validation V3-A5: node scripts/check-syntax.js passed; npm test exited 1; npm audit and npm run package:check were not reached.",
+      "Earlier full-suite diagnosis showed a first package-payload failure with cascading failures when generated installer payload was stale; agent:build and prepack were rerun, but the terminal A5 full suite still returned exit 1.",
+      "New Gallery/Release/Packaging/Quickstart slice passed 56 tests with 1 explicit Poetry prerequisite skip.",
+      "Native Windows live matrix passed 6/10 real cells; FastAPI, Django, and Node/Python were blocked by Poetry, and Spring Boot by Java/Maven. All executed cells accounted for cleanup and released ports.",
+      "External Launchdeck contract matrix passed all 20 Windows/Linux contract cells; local real Windows cells passed Vite, Next.js, NestJS, Go, and ASP.NET, while Docker Compose failed to pull node:22-alpine because auth.docker.io was unreachable.",
+      "No hosted Windows or Linux live CI result is available, so the required 20 native and 20 external real lifecycle denominator is not proven."
+    ],
+    "exact_next_action": "In a clean, dependency-complete environment, reproduce and repair the first stable failure from npm test, then run the terminal validation gate again in the same V3 logical gate only if the runtime permits a new fingerprint; execute LAUNCHDECK_GALLERY_LIVE=1 on hosted Windows and Linux CI with Poetry, Java/Maven, Go, .NET, and Docker available, and attach all 40 real lifecycle receipts before resuming sp-review.",
+    "human_action_guide": {
+      "evidence_to_return": [
+        "First stable full npm test failure and repair diff.",
+        "V3 validation result with npm test, npm audit, and package inventory outcomes.",
+        "Hosted Windows/Linux native and external matrix receipts or CI run links."
+      ],
+      "goal": "Provide a dependency-complete hosted Windows/Linux verification run or authorize the maintainer to repair the remaining full-suite failure and rerun the Review gate.",
+      "prerequisites": [
+        "Keep the active worktree F:/github/launchdeck/.tmp/worktrees/sample-project-gallery.",
+        "Do not treat local prerequisite failures as passes or silently skip the affected cells.",
+        "Preserve the source-only gallery boundary and the no-evaluation-scoring rule."
+      ],
+      "resume_instruction": "After the first stable npm test failure is repaired and hosted Windows/Linux evidence is available, resume with the exact runtime-provided workflow next action for this feature; do not reconstruct or skip Review state.",
+      "safety_notes": [
+        "Do not modify product scope to make unavailable prerequisites pass.",
+        "Do not mark missing Linux evidence as a hardware waiver.",
+        "Do not close Review or route to sp-accept until the required live evidence and full-suite pass exist."
+      ],
+      "steps": [
+        {
+          "action": "Run npm test in the active worktree with complete failure diagnostics and identify the first stable failing test.",
+          "command": "npm test",
+          "expected_result": "A concrete test name, assertion, and root cause are captured.",
+          "if_failed": "Return the full first-failure diagnostic and keep Review blocked.",
+          "order": 1,
+          "title": "Reproduce terminal npm failure"
+        },
+        {
+          "action": "Run the gallery CI job on Windows and Linux with Node, Python/Poetry, Go, Java/Maven, .NET, and Docker Compose available.",
+          "command": "LAUNCHDECK_GALLERY_LIVE=1 node --test --test-concurrency=1 test/gallery-native-matrix.test.js test/gallery-launchdeck-matrix.test.js",
+          "expected_result": "10 native and 10 external real cells pass on each platform with cleanup and port-release evidence.",
+          "if_failed": "Return the failing cell receipt and prerequisite/runtime diagnostics; do not waive ordinary missing-tool failures.",
+          "order": 2,
+          "title": "Run hosted gallery lanes"
+        }
+      ],
+      "verification": [
+        "V3 terminal validation ledger is passed on the repaired fingerprint.",
+        "All 40 live gallery cells have fresh invocation, runtime diagnostics, and side-effect evidence.",
+        "No source purity, cleanup, port release, or package inventory finding remains open."
+      ],
+      "why_human": "The remaining proof requires external hosted runners and ordinary toolchains absent locally; Review cannot convert missing external evidence or an unresolved terminal test failure into an agent-only completion claim."
+    },
+    "human_action_required": true,
+    "owner": "maintainer",
+    "resume": {
+      "argv": [
+        "specify-runtime",
+        "workflow",
+        "show",
+        "--feature-dir",
+        ".specify/features/2026-08-03-deliver-ten-standalone",
+        "--format",
+        "json"
+      ],
+      "command": "use resume.argv",
+      "instruction": "Execute the structured resume.argv array exactly; do not reconstruct a shell command."
+    },
+    "stage": "review",
+    "summary": "Review delivery validation remains unproven: the terminal V3-A5 full npm test command returned exit 1, and the bounded follow-up diagnostic exceeded the normal runner window without yielding a stable first failing assertion. The live cross-platform matrix also cannot be completed in this Windows environment.",
+    "unblock_criteria": "The full npm test suite completes with zero failures, npm audit --omit=dev --audit-level=high and the read-only package inventory pass, hosted Windows and Linux live gallery lanes each complete their 10 native and 10 external cells with no silent skips, all required cleanup/source-purity/port-release evidence is fresh and bound, and Review validation/obligation coverage has no uncovered blocker.",
+    "version": 1,
+    "workflow": "review"
+  },
+  "last_resolution_evidence": [
+    "User invoked sp-auto; its safe-default contract accepted the single reversible internal worktree relocation recommendation.",
+    "Git worktree is registered at F:/github/launchdeck/.tmp/worktrees/sample-project-gallery; branch 2026-08-03-deliver-ten-standalone, HEAD 39271a1, and status hash 6CC6D661... remained unchanged; old path is absent.",
+    "Discussion handoff path-only repair is user-confirmed under digest e7e620fe1f707a44a1ad5a8cdeb62732114d146467f00a34b6da6ff233dadb26; consumer binding succeeded and discussion status is consumed.",
+    "Standard and deep specification validation each passed 16/16 checks with zero warnings.",
+    "User explicitly approved a narrowly scoped Spec Kit planning-toolchain compatibility repair in the clean worktree, with product source and tests excluded.",
+    "The registered planning-lane-manifest scaffold and the required data-model and quickstart scaffolds succeeded after adding only the official missing tooling templates.",
+    "Worktree-local runtime SHA-256 4A781CC1A13AE91B0A72611DF4F5563086847DAFF714E1C4BE7EF460CBEF0035 passed the targeted Codex plan-channel and existing rejection tests; result path reports integration=codex.",
+    "Two real native plan lanes submitted canonical successful results through runtime result submit without sp-teams fallback.",
+    "git status restricted to src, test, examples, package files, README, and CI is empty; the repair changed no product source or tests.",
+    "reopened implement to tasks: Repair the T027 runtime result handoff before continuing implementation.",
+    "T027 was merged without the two required task_check validation rows; the product change and tests are already present and validated.",
+    "reopened implement to tasks: Repair the T027 runtime result handoff before continuing implementation.",
+    "T027 was merged without the two required task_check validation rows; both the lifecycle record and worker result need runtime-owned repair, while product files remain validated."
+  ],
+  "last_reopen": {
+    "evidence": [
+      "T027 was merged without the two required task_check validation rows; both the lifecycle record and worker result need runtime-owned repair, while product files remain validated."
+    ],
+    "invalidated_artifacts": [
+      "implementation-review/tasks/T027.json",
+      "worker-results/T027.json"
+    ],
+    "reason": "Repair the T027 runtime result handoff before continuing implementation.",
+    "source_stage": "implement",
+    "source_status": "active",
+    "target_stage": "tasks"
+  },
+  "last_blocker_resolution": {
+    "blocker": {
+      "affected_scope": [
+        "planning/lane-manifest.json creation",
+        "mandatory native-subagent result submission",
+        "plan artifact synthesis and plan-stage completion",
+        "product source and tests remain untouched and safe"
+      ],
+      "attempted_recovery": [
+        {
+          "action": "Queried artifact catalog and artifact.scaffold API/schema for a supported template-root override or alternate scaffold owner.",
+          "result": "No alternate project root, template root, or lane initializer is exposed."
+        },
+        {
+          "action": "Queried result.submit and sp-teams submit-result capability surfaces without creating lane results.",
+          "result": "The runtime policy directs Codex to sp-teams, but sp-plan forbids that fallback for adaptive planning lanes."
+        },
+        {
+          "action": "Searched the repository read-only for an official template-root environment variable or documented recovery route.",
+          "result": "No supported override was found; direct template copying would modify runtime tooling outside planning authority."
+        }
+      ],
+      "blocker_id": "workflow-plan-conflict-or-drift-r6",
+      "can_continue": false,
+      "category": "conflict-or-drift",
+      "details": "The active clean worktree and the project-local Spec Kit runtime/skills are version-misaligned: the registered planning lane scaffold cannot load its template, while the runtime rejects the Codex result channel required by sp-plan and the workflow forbids sp-teams fallback.",
+      "evidence": [
+        "artifact scaffold --kind planning-lane-manifest failed before artifact creation: .specify/templates/artifacts/lane-manifest.json is unavailable in the active clean worktree.",
+        "artifact catalog registers planning-lane-manifest and requires the missing lane-manifest.json template.",
+        "The source repository contains .specify/templates/artifacts/lane-manifest.json, but the active clean worktree does not.",
+        "result submit --help returned: Codex projects must use sp-teams submit-result for runtime-managed result channels.",
+        "sp-plan requires native delegated lanes to submit through result submit and explicitly prohibits managed-team fallback.",
+        "plan.md and draft plan-contract.json were created; no product source or test file was edited."
+      ],
+      "exact_next_action": "Authorize a narrowly scoped Spec Kit planning-toolchain compatibility repair in the active clean worktree, or have a maintainer align its runtime, templates, and Codex planning result-channel contract; then verify the registered lane scaffold and Codex plan result submission before resuming.",
+      "human_action_guide": {
+        "evidence_to_return": [
+          "Chat approval for the scoped tooling repair, or sanitized outputs proving both compatibility checks.",
+          "A concise changed-path list limited to tooling/planning artifacts."
+        ],
+        "goal": "Authorize or perform the smallest version-alignment repair needed for canonical delegated planning lanes.",
+        "prerequisites": [
+          "Keep feature work in F:/github/launchdeck/.tmp/worktrees/sample-project-gallery.",
+          "Preserve plan workflow revision 5 and all existing spec artifacts.",
+          "Do not merge or overwrite the dirty original product worktree."
+        ],
+        "resume_instruction": "After approval or maintainer repair, invoke $sp-auto; it must execute the runtime-provided workflow show/resolve actions rather than reconstructing a revision.",
+        "safety_notes": [
+          "Limit any repair to Spec Kit runtime/template/skill compatibility.",
+          "Do not hand-create lane-manifest.json or planning handoff artifacts.",
+          "Do not use sp-teams as a hidden fallback for this plan workflow.",
+          "Do not modify product source, tests, package contents, or feature requirements."
+        ],
+        "steps": [
+          {
+            "action": "Reply that you approve a narrowly scoped Spec Kit planning-toolchain compatibility repair in the active clean worktree.",
+            "command": null,
+            "expected_result": "The agent may align only the runtime/template/result-channel tooling needed by sp-plan and then resume automatically.",
+            "if_failed": "Ask a maintainer to align the clean worktree to one Spec Kit release that supports planning-lane-manifest and the Codex plan result channel, then return sanitized verification output.",
+            "order": 1,
+            "title": "Approve scoped tooling repair"
+          },
+          {
+            "action": "Confirm that artifact scaffold can create the registered planning lane manifest and that the approved Codex plan result channel accepts a real lane result.",
+            "command": null,
+            "expected_result": "Both checks pass while git status shows no product source/test changes from the repair.",
+            "if_failed": "Return the two sanitized command errors and do not manually create canonical artifacts.",
+            "order": 2,
+            "title": "Verify the repair boundary"
+          }
+        ],
+        "verification": [
+          "artifact scaffold --kind planning-lane-manifest succeeds in the active clean worktree.",
+          "A native plan lane result is accepted through the workflow-approved runtime channel.",
+          "workflow show reports stage plan, status active.",
+          "Only explicitly approved Spec Kit tooling paths and planning artifacts changed; product source/tests did not."
+        ],
+        "why_human": "The repair changes project workflow tooling outside the approved product feature and outside sp-plan write authority."
+      },
+      "human_action_required": true,
+      "owner": "maintainer",
+      "resume": {
+        "argv": [
+          "specify-runtime",
+          "workflow",
+          "show",
+          "--feature-dir",
+          ".specify/features/2026-08-03-deliver-ten-standalone",
+          "--format",
+          "json"
+        ],
+        "command": "use resume.argv",
+        "instruction": "Execute the structured resume.argv array exactly; do not reconstruct a shell command."
+      },
+      "stage": "plan",
+      "summary": "The active clean worktree and the project-local Spec Kit runtime/skills are version-misaligned: the registered planning lane scaffold cannot load its template, while the runtime rejects the Codex result channel required by sp-plan and the workflow forbids sp-teams fallback.",
+      "unblock_criteria": "In the active clean worktree, planning-lane-manifest scaffolding succeeds through artifact scaffold, a real native plan lane can submit through the workflow-approved runtime channel without sp-teams fallback, workflow show remains at active plan, and no product source/test files change.",
+      "version": 1,
+      "workflow": "plan"
+    },
+    "resolution_evidence": [
+      "User explicitly approved a narrowly scoped Spec Kit planning-toolchain compatibility repair in the clean worktree, with product source and tests excluded.",
+      "The registered planning-lane-manifest scaffold and the required data-model and quickstart scaffolds succeeded after adding only the official missing tooling templates.",
+      "Worktree-local runtime SHA-256 4A781CC1A13AE91B0A72611DF4F5563086847DAFF714E1C4BE7EF460CBEF0035 passed the targeted Codex plan-channel and existing rejection tests; result path reports integration=codex.",
+      "Two real native plan lanes submitted canonical successful results through runtime result submit without sp-teams fallback.",
+      "git status restricted to src, test, examples, package files, README, and CI is empty; the repair changed no product source or tests."
+    ],
+    "resolved_revision": 7,
+    "stage": "plan",
+    "summary": "Resolved blocker workflow-plan-conflict-or-drift-r6."
+  },
+  "acceptance_sha256": null
+}

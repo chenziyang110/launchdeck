@@ -1,0 +1,70 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/node-python-issue-tracker/.gitignore",
+    "examples/sample-projects/node-python-issue-tracker/LICENSE",
+    "examples/sample-projects/node-python-issue-tracker/README.md",
+    "examples/sample-projects/node-python-issue-tracker/data/seed.json",
+    "examples/sample-projects/node-python-issue-tracker/node/src/seed.mjs",
+    "examples/sample-projects/node-python-issue-tracker/node/src/server.mjs",
+    "examples/sample-projects/node-python-issue-tracker/node/src/store.mjs",
+    "examples/sample-projects/node-python-issue-tracker/node/test/server.test.mjs",
+    "examples/sample-projects/node-python-issue-tracker/package-lock.json",
+    "examples/sample-projects/node-python-issue-tracker/package.json",
+    "examples/sample-projects/node-python-issue-tracker/poetry.lock",
+    "examples/sample-projects/node-python-issue-tracker/pyproject.toml",
+    "examples/sample-projects/node-python-issue-tracker/python/issue_tracker/__init__.py",
+    "examples/sample-projects/node-python-issue-tracker/python/issue_tracker/seed.py",
+    "examples/sample-projects/node-python-issue-tracker/python/issue_tracker/server.py",
+    "examples/sample-projects/node-python-issue-tracker/python/issue_tracker/storage.py",
+    "examples/sample-projects/node-python-issue-tracker/python/tests/test_issue_tracker.py"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Standalone Node.js and Python services include MIT licensing, package-lock.json, poetry.lock, deterministic seed data, native persistence, tests, real API surfaces, health endpoints, and overridable ports.",
+      "id": "AC-002"
+    },
+    {
+      "evidence": "README records both service commands, default ports, overrides, health checks, persistence paths, and cleanup.",
+      "id": "CA-002"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the native Node/Python lifecycle matrix later from a fresh copy, including install, tests, start, health, stop, and cleanup."
+  ],
+  "task_id": "T011",
+  "validation_results": [
+    {
+      "command": "node --check Node sources/tests",
+      "output": "All Node syntax checks passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Python AST syntax validation",
+      "output": "All Python sources parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "Native JSON/TOML parsing",
+      "output": "Native manifests, locks, seed, and TOML parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity audit",
+      "output": "No forbidden artifacts or terms found in the sample.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed paths are inside the T011 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "README documents install, test, run, PORT overrides, health endpoints, persistence paths, and cleanup.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

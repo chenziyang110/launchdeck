@@ -1,0 +1,62 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Update the stale package.files repository assertion in the owning integration/release task before T030."
+    ]
+  },
+  "result_ref": "worker-results/T026.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T026",
+  "task_ref": "task-index.json#/tasks/25",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "YAML parse and static gallery CI contract",
+      "evidence": "gallery job has exact windows-latest/ubuntu-latest matrix, Docker fail-closed prerequisite step before both matrix commands, and no gallery macOS entry.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=CI runs the repository checks test/repository-contract.test.js",
+      "evidence": "The CI-specific repository contract passed 1/1.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- .github/workflows/ci.yml",
+      "evidence": "CI patch has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only .github/workflows/ci.yml changed for T026.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "CI invokes serialized native and Launchdeck matrix tests after explicit docker version/info/compose checks; their contracts enforce source unchanged and residue-free cleanup.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

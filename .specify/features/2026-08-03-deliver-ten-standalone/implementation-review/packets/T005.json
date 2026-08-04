@@ -1,0 +1,115 @@
+{
+  "acceptance_refs": [
+    "spec-contract.json#/acceptance_criteria/0",
+    "spec-contract.json#/acceptance_criteria/1",
+    "spec-contract.json#/acceptance_criteria/7",
+    "plan-contract.json",
+    "spec-contract.json",
+    "data-model.md",
+    "contracts/example-cli-contract.md",
+    "quickstart.md"
+  ],
+  "authoritative_refs": [
+    "plan-contract.json#/architecture_decisions",
+    "plan-contract.json#/interface_map",
+    "plan-contract.json#/operational_consequence_decisions",
+    "spec-contract.json#/acceptance_refs",
+    "plan-contract.json",
+    "spec-contract.json",
+    "data-model.md",
+    "contracts/example-cli-contract.md",
+    "quickstart.md"
+  ],
+  "capability_operation_refs": [
+    "spec-contract.json#/capability_operations/1"
+  ],
+  "consequence_obligation_refs": [
+    "CA-002"
+  ],
+  "done_condition": [
+    "Complete the objective and satisfy acceptance refs 0,1,7."
+  ],
+  "fidelity_refs": [
+    "plan-contract.json#/ui_design_contract",
+    "DESIGN.md@sha256:2c0d7b74b07d861e123a8c5619b0165907d1b32151b384b4aa2e87a7ea54f2aa"
+  ],
+  "forbidden_drift": [
+    "Do not reduce, replace or merge the ten approved projects.",
+    "Do not add .launchdeck.yml, Launchdeck runtime state, scoring, answers, evaluation or telemetry to sample sources.",
+    "Do not silently skip a required OS/sample cell."
+  ],
+  "implementation_target_ref": "F:/github/launchdeck/.tmp/worktrees/sample-project-gallery",
+  "must_preserve_refs": [
+    "MP-001",
+    "MP-002",
+    "MP-003"
+  ],
+  "objective": "Author standalone sample fastapi-inventory (FastAPI) with native manifest, lock, MIT license, deterministic seed/tests, persistence and health surface.",
+  "policy_refs": [
+    "plan-contract.json#/complete_first_scope_preservation",
+    "plan-contract.json#/global_constraints",
+    "plan-contract.json#/stop_and_reopen_conditions"
+  ],
+  "read_scope": [
+    "package.json",
+    "README.md"
+  ],
+  "recovery": "Repair the failing task or prerequisite in its declared scope and rerun its focused validation; do not shrink the denominator.",
+  "required_consumer_evidence": [
+    "standalone sample source",
+    "native lifecycle matrix"
+  ],
+  "required_validation": [
+    "static purity and native lifecycle for fastapi-inventory"
+  ],
+  "source_revision": 1,
+  "source_task_ref": "task-index.json#/tasks/4",
+  "stop_and_reopen_conditions": [
+    "Stop and reopen if scope, denominator, public outcome contract or platform claim must be weakened.",
+    "Stop on residue, source mutation, silent skip or unsafe publish."
+  ],
+  "task_checks": [
+    "Check changed files stay inside expected_write_scope.",
+    "Record invocation, runtime and side-effect evidence for the real consumer."
+  ],
+  "task_id": "T005",
+  "ui_contract": {
+    "approved_visual_ref": "",
+    "audience": "",
+    "content_thesis": "",
+    "design_sources": [],
+    "fidelity_level": "none",
+    "image_plan": [],
+    "interaction_thesis": "",
+    "may_adapt": [],
+    "must_not": [],
+    "must_preserve": [],
+    "platforms": [],
+    "real_content_plan": [],
+    "reference_intents": [],
+    "reference_notes": "",
+    "required_evidence": [],
+    "required_states": [],
+    "signature_element": "",
+    "single_job": "",
+    "subject": "",
+    "surface_type": "",
+    "ui_work_type": "",
+    "visual_target": "",
+    "visual_thesis": ""
+  },
+  "user_confirmed_deferral_refs": [
+    "plan-contract.json#/user_confirmed_deferrals/0"
+  ],
+  "validation_policy": {
+    "budget_ref": "implementation-review/validation-runs.json",
+    "budget_scope": "implement-review",
+    "heavy_gate_owner": "leader",
+    "max_epochs": 3,
+    "mode": "feature_epochs"
+  },
+  "version": 2,
+  "write_scope": [
+    "examples/sample-projects/fastapi-inventory/**"
+  ]
+}
