@@ -212,7 +212,9 @@ export function inspectGalleryNativePrerequisites(cell, { spawnSyncImpl = spawnS
   const checks = cell.prerequisite.checks.map((check) => {
     const result = spawnSyncImpl(check.command, check.args, {
       encoding: 'utf8',
-      timeout: 5_000,
+      // Tool startup can be slower on hosted Windows runners under load.
+      // Keep the probe bounded while avoiding false prerequisite failures.
+      timeout: 15_000,
       windowsHide: true,
       // npm is exposed as npm.cmd on Windows. Using the platform shell here
       // keeps prerequisite inspection aligned with the commands used by the

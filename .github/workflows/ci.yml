@@ -141,6 +141,11 @@ jobs:
           docker info
           docker compose version
 
+      - name: Pre-pull Windows Docker base image
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: docker pull mcr.microsoft.com/windows/servercore:ltsc2025
+
       - name: Run native gallery matrix
         run: node --test --test-concurrency=1 test/gallery-native-matrix.test.js
 
