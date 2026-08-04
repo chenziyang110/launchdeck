@@ -482,14 +482,16 @@ function writeFixtureSupportFiles(cell, projectRoot) {
 function nodePythonSupervisorSource() {
   return `import { spawn } from 'node:child_process';
 
-const command = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const nodeCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const poetryCommand = process.platform === 'win32' ? 'poetry.exe' : 'poetry';
+const childOptions = { stdio: 'inherit', shell: process.platform === 'win32' };
 const children = [
-  spawn(command, ['start'], {
-    stdio: 'inherit',
+  spawn(nodeCommand, ['start'], {
+    ...childOptions,
     env: { ...process.env, PORT: process.env.NODE_PORT }
   }),
-  spawn('poetry', ['run', 'issue-server'], {
-    stdio: 'inherit',
+  spawn(poetryCommand, ['run', 'issue-server'], {
+    ...childOptions,
     env: { ...process.env, PORT: process.env.PYTHON_PORT, PYTHONUNBUFFERED: '1' }
   })
 ];
