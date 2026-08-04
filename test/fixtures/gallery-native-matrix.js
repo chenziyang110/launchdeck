@@ -940,7 +940,10 @@ function snapshotTree(directory) {
   for (const entry of walk(directory)) {
     const relative = path.relative(directory, entry).replaceAll(path.sep, '/');
     const stat = fs.lstatSync(entry);
-    if (stat.isSymbolicLink()) throw new Error(`Symlink is not allowed in native fixture: ${relative}`);
+    // npm and other package managers create dependency-bin symlinks inside
+    // the owned fixture. Source and digest walks still reject symlinks; the
+    // runtime snapshot only needs to account for regular-file mutations.
+    if (stat.isSymbolicLink()) continue;
     if (stat.isFile()) snapshot.set(relative, digestFile(entry));
   }
   return snapshot;

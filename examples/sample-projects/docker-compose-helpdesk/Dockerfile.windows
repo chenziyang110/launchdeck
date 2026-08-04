@@ -11,7 +11,7 @@ ENV PATH="C:\\node;C:\\node\\node_modules\\npm\\bin;C:\\Windows\\System32;C:\\Wi
 
 RUN $nodeUrl = ('https://nodejs.org/dist/v{0}/node-v{0}-win-x64.zip' -f $env:NODE_VERSION); Invoke-WebRequest -Uri $nodeUrl -OutFile C:\node.zip; Expand-Archive -LiteralPath C:\node.zip -DestinationPath C:\; Rename-Item -LiteralPath ('C:\node-v{0}-win-x64' -f $env:NODE_VERSION) -NewName node; Remove-Item -Force C:\node.zip
 
-WORKDIR C:\app
+WORKDIR C:/app
 
 COPY package.json package-lock.json ./
 RUN npm.cmd ci --omit=dev --ignore-scripts --no-audit --no-fund
@@ -22,7 +22,7 @@ COPY scripts ./scripts
 COPY src ./src
 COPY test ./test
 
-RUN New-Item -ItemType Directory -Force C:\app\data | Out-Null
+RUN New-Item -ItemType Directory -Force C:/app/data | Out-Null
 
 EXPOSE 3000
 
