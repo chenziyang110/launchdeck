@@ -144,7 +144,10 @@ const SAMPLE_LIFECYCLES = Object.freeze({
     test: 'docker compose run --rm --no-deps helpdesk npm test',
     start: 'docker compose up',
     stop: 'docker compose down --remove-orphans',
-    env: { HELPDESK_PORT: String(ports[0]) },
+    env: {
+      HELPDESK_PORT: String(ports[0]),
+      HELPDESK_DOCKERFILE: process.platform === 'win32' ? 'Dockerfile.windows' : 'Dockerfile'
+    },
     healthPaths: ['/health']
   }),
   'node-python-issue-tracker': ({ ports, fixture }) => nativeProfile({
@@ -493,7 +496,7 @@ function normalizeLifecycleReceipt(cell, value) {
 }
 
 function createGalleryNativeFixture({ cell, rootDir }) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX));
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX)));
   const projectRoot = path.join(root, 'sample-copy');
   const externalFixtureRoot = path.join(root, 'external-fixture');
   const launchdeckHome = path.join(externalFixtureRoot, 'launchdeck-home');
@@ -989,7 +992,7 @@ function walk(directory) {
 
 function removeFixtureRoot(root) {
   const resolved = path.resolve(root);
-  const tempRoot = path.resolve(os.tmpdir());
+  const tempRoot = fs.realpathSync.native(path.resolve(os.tmpdir()));
   const relative = path.relative(tempRoot, resolved);
   if (path.dirname(resolved) !== tempRoot || !path.basename(resolved).startsWith(FIXTURE_PREFIX) ||
       relative.startsWith('..') || path.isAbsolute(relative)) {

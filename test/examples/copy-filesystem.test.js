@@ -10,7 +10,7 @@ import { loadCatalog } from '../../src/examples/catalog.js';
 const catalog = loadCatalog({ rootDir: repoRoot });
 
 test('copy publishes a complete sample tree and leaves no staging residue', () => {
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-copy-'));
+  const workspace = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-copy-')));
   const destination = path.join(workspace, 'fastapi-inventory');
 
   try {
@@ -35,7 +35,7 @@ test('copy publishes a complete sample tree and leaves no staging residue', () =
 });
 
 test('copy rejects every existing destination before mutation', () => {
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-conflict-'));
+  const workspace = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-conflict-')));
   const destination = path.join(workspace, 'existing');
 
   try {
@@ -51,7 +51,7 @@ test('copy rejects every existing destination before mutation', () => {
 });
 
 test('copy cleans owned staging after copy failure', () => {
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-copy-fail-'));
+  const workspace = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-copy-fail-')));
   const destination = path.join(workspace, 'failed');
 
   try {
@@ -78,7 +78,7 @@ test('copy cleans owned staging after copy failure', () => {
 });
 
 test('copy cleans owned staging after atomic publish failure', () => {
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-rename-'));
+  const workspace = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-rename-')));
   const destination = path.join(workspace, 'rename-failed');
   let attempts = 0;
 
@@ -110,7 +110,7 @@ test('copy cleans owned staging after atomic publish failure', () => {
 });
 
 test('copy retries transient Windows publish contention while ownership remains safe', () => {
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-rename-retry-'));
+  const workspace = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-example-rename-retry-')));
   const destination = path.join(workspace, 'rename-retried');
   let attempts = 0;
 

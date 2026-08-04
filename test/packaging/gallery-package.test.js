@@ -47,7 +47,7 @@ let packageEntry;
 let tarballPath;
 
 test.before(() => {
-  packRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-gallery-package-'));
+  packRoot = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-gallery-package-')));
   const npmCommand = process.platform === 'win32' ? (process.env.ComSpec ?? 'cmd.exe') : 'npm';
   const npmArgs = process.platform === 'win32'
     ? ['/d', '/s', '/c', 'npm.cmd', 'pack', '--json', '--pack-destination', packRoot]
@@ -103,7 +103,7 @@ test('repository sources, successful copies, and tarball sources have matching d
   const tarballFiles = tarballGalleryFiles();
   assert.deepEqual([...tarballFiles.keys()].sort(), [...sourceFiles.keys()].sort());
 
-  const copyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-gallery-copies-'));
+  const copyRoot = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), 'launchdeck-gallery-copies-')));
   try {
     for (const entry of catalog) {
       copyExample({

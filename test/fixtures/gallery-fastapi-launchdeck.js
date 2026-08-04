@@ -44,7 +44,7 @@ export function getFastApiLaunchdeckContract({ rootDir = repositoryRoot } = {}) 
 }
 
 export function createFastApiLaunchdeckFixture({ rootDir = repositoryRoot } = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX));
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX)));
   const projectRoot = path.join(root, 'sample-copy');
   const homeDir = path.join(root, 'launchdeck-home');
   const externalFixtureRoot = path.join(root, 'external-fixture');

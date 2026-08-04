@@ -122,7 +122,7 @@ export function getPoetryAvailability({ command = 'poetry' } = {}) {
 }
 
 export function createFastApiNativeFixture({ rootDir = repositoryRoot } = {}) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX));
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX)));
   const projectRoot = path.join(root, 'sample-copy');
   const externalFixtureRoot = path.join(root, 'external-fixture');
   fs.mkdirSync(externalFixtureRoot);
@@ -578,7 +578,7 @@ function walk(directory) {
 
 function removeFixtureRoot(root) {
   const resolved = path.resolve(root);
-  const tempRoot = path.resolve(os.tmpdir());
+  const tempRoot = fs.realpathSync.native(path.resolve(os.tmpdir()));
   const relative = path.relative(tempRoot, resolved);
   if (path.dirname(resolved) !== tempRoot || !path.basename(resolved).startsWith(FIXTURE_PREFIX) ||
       relative.startsWith('..') || path.isAbsolute(relative)) {

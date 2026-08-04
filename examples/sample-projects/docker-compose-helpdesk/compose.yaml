@@ -2,7 +2,7 @@ services:
   helpdesk:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ${HELPDESK_DOCKERFILE:-Dockerfile}
     environment:
       DATA_FILE: /app/data/tickets.json
       HOST: 0.0.0.0

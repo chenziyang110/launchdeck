@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2025
+
+SHELL ["powershell", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ARG NODE_VERSION=22.23.1
+ENV NODE_HOME="C:\\node"
+ENV PATH="C:\\node;C:\\node\\node_modules\\npm\\bin;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\WindowsPowerShell\\v1.0"
+
+RUN Invoke-WebRequest -Uri ("https://nodejs.org/dist/v{0}/node-v{0}-win-x64.zip" -f $env:NODE_VERSION) -OutFile C:\node.zip; `
+    Expand-Archive -LiteralPath C:\node.zip -DestinationPath C:\; `
+    Rename-Item -LiteralPath ("C:\node-v{0}-win-x64" -f $env:NODE_VERSION) -NewName node; `
+    Remove-Item -Force C:\node.zip
+
+WORKDIR C:\app
+
+COPY package.json package-lock.json ./
+RUN npm.cmd ci --omit=dev --ignore-scripts --no-audit --no-fund
+
+COPY db ./db
+COPY public ./public
+COPY scripts ./scripts
+COPY src ./src
+COPY test ./test
+
+RUN New-Item -ItemType Directory -Force C:\app\data | Out-Null
+
+EXPOSE 3000
+
+CMD ["C:\\node\\node.exe", "src\\server.mjs"]

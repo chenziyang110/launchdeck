@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -55,10 +56,20 @@ def connect(database_path: Path | str) -> sqlite3.Connection:
     return connection
 
 
+@contextmanager
+def transaction(database_path: Path | str):
+    connection = connect(database_path)
+    try:
+        with connection:
+            yield connection
+    finally:
+        connection.close()
+
+
 def initialize_database(database_path: Path | str | None = None) -> Path:
     selected_path = resolve_database_path(database_path)
     selected_path.parent.mkdir(parents=True, exist_ok=True)
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         connection.execute(
             """
             CREATE TABLE IF NOT EXISTS issues (
@@ -86,7 +97,7 @@ def initialize_database(database_path: Path | str | None = None) -> Path:
 
 def seed_database(database_path: Path | str | None = None) -> int:
     selected_path = initialize_database(database_path)
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         return int(connection.execute("SELECT COUNT(*) FROM issues").fetchone()[0])
 
 
@@ -96,14 +107,14 @@ def row_to_issue(row: sqlite3.Row) -> dict[str, Any]:
 
 def list_issues(database_path: Path | str | None = None) -> list[dict[str, Any]]:
     selected_path = initialize_database(database_path)
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         rows = connection.execute("SELECT * FROM issues ORDER BY id").fetchall()
     return [row_to_issue(row) for row in rows]
 
 
 def get_issue(issue_id: str, database_path: Path | str | None = None) -> dict[str, Any] | None:
     selected_path = initialize_database(database_path)
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         row = connection.execute("SELECT * FROM issues WHERE id = ?", (issue_id,)).fetchone()
     return row_to_issue(row) if row else None
 
@@ -116,7 +127,7 @@ def create_issue(payload: dict[str, Any], database_path: Path | str | None = Non
     from datetime import datetime, timezone
 
     issue = validate_issue({"id": f"ISSUE-{next_number}", "title": payload.get("title"), "description": payload.get("description", ""), "status": payload.get("status", "open"), "labels": payload.get("labels", []), "assignee": payload.get("assignee", ""), "createdAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")})
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         connection.execute(
             "INSERT INTO issues VALUES (?, ?, ?, ?, ?, ?, ?)",
             (issue["id"], issue["title"], issue["description"], issue["status"], json.dumps(issue["labels"], separators=(",", ":")), issue["assignee"], issue["createdAt"]),
@@ -130,10 +141,9 @@ def update_issue(issue_id: str, payload: dict[str, Any], database_path: Path | s
         raise KeyError(issue_id)
     updated = validate_issue({**current, **payload, "id": issue_id, "createdAt": current["createdAt"]})
     selected_path = resolve_database_path(database_path)
-    with connect(selected_path) as connection:
+    with transaction(selected_path) as connection:
         connection.execute(
             "UPDATE issues SET title = ?, description = ?, status = ?, labels_json = ?, assignee = ? WHERE id = ?",
             (updated["title"], updated["description"], updated["status"], json.dumps(updated["labels"], separators=(",", ":")), updated["assignee"], issue_id),
         )
     return updated
-

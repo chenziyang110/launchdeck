@@ -25,6 +25,17 @@ The Compose install happens during the image build:
 docker compose build
 ```
 
+On a Windows host using Windows containers, select the Windows-compatible
+Dockerfile before building or starting Compose:
+
+```powershell
+$env:HELPDESK_DOCKERFILE = "Dockerfile.windows"
+docker compose build
+```
+
+Linux containers use `Dockerfile` by default. The Windows Dockerfile targets
+the Windows Server 2025 container base used by current Windows runners.
+
 ## Test
 
 Run the native tests without starting a long-lived service:

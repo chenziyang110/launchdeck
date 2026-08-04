@@ -125,7 +125,10 @@ const SAMPLE_PROFILES = Object.freeze({
       test: 'docker compose run --rm --no-deps helpdesk npm test',
       start: 'docker compose up'
     },
-    env: { HELPDESK_PORT: String(ports[0]) },
+    env: {
+      HELPDESK_PORT: String(ports[0]),
+      HELPDESK_DOCKERFILE: process.platform === 'win32' ? 'Dockerfile.windows' : 'Dockerfile'
+    },
     healthPaths: ['/health'],
     clean: ['data']
   }),
@@ -174,7 +177,7 @@ export function createGalleryLaunchdeckFixture({
   rootDir = repositoryRoot
 } = {}) {
   const selectedCell = resolveCell({ cell, sampleId, platform, rootDir });
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX));
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), FIXTURE_PREFIX)));
   const projectRoot = path.join(root, 'sample-copy');
   const homeDir = path.join(root, 'launchdeck-home');
   const externalFixtureRoot = path.join(root, 'external-fixture');
@@ -936,7 +939,7 @@ function walk(directory) {
 
 function assertOwnedFixtureRoot(root) {
   const resolvedRoot = path.resolve(root);
-  const temporaryRoot = path.resolve(os.tmpdir());
+  const temporaryRoot = fs.realpathSync.native(path.resolve(os.tmpdir()));
   if (path.dirname(resolvedRoot) !== temporaryRoot || !path.basename(resolvedRoot).startsWith(FIXTURE_PREFIX)) {
     throw galleryError('gallery_cleanup_refused', `Refusing to remove unowned fixture root '${resolvedRoot}'.`);
   }

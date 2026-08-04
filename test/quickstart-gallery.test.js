@@ -32,7 +32,7 @@ const ANSI_PATTERN = /\u001b\[[0-?]*[ -/]*[@-~]/u;
 const PROMPT_PATTERN = /(?:select an example|choose an example|search examples|press enter|[❯›])/iu;
 
 test('quickstart materializes the real FastAPI list/copy consumer evidence', (t) => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), TEMP_PREFIX));
+  const tempRoot = fs.realpathSync.native(fs.mkdtempSync(path.join(os.tmpdir(), TEMP_PREFIX)));
   const destination = path.join(tempRoot, 'fastapi-inventory');
   const isolatedHome = path.join(tempRoot, 'launchdeck-home');
   const sourceBefore = snapshotTree(sourceRoot);
@@ -299,7 +299,7 @@ function readTestFile(relativePath) {
 
 function removeOwnedTempRoot(tempRoot) {
   const resolved = path.resolve(tempRoot);
-  const tempParent = path.resolve(os.tmpdir());
+  const tempParent = fs.realpathSync.native(path.resolve(os.tmpdir()));
   assert.equal(path.dirname(resolved), tempParent);
   assert.equal(path.basename(resolved).startsWith(TEMP_PREFIX), true);
   fs.rmSync(resolved, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
