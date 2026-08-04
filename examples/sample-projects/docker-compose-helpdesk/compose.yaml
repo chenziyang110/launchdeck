@@ -12,7 +12,7 @@ services:
     volumes:
       - helpdesk-data:${HELPDESK_DATA_TARGET:-/app/data}
     healthcheck:
-      test: ["CMD", "node", "scripts/healthcheck.mjs"]
+      test: ["CMD", "${HELPDESK_NODE_COMMAND:-node}", "scripts/healthcheck.mjs"]
       interval: 5s
       timeout: 3s
       retries: 10

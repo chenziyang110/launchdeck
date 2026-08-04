@@ -141,14 +141,17 @@ const SAMPLE_LIFECYCLES = Object.freeze({
   'docker-compose-helpdesk': ({ ports }) => nativeProfile({
     install: 'npm ci',
     build: 'docker compose build',
-    test: 'docker compose run --rm --no-deps helpdesk npm test',
+    test: process.platform === 'win32'
+      ? 'docker compose run --rm --no-deps helpdesk C:/node/npm.cmd test'
+      : 'docker compose run --rm --no-deps helpdesk npm test',
     start: 'docker compose up',
     stop: 'docker compose down --remove-orphans',
     env: {
       HELPDESK_PORT: String(ports[0]),
       HELPDESK_DOCKERFILE: process.platform === 'win32' ? 'Dockerfile.windows' : 'Dockerfile',
       HELPDESK_DATA_FILE: process.platform === 'win32' ? 'C:/app/data/tickets.json' : '/app/data/tickets.json',
-      HELPDESK_DATA_TARGET: process.platform === 'win32' ? 'C:/app/data' : '/app/data'
+      HELPDESK_DATA_TARGET: process.platform === 'win32' ? 'C:/app/data' : '/app/data',
+      HELPDESK_NODE_COMMAND: process.platform === 'win32' ? 'C:/node/node.exe' : 'node'
     },
     healthPaths: ['/health']
   }),
