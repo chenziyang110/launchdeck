@@ -811,9 +811,10 @@ function nodePythonSupervisorSource() {
   return `import { spawn } from 'node:child_process';
 
 const nodeCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const poetryCommand = process.platform === 'win32' ? 'poetry.exe' : 'poetry';
 const children = [
   spawn(nodeCommand, ['start'], { stdio: 'inherit', env: { ...process.env, PORT: process.env.NODE_PORT } }),
-  spawn('poetry', ['run', 'issue-server'], {
+  spawn(poetryCommand, ['run', 'issue-server'], {
     stdio: 'inherit',
     env: { ...process.env, PORT: process.env.PYTHON_PORT, PYTHONUNBUFFERED: '1' }
   })
