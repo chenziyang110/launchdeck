@@ -146,7 +146,9 @@ const SAMPLE_LIFECYCLES = Object.freeze({
     stop: 'docker compose down --remove-orphans',
     env: {
       HELPDESK_PORT: String(ports[0]),
-      HELPDESK_DOCKERFILE: process.platform === 'win32' ? 'Dockerfile.windows' : 'Dockerfile'
+      HELPDESK_DOCKERFILE: process.platform === 'win32' ? 'Dockerfile.windows' : 'Dockerfile',
+      HELPDESK_DATA_FILE: process.platform === 'win32' ? 'C:/app/data/tickets.json' : '/app/data/tickets.json',
+      HELPDESK_DATA_TARGET: process.platform === 'win32' ? 'C:/app/data' : '/app/data'
     },
     healthPaths: ['/health']
   }),

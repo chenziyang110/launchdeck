@@ -30,6 +30,8 @@ Dockerfile before building or starting Compose:
 
 ```powershell
 $env:HELPDESK_DOCKERFILE = "Dockerfile.windows"
+$env:HELPDESK_DATA_FILE = "C:/app/data/tickets.json"
+$env:HELPDESK_DATA_TARGET = "C:/app/data"
 docker compose build
 ```
 

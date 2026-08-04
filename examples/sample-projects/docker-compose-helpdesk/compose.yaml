@@ -4,13 +4,13 @@ services:
       context: .
       dockerfile: ${HELPDESK_DOCKERFILE:-Dockerfile}
     environment:
-      DATA_FILE: /app/data/tickets.json
+      DATA_FILE: ${HELPDESK_DATA_FILE:-/app/data/tickets.json}
       HOST: 0.0.0.0
       PORT: "3000"
     ports:
       - "${HELPDESK_PORT:-8110}:3000"
     volumes:
-      - helpdesk-data:/app/data
+      - helpdesk-data:${HELPDESK_DATA_TARGET:-/app/data}
     healthcheck:
       test: ["CMD", "node", "scripts/healthcheck.mjs"]
       interval: 5s
