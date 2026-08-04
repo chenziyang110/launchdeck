@@ -812,10 +812,11 @@ function nodePythonSupervisorSource() {
 
 const nodeCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const poetryCommand = process.platform === 'win32' ? 'poetry.exe' : 'poetry';
+const childOptions = { stdio: 'inherit', shell: process.platform === 'win32' };
 const children = [
-  spawn(nodeCommand, ['start'], { stdio: 'inherit', env: { ...process.env, PORT: process.env.NODE_PORT } }),
+  spawn(nodeCommand, ['start'], { ...childOptions, env: { ...process.env, PORT: process.env.NODE_PORT } }),
   spawn(poetryCommand, ['run', 'issue-server'], {
-    stdio: 'inherit',
+    ...childOptions,
     env: { ...process.env, PORT: process.env.PYTHON_PORT, PYTHONUNBUFFERED: '1' }
   })
 ];
