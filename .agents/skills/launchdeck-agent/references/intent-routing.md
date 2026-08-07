@@ -2,6 +2,10 @@
 
 Route when the prompt combines local lifecycle intent with local project/service context, or when it explicitly asks to configure that local project for Launchdeck. Lifecycle users do not need to say "Launchdeck"; configuration authoring users must explicitly request the config write.
 
+## Surface pin (hard rule)
+
+Pin exactly one Launchdeck entrypoint for the whole request through `entrypoint-discovery.md` (MCP first, then CLI candidates). **Pre-dispatch only:** compatible CLI JSON may cover capabilities, projects, and read-only discovery when MCP is unavailable. **After a mutation may have been dispatched:** never switch entrypoints, never fall back to CLI or another surface, and never repeat the mutation—recover only by known operation ID or the bounded `operation.list` correlation in this document.
+
 ## Should Trigger
 
 - Start/run/dev: "start this project", "run the dev server", "start the local API", "启动这个项目", "运行开发服务".

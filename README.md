@@ -81,12 +81,21 @@ launchdeck --help
 
 ## Unified Lifecycle And Agent Boundary
 
-Launchdeck uses one lifecycle model across the CLI, MCP, and installed Agent surfaces. The CLI is the human and automation entrypoint, MCP exposes the bounded Agent operation catalog, and the installed `launchdeck-agent` Skill decides when to use MCP first or a compatible CLI JSON fallback. All mutation still flows through the shared Kernel and the same ownership, compatibility, lock, journal, and recovery rules.
+Launchdeck uses **one** lifecycle model, but the agent-facing surfaces are **not peers**:
+
+1. **Skill is policy** — intent routing, entrypoint pin, safety gates, and when to author config. It is not a second control plane.
+2. **MCP is the narrow preferred agent transport** — the bounded operation catalog agents should use first.
+3. **CLI is the full human and automation surface** — plus a **pre-dispatch-only** compatible JSON fallback when MCP is unavailable before any mutation.
+4. **Kernel is the sole execution authority** — ownership, risk, locks, journal, and recovery for every lifecycle mutation.
+
+All mutation still flows through that shared Kernel. The CLI, MCP, and installed Agent Skill share the same lifecycle semantics; they do not compete as independent authorities.
+
+**Config authoring and lifecycle mutation are separate intent chains.** Explicit configuration authoring may write one missing `.launchdeck.yml` and validate it. Ordinary start/dev/run does **not** authorize writing config. Combined configure-validate-launch requires the current request to authorize every phase explicitly.
 
 The installer and installed Agent have separate responsibilities:
 
 - The installer installs or repairs Launchdeck-owned runtime, Skill, MCP, launcher, host config, and receipt artifacts. It never authors a project `.launchdeck.yml`.
-- The installed Agent may author one missing project `.launchdeck.yml` only after an explicit config-authoring request, bounded project inspection, and preservation of any existing config.
+- The installed Agent may author one missing project `.launchdeck.yml` only after an explicit config-authoring request, bounded project inspection, and preservation of any existing config. That write is a workspace file edit plus validation—not an MCP lifecycle mutation—and does not start, stop, register, or clean as a side effect.
 - Host approval, host trust prompts, extension reloads, and runtime readiness are separate layers. Installing files does not prove the host has approved, trusted, reloaded, or launched the MCP runtime unless exact evidence says so.
 - Project scope is the default for setup/install planning. User scope is explicit and must be selected with `--scope user`; it is not silently inferred from home-directory access.
 
@@ -374,9 +383,9 @@ The table below documents target paths, not an aggregate support guarantee. A ho
 
 ## Agent And Plugin Surfaces
 
-The canonical Skill resolves one entrypoint deterministically: available Launchdeck MCP, global `launchdeck`, project-local `node_modules/.bin/launchdeck`, then `src/cli.js` only in a verified Launchdeck source checkout. It reuses the handshake winner for the request. Before any mutation dispatch, MCP unavailability may fall back to compatible CLI JSON for capabilities, project listing, and read-only config discovery. Once a mutation may have been dispatched, it recovers by operation ID or a bounded correlation query; it never switches entrypoints or repeats the mutation on another surface.
+The canonical Skill **pins one entrypoint** for the whole request, in this order: available Launchdeck MCP, global `launchdeck`, project-local `node_modules/.bin/launchdeck`, then `src/cli.js` only in a verified Launchdeck source checkout. It reuses the handshake winner. **Before any mutation dispatch**, MCP unavailability may fall back to compatible CLI JSON only for capabilities, project listing, and read-only config discovery. **After a mutation may have been dispatched**, recovery uses the operation ID or a bounded correlation query only—it never switches entrypoints, never falls back to another surface, and never repeats the mutation.
 
-Adoption inspection remains read-only. MCP `adoption.inspect` is used only for a registered/resolved target; an unregistered missing-config project is inspected through the Agent's bounded workspace read surface because the CLI adoption command also requires an existing config. When a user explicitly asks to create a project-adapted `.launchdeck.yml`, the Skill may write one missing config for exact or strong candidates and validate it with `launchdeck doctor`. It preserves any existing config and never registers, starts, stops, restarts, cleans, or controls processes as a config-authoring side effect.
+Adoption inspection remains read-only. MCP `adoption.inspect` is used only for a registered/resolved target; an unregistered missing-config project is inspected through the Agent's bounded workspace read surface because the CLI adoption command also requires an existing config. When a user explicitly asks to create a project-adapted `.launchdeck.yml`, the Agent (following the Skill) may write one missing config for exact or strong candidates through the workspace file surface and validate it with `launchdeck doctor` or `launchdeck config validate`. It preserves any existing config and never registers, starts, stops, restarts, cleans, or controls processes as a config-authoring side effect.
 
 Build the separate Codex and Claude artifacts with:
 

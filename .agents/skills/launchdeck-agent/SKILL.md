@@ -11,14 +11,20 @@ Use this skill only after verifying a local project/service context plus one app
 - Explicit configuration-authoring intent: create/write/generate `.launchdeck.yml` or configure/adopt this project for Launchdeck.
 - Local context: current repo, named local project, declared task, service, port, runtime state, or `.launchdeck.yml`.
 
-Launchdeck is the execution authority. Do not use raw PID/port process control, direct background service recipes, or ad hoc lifecycle commands when Launchdeck can observe or mutate the project. Prefer the local stdio MCP, observe before mutate, and summarize the normalized result instead of dumping raw JSON.
+## Policy, transport, and authority
 
-Keep the layers separate:
+These surfaces are layered, not peer competitors:
+
+- **Policy (this Skill):** intent gates, entrypoint pin, observe-before-mutate, config-authoring rules, recovery, and refusals. The Skill decides *whether* and *how* to route; it is not a second control plane.
+- **Transport (MCP preferred, CLI fallback):** call the pinned Launchdeck surface. Prefer local stdio MCP. Use compatible CLI JSON only when MCP is unavailable **before** any mutation dispatch, or omits a required safe operation. Do not use raw PID/port process control, ad hoc background recipes, or shell lifecycle when Launchdeck can observe or mutate the project.
+- **Authority (Kernel):** every lifecycle mutation is decided by the shared Kernel (ownership, risk, locks, journal, recovery). Summarize the normalized result; do not dump raw JSON to the user.
+
+Keep the install and host layers separate:
 
 - Installer layer: installs or repairs Launchdeck-owned runtime, Skill, MCP, launcher, host config, and receipts. It never authors a project `.launchdeck.yml`.
-- Agent authoring layer: may write one missing `.launchdeck.yml` only through the explicit authoring branch after bounded project inspection. Preserve every existing config.
+- Agent authoring layer: may write one missing `.launchdeck.yml` only through the explicit authoring branch after bounded project inspection (workspace file edit + validation, not an MCP lifecycle mutation). Preserve every existing config. Lifecycle-only intent never authors a missing config.
 - Host layer: approval prompts, trust decisions, extension reloads, and host discovery are host-owned. Do not treat an installed file or fixture as host readiness.
-- Runtime layer: readiness requires MCP initialize/capabilities evidence or compatible CLI JSON evidence for the exact selected build, component, scope, host/version, platform, and scenario.
+- Runtime readiness: MCP initialize/capabilities evidence or compatible CLI JSON evidence for the exact selected build, component, scope, host/version, platform, and scenario.
 
 Project scope is the default for setup/install planning. User scope is explicit; do not infer it from home-directory access or from a generic confirmation.
 
