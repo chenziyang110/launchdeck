@@ -13,7 +13,7 @@ Launchdeck requires Node.js 20 or newer. Install the supported v0.5.4 package fr
 Install the CLI globally:
 
 ```bash
-npm install --global launchdeck@0.5.3
+npm install --global launchdeck@0.5.4
 launchdeck --help
 launchdeck agent setup --host codex --component runtime,skill,mcp --scope user --yes --json
 launchdeck agent status --host codex --scope user --json
@@ -22,7 +22,7 @@ launchdeck agent status --host codex --scope user --json
 Or install it into another project:
 
 ```bash
-npm install --save-dev launchdeck@0.5.3
+npm install --save-dev launchdeck@0.5.4
 npx launchdeck --help
 npx launchdeck agent setup
 npx launchdeck agent status --host codex --scope project --project . --json
@@ -153,6 +153,47 @@ Pop-Location
 ```
 
 The demo server also exposes a controlled exit endpoint so stale state recovery can be exercised without killing unmanaged processes.
+
+## Standalone Sample Project Gallery
+
+The npm package also ships ten standalone source projects for developers who want
+to try Launchdeck against realistic project shapes. They are catalogued in
+`examples/sample-projects/catalog.json`, and the CLI reads that same catalog for
+listing and copying:
+
+```bash
+launchdeck example list
+launchdeck example list --json
+launchdeck example copy vite-react-habit-tracker ./my-habit-tracker
+```
+
+`launchdeck example copy` only copies source files. It does not install
+dependencies, run a build, start a service, initialize Git, access the network,
+or create a `.launchdeck.yml`; the copied project is deliberately ready for a
+developer to inspect and configure independently. The destination must not
+already exist, and the copy is published atomically so a failed copy does not
+leave a partial project behind. In JSON or non-interactive mode, provide the
+sample ID explicitly.
+
+The current catalog is:
+
+| ID | Stack | Theme | Port(s) |
+| --- | --- | --- | --- |
+| `vite-react-habit-tracker` | Vite + React | habit tracking | 4173 |
+| `nextjs-blog-manager` | Next.js | blog management | 3402 |
+| `nestjs-url-shortener` | NestJS | URL shortening | 4013 |
+| `fastapi-inventory` | FastAPI | inventory | 8104 |
+| `django-events` | Django | events | 8105 |
+| `go-webhook-inbox` | Go | webhook inbox | 8106 |
+| `spring-boot-orders` | Spring Boot | orders | 8107 |
+| `aspnet-library-catalog` | ASP.NET Core | library catalog | 5217 |
+| `docker-compose-helpdesk` | Docker Compose | helpdesk | 8110 |
+| `node-python-issue-tracker` | Node.js + Python monorepo | issue tracking | 4821, 5821 |
+
+These are source fixtures, not Launchdeck evaluation targets or scored demos.
+They contain no Launchdeck configuration and are not included in product
+readiness or evaluation scoring. Windows and Linux lifecycle evidence is tracked
+per project and prerequisite; no broad macOS support claim is implied.
 
 ## Agent-Authored Flask Flow
 
@@ -286,6 +327,8 @@ clean:
 | `launchdeck logs [task or project:task] [--lines 80] [--follow] [--json]` | Reads task logs. With `--follow --json`, it streams JSON Lines instead of a single JSON object. |
 | `launchdeck events [target] [--lines 80] [--follow] [--json]` | Reads structured event history. With `--follow --json`, it streams JSON Lines. |
 | `launchdeck clean [--safe] [--all --yes] [--json]` | Plans cleanup targets, previews by default, and requires confirmation for risky cleanup. |
+| `launchdeck example list [--json] [--compact] [--no-color]` | Lists the ten standalone sample projects from the packaged catalog. |
+| `launchdeck example copy [<id>] [<destination>] [--json] [--compact] [--no-color]` | Atomically copies one catalog sample into a new destination without installing, running, or authoring Launchdeck configuration. |
 | `launchdeck agent paths [--json]` | Lists the canonical `launchdeck-agent` skill source plus known project and user skill target directories. |
 | `launchdeck agent doctor [--json]` | Validates the canonical skill package and conservative adapter matrix without writing files. |
 | `launchdeck agent install --agent <id> [--scope project\|user] [--dry-run] [--force] [--target dir] [--json]` | Copies `.agents/skills/launchdeck-agent` into one selected local agent host target. Defaults to project scope; user scope must be explicit. |

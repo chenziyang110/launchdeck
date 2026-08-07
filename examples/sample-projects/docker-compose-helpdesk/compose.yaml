@@ -1,0 +1,22 @@
+services:
+  helpdesk:
+    build:
+      context: .
+      dockerfile: ${HELPDESK_DOCKERFILE:-Dockerfile}
+    environment:
+      DATA_FILE: ${HELPDESK_DATA_FILE:-/app/data/tickets.json}
+      HOST: 0.0.0.0
+      PORT: "3000"
+    ports:
+      - "${HELPDESK_PORT:-8110}:3000"
+    volumes:
+      - helpdesk-data:${HELPDESK_DATA_TARGET:-/app/data}
+    healthcheck:
+      test: ["CMD", "${HELPDESK_NODE_COMMAND:-node}", "scripts/healthcheck.mjs"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  helpdesk-data:

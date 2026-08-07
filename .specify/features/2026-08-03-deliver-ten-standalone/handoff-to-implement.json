@@ -1,0 +1,10 @@
+{
+  "source_revision": 1,
+  "status": "ready",
+  "target": "implement",
+  "task_count": 30,
+  "task_index_ref": "task-index.json",
+  "task_index_sha256": "56e48995c796a58a9e0900943df1272133e91d0084bcef1b69cccab9538c44dc",
+  "tasks_ref": "tasks.md",
+  "version": 1
+}

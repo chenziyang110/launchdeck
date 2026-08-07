@@ -1,0 +1,17 @@
+{
+  "name": "node-python-issue-tracker-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node.js page and JSON API for a standalone issue tracker monorepo.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "seed": "node node/src/seed.mjs",
+    "start": "node node/src/server.mjs",
+    "test": "node --test --test-concurrency=1 node/test/server.test.mjs",
+    "test:python": "poetry run python -m unittest discover -s python/tests -p test_*.py",
+    "test:all": "npm test && npm run test:python"
+  }
+}

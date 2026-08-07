@@ -1,0 +1,39 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/examples/copy-filesystem.test.js",
+    "test/cli-example-contract.test.js",
+    "test/cli-example-outcomes.test.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Filesystem tests prove preflight destination rejection, same-parent staging cleanup, atomic publish failure cleanup, and source containment.",
+      "id": "CA-003"
+    },
+    {
+      "evidence": "CLI list/copy contracts derive from the exact-ten catalog and preserve machine envelope behavior.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T019",
+  "validation_results": [
+    {
+      "command": "node --test --test-concurrency=1 test/examples/copy-filesystem.test.js test/cli-example-contract.test.js test/cli-example-outcomes.test.js",
+      "output": "8 focused CLI/copy tests passed, 0 failed; success, conflict, copy-failure, publish-failure, source-containment, list JSON and unknown-ID outcomes covered.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All test changes are within T019 expected scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Real catalog copy published to an isolated temp destination; conflict and injected copy/rename failures left no staging, lock, or destination residue.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

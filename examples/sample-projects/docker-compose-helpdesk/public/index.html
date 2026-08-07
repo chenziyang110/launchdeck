@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Northstar Helpdesk</title>
+    <style>
+      :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #f4f7fb; color: #172033; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      header { background: #172033; color: #fff; padding: 28px max(24px, calc((100vw - 1080px) / 2)); }
+      header p { color: #b8c6df; margin: 8px 0 0; }
+      main { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr); max-width: 1080px; margin: 32px auto; padding: 0 24px; }
+      section { background: #fff; border: 1px solid #dce4f1; border-radius: 16px; padding: 24px; box-shadow: 0 8px 24px #2d466d12; }
+      h1, h2 { margin: 0; }
+      h2 { font-size: 1.15rem; }
+      .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+      #health { color: #18794e; font-size: .9rem; }
+      .ticket { border-top: 1px solid #e8edf5; padding: 18px 0; }
+      .ticket:first-child { border-top: 0; padding-top: 0; }
+      .ticket h3 { margin: 0 0 8px; font-size: 1rem; }
+      .ticket p { color: #53627a; line-height: 1.5; margin: 0 0 10px; }
+      .meta { color: #687892; font-size: .82rem; }
+      .badge { border-radius: 999px; display: inline-block; font-size: .75rem; margin-left: 8px; padding: 3px 8px; background: #e8efff; color: #2854a5; }
+      label { display: block; font-weight: 650; font-size: .9rem; margin-top: 14px; }
+      input, textarea, select { border: 1px solid #cbd6e7; border-radius: 9px; display: block; font: inherit; margin-top: 6px; padding: 10px 12px; width: 100%; }
+      textarea { min-height: 110px; resize: vertical; }
+      button { background: #315efb; border: 0; border-radius: 9px; color: #fff; cursor: pointer; font: inherit; font-weight: 700; margin-top: 18px; padding: 11px 16px; }
+      button:hover { background: #2048dc; }
+      #message { min-height: 1.25em; color: #53627a; font-size: .88rem; margin: 12px 0 0; }
+      @media (max-width: 760px) { main { grid-template-columns: 1fr; margin-top: 20px; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Northstar Helpdesk</h1>
+      <p>A small, persistent ticket queue for a local support team.</p>
+    </header>
+    <main>
+      <section aria-labelledby="ticket-heading">
+        <div class="toolbar">
+          <h2 id="ticket-heading">Open tickets</h2>
+          <span id="health">Checking service…</span>
+        </div>
+        <div id="tickets" aria-live="polite">Loading tickets…</div>
+      </section>
+      <section aria-labelledby="new-ticket-heading">
+        <h2 id="new-ticket-heading">Create a ticket</h2>
+        <form id="ticket-form">
+          <label>Title<input name="title" required maxlength="120" placeholder="What needs attention?"></label>
+          <label>Details<textarea name="description" required maxlength="2000" placeholder="Include useful context for the support team."></textarea></label>
+          <label>Your email<input name="requesterEmail" type="email" required placeholder="you@example.com"></label>
+          <label>Priority<select name="priority"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select></label>
+          <button type="submit">Submit ticket</button>
+          <p id="message" role="status"></p>
+        </form>
+      </section>
+    </main>
+    <script>
+      const ticketList = document.querySelector('#tickets');
+      const health = document.querySelector('#health');
+      const message = document.querySelector('#message');
+
+      function renderTickets(tickets) {
+        ticketList.replaceChildren();
+        if (tickets.length === 0) {
+          ticketList.textContent = 'No tickets yet.';
+          return;
+        }
+        for (const ticket of tickets) {
+          const article = document.createElement('article');
+          article.className = 'ticket';
+          const title = document.createElement('h3');
+          title.textContent = ticket.title;
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = ticket.priority;
+          title.append(badge);
+          const description = document.createElement('p');
+          description.textContent = ticket.description;
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = `${ticket.id} · ${ticket.status} · ${ticket.requesterEmail}`;
+          article.append(title, description, meta);
+          ticketList.append(article);
+        }
+      }
+
+      async function loadTickets() {
+        const [healthResponse, ticketsResponse] = await Promise.all([fetch('/health'), fetch('/api/tickets')]);
+        if (!healthResponse.ok || !ticketsResponse.ok) throw new Error('The helpdesk service is unavailable.');
+        const healthPayload = await healthResponse.json();
+        const ticketsPayload = await ticketsResponse.json();
+        health.textContent = `Healthy · ${healthPayload.seededTickets} tickets`;
+        renderTickets(ticketsPayload.tickets);
+      }
+
+      document.querySelector('#ticket-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = 'Submitting…';
+        const form = new FormData(event.currentTarget);
+        const response = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(form)),
+        });
+        if (!response.ok) {
+          const payload = await response.json();
+          message.textContent = payload.error || 'Unable to submit ticket.';
+          return;
+        }
+        event.currentTarget.reset();
+        message.textContent = 'Ticket created.';
+        await loadTickets();
+      });
+
+      loadTickets().catch((error) => {
+        health.textContent = 'Unavailable';
+        health.style.color = '#b42318';
+        ticketList.textContent = error.message;
+      });
+    </script>
+  </body>
+</html>

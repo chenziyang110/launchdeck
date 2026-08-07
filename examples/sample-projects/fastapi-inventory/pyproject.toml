@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "fastapi-inventory"
+version = "0.1.0"
+description = "A deterministic FastAPI inventory service backed by SQLite."
+readme = "README.md"
+packages = [{ include = "inventory_api" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+fastapi = "0.115.6"
+uvicorn = "0.34.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.4"
+httpx = "0.28.1"
+
+[tool.poetry.scripts]
+inventory-api = "inventory_api.main:run"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

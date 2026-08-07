@@ -1,0 +1,24 @@
+{
+  "name": "nextjs-blog-manager",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A standalone Next.js blog manager with local persistence.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test",
+    "seed": "node scripts/seed.js",
+    "health": "node scripts/health.js"
+  },
+  "dependencies": {
+    "next": "15.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  }
+}

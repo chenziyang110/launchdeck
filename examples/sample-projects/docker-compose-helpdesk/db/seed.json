@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "tickets": [
+    {
+      "id": "ticket-001",
+      "title": "Cannot connect to the office VPN",
+      "description": "The VPN client reports a timeout after the latest laptop update.",
+      "requesterEmail": "alex@example.test",
+      "priority": "high",
+      "status": "open",
+      "createdAt": "2026-01-15T09:00:00.000Z"
+    },
+    {
+      "id": "ticket-002",
+      "title": "Request access to the design folder",
+      "description": "Please grant the product team read access to the shared design folder.",
+      "requesterEmail": "sam@example.test",
+      "priority": "normal",
+      "status": "in-progress",
+      "createdAt": "2026-01-15T09:05:00.000Z"
+    },
+    {
+      "id": "ticket-003",
+      "title": "Keyboard replacement",
+      "description": "Several keys on the shared reception keyboard are sticking.",
+      "requesterEmail": "riley@example.test",
+      "priority": "low",
+      "status": "open",
+      "createdAt": "2026-01-15T09:10:00.000Z"
+    }
+  ]
+}

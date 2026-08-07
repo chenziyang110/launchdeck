@@ -1,0 +1,43 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "src/errors.js",
+    "src/output.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Typed copy outcome codes are registered centrally for downstream filesystem outcomes.",
+      "id": "CA-003"
+    },
+    {
+      "evidence": "Central output envelope preserves catalog-derived entries for JSON and compact consumers.",
+      "id": "CA-004"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T017",
+  "validation_results": [
+    {
+      "command": "node --check src/errors.js src/output.js src/examples/list.js src/examples/copy.js src/examples/selector.js src/examples/catalog.js src/examples/index.js",
+      "output": "All shared error/output/example modules passed syntax checks.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js",
+      "output": "27 tests passed, 0 failed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only src/errors.js and src/output.js changed within T017 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Example-specific public errors normalize through the central registry and compact example list entries remain in the schemaVersion 1 envelope.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

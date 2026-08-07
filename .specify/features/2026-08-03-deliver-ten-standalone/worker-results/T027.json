@@ -1,0 +1,76 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "README.md",
+    "test/docs-gallery.test.js",
+    "test/packaging/gallery-package.test.js"
+  ],
+  "concerns": [],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "test/packaging/gallery-package.test.js",
+      "consumer": "published launchdeck tarball",
+      "entrypoint": "npm pack",
+      "kind": "real_entrypoint",
+      "producer": "package.json files allowlist",
+      "transformer": "npm prepack/build-agent-plugins",
+      "validation": "Repository, copied projects, and tarball gallery trees have matching inventories and SHA-256 digests."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "gallery-package.test.js passes exact inventory and digest comparisons.",
+      "obligation": "Catalog, repository copy, and npm tarball use one exact source denominator."
+    },
+    {
+      "evidence": "README documents no Launchdeck configuration/evaluation scoring; docs-gallery.test.js passes.",
+      "obligation": "Samples are source-only and excluded from evaluation scoring."
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "Windows npm.cmd direct spawn returned EINVAL under Node; packaging test now invokes npm.cmd through ComSpec. The real npm pack and package:check both pass."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T027",
+  "testImpact": {
+    "affectedTests": [
+      "test/docs-gallery.test.js",
+      "test/packaging/gallery-package.test.js"
+    ],
+    "changedBehavior": "README and packaged sample gallery documentation now describe the catalog-derived list/copy commands, source-only semantics, and ten entries.",
+    "expectedRegressionScope": "Documentation, npm tarball gallery inventory, copy/tarball digest parity, and package size/forbidden-artifact contracts.",
+    "requiredHeavyGates": [
+      "Full native and external lifecycle matrices remain pending in T024/T025."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "node --check test/docs-gallery.test.js",
+      "evidence": "README gallery contract test parses successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/docs-gallery.test.js test/packaging/gallery-package.test.js",
+      "evidence": "7 tests passed; README catalog coverage and real npm pack inventory/copy/tarball digest parity passed.",
+      "status": "passed"
+    },
+    {
+      "command": "npm run package:check",
+      "evidence": "npm pack --dry-run passed; package includes examples/sample-projects catalog and all ten source projects.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Changed files are limited to README.md and the two T027 contract tests declared by the task scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Real npm pack exercised the published tarball consumer and verified repository/copy/tarball inventories plus SHA-256 parity.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

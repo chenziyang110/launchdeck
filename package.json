@@ -25,8 +25,10 @@
     "src/",
     "schema/",
     "agent/compatibility-manifest.json",
+    "agent/evidence/index.json",
     "agent/installer-payload/",
-    ".agents/skills/launchdeck-agent/"
+    ".agents/skills/launchdeck-agent/",
+    "examples/sample-projects/"
   ],
   "scripts": {
     "check": "node scripts/check-syntax.js",
@@ -35,7 +37,7 @@
     "agent:build": "node scripts/build-agent-plugins.js",
     "prepack": "node scripts/build-agent-plugins.js --installer-payload",
     "smoke": "node scripts/smoke-lifecycle.js --mode quick --json",
-    "package:check": "npm pack --dry-run"
+    "package:check": "node scripts/check-package.js"
   },
   "dependencies": {
     "@clack/prompts": "1.1.0",

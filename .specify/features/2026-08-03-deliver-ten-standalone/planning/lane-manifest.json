@@ -1,0 +1,90 @@
+{
+  "command": "plan",
+  "lanes": [
+    {
+      "acceptance_checks": [
+        "Preserve all capability, MP, CA, target-boundary, and acceptance refs.",
+        "Produce explicit architecture decisions and interface map.",
+        "Produce one complete operational decision for every outcome in entrypoint_outcome_contract, with every required field and security constraints for recoverable-user-input.",
+        "Submit one revised structured result through the runtime command supplied in the packet."
+      ],
+      "allowed_read_scope": [
+        "authoritative inputs and directly referenced targeted tests"
+      ],
+      "allowed_write_scope": [
+        "runtime-owned planning/handoffs/architecture-interface.json via result submit only"
+      ],
+      "authoritative_inputs": [
+        ".specify/features/2026-08-03-deliver-ten-standalone/spec-contract.json",
+        ".specify/features/2026-08-03-deliver-ten-standalone/spec.md#Confirmed Scope *(mandatory)*",
+        ".specify/features/2026-08-03-deliver-ten-standalone/spec.md#Consequence Analysis",
+        "package.json",
+        "src/cli.js",
+        "src/output.js",
+        "src/errors.js",
+        "src/agent/lifecycle-prompter.js",
+        "README.md",
+        "DESIGN.md"
+      ],
+      "blocker": null,
+      "forbidden_paths": [
+        "all product source edits",
+        "all test edits",
+        "all canonical planning artifact direct writes"
+      ],
+      "integration_target": [
+        "plan-contract.json#/architecture_decisions",
+        "plan-contract.json#/interface_map",
+        "plan-contract.json#/operational_consequence_decisions",
+        "plan.md"
+      ],
+      "lane_id": "architecture-interface",
+      "objective": "Design the implementation architecture and complete per-outcome operational consequence decisions for the ten standalone sample gallery and list/copy CLI.",
+      "result_ref": ".specify/features/2026-08-03-deliver-ten-standalone/planning/handoffs/architecture-interface.json",
+      "result_sha256": "7be3a10134fb2b418e530527324049701535dacc925e33f95fea1d299eb53f83",
+      "status": "accepted"
+    },
+    {
+      "acceptance_checks": [
+        "Cover all ten sample types and all list/copy/lifecycle/package acceptance paths.",
+        "Define deterministic representative scenarios, failure/recovery evidence, cross-platform matrix, and CI boundaries.",
+        "Submit one success/blocked/failed structured result through the runtime command supplied in the packet."
+      ],
+      "allowed_read_scope": [
+        "authoritative inputs and directly referenced test helpers/fixtures"
+      ],
+      "allowed_write_scope": [
+        "runtime-owned planning/handoffs/validation-scenarios.json via result submit only"
+      ],
+      "authoritative_inputs": [
+        ".specify/features/2026-08-03-deliver-ten-standalone/spec-contract.json",
+        ".specify/features/2026-08-03-deliver-ten-standalone/spec.md#Confirmed Scope *(mandatory)*",
+        "package.json",
+        ".github/workflows/ci.yml",
+        "test/repository-contract.test.js",
+        "test/cli-control-plane-contract.test.js",
+        "test/cli-contract.test.js",
+        "README.md"
+      ],
+      "blocker": null,
+      "forbidden_paths": [
+        "all product source edits",
+        "all test edits",
+        "all canonical planning artifact direct writes"
+      ],
+      "integration_target": [
+        "plan-contract.json#/conditional_artifacts",
+        "plan-contract.json#/review_risk_notes",
+        "quickstart.md",
+        "plan.md"
+      ],
+      "lane_id": "validation-scenarios",
+      "objective": "Design the complete verification and quickstart matrix for ten standalone source projects, npm package inventory/size, safe copy behavior, and Windows/Linux Launchdeck compile/run/stop lifecycle.",
+      "result_ref": ".specify/features/2026-08-03-deliver-ten-standalone/planning/handoffs/validation-scenarios.json",
+      "result_sha256": "e2d63c17583189755d873454def564a04b0f6ebe9f0e8e7d5f4630138a3eb819",
+      "status": "accepted"
+    }
+  ],
+  "status": "integrated",
+  "version": 1
+}

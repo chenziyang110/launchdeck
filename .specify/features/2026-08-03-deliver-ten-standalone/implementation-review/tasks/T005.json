@@ -1,0 +1,71 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "examples/sample-projects/fastapi-inventory/LICENSE",
+    "examples/sample-projects/fastapi-inventory/README.md",
+    "examples/sample-projects/fastapi-inventory/pyproject.toml",
+    "examples/sample-projects/fastapi-inventory/poetry.lock",
+    "examples/sample-projects/fastapi-inventory/inventory_api/__init__.py",
+    "examples/sample-projects/fastapi-inventory/inventory_api/__main__.py",
+    "examples/sample-projects/fastapi-inventory/inventory_api/db.py",
+    "examples/sample-projects/fastapi-inventory/inventory_api/main.py",
+    "examples/sample-projects/fastapi-inventory/inventory_api/seed.py",
+    "examples/sample-projects/fastapi-inventory/tests/test_inventory.py"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Standalone FastAPI source includes MIT license, Poetry manifest/lock, deterministic seed data, SQLite persistence, native pytest tests, API health, and no prohibited artifacts.",
+      "id": "AC-002"
+    },
+    {
+      "evidence": "Native lifecycle commands and tests are authored; runtime lifecycle remains available for downstream matrix validation.",
+      "id": "CA-002"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T005.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T005",
+  "task_ref": "task-index.json#/tasks/4",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "Compile Python sources and parse native TOML/lock files.",
+      "output": "Python syntax and native TOML/lock parsing passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity audit for fastapi-inventory.",
+      "output": "No forbidden Launchdeck, evaluation, or runtime residue found.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed paths are under the T005 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "README documents install, pytest, run, PORT override, /health, and cleanup; runtime persistence is confined to data/.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

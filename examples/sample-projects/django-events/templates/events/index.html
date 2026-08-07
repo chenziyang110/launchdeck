@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Community events</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; }
+      body { background: #f5f7fb; color: #172033; margin: 0; }
+      main { margin: 0 auto; max-width: 900px; padding: 3rem 1.25rem; }
+      h1 { margin-bottom: .5rem; }
+      .intro { color: #526078; margin-bottom: 2rem; }
+      .events { display: grid; gap: 1rem; }
+      article { background: white; border: 1px solid #dce3ef; border-radius: 12px; padding: 1.25rem; }
+      h2 { margin: 0 0 .5rem; }
+      .meta { color: #526078; font-size: .95rem; }
+      .badge { color: #176b45; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Community events</h1>
+      <p class="intro">A small, local-first calendar backed by Django and SQLite.</p>
+      <section class="events" aria-label="Upcoming events">
+        {% for event in events %}
+          <article>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.description }}</p>
+            <p class="meta">
+              {{ event.starts_at|date:"M j, Y, g:i A T" }} · {{ event.venue }} ·
+              {{ event.capacity }} seats
+              {% if event.is_free %}<span class="badge">· Free</span>{% endif %}
+            </p>
+          </article>
+        {% empty %}
+          <p>No events have been seeded yet.</p>
+        {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>

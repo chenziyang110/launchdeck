@@ -1,0 +1,528 @@
+{
+  "budget_scope": "implement-review",
+  "max_epochs": 3,
+  "mode": "feature_epochs",
+  "runs": [
+    {
+      "attempt_id": "V1-A2",
+      "attempts": [
+        {
+          "attempt_id": "V1-A1",
+          "commands": [
+            "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js"
+          ],
+          "completed_at": "2026-08-03T16:21:41.1609598Z",
+          "covered_task_ids": [
+            "T001"
+          ],
+          "evidence_refs": [
+            "command:node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js; error:ERR_MODULE_NOT_FOUND:@clack/prompts"
+          ],
+          "failure_kind": "environment",
+          "fingerprint": "4ff12c44939f61f03e72a25e295fbd5ccda6aebb3f75aae7f728cb0526e22d44",
+          "started_at": "2026-08-03T16:21:07.1786286Z",
+          "status": "interrupted",
+          "summary": "Baseline could not start because clean worktree dependencies are not installed; Node failed to resolve @clack/prompts before product assertions."
+        },
+        {
+          "attempt_id": "V1-A2",
+          "commands": [
+            "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js"
+          ],
+          "completed_at": "2026-08-03T16:22:31.2759723Z",
+          "covered_task_ids": [
+            "T001"
+          ],
+          "evidence_refs": [
+            "command:node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js; result:26 passed, 0 failed"
+          ],
+          "failure_kind": null,
+          "fingerprint": "4ff12c44939f61f03e72a25e295fbd5ccda6aebb3f75aae7f728cb0526e22d44",
+          "started_at": "2026-08-03T16:22:01.8810967Z",
+          "status": "passed",
+          "summary": "Credible pre-change baseline passed after npm ci: repository and CLI contract suites completed 26/26."
+        }
+      ],
+      "commands": [
+        "node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js"
+      ],
+      "completed_at": "2026-08-03T16:22:31.2759723Z",
+      "covered_task_ids": [
+        "T001"
+      ],
+      "evidence_refs": [
+        "command:node --test --test-concurrency=1 test/repository-contract.test.js test/cli-contract.test.js; result:26 passed, 0 failed"
+      ],
+      "failure_kind": null,
+      "fingerprint": "4ff12c44939f61f03e72a25e295fbd5ccda6aebb3f75aae7f728cb0526e22d44",
+      "purpose": "baseline",
+      "run_id": "V1",
+      "stage": "implement",
+      "started_at": "2026-08-03T16:22:01.8810967Z",
+      "status": "passed",
+      "summary": "Credible pre-change baseline passed after npm ci: repository and CLI contract suites completed 26/26."
+    },
+    {
+      "attempt_id": "V2-A7",
+      "attempts": [
+        {
+          "attempt_id": "V2-A1",
+          "commands": [
+            "npm run check",
+            "node --test --test-concurrency=1 test/repository-contract.test.js"
+          ],
+          "completed_at": "2026-08-04T04:46:45.2305915Z",
+          "covered_task_ids": [
+            "T001",
+            "T021",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm run check; result:failed because root node --check scanned Next.js JSX under examples/sample-projects",
+            "command:node --test --test-concurrency=1 test/repository-contract.test.js; result:4 passed, 1 failed because package.files expectation omitted examples/sample-projects/"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "9dd42c86a2791f6b4abc85aad77f7371241bf15a4f5a24ae76d21cee8b80b775",
+          "started_at": "2026-08-04T04:45:58.0338566Z",
+          "status": "failed",
+          "summary": "Convergence found two integration-boundary defects: stale npm allowlist expectation and root syntax checker treating standalone sample JSX as root Node syntax."
+        },
+        {
+          "attempt_id": "V2-A2",
+          "commands": [
+            "npm run check",
+            "node --test --test-concurrency=1 test/repository-contract.test.js"
+          ],
+          "completed_at": "2026-08-04T04:48:35.6456791Z",
+          "covered_task_ids": [
+            "T001",
+            "T021",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm run check; result:Syntax check passed (263 root-owned files), standalone sample-projects excluded by contract",
+            "command:node --test --test-concurrency=1 test/repository-contract.test.js; result:5 passed, 0 failed"
+          ],
+          "failure_kind": null,
+          "fingerprint": "c20e8f97fe62b9a646fdaafea0dad956b9b2cd30c605b69f5fb1c9a5ad6ba1c9",
+          "started_at": "2026-08-04T04:47:56.5729579Z",
+          "status": "passed",
+          "summary": "Convergence passed after aligning the npm allowlist assertion and keeping independent sample sources outside the root Node syntax checker."
+        },
+        {
+          "attempt_id": "V2-A3",
+          "commands": [
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T04:58:24.0752982Z",
+          "covered_task_ids": [
+            "T001",
+            "T002",
+            "T003",
+            "T004",
+            "T005",
+            "T006",
+            "T007",
+            "T008",
+            "T009",
+            "T010",
+            "T011",
+            "T012",
+            "T013",
+            "T014",
+            "T015",
+            "T016",
+            "T017",
+            "T018",
+            "T019",
+            "T020",
+            "T021",
+            "T022",
+            "T023",
+            "T024",
+            "T025",
+            "T026",
+            "T027",
+            "T028",
+            "T029",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm test; result:completed and advanced to audit without surfaced assertion failure, but exact final count must be recaptured on retry",
+            "command:npm audit --omit=dev --audit-level=high --json; result:exit 1, 3 production vulnerabilities (2 high, 1 moderate): fast-uri, ip-address, hono",
+            "command:npm run package:check; result:passed, 274 files, 750.1 kB packed, 3.7 MB unpacked"
+          ],
+          "failure_kind": "verification",
+          "fingerprint": "c20e8f97fe62b9a646fdaafea0dad956b9b2cd30c605b69f5fb1c9a5ad6ba1c9",
+          "started_at": "2026-08-04T04:49:01.6071039Z",
+          "status": "failed",
+          "summary": "Final release gate failed closed on production dependency audit: fast-uri and ip-address are high severity, with one moderate hono advisory."
+        },
+        {
+          "attempt_id": "V2-A4",
+          "commands": [
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T05:08:57.1438432Z",
+          "covered_task_ids": [
+            "T001",
+            "T002",
+            "T003",
+            "T004",
+            "T005",
+            "T006",
+            "T007",
+            "T008",
+            "T009",
+            "T010",
+            "T011",
+            "T012",
+            "T013",
+            "T014",
+            "T015",
+            "T016",
+            "T017",
+            "T018",
+            "T019",
+            "T020",
+            "T021",
+            "T022",
+            "T023",
+            "T024",
+            "T025",
+            "T026",
+            "T027",
+            "T028",
+            "T029",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm test; result:exit 1 after 503.2s, 807 tests, 802 passed, 1 failed, 4 skipped",
+            "command:npm audit --omit=dev --audit-level=high; result:not run because npm test failed",
+            "command:npm run package:check; result:not run because npm test failed"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "b8ff3f7cbd75972642f4a5446e06ac799cbac08c0162174173f771bdeaf824fa",
+          "started_at": "2026-08-04T04:59:56.8454593Z",
+          "status": "failed",
+          "summary": "Dependency-fixed full suite has one remaining assertion failure; exact failing test must be isolated before repair."
+        },
+        {
+          "attempt_id": "V2-A5",
+          "commands": [
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T05:31:10.2376931Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "command:npm test; result:exit 0, 807 tests, 803 passed, 0 failed, 4 skipped, duration 507.3s",
+            "command:npm audit --omit=dev --audit-level=high --json; result:exit 0, 0 vulnerabilities across info/low/moderate/high/critical",
+            "command:npm run package:check; result:exit 0, npm pack --dry-run produced launchdeck@0.5.4 with 274 files, 750.4 kB packed, 3.7 MB unpacked",
+            "command:npm run check; result:exit 0, syntax check passed for 263 root-owned files",
+            "command:node --test --test-concurrency=1 test/host/evidence-index.test.js test/release/agent-release-process-doc.test.js; result:5 passed, 0 failed; post-prepack candidate identity matches and all 31 older evidence cells remain superseded"
+          ],
+          "failure_kind": null,
+          "fingerprint": "789053b2446fd71923434482a0bc68b4dff353ac858cc9dfb1aa306c37ce204e",
+          "started_at": "2026-08-04T05:20:42.1219803Z",
+          "status": "passed",
+          "summary": "Final implement convergence passed on the repaired fingerprint: complete serialized suite, zero-vulnerability production audit, deterministic package dry-run, root syntax check, and evidence-index binding all passed."
+        },
+        {
+          "attempt_id": "V2-A6",
+          "commands": [
+            "npm run check",
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T05:47:15.8347126Z",
+          "covered_task_ids": [
+            "T001",
+            "T002",
+            "T003",
+            "T004",
+            "T005",
+            "T006",
+            "T007",
+            "T008",
+            "T009",
+            "T010",
+            "T011",
+            "T012",
+            "T013",
+            "T014",
+            "T015",
+            "T016",
+            "T017",
+            "T018",
+            "T019",
+            "T020",
+            "T021",
+            "T022",
+            "T023",
+            "T024",
+            "T025",
+            "T026",
+            "T027",
+            "T028",
+            "T029",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm run check; result:exit 0, syntax check passed for 263 files",
+            "command:npm test; result:exit 1 after 518.8s, 807 tests, 802 passed, 1 failed, 4 skipped; tail-only capture omitted failing test identity, diagnostic recapture required"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "09f85ebb56d2508e84017a190ae7ef696f184a14e2c6063cbe218ab774d55c70",
+          "started_at": "2026-08-04T05:37:23.9345421Z",
+          "status": "failed",
+          "summary": "Terminal-fingerprint convergence found one assertion failure after syntax passed; audit and package were not run, and the exact failing test must be recaptured before repair."
+        },
+        {
+          "attempt_id": "V2-A7",
+          "commands": [
+            "npm run check",
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T06:27:02.8822776Z",
+          "covered_task_ids": [
+            "T001",
+            "T002",
+            "T003",
+            "T004",
+            "T005",
+            "T006",
+            "T007",
+            "T008",
+            "T009",
+            "T010",
+            "T011",
+            "T012",
+            "T013",
+            "T014",
+            "T015",
+            "T016",
+            "T017",
+            "T018",
+            "T019",
+            "T020",
+            "T021",
+            "T022",
+            "T023",
+            "T024",
+            "T025",
+            "T026",
+            "T027",
+            "T028",
+            "T029",
+            "T030"
+          ],
+          "evidence_refs": [
+            "command:npm run check; result:exit 0, syntax check passed for 263 files",
+            "command:npm test; result:exit 0, 808 tests, 804 passed, 0 failed, 4 explicit platform/prerequisite skips, duration 615.2s",
+            "command:npm audit --omit=dev --audit-level=high --json; result:exit 0, zero production vulnerabilities at all severities",
+            "command:npm run package:check; result:exit 0, npm pack --dry-run produced launchdeck@0.5.4 with 274 files, 750.6 kB packed, 3.7 MB unpacked",
+            "diagnostic:200 pre-fix django copies produced 4 EPERM rename failures; result:root cause reproduced with safe cleanup",
+            "command:500 post-fix real django copies; result:500 succeeded, 0 failed",
+            "command:10 repeated repository-source/copy/tarball digest tests; result:10 passed, 0 failed",
+            "command:transient publish contention regression; result:2 passed, including EPERM retry and EXDEV no-retry"
+          ],
+          "failure_kind": null,
+          "fingerprint": "cf714b5f275cdfc55d8f66a84dd9dd076b47c8e9d3d79cd0a33c9c47d60e636a",
+          "started_at": "2026-08-04T06:15:01.0724567Z",
+          "status": "passed",
+          "summary": "Terminal implement convergence passed for all 30 tasks after hardening atomic example publication against verified transient Windows EPERM contention."
+        }
+      ],
+      "commands": [
+        "npm run check",
+        "npm test",
+        "npm audit --omit=dev --audit-level=high",
+        "npm run package:check"
+      ],
+      "completed_at": "2026-08-04T06:27:02.8822776Z",
+      "covered_task_ids": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020",
+        "T021",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T029",
+        "T030"
+      ],
+      "evidence_refs": [
+        "command:npm run check; result:exit 0, syntax check passed for 263 files",
+        "command:npm test; result:exit 0, 808 tests, 804 passed, 0 failed, 4 explicit platform/prerequisite skips, duration 615.2s",
+        "command:npm audit --omit=dev --audit-level=high --json; result:exit 0, zero production vulnerabilities at all severities",
+        "command:npm run package:check; result:exit 0, npm pack --dry-run produced launchdeck@0.5.4 with 274 files, 750.6 kB packed, 3.7 MB unpacked",
+        "diagnostic:200 pre-fix django copies produced 4 EPERM rename failures; result:root cause reproduced with safe cleanup",
+        "command:500 post-fix real django copies; result:500 succeeded, 0 failed",
+        "command:10 repeated repository-source/copy/tarball digest tests; result:10 passed, 0 failed",
+        "command:transient publish contention regression; result:2 passed, including EPERM retry and EXDEV no-retry"
+      ],
+      "failure_kind": null,
+      "fingerprint": "cf714b5f275cdfc55d8f66a84dd9dd076b47c8e9d3d79cd0a33c9c47d60e636a",
+      "purpose": "convergence",
+      "run_id": "V2",
+      "stage": "implement",
+      "started_at": "2026-08-04T06:15:01.0724567Z",
+      "status": "passed",
+      "summary": "Terminal implement convergence passed for all 30 tasks after hardening atomic example publication against verified transient Windows EPERM contention."
+    },
+    {
+      "attempt_id": "V3-A5",
+      "attempts": [
+        {
+          "attempt_id": "V3-A1",
+          "commands": [
+            "npm run check",
+            "npm test",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T06:51:13.3328312Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "review-cycle-1/V3-A1/npm-test",
+            "review-cycle-1/V3-A1/source-change-invalidated"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "cf714b5f275cdfc55d8f66a84dd9dd076b47c8e9d3d79cd0a33c9c47d60e636a",
+          "started_at": "2026-08-04T06:35:58.3617209Z",
+          "status": "failed",
+          "summary": "A1 npm test produced 803 passes, 1 failure, and 4 skips; the attempt crossed a Review Fix fingerprint change, so its evidence is invalidated and requires same-gate revalidation."
+        },
+        {
+          "attempt_id": "V3-A2",
+          "commands": [
+            "npm run check",
+            "npm test",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T06:54:02.0069735Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "review-cycle-1/V3-A2/npm-run-check-timeout",
+            "review-cycle-1/V3-A2/process-diagnostics"
+          ],
+          "failure_kind": "runner_timeout",
+          "fingerprint": "02aca64edb0bbb1d69aaa220136a56f33dbcccd1b4be79dbe1c6a2445f255092",
+          "started_at": "2026-08-04T06:51:26.5424847Z",
+          "status": "interrupted",
+          "summary": "A2 npm run check exceeded 124 seconds without output. Process diagnostics found only the command-owned check-syntax child tree; it was no longer present after timeout. No assertion failure was recorded."
+        },
+        {
+          "attempt_id": "V3-A3",
+          "commands": [
+            "node scripts/check-syntax.js",
+            "npm test",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T07:06:45.1223073Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "review-cycle-1/V3-A3/npm-test",
+            "review-cycle-1/V3-A3/check-syntax"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "02aca64edb0bbb1d69aaa220136a56f33dbcccd1b4be79dbe1c6a2445f255092",
+          "started_at": "2026-08-04T06:54:27.4037737Z",
+          "status": "failed",
+          "summary": "A3 syntax check passed, but the full npm test suite ended with 802 passes, 2 failures, and 4 skips. Failure details require bounded diagnosis and repair before same-gate revalidation."
+        },
+        {
+          "attempt_id": "V3-A4",
+          "commands": [
+            "node scripts/check-syntax.js",
+            "npm test",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T07:21:37.2516128Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "review-cycle-1/V3-A4/npm-test",
+            "review-cycle-1/V3-A4/check-syntax"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "e280a7c45f3fc27abb3f0cc866a3c4f6e2ce0ec8c05f247d16a5dace456f6e15",
+          "started_at": "2026-08-04T07:08:24.1544451Z",
+          "status": "failed",
+          "summary": "A4 syntax passed; full npm test ended with 803 passes, 1 failure, and 4 skips. Allowlist contract is repaired; bounded release/packaging/host diagnosis is required before retry."
+        },
+        {
+          "attempt_id": "V3-A5",
+          "commands": [
+            "node scripts/check-syntax.js",
+            "npm test",
+            "npm audit --omit=dev --audit-level=high",
+            "npm run package:check"
+          ],
+          "completed_at": "2026-08-04T08:23:34.8051697Z",
+          "covered_task_ids": [],
+          "evidence_refs": [
+            "review-cycle-1/V3-A5/check-syntax",
+            "review-cycle-1/V3-A5/npm-test",
+            "review-cycle-1/V3-A5/prepack-refresh"
+          ],
+          "failure_kind": "assertion",
+          "fingerprint": "d661e1f82daeeae787fa650bc80b7d1d1034c176df00eb6e9c2acf9aa4c961fe",
+          "started_at": "2026-08-04T08:14:34.4218997Z",
+          "status": "failed",
+          "summary": "A5 syntax check passed, but the full npm test command returned exit 1 after the generated installer payload was refreshed; audit and package inventory were not run."
+        }
+      ],
+      "commands": [
+        "node scripts/check-syntax.js",
+        "npm test",
+        "npm audit --omit=dev --audit-level=high",
+        "npm run package:check"
+      ],
+      "completed_at": "2026-08-04T08:23:34.8051697Z",
+      "covered_task_ids": [],
+      "evidence_refs": [
+        "review-cycle-1/V3-A5/check-syntax",
+        "review-cycle-1/V3-A5/npm-test",
+        "review-cycle-1/V3-A5/prepack-refresh"
+      ],
+      "failure_kind": "assertion",
+      "fingerprint": "d661e1f82daeeae787fa650bc80b7d1d1034c176df00eb6e9c2acf9aa4c961fe",
+      "purpose": "delivery",
+      "run_id": "V3",
+      "stage": "review",
+      "started_at": "2026-08-04T08:14:34.4218997Z",
+      "status": "failed",
+      "summary": "A5 syntax check passed, but the full npm test command returned exit 1 after the generated installer payload was refreshed; audit and package inventory were not run."
+    }
+  ],
+  "version": 2
+}

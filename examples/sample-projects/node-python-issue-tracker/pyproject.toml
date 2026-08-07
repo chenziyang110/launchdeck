@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "node-python-issue-tracker-python"
+version = "1.0.0"
+description = "SQLite-backed Python API for a standalone Node.js and Python issue tracker."
+readme = "README.md"
+packages = [{ include = "issue_tracker", from = "python" }]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+
+[tool.poetry.scripts]
+issue-server = "issue_tracker.server:main"
+issue-seed = "issue_tracker.seed:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+

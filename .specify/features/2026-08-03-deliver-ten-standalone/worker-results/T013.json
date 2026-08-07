@@ -1,0 +1,37 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/examples/purity.test.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Exact-ten sample inventory and source purity join passed.",
+      "id": "CA-004"
+    },
+    {
+      "evidence": "All ten approved sample IDs are present with source directories.",
+      "id": "AC-001"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T013",
+  "validation_results": [
+    {
+      "command": "node --test --test-concurrency=1 test/examples/purity.test.js test/examples/catalog.test.js test/repository-contract.test.js",
+      "output": "7 tests passed, 0 failed; exact ten catalog and purity join verified.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "The only changed product-side artifact is test/examples/purity.test.js, which is inside T013 expected scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Focused repository/catalog/purity checks passed; all ten sample roots retain native manifests/locks, MIT licenses, and no forbidden Launchdeck artifacts.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

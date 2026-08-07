@@ -1,0 +1,69 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/nextjs-blog-manager/.gitignore",
+    "examples/sample-projects/nextjs-blog-manager/LICENSE",
+    "examples/sample-projects/nextjs-blog-manager/README.md",
+    "examples/sample-projects/nextjs-blog-manager/package.json",
+    "examples/sample-projects/nextjs-blog-manager/package-lock.json",
+    "examples/sample-projects/nextjs-blog-manager/data/seed.json",
+    "examples/sample-projects/nextjs-blog-manager/lib/posts.js",
+    "examples/sample-projects/nextjs-blog-manager/components/post-form.js",
+    "examples/sample-projects/nextjs-blog-manager/app/layout.js",
+    "examples/sample-projects/nextjs-blog-manager/app/page.js",
+    "examples/sample-projects/nextjs-blog-manager/app/globals.css",
+    "examples/sample-projects/nextjs-blog-manager/app/posts/new/page.js",
+    "examples/sample-projects/nextjs-blog-manager/app/posts/[slug]/page.js",
+    "examples/sample-projects/nextjs-blog-manager/app/posts/[slug]/edit/page.js",
+    "examples/sample-projects/nextjs-blog-manager/app/api/health/route.js",
+    "examples/sample-projects/nextjs-blog-manager/app/api/posts/route.js",
+    "examples/sample-projects/nextjs-blog-manager/app/api/posts/[slug]/route.js",
+    "examples/sample-projects/nextjs-blog-manager/scripts/seed.js",
+    "examples/sample-projects/nextjs-blog-manager/scripts/health.js",
+    "examples/sample-projects/nextjs-blog-manager/test/posts.test.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Complete standalone sample authored with native Next.js manifest/lockfile, deterministic seed/tests, persistence, health endpoint, and no scope reduction.",
+      "id": "CA-002"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the leader-owned native Next.js build/start/health/stop matrix."
+  ],
+  "task_id": "T003",
+  "validation_results": [
+    {
+      "command": "npm test",
+      "output": "3 tests passed.",
+      "status": "passed"
+    },
+    {
+      "command": "JSX syntax parse with esbuild",
+      "output": "13 files parsed.",
+      "status": "passed"
+    },
+    {
+      "command": "Direct health handler invocation",
+      "output": "HTTP 200; seeded posts=3; persistence=json-file; no runtime file.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity and manifest/lock audit",
+      "output": "Lockfile v3 valid; required files present; no generated residue or forbidden application tokens.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed paths remain under the T003 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Node sample tests and health handler passed; no generated or Launchdeck residue.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

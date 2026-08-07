@@ -1,0 +1,836 @@
+{
+  "acceptance_coverage": [
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/0",
+      "requirement_ref": "spec-contract.json#/scope/in/0"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/1",
+      "requirement_ref": "spec-contract.json#/scope/in/1"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/2",
+      "requirement_ref": "spec-contract.json#/scope/in/2"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/3",
+      "requirement_ref": "spec-contract.json#/scope/in/3"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/4",
+      "requirement_ref": "spec-contract.json#/scope/in/4"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/5",
+      "requirement_ref": "spec-contract.json#/scope/in/5"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/6",
+      "requirement_ref": "spec-contract.json#/capability_operations/0"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/7",
+      "requirement_ref": "spec-contract.json#/capability_operations/1"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/8",
+      "requirement_ref": "spec-contract.json#/capability_operations/2"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/9",
+      "requirement_ref": "spec-contract.json#/capability_operations/3"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/10",
+      "requirement_ref": "spec-contract.json#/capability_operations/4"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/11",
+      "requirement_ref": "spec-contract.json#/capability_operations/5"
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-001",
+      "statement": "examples/sample-projects 与 gallery catalog 恰好包含十个已批准 ID、栈和主题；每个 ID 唯一映射到一个存在的源码目录。",
+      "verification": "catalog schema 与精确 inventory 集合测试。"
+    },
+    {
+      "id": "AC-002",
+      "statement": "每个样例可脱离 Launchdeck 独立复制，包含独立 MIT 许可、锁文件、确定性种子、栈原生持久化、原生测试及可观察页面或 API；不含 .launchdeck.yml、Launchdeck 依赖、答案、评分或遥测。",
+      "verification": "十目录静态纯度审计和隔离原生安装/测试/启动/健康检查。"
+    },
+    {
+      "id": "AC-003",
+      "statement": "每个样例的临时副本均可由外部验证夹具形成候选 .launchdeck.yml，经 doctor 验证后完成适用的 setup/build/test/start/health/stop，且源目录始终无 Launchdeck 产物。",
+      "verification": "Windows/Linux 隔离 Launchdeck 端到端矩阵与 finally 清理。"
+    },
+    {
+      "id": "AC-004",
+      "statement": "example list 与 copy 在人类、--json、--compact、TTY 和非 TTY 模式遵循既有 CLI 合约；显式 ID 永不提示，省略 ID 仅可在交互 TTY 打开搜索选择。",
+      "verification": "CLI 参数、输出 envelope、TTY 门控、取消和窄宽/no-color 测试。"
+    },
+    {
+      "id": "AC-005",
+      "statement": "copy 默认到 ./\u003cid\u003e，拒绝任何已存在目标或错误类型目标，在同一父目录 staging 后原子 rename；复制、rename 或取消失败后目标与 staging 均无残留。",
+      "verification": "目标状态矩阵与故障注入回滚测试。"
+    },
+    {
+      "id": "AC-006",
+      "statement": "npm 实包包含完整 gallery，packed \u003c=5 MiB、unpacked \u003c=20 MiB；Windows/Linux 原生 CI 验证十个样例，仓库源、复制结果与 tarball 不一致时阻断发布。",
+      "verification": "实际 npm pack inventory/尺寸/摘要和双平台必需矩阵。"
+    },
+    {
+      "id": "AC-007",
+      "statement": "catalog 是 list、copy、README 索引、tarball inventory 与验证矩阵的唯一元数据来源，字段仅为 ID/title/stack/theme/requirements/ports/source path。",
+      "verification": "消费者均从 catalog 派生且无重复手写 inventory 的契约测试。"
+    },
+    {
+      "id": "AC-008",
+      "statement": "十个样例分别在声明的稳定或 LTS 工具链上使用锁定依赖通过原生测试，种子结果可重复，端口唯一且可覆盖，停止后无进程或运行文件残留。",
+      "verification": "每栈原生 lifecycle matrix 与端口/清理断言。"
+    },
+    {
+      "id": "AC-009",
+      "statement": "兼容性夹具逐样例证明配置内容可审阅、任务与端口准确，并通过 Launchdeck setup/build/test/start/HTTP-or-API-health/stop；该证明不被描述为样例评分。",
+      "verification": "逐样例 Launchdeck acceptance receipts，检查任务、健康和 owned-process cleanup。"
+    },
+    {
+      "id": "AC-010",
+      "statement": "example list 人类输出可扫描且窄宽/no-color 可读；JSON 与 compact 各输出一个 schemaVersion 1 对象，目录字段与 catalog 精确一致。",
+      "verification": "人类快照、60/120 列、no-color 和 JSON 单对象测试。"
+    },
+    {
+      "id": "AC-011",
+      "statement": "example copy 覆盖显式 ID、未知 ID、TTY 搜索/无匹配/取消、非 TTY 缺失 ID、目标冲突、copy 失败、rename 失败和成功 receipt，均返回稳定且可操作的结果。",
+      "verification": "完整状态-行为矩阵、稳定错误码和无残留断言。"
+    },
+    {
+      "id": "AC-012",
+      "statement": "发布门禁对实际 tarball 执行精确十项目快照、禁入项、5/20 MiB 阈值和 Windows/Linux 全矩阵；任何 skip、源码漂移或范围缩减均失败。",
+      "verification": "package gate 与 CI contract tests。"
+    }
+  ],
+  "artifact_refs": {
+    "alignment": "alignment.md",
+    "context": "context.md",
+    "references": null,
+    "spec": "spec.md",
+    "ui_brief": "ui-brief.md"
+  },
+  "capability_operations": [
+    {
+      "id": "CAP-001",
+      "operation": "author-gallery-catalog",
+      "requirement": "以一个确定性 catalog 管理固定十个样例及最小元数据，不形成评分模型。"
+    },
+    {
+      "id": "CAP-002",
+      "operation": "deliver-standalone-samples",
+      "requirement": "交付栈原生、可独立运行和测试的真实源码项目，保持样例纯度。"
+    },
+    {
+      "id": "CAP-003",
+      "operation": "verify-launchdeck-compatibility",
+      "requirement": "仅在隔离副本与外部夹具中验证配置形成和 setup/build/test/start/health/stop。"
+    },
+    {
+      "id": "CAP-004",
+      "operation": "list-examples",
+      "requirement": "通过人类终端和 JSON 合约列出同一 catalog。"
+    },
+    {
+      "id": "CAP-005",
+      "operation": "copy-example-safely",
+      "requirement": "支持显式 ID 与 TTY 搜索选择，并以原子、可回滚方式复制。"
+    },
+    {
+      "id": "CAP-006",
+      "operation": "publish-and-gate-gallery",
+      "requirement": "把 gallery 纳入 npm 包并以快照、尺寸和 Windows/Linux 矩阵阻断漂移。"
+    }
+  ],
+  "consequence_obligation_refs": [
+    "CA-001",
+    "CA-002",
+    "CA-003",
+    "CA-004"
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "text": "Node.js \u003e=20 ESM，复用现有 yaml、@clack/prompts、LaunchdeckError 与 output envelope；无证据不得新增运行时依赖。"
+    },
+    {
+      "id": "C-002",
+      "text": "根 npm install 不安装任何样例依赖；样例不得加入根 workspace。"
+    },
+    {
+      "id": "C-003",
+      "text": "样例使用稳定/LTS 工具链和锁文件；禁止提交 node_modules、虚拟环境、构建产物、运行数据库和二进制 vendoring。"
+    },
+    {
+      "id": "C-004",
+      "text": "gallery catalog 是 list、copy、tarball inventory 和文档的共同事实来源，字段限定为 ID/title/stack/theme/requirements/ports/source path。"
+    },
+    {
+      "id": "C-005",
+      "text": "无 TTY、--json、--compact 和 --no-color 必须遵循现有 CLI 契约；JSON 模式不得提示或输出终端装饰。"
+    },
+    {
+      "id": "C-006",
+      "text": "原始脏工作区 F:/github/launchdeck 不承载产品源码或测试更改；实施目标是已批准的干净 feature worktree。"
+    }
+  ],
+  "context_capsule": {
+    "boundary_ref": "spec-contract.json#/scope",
+    "evidence_refs": [
+      "package.json:19-24,41-48",
+      "src/cli.js:111-271,2546-2760,3015-3250,3988-4347",
+      "src/output.js:8-129",
+      "src/errors.js:1-111",
+      "src/agent/lifecycle-prompter.js:15-77",
+      "README.md:5,63-89,159-170,262-336,412-414",
+      ".github/workflows/ci.yml",
+      "test/repository-contract.test.js",
+      "test/cli-control-plane-contract.test.js",
+      "test/cli-contract.test.js",
+      "DESIGN.md:130-164",
+      "approved discussion digest e7e620fe1f707a44a1ad5a8cdeb62732114d146467f00a34b6da6ff233dadb26"
+    ],
+    "minimal_live_reads": [
+      "package.json",
+      "src/cli.js",
+      "src/output.js",
+      "src/errors.js",
+      "src/agent/lifecycle-prompter.js",
+      "README.md",
+      ".github/workflows/ci.yml",
+      "DESIGN.md",
+      "targeted CLI/packaging tests"
+    ],
+    "selected_capabilities": [
+      "CAP-001",
+      "CAP-002",
+      "CAP-003",
+      "CAP-004",
+      "CAP-005",
+      "CAP-006"
+    ],
+    "stale_if": [
+      "CLI dispatch/output envelope changes",
+      "package files allowlist or prepack changes",
+      "CI operating-system matrix changes",
+      "DESIGN.md CLI/TUI rules change",
+      "approved discussion digest changes"
+    ],
+    "validation_routes": [
+      "specify-runtime validate spec --tier deep",
+      "CLI contract and visual tests",
+      "actual npm pack inventory/size test",
+      "Windows/Linux sample lifecycle matrix",
+      "Launchdeck isolated compatibility matrix"
+    ]
+  },
+  "decision_digest_ref": "e7e620fe1f707a44a1ad5a8cdeb62732114d146467f00a34b6da6ff233dadb26",
+  "decisions": [
+    {
+      "decision": "交付物是供开发者自行测试的真实源码，不参与 Launchdeck 评分或评估。",
+      "id": "D-001",
+      "source": "approved discussion MP-001"
+    },
+    {
+      "decision": "样例集合固定为十个批准项目，不允许规划阶段替换、合并或缩减。",
+      "id": "D-002",
+      "source": "approved discussion MP-002"
+    },
+    {
+      "decision": "样例目录保持 Launchdeck 中立；Launchdeck 说明集中在 gallery 层，兼容验证使用外部夹具。",
+      "id": "D-003",
+      "source": "approved discussion MP-003/MP-009"
+    },
+    {
+      "decision": "用户入口仅为 example list 与 example copy；显式 ID 面向脚本，TTY 可搜索选择面向人类。",
+      "id": "D-004",
+      "source": "approved discussion MP-004/MP-005"
+    },
+    {
+      "decision": "复制采用目标父目录内同文件系统 staging + atomic rename；任何已存在目标均拒绝，以满足已批准的非空目标保护并保持 Windows/Linux 一致的无覆盖语义。",
+      "id": "D-005",
+      "source": "approved discussion MP-006/CA-003 plus safe cross-platform specification default"
+    },
+    {
+      "decision": "npm 实包快照和 5/20 MiB 阈值、Windows/Linux 原生矩阵均为发布门禁。",
+      "id": "D-006",
+      "source": "approved discussion MP-007/MP-008"
+    },
+    {
+      "decision": "保留既有 examples 资产，除非出现明确冲突并重新请用户确认。",
+      "id": "D-007",
+      "source": "approved discussion locked direction"
+    },
+    {
+      "decision": "现有 DESIGN.md 为 CLI/TUI 设计系统来源；无外部视觉参考，不创建 mockup。",
+      "id": "D-008",
+      "source": "live DESIGN.md evidence"
+    }
+  ],
+  "design_contract": {
+    "approved_visual_ref": null,
+    "audience": "developers evaluating Launchdeck against real source projects",
+    "content_thesis": "Lead with sample ID, stack and theme; show requirements and ports as supporting facts; always state the next action.",
+    "design_risk_level": "medium",
+    "design_source_refs": [
+      "DESIGN.md@sha256:2c0d7b74b07d861e123a8c5619b0165907d1b32151b384b4aa2e87a7ea54f2aa"
+    ],
+    "design_system_requirements": [
+      "Reuse existing @clack/prompts conventions",
+      "Reuse Launchdeck success/failure envelope and human receipt grammar",
+      "Remain readable at narrow widths and without color",
+      "Make focus, selection, cancellation, empty and error states explicit"
+    ],
+    "design_system_status": "ready",
+    "entry_points": [
+      "launchdeck example list",
+      "launchdeck example copy [\u003cid\u003e] [\u003cdestination\u003e]"
+    ],
+    "experience_requirements": [
+      "keyboard-first selector",
+      "no prompt in JSON/non-TTY modes",
+      "single JSON object",
+      "typed cancellation",
+      "destination preview",
+      "atomic-copy progress and outcome"
+    ],
+    "fidelity_mode": "none",
+    "fidelity_refs": [],
+    "image_plan": [],
+    "interaction_thesis": "Explicit IDs are deterministic for automation; only an interactive TTY may open a keyboard-first searchable selector; copy confirmation and outcome remain explicit.",
+    "may_adapt": [
+      "exact human table column widths",
+      "prompt helper composition",
+      "receipt wording while preserving semantic fields"
+    ],
+    "must_not": [
+      "color-only status",
+      "hidden empty/error/cancel states",
+      "prompt in --json or non-TTY",
+      "automatic install/run/config/network behavior",
+      "evaluation or score language"
+    ],
+    "must_preserve": [
+      "existing CLI command grammar and error normalization",
+      "schemaVersion 1 JSON envelope",
+      "no-color and narrow-width readability",
+      "sample purity and list/copy-only boundary"
+    ],
+    "original_reference_refs": [],
+    "platforms": [
+      "Windows terminal",
+      "Linux terminal"
+    ],
+    "real_content_plan": [
+      "Use the approved ten IDs, stacks, themes, requirements and ports from the real catalog"
+    ],
+    "reference_intents": [],
+    "required_evidence": [
+      "60-column and 120-column human captures",
+      "no-color list/copy/error captures",
+      "keyboard search/no-match/cancel tests",
+      "JSON and compact one-object snapshots",
+      "destination conflict and rollback failure receipts"
+    ],
+    "required_states": [
+      "catalog list",
+      "search/filter",
+      "focused option",
+      "selected option",
+      "no matches",
+      "cancelled",
+      "missing ID without TTY",
+      "destination conflict",
+      "copying",
+      "copy success",
+      "copy/rename failure with rollback"
+    ],
+    "signature_element": "Searchable stack/theme sample selector followed by an explicit destination preview and receipt.",
+    "single_job": "find one representative sample and copy it safely into a local destination",
+    "subject": "sample project gallery",
+    "surface_type": "CLI/TUI",
+    "ui_applicable": true,
+    "ui_work_type": "new-cli-tui-flow",
+    "validation_refs": [
+      "test/cli-control-plane-contract.test.js",
+      "test/cli-contract.test.js",
+      "test/cli/agent-lifecycle-visual.test.js",
+      "DESIGN.md:130-164"
+    ],
+    "visual_acceptance": [
+      "IDs, stacks and themes remain scannable at 60 columns",
+      "selected/focused/error states are textually distinguishable without color",
+      "success receipt states source ID, absolute destination and no implicit next action"
+    ],
+    "visual_thesis": "A restrained, scan-friendly catalog and receipt flow that looks native to the existing Launchdeck CLI."
+  },
+  "entrypoint_outcome_contract": {
+    "inventory_complete": true,
+    "inventory_evidence_refs": [
+      "src/cli.js:111-271,2546-2760,3015-3250,3988-4347",
+      "src/output.js:8-129",
+      "src/errors.js:1-111",
+      "src/agent/lifecycle-prompter.js:15-77",
+      "src/agent-installer.js:641-656",
+      "test/cli-control-plane-contract.test.js",
+      "test/cli-contract.test.js",
+      "test/cli/agent-lifecycle-visual.test.js",
+      "test/cli/agent-lifecycle-vertical.test.js:47-76"
+    ],
+    "learning_candidate_refs": [
+      "agent-setup-additive-receipt-revalidation"
+    ],
+    "learning_context": {
+      "consumers": [
+        "human TTY",
+        "human non-TTY",
+        "JSON automation"
+      ],
+      "interaction_owner": "Launchdeck CLI",
+      "operation": "example list/copy",
+      "outcome_families": [
+        "catalog read",
+        "selection",
+        "validation",
+        "staging copy",
+        "atomic rename",
+        "rollback"
+      ],
+      "state_owners": [
+        "catalog",
+        "destination parent filesystem"
+      ]
+    },
+    "learning_dispositions": [
+      {
+        "candidate_ref": "agent-setup-additive-receipt-revalidation",
+        "current_evidence_refs": [
+          "spec-contract.json#/scope/out/1",
+          "spec-contract.json#/scope/out/6",
+          "package.json:24",
+          "src/agent-installer.js:641-656"
+        ],
+        "disposition": "not_applicable",
+        "reason": "The feature does not install or reconcile Agent hosts, components, receipts, or additive target unions; it only reads a packaged catalog and copies source trees."
+      }
+    ],
+    "learning_search_refs": [
+      "learning start --command sp-specify in F:/github/launchdeck",
+      "learning show agent-setup-additive-receipt-revalidation in source project"
+    ],
+    "outcome_dispositions": [
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/9"
+        ],
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Return exactly ten catalog entries in a scan-friendly human view or one schemaVersion 1 JSON envelope.",
+        "outcome_ref": "OUT-EX-LIST-OK",
+        "result_ref": "OUT-EX-LIST-OK"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Report copied sample ID and resolved destination only after atomic rename succeeds.",
+        "outcome_ref": "OUT-EX-COPY-OK",
+        "result_ref": "OUT-EX-COPY-OK"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/9",
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003",
+          "CA-004"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Return command_usage_error with valid example syntax and no filesystem mutation.",
+        "outcome_ref": "OUT-EX-USAGE",
+        "result_ref": "OUT-EX-USAGE"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/9"
+        ],
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Return a typed package-integrity failure with no partial list when the packaged catalog is absent, unreadable, invalid, duplicated, or points outside the approved root.",
+        "outcome_ref": "OUT-EX-CATALOG-INVALID",
+        "result_ref": "OUT-EX-CATALOG-INVALID"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Return a typed unknown-example result with valid IDs or list as the next action; retain caller destination for retry.",
+        "outcome_ref": "OUT-EX-UNKNOWN-ID",
+        "recovery_contract": {
+          "activation_policy": "explicit retry only",
+          "cancel_behavior": "omit retry",
+          "consumer": "CLI caller",
+          "interaction_surface": "same CLI command",
+          "request_retention": "retain destination; replace ID",
+          "retry_identity": "new invocation with corrected ID",
+          "security_constraints": "ID resolves only through catalog",
+          "state_transition": "validation-failed -\u003e corrected-invocation",
+          "validation": "unknown-ID and valid-retry contract tests"
+        },
+        "result_ref": "OUT-EX-UNKNOWN-ID"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Without an explicit ID, non-TTY and JSON invocations return command_usage_error and instruct an explicit retry; they never prompt.",
+        "outcome_ref": "OUT-EX-NO-TTY-ID",
+        "recovery_contract": {
+          "activation_policy": "never prompt; explicit retry only",
+          "cancel_behavior": "do not retry",
+          "consumer": "noninteractive or JSON caller",
+          "interaction_surface": "same CLI command with explicit ID",
+          "request_retention": "retain destination and flags",
+          "retry_identity": "new invocation with ID",
+          "security_constraints": "no TTY UI or terminal noise",
+          "state_transition": "input-required -\u003e corrected-invocation",
+          "validation": "non-TTY and JSON missing-ID tests"
+        },
+        "result_ref": "OUT-EX-NO-TTY-ID"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Keep the selector active with an explicit no-match state, retain the query, and allow edit or cancellation without filesystem mutation.",
+        "outcome_ref": "OUT-EX-NO-MATCH",
+        "recovery_contract": {
+          "activation_policy": "TTY-only omitted-ID flow",
+          "cancel_behavior": "typed cancellation and no mutation",
+          "consumer": "human TTY",
+          "interaction_surface": "searchable selector",
+          "request_retention": "retain query and destination",
+          "retry_identity": "same prompt session",
+          "security_constraints": "catalog-only options",
+          "state_transition": "search-empty -\u003e search-active or cancelled",
+          "validation": "keyboard no-match edit and cancel capture"
+        },
+        "result_ref": "OUT-EX-NO-MATCH"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "TTY cancellation returns a typed cancelled result and leaves no target or staging path.",
+        "outcome_ref": "OUT-EX-CANCEL",
+        "result_ref": "OUT-EX-CANCEL"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Reject an unsafe existing destination before staging and report the exact conflicting path.",
+        "outcome_ref": "OUT-EX-DEST-CONFLICT",
+        "result_ref": "OUT-EX-DEST-CONFLICT"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Return a typed package-integrity failure and leave destination absent when catalog source is missing, escaped, or differs from the packaged snapshot.",
+        "outcome_ref": "OUT-EX-SOURCE-MISSING",
+        "result_ref": "OUT-EX-SOURCE-MISSING"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Clean staging after copy failure, leave destination absent, and report a typed filesystem error for an explicit user retry.",
+        "outcome_ref": "OUT-EX-COPY-FAIL",
+        "result_ref": "OUT-EX-COPY-FAIL"
+      },
+      {
+        "acceptance_refs": [
+          "spec-contract.json#/acceptance_criteria/10"
+        ],
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "disposition": "adapted",
+        "observable_behavior": "Clean staging and any unpublished destination after rename failure, then report a typed filesystem error for an explicit user retry.",
+        "outcome_ref": "OUT-EX-RENAME-FAIL",
+        "result_ref": "OUT-EX-RENAME-FAIL"
+      }
+    ],
+    "result_inventory": [
+      {
+        "classification": "terminal-success",
+        "entrypoint_id": "EP-EXAMPLE-LIST",
+        "live_evidence_refs": [
+          "src/output.js:8-20",
+          "src/cli.js:4305-4347"
+        ],
+        "material": true,
+        "operation_result_family": "example.list/success",
+        "outcome_id": "OUT-EX-LIST-OK",
+        "reachable": true,
+        "result_id": "OUT-EX-LIST-OK"
+      },
+      {
+        "classification": "terminal-success",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/output.js:8-20",
+          "src/agent-installer.js:641-656"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/success",
+        "outcome_id": "OUT-EX-COPY-OK",
+        "reachable": true,
+        "result_id": "OUT-EX-COPY-OK"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-ROOT",
+        "live_evidence_refs": [
+          "src/cli.js:248-271",
+          "src/cli.js:4197-4219",
+          "src/errors.js:55-68"
+        ],
+        "material": true,
+        "operation_result_family": "example/invalid-subcommand-or-arguments",
+        "outcome_id": "OUT-EX-USAGE",
+        "reachable": true,
+        "result_id": "OUT-EX-USAGE"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-LIST",
+        "live_evidence_refs": [
+          "src/errors.js:1-111",
+          "src/output.js:22-47",
+          "test/repository-contract.test.js"
+        ],
+        "material": true,
+        "operation_result_family": "example.catalog/read-or-validation-failure",
+        "outcome_id": "OUT-EX-CATALOG-INVALID",
+        "reachable": true,
+        "result_id": "OUT-EX-CATALOG-INVALID"
+      },
+      {
+        "classification": "recoverable-user-input",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/errors.js:1-111",
+          "test/cli-control-plane-contract.test.js"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/unknown-id",
+        "outcome_id": "OUT-EX-UNKNOWN-ID",
+        "reachable": true,
+        "result_id": "OUT-EX-UNKNOWN-ID"
+      },
+      {
+        "classification": "recoverable-user-input",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/cli.js:2636-2755",
+          "test/cli/agent-lifecycle-vertical.test.js:47-76"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/missing-id-noninteractive",
+        "outcome_id": "OUT-EX-NO-TTY-ID",
+        "reachable": true,
+        "result_id": "OUT-EX-NO-TTY-ID"
+      },
+      {
+        "classification": "recoverable-user-input",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/agent/lifecycle-prompter.js:15-77",
+          "DESIGN.md:141-164"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/search-no-match",
+        "outcome_id": "OUT-EX-NO-MATCH",
+        "reachable": true,
+        "result_id": "OUT-EX-NO-MATCH"
+      },
+      {
+        "classification": "cancelled",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/agent/lifecycle-prompter.js:57-77",
+          "test/cli/agent-lifecycle-output.test.js:43-94"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/prompt-cancelled",
+        "outcome_id": "OUT-EX-CANCEL",
+        "reachable": true,
+        "result_id": "OUT-EX-CANCEL"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/agent-installer.js:641-656",
+          "src/errors.js:1-111"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/destination-conflict",
+        "outcome_id": "OUT-EX-DEST-CONFLICT",
+        "reachable": true,
+        "result_id": "OUT-EX-DEST-CONFLICT"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "package.json:24",
+          "test/packaging/agent-installer-payload.test.js",
+          "test/repository-contract.test.js"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/package-source-missing-or-drifted",
+        "outcome_id": "OUT-EX-SOURCE-MISSING",
+        "reachable": true,
+        "result_id": "OUT-EX-SOURCE-MISSING"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/agent-installer.js:641-656",
+          "test/cli/agent-lifecycle-visual.test.js:19-152"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/staging-copy-failure",
+        "outcome_id": "OUT-EX-COPY-FAIL",
+        "reachable": true,
+        "result_id": "OUT-EX-COPY-FAIL"
+      },
+      {
+        "classification": "terminal-failure",
+        "entrypoint_id": "EP-EXAMPLE-COPY",
+        "live_evidence_refs": [
+          "src/agent-installer.js:641-656",
+          "test/cli/agent-lifecycle-visual.test.js:19-152"
+        ],
+        "material": true,
+        "operation_result_family": "example.copy/atomic-rename-failure",
+        "outcome_id": "OUT-EX-RENAME-FAIL",
+        "reachable": true,
+        "result_id": "OUT-EX-RENAME-FAIL"
+      }
+    ],
+    "stand_down_reason": null,
+    "trigger_reasons": [
+      "new CLI entrypoint family",
+      "interactive TTY consumer added beside explicit scripting mode",
+      "filesystem copy and atomic publication create material success/failure outcomes"
+    ],
+    "triggered": true
+  },
+  "must_preserve_refs": [
+    "MP-001",
+    "MP-002",
+    "MP-003",
+    "MP-004",
+    "MP-005",
+    "MP-006",
+    "MP-007",
+    "MP-008",
+    "MP-009",
+    "MP-010"
+  ],
+  "open_items": [],
+  "scope": {
+    "deferred": [
+      "macOS 原生样例矩阵；仅在后续获得用户确认和可重复证据后重新开放。"
+    ],
+    "in": [
+      "在 examples/sample-projects 下交付固定十个可独立复制的真实源码项目，并维护唯一 gallery catalog。",
+      "每个样例具备独立 MIT 许可、锁定依赖、确定性种子数据、栈原生持久化、原生测试、页面或 API、唯一且可覆盖的端口。",
+      "证明每个样例在临时副本中可由 Launchdeck 辅助形成项目配置，并完成适用的 setup/build/test/start/health/stop 生命周期；证明材料不得进入样例源码。",
+      "提供 launchdeck example list 与 launchdeck example copy [\u003cid\u003e] [\u003cdestination\u003e]，同时支持人类终端和现有 JSON 合约。",
+      "复制操作使用同文件系统 staging 加原子 rename，拒绝非空目标，并在失败或取消时清理全部暂存残留。",
+      "将 gallery 随 npm 包发布，锁定源码到 tarball 快照，满足 packed 不超过 5 MiB、unpacked 不超过 20 MiB，并在 Windows 与 Linux 原生 CI 验证。"
+    ],
+    "out": [
+      "样例不包含 .launchdeck.yml、Launchdeck 依赖、Launchdeck 问卷、评分、评估逻辑或遥测。",
+      "example copy 不安装依赖、不运行项目、不初始化 Git、不写 Launchdeck 配置、不访问网络。",
+      "不新增 example install、run、start、stop、update、score 或 evaluate 命令。",
+      "不把十个样例依赖纳入根工作区安装。",
+      "不替换或删除既有 examples/demo-api、examples/hands-on-demo 及两个配置示例。",
+      "不承诺 macOS 原生 CI 或运行兼容性。",
+      "不修改与该功能无关的现有 CLI、Agent、MCP 或运行时行为。"
+    ]
+  },
+  "semantic_delta": [],
+  "source_contract": "F:/github/launchdeck/.specify/discussions/discussion/handoff-to-specify.json",
+  "source_revision": "e7e620fe1f707a44a1ad5a8cdeb62732114d146467f00a34b6da6ff233dadb26",
+  "status": "planning-ready",
+  "target_need": "Give developers ten credible standalone source projects they can copy anywhere and use to test Launchdeck, without pre-solved configuration, bundled Launchdeck behavior, scoring, or evaluation.",
+  "transition": {
+    "blockers": [],
+    "next_action": "/sp.plan",
+    "recovery": null,
+    "required_refs": [
+      "spec.md",
+      "alignment.md",
+      "context.md",
+      "ui-brief.md",
+      "brainstorming/handoff-to-specify.json"
+    ],
+    "semantic_delta": [],
+    "source_ref": "spec-contract.json",
+    "status": "ready",
+    "version": 1
+  },
+  "version": 1
+}

@@ -1,0 +1,58 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/release/gallery-denominator.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T028.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T028",
+  "task_ref": "task-index.json#/tasks/27",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/release/gallery-denominator.test.js",
+      "evidence": "Release denominator test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/release/gallery-denominator.test.js",
+      "evidence": "3/3 passed: exact 40 cells, CI Docker/OS contract, and source-purity/no-skip evidence.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- test/release/gallery-denominator.test.js",
+      "evidence": "Join test has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only test/release/gallery-denominator.test.js was added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "The release test consumes both runtime matrix builders and the parsed CI workflow, proving 40 unique cells, fail-closed Docker ordering, source unchanged/residue assertions, and no gallery macOS claim.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

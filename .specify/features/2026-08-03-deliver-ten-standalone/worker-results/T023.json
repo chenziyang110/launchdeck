@@ -1,0 +1,45 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/fixtures/gallery-fastapi-launchdeck.js",
+    "test/gallery-fastapi-launchdeck.test.js"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "External config and runtime-home isolation are tested; contract-only lifecycle preserves explicit full-phase receipts without mutating shipped samples.",
+      "id": "CA-002"
+    },
+    {
+      "evidence": "Launchdeck config is authored only in the isolated copy and not in source sample roots.",
+      "id": "MP-010"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run execute=true in a Poetry-enabled environment for full doctor/setup/build/test/start/health/stop evidence."
+  ],
+  "task_id": "T023",
+  "validation_results": [
+    {
+      "command": "node --check test/fixtures/gallery-fastapi-launchdeck.js test/gallery-fastapi-launchdeck.test.js",
+      "output": "External Launchdeck fixture and test passed syntax checks.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-fastapi-launchdeck.test.js",
+      "output": "2 external-isolation/lifecycle-contract tests passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only the two T023 fixture/test files changed.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Fixture creates candidate .launchdeck.yml in a copied project, separate LAUNCHDECK_HOME sibling, catalog-derived source/copy digest, explicit doctor/setup/build/test/start/health/stop/cleanup phases, and source mutation checks.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

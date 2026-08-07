@@ -1,0 +1,63 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "src/cli.js",
+    "src/examples/index.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Copy router delegates typed filesystem outcomes and reports command example copy.",
+      "id": "CA-003"
+    },
+    {
+      "evidence": "List router derives entries from the single catalog and compact output remains one object.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T018.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T018",
+  "task_ref": "task-index.json#/tasks/17",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check src/cli.js src/examples/index.js",
+      "output": "Router and example index syntax checks passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/cli-example-contract.test.js test/cli-example-outcomes.test.js",
+      "output": "3 example CLI contract/outcome tests passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Router changes are limited to src/cli.js and src/examples/index.js.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "example list/copy commands route through catalog/list/copy/selector modules, preserve JSON/compact envelopes, and perform no install/run/runtime mutation.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

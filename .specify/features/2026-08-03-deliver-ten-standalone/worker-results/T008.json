@@ -1,0 +1,64 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/spring-boot-orders/.gitignore",
+    "examples/sample-projects/spring-boot-orders/LICENSE",
+    "examples/sample-projects/spring-boot-orders/README.md",
+    "examples/sample-projects/spring-boot-orders/pom.xml",
+    "examples/sample-projects/spring-boot-orders/data/seed.json",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/CreateOrderRequest.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/HealthController.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/Order.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/OrderController.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/OrderRepository.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/OrderService.java",
+    "examples/sample-projects/spring-boot-orders/src/main/java/com/example/orders/OrdersApplication.java",
+    "examples/sample-projects/spring-boot-orders/src/main/resources/application.properties",
+    "examples/sample-projects/spring-boot-orders/src/main/resources/schema.sql",
+    "examples/sample-projects/spring-boot-orders/src/test/java/com/example/orders/OrderApplicationTests.java",
+    "examples/sample-projects/spring-boot-orders/src/test/resources/application-test.properties"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Real Spring Boot order API with Maven manifest, MIT license, deterministic JSON seed, H2 persistence, native tests, health, configurable port, and cleanup.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "Sample is Launchdeck-neutral and contains no runtime database, build output, scoring, evaluation, answers, or telemetry artifacts.",
+      "ref": "CA-002"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the leader-owned Maven test/package/start/health/stop lifecycle matrix on Windows and Linux."
+  ],
+  "task_id": "T008",
+  "validation_results": [
+    {
+      "command": "Parse pom.xml, seed.json, and application properties.",
+      "output": "Valid XML/JSON and native Spring Boot configuration detected.",
+      "status": "passed"
+    },
+    {
+      "command": "Cheap Java structural syntax check.",
+      "output": "All Java files have expected package declarations and balanced braces.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity, residue, and whitespace audit.",
+      "output": "No prohibited artifacts/tokens or generated runtime files found.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed files are under the T008 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "README records Maven lifecycle, API health, port override, persistence, deterministic seed, and cleanup; full lifecycle deferred.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

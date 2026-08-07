@@ -1,0 +1,30 @@
+[
+  {
+    "isbn": "9780140328721",
+    "title": "The Iron Orchard",
+    "author": "Mara Ellis",
+    "publishedYear": 2021,
+    "available": true
+  },
+  {
+    "isbn": "9780062457714",
+    "title": "A Field Guide to Small Stars",
+    "author": "Jonah Reed",
+    "publishedYear": 2019,
+    "available": true
+  },
+  {
+    "isbn": "9780307387899",
+    "title": "The Quiet Archive",
+    "author": "Nadia Foster",
+    "publishedYear": 2022,
+    "available": false
+  },
+  {
+    "isbn": "9780593083331",
+    "title": "Maps for the Uncertain Sea",
+    "author": "Elliot Park",
+    "publishedYear": 2024,
+    "available": true
+  }
+]

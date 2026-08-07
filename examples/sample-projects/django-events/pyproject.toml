@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "django-events"
+version = "0.1.0"
+description = "A deterministic Django event calendar backed by SQLite."
+readme = "README.md"
+packages = [
+    { include = "eventsite" },
+    { include = "events" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+django = "5.2.0"
+
+[tool.poetry.scripts]
+events-server = "eventsite.server:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

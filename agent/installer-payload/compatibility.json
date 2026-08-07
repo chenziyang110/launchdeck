@@ -1,6 +1,6 @@
 {
   "manifestVersion": 1,
-  "buildIdentity": "sha256:2bb33aea2996f60d1d54203ab871eb3eb2ad71048729d2824e0b6ba30ff87069",
+  "buildIdentity": "sha256:965494f3a87f982ca02147970674136e70effedd15a26098c3b0093c7a2f7be8",
   "packageVersion": "0.5.4",
   "nodeRange": ">=20",
   "versions": {
@@ -76,7 +76,7 @@
     }
   },
   "componentDigests": {
-    "runtimeBundle": "sha256:29492dae2733e6ed209d232bc915c1b54aa499de8798aa5f464009d1eea63271",
+    "runtimeBundle": "sha256:156304c152e1fd8a332bdb9d35ae8d1b29462dc86cc9064670078a046327b945",
     "operationRegistry": "sha256:2d8c075a4f7b256b60b25fd25a16c298d8fe6a32a6692197bb01d79e47efbe8b",
     "operationSchemas": "sha256:549be132ac488354829b6195caf43f6596c6dd4c6c2ad8b2e8999238911bd4fa",
     "agentResultSchema": "sha256:3e89f63695ed8c96ea0c4f9db85067d4abd2a45322ac9d5b853553b30d541207",

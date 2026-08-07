@@ -1,0 +1,17 @@
+{
+  "name": "docker-compose-helpdesk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A standalone Docker Compose helpdesk with a persistent ticket API.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "seed": "node scripts/seed.mjs",
+    "test": "node --test",
+    "health": "node scripts/healthcheck.mjs"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "examples/sample-projects/vite-react-habit-tracker/package.json",
+    "examples/sample-projects/vite-react-habit-tracker/package-lock.json",
+    "examples/sample-projects/vite-react-habit-tracker/LICENSE",
+    "examples/sample-projects/vite-react-habit-tracker/README.md",
+    "examples/sample-projects/vite-react-habit-tracker/index.html",
+    "examples/sample-projects/vite-react-habit-tracker/vite.config.js",
+    "examples/sample-projects/vite-react-habit-tracker/src/App.jsx",
+    "examples/sample-projects/vite-react-habit-tracker/src/main.jsx",
+    "examples/sample-projects/vite-react-habit-tracker/src/styles.css",
+    "examples/sample-projects/vite-react-habit-tracker/src/data/seed.js",
+    "examples/sample-projects/vite-react-habit-tracker/src/lib/habits.js",
+    "examples/sample-projects/vite-react-habit-tracker/src/lib/storage.js",
+    "examples/sample-projects/vite-react-habit-tracker/test/habits.test.js",
+    "examples/sample-projects/vite-react-habit-tracker/test/storage.test.js",
+    "examples/sample-projects/vite-react-habit-tracker/scripts/health.mjs",
+    "examples/sample-projects/vite-react-habit-tracker/public/health.json",
+    "examples/sample-projects/vite-react-habit-tracker/.gitignore"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Real React/Vite habit tracker with deterministic seed data, persistence, native tests, MIT license, and README.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "Static purity scan passed with no Launchdeck artifacts, scoring, answers, evaluation, or telemetry.",
+      "ref": "CA-002"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Run the leader-owned Windows/Linux native lifecycle matrix from a fresh sample copy."
+    ]
+  },
+  "result_ref": "worker-results/T002.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T002",
+  "task_ref": "task-index.json#/tasks/1",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "npm install --package-lock-only --ignore-scripts --no-audit --no-fund",
+      "output": "Native package-lock.json generated successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check src/data/seed.js src/lib/habits.js src/lib/storage.js scripts/health.mjs vite.config.js",
+      "output": "All checked JavaScript files passed syntax validation.",
+      "status": "passed"
+    },
+    {
+      "command": "Parse package.json, package-lock.json, and public/health.json",
+      "output": "All JSON files parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "Static purity scan for forbidden Launchdeck, evaluation, scoring, answer, and telemetry content",
+      "output": "No forbidden content found in the sample.",
+      "status": "passed"
+    },
+    {
+      "command": "Check native manifest and lockfile consistency",
+      "output": "lockfileVersion 3 and native manifest/lock consistency verified.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed paths are inside the T002 sample scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Native scripts, Node \u003e=20, lockfile, localStorage persistence, configurable port, and health surface recorded.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

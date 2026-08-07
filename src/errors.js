@@ -49,6 +49,13 @@ export const ERROR_CODES = new Set([
   'agent_adapter_unsupported',
   'agent_source_invalid',
   'agent_target_conflict',
+  'example_catalog_invalid',
+  'example_not_found',
+  'example_selection_cancelled',
+  'example_destination_exists',
+  'example_source_invalid',
+  'example_copy_failed',
+  'example_publish_failed',
   'internal_error'
 ]);
 

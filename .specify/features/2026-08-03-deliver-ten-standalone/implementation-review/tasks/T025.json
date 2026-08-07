@@ -1,0 +1,59 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/fixtures/gallery-launchdeck-matrix.js",
+    "test/gallery-launchdeck-matrix.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T025.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T025",
+  "task_ref": "task-index.json#/tasks/24",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/fixtures/gallery-launchdeck-matrix.js",
+      "evidence": "Fixture syntax passed in the parent takeover verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check test/gallery-launchdeck-matrix.test.js",
+      "evidence": "Test syntax passed in the parent takeover verification.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/gallery-launchdeck-matrix.test.js",
+      "evidence": "22/22 tests passed, 0 skipped, and the process exited naturally in 30.3 seconds.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only test/fixtures/gallery-launchdeck-matrix.js and test/gallery-launchdeck-matrix.test.js were added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Every matrix cell invoked the real external Launchdeck doctor CLI in an isolated copy/home, recorded deterministic setup/build/test/start/health/stop evidence, then proved source purity and zero residue.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

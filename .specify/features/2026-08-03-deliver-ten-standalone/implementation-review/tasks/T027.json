@@ -1,0 +1,60 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "README.md",
+    "test/docs-gallery.test.js",
+    "test/packaging/gallery-package.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T027.json",
+  "review": null,
+  "revision": 4,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T027",
+  "task_ref": "task-index.json#/tasks/26",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/docs-gallery.test.js",
+      "evidence": "README gallery contract test parses successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/docs-gallery.test.js test/packaging/gallery-package.test.js",
+      "evidence": "7 tests passed; README catalog coverage and real npm pack inventory/copy/tarball digest parity passed.",
+      "status": "passed"
+    },
+    {
+      "command": "npm run package:check",
+      "evidence": "npm pack --dry-run passed; package includes examples/sample-projects catalog and all ten source projects.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Changed files are limited to README.md and the two T027 contract tests declared by the task scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Real npm pack exercised the published tarball consumer and verified repository/copy/tarball inventories plus SHA-256 parity.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

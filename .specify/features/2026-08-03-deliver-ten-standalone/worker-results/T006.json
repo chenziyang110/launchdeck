@@ -1,0 +1,46 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/django-events/LICENSE",
+    "examples/sample-projects/django-events/README.md",
+    "examples/sample-projects/django-events/pyproject.toml",
+    "examples/sample-projects/django-events/poetry.lock",
+    "examples/sample-projects/django-events/manage.py",
+    "examples/sample-projects/django-events/eventsite/",
+    "examples/sample-projects/django-events/events/",
+    "examples/sample-projects/django-events/templates/events/index.html"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Django ORM with SQLite persistence, deterministic idempotent seed data, native migrations/tests, HTML page, JSON API, and health surface.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "Documented in README; execution deferred to leader validation.",
+      "ref": "native lifecycle matrix"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run the native Django lifecycle matrix later in an isolated copy."
+  ],
+  "task_id": "T006",
+  "validation_results": [
+    {
+      "check": "Check changed files stay inside expected_write_scope.",
+      "output": "All changed paths are inside the T006 sample scope.",
+      "status": "passed"
+    },
+    {
+      "check": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Manifest, server entry point, page, JSON API, health endpoint, seed command, and cleanup instructions are present; no runtime artifacts were produced.",
+      "status": "passed"
+    },
+    {
+      "check": "Python AST, TOML manifest/lock, lock hash, and static purity checks.",
+      "output": "Python AST, native lock metadata, and purity checks passed.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

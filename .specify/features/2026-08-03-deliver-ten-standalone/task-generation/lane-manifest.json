@@ -1,0 +1,61 @@
+{
+  "command": "tasks",
+  "lanes": [
+    {
+      "acceptance_checks": [
+        "Cover all ten samples, list/copy behavior, package/docs, native/Launchdeck matrices and release gates.",
+        "Preserve AC-001..AC-012, CAP-001..CAP-006, MP-001..MP-010 and CA-001..CA-004."
+      ],
+      "allowed_read_scope": [
+        "canonical plan inputs and targeted repository evidence"
+      ],
+      "allowed_write_scope": [
+        "runtime-owned task-generation/handoffs/task-decomposition.json via result submit only"
+      ],
+      "forbidden_paths": [
+        "product source",
+        "product tests",
+        "canonical task artifacts direct writes"
+      ],
+      "integration_target": [
+        "task-index.json#/tasks",
+        "task-index.json#/parallel_batches",
+        "task-index.json#/join_points"
+      ],
+      "lane_id": "task-decomposition",
+      "objective": "Decompose the approved plan into executable task packets covering ten samples, CLI, package, matrices and release gates.",
+      "result_ref": ".specify/features/2026-08-03-deliver-ten-standalone/task-generation/handoffs/task-decomposition.json",
+      "result_sha256": "e87db69d5fa15b4df4fcca69b48de3e48e0b19c1c428c639a14974eceb2ed38e",
+      "status": "accepted"
+    },
+    {
+      "acceptance_checks": [
+        "Serialize shared catalog/CLI/package surfaces and parallelize only disjoint sample/module/matrix scopes.",
+        "Require one system-review witness per AC and a non-empty human acceptance universe; Docker and representative lifecycle are explicit gates."
+      ],
+      "allowed_read_scope": [
+        "canonical plan inputs and accepted task-decomposition result"
+      ],
+      "allowed_write_scope": [
+        "runtime-owned task-generation/handoffs/task-dependency-safety.json via result submit only"
+      ],
+      "forbidden_paths": [
+        "product source",
+        "product tests",
+        "canonical task artifacts direct writes"
+      ],
+      "integration_target": [
+        "task-index.json#/parallel_batches",
+        "task-index.json#/join_points",
+        "task-index.json#/review_obligations"
+      ],
+      "lane_id": "task-dependency-safety",
+      "objective": "Review task decomposition for dependency order, parallel write safety, join recovery and acceptance/human-acceptance coverage.",
+      "result_ref": ".specify/features/2026-08-03-deliver-ten-standalone/task-generation/handoffs/task-dependency-safety.json",
+      "result_sha256": "738a405f9b136f100be4c956c869295e5fc7e1c47c0784a8028664bc6f243f62",
+      "status": "accepted"
+    }
+  ],
+  "status": "integrated",
+  "version": 1
+}

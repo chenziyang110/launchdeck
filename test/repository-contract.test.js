@@ -14,9 +14,13 @@ test('release metadata keeps system tests deterministic and the npm payload boun
     'src/',
     'schema/',
     'agent/compatibility-manifest.json',
+    'agent/evidence/index.json',
     'agent/installer-payload/',
-    '.agents/skills/launchdeck-agent/'
+    '.agents/skills/launchdeck-agent/',
+    'examples/sample-projects/'
   ]);
+  const syntaxChecker = fs.readFileSync(path.join(repoRoot, 'scripts', 'check-syntax.js'), 'utf8');
+  assert.match(syntaxChecker, /path\.join\(repoRoot, 'examples', 'sample-projects'\)/);
   assert.equal(packageJson.repository.url, 'git+https://github.com/chenziyang110/launchdeck.git');
   assert.equal(fs.existsSync(path.join(repoRoot, 'LICENSE')), true);
 });
@@ -56,6 +60,39 @@ test('release tests do not depend on workflow feature archives', () => {
   for (const filePath of listJavaScriptFiles(path.join(repoRoot, 'test'))) {
     const source = fs.readFileSync(filePath, 'utf8').replaceAll('\\', '/');
     assert.equal(source.includes(forbiddenFeaturePath), false, path.relative(repoRoot, filePath));
+  }
+});
+
+test('gallery source inventory is exactly the approved ten-project denominator', () => {
+  const expectedIds = [
+    'vite-react-habit-tracker',
+    'nextjs-blog-manager',
+    'nestjs-url-shortener',
+    'fastapi-inventory',
+    'django-events',
+    'go-webhook-inbox',
+    'spring-boot-orders',
+    'aspnet-library-catalog',
+    'docker-compose-helpdesk',
+    'node-python-issue-tracker'
+  ];
+  const catalogPath = path.join(repoRoot, 'examples', 'sample-projects', 'catalog.json');
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+  const entries = Array.isArray(catalog) ? catalog : catalog.entries;
+
+  assert.deepEqual(entries.map((entry) => entry.id), expectedIds);
+  assert.equal(new Set(entries.map((entry) => entry.id)).size, expectedIds.length);
+  for (const entry of entries) {
+    assert.deepEqual(Object.keys(entry).sort(), [
+      'id',
+      'ports',
+      'requirements',
+      'sourcePath',
+      'stack',
+      'theme',
+      'title'
+    ]);
+    assert.equal(fs.existsSync(path.join(repoRoot, entry.sourcePath)), true, entry.id);
   }
 });
 

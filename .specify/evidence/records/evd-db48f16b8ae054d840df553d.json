@@ -1,0 +1,15 @@
+{
+  "schema_version": "spec-kit-evidence-v1",
+  "evidence_id": "evd-db48f16b8ae054d840df553d",
+  "status": "ready",
+  "sha256": "92aafc3587b61924217d54005fa5e659f8009fc5810516c085808440d79351c3",
+  "size": 150,
+  "mime": "text/plain",
+  "scope": "integrated",
+  "source": "review-cycle-1",
+  "provenance": "leader-live-review",
+  "scenario_id": "RS-AC-001",
+  "object_ref": ".specify/evidence/objects/sha256/92/92aafc3587b61924217d54005fa5e659f8009fc5810516c085808440d79351c3",
+  "record_ref": ".specify/evidence/records/evd-db48f16b8ae054d840df553d.json",
+  "created_at": "2026-08-04T07:03:01Z"
+}

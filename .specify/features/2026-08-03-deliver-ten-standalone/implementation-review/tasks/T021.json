@@ -1,0 +1,72 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "package.json"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Root package allowlist includes examples/sample-projects and preserves size/inventory testing.",
+      "id": "CA-001"
+    },
+    {
+      "evidence": "Published source parity is preserved after removing npm-excluded sample metadata.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T021.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T021",
+  "task_ref": "task-index.json#/tasks/20",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "Parse package.json and package-lock.json",
+      "output": "Both package files parsed successfully.",
+      "status": "passed"
+    },
+    {
+      "command": "Root install boundary audit",
+      "output": "Root scripts and dependencies preserved; package-lock.json unchanged and sample dependencies remain outside root dependencies.",
+      "status": "passed"
+    },
+    {
+      "command": "Package allowlist audit",
+      "output": "Added examples/sample-projects/ to the npm files allowlist.",
+      "status": "passed"
+    },
+    {
+      "command": "npm pack dry-run --ignore-scripts",
+      "output": "Package dry-run completed; leader removed npm-excluded sample .gitignore metadata to preserve exact published source parity.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Package change is within T021 scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Npm allowlist now publishes catalog and sample trees without adding sample dependencies to root install.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

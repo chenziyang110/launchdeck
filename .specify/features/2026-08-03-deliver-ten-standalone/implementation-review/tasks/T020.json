@@ -1,0 +1,61 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/packaging/gallery-package.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Added npm pack inventory, digest, forbidden-file, and packed/unpacked size assertions.",
+      "id": "CA-001"
+    },
+    {
+      "evidence": "Gallery inventory derives from the canonical catalog and compares repository, copied, and tarball digests.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Run npm test packaging gallery during integration."
+    ]
+  },
+  "result_ref": "worker-results/T020.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T020",
+  "task_ref": "task-index.json#/tasks/19",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/packaging/gallery-package.test.js",
+      "output": "Syntax check passed.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only the assigned test file was added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Test invokes real npm pack and checks inventory, digests, forbidden files, and size limits; execution deferred until package allowlist integration.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

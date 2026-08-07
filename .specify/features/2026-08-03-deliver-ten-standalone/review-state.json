@@ -1,0 +1,1885 @@
+{
+  "blocker": null,
+  "coverage": {
+    "blind_audit_complete": false,
+    "discovery_complete": false,
+    "final_gap_scan": "pending",
+    "uncovered_obligation_ids": [
+      "RO-EP-EXAMPLE-LIST",
+      "RO-EP-EXAMPLE-COPY",
+      "RO-EP-NATIVE-MATRIX",
+      "RO-EP-LAUNCHDECK-MATRIX",
+      "RO-EP-NPM-PACK",
+      "RO-AC-001",
+      "RO-AC-002",
+      "RO-AC-003",
+      "RO-AC-004",
+      "RO-AC-005",
+      "RO-AC-006",
+      "RO-AC-007",
+      "RO-AC-008",
+      "RO-AC-009",
+      "RO-AC-010",
+      "RO-AC-011",
+      "RO-AC-012",
+      "RO-CAP-001",
+      "RO-CAP-002",
+      "RO-CAP-003",
+      "RO-CAP-004",
+      "RO-CAP-005",
+      "RO-CAP-006",
+      "RO-MP-001",
+      "RO-MP-002",
+      "RO-MP-003",
+      "RO-MP-004",
+      "RO-MP-005",
+      "RO-MP-006",
+      "RO-MP-007",
+      "RO-MP-008",
+      "RO-MP-009",
+      "RO-MP-010",
+      "RO-CA-001",
+      "RO-CA-002",
+      "RO-CA-003",
+      "RO-CA-004",
+      "RO-UI-001",
+      "RO-UI-002"
+    ],
+    "uncovered_surface_ids": []
+  },
+  "cursor": {
+    "next_action": "Run the current scenario from its official entrypoint.",
+    "scenario_id": "RS-AC-001"
+  },
+  "entrypoints": [
+    {
+      "command": "launchdeck example list [--json] [--compact] [--no-color]",
+      "id": "EP-EXAMPLE-LIST",
+      "ready_signal": "Ten catalog-derived entries or one schemaVersion 1 JSON object; no mutation.",
+      "task_ids": [
+        "T014",
+        "T018",
+        "T019",
+        "T030"
+      ]
+    },
+    {
+      "command": "launchdeck example copy [id] [destination]",
+      "id": "EP-EXAMPLE-COPY",
+      "ready_signal": "Post-rename receipt or stable typed outcome; no overwrite or residue.",
+      "task_ids": [
+        "T015",
+        "T016",
+        "T018",
+        "T019",
+        "T030"
+      ]
+    },
+    {
+      "command": "Catalog-driven native install/build/test/start/health/stop on Windows/Linux",
+      "id": "EP-NATIVE-MATRIX",
+      "ready_signal": "20 completed cells, bounded health, released ports and no skip.",
+      "task_ids": [
+        "T022",
+        "T024",
+        "T028",
+        "T030"
+      ]
+    },
+    {
+      "command": "External .launchdeck.yml doctor/setup/build/test/start/health/stop on Windows/Linux",
+      "id": "EP-LAUNCHDECK-MATRIX",
+      "ready_signal": "20 isolated cells, owned-process cleanup and pure sources.",
+      "task_ids": [
+        "T023",
+        "T025",
+        "T026",
+        "T028",
+        "T030"
+      ]
+    },
+    {
+      "command": "npm pack --json plus non-workspace install/npx smoke",
+      "id": "EP-NPM-PACK",
+      "ready_signal": "Exact inventory/digests and packed/unpacked size gates pass.",
+      "task_ids": [
+        "T020",
+        "T021",
+        "T027",
+        "T030"
+      ]
+    }
+  ],
+  "final": {
+    "all_packets_joined": false,
+    "coverage_verdict": "pending",
+    "implementation_summary_sha256": "",
+    "integration_verdict": "pending",
+    "repair_verdict": "pending",
+    "review_exceptions_sha256": "986607c0fc9ed8bea566c22b8cd08a1dd5c53cf3b9707673df7ad5e93a3e6652",
+    "reviewed_snapshot_sha256": "",
+    "runtime_targets_sha256": "",
+    "verdict": "pending"
+  },
+  "findings": [],
+  "fix_assignments": [],
+  "human_acceptance_obligations": [
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/0",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "HA-001-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-001-SCENARIO"
+      ],
+      "title": "Inspect exact-ten gallery"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/1",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "HA-002-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-002-SCENARIO"
+      ],
+      "title": "Inspect a standalone copied sample"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/2",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-LAUNCHDECK-MATRIX"
+      ],
+      "id": "HA-003-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-003-SCENARIO"
+      ],
+      "title": "Walk the representative Launchdeck path"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/3",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "HA-004-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-004-SCENARIO"
+      ],
+      "title": "Use explicit and omitted-ID grammar"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/4",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "HA-005-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-005-SCENARIO"
+      ],
+      "title": "Confirm destination safety"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/6",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "HA-006-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-006-SCENARIO"
+      ],
+      "title": "Verify catalog-derived docs"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/9",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "HA-007-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-007-SCENARIO"
+      ],
+      "title": "Review list presentation"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/10",
+      "consumer_surface": "developer human acceptance",
+      "entrypoint_ids": [
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "HA-008-OBLIGATION",
+      "required": true,
+      "scenario_ids": [
+        "HA-008-SCENARIO"
+      ],
+      "title": "Exercise selector outcomes"
+    }
+  ],
+  "human_acceptance_scenarios": [
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/0",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "human_action": "Run human list at narrow and normal widths without color.",
+      "id": "HA-001-SCENARIO",
+      "kind": "integration",
+      "observable_terminal_outcome": "Ten IDs, stacks and themes are scannable and match catalog.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "visual_capture"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-001"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Inspect exact-ten gallery"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/1",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "human_action": "Copy fastapi-inventory and inspect its source tree.",
+      "id": "HA-002-SCENARIO",
+      "kind": "integration",
+      "observable_terminal_outcome": "MIT license, lock, seed/tests and health surface exist; no Launchdeck artifact.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "structure_snapshot",
+        "side_effect"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-002"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Inspect a standalone copied sample"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/2",
+      "actor": "developer",
+      "entrypoint_id": "EP-LAUNCHDECK-MATRIX",
+      "evidence": [],
+      "human_action": "Observe the quickstart fastapi copy through doctor and stop.",
+      "id": "HA-003-SCENARIO",
+      "kind": "integration",
+      "observable_terminal_outcome": "Config is reviewable, health succeeds, owned process stops and source stays pure.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-003"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Walk the representative Launchdeck path"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/3",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "human_action": "Run explicit ID non-interactively and selector only in a TTY.",
+      "id": "HA-004-SCENARIO",
+      "kind": "interaction",
+      "observable_terminal_outcome": "Explicit ID never prompts and omitted ID is TTY-gated.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "visual_capture"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-004"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Use explicit and omitted-ID grammar"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/4",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "human_action": "Attempt a conflict and fault-injected copy.",
+      "id": "HA-005-SCENARIO",
+      "kind": "interaction",
+      "observable_terminal_outcome": "Existing target is unchanged and failed staging is removed.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "side_effect",
+        "runtime_diagnostics"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-005"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Confirm destination safety"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/6",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "human_action": "Compare README/help index with list output.",
+      "id": "HA-006-SCENARIO",
+      "kind": "interaction",
+      "observable_terminal_outcome": "Docs use catalog denominator and no evaluation language.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "structure_snapshot"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-007"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Verify catalog-derived docs"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/9",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "human_action": "Run human, no-color, compact and JSON modes.",
+      "id": "HA-007-SCENARIO",
+      "kind": "interaction",
+      "observable_terminal_outcome": "Human output is readable and machine modes emit one schemaVersion 1 object.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "visual_capture"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-010"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Review list presentation"
+    },
+    {
+      "acceptance_ref": "spec-contract.json#/acceptance_criteria/10",
+      "actor": "developer",
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "human_action": "Exercise unknown, no-match, cancel, conflict, copy-failure, rename-failure and success.",
+      "id": "HA-008-SCENARIO",
+      "kind": "interaction",
+      "observable_terminal_outcome": "Results are stable and actionable with no unauthorized residue.",
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "review_scenario_ids": [
+        "RS-AC-011"
+      ],
+      "starting_state": "Clean package and empty user-owned destination parent.",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "Exercise selector outcomes"
+    }
+  ],
+  "implementation_deferrals": [],
+  "leader": {
+    "all_fix_results_joined": false,
+    "all_review_results_joined": false,
+    "final_revalidation_complete": false,
+    "fix_plan_complete": false,
+    "review_plan_complete": false,
+    "strategy": "pending",
+    "verdict": "pending"
+  },
+  "obligations": [
+    {
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-EP-EXAMPLE-LIST",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "plan-contract.json#/official_entrypoints"
+    },
+    {
+      "entrypoint_ids": [
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "RO-EP-EXAMPLE-COPY",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "plan-contract.json#/official_entrypoints"
+    },
+    {
+      "entrypoint_ids": [
+        "EP-NATIVE-MATRIX"
+      ],
+      "id": "RO-EP-NATIVE-MATRIX",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "plan-contract.json#/official_entrypoints"
+    },
+    {
+      "entrypoint_ids": [
+        "EP-LAUNCHDECK-MATRIX"
+      ],
+      "id": "RO-EP-LAUNCHDECK-MATRIX",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "plan-contract.json#/official_entrypoints"
+    },
+    {
+      "entrypoint_ids": [
+        "EP-NPM-PACK"
+      ],
+      "id": "RO-EP-NPM-PACK",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "plan-contract.json#/official_entrypoints"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-001",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/0"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/1"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-002",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-002"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/1"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/2"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-003",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-003"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/2"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/3"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-004",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-004"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/3"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/4"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-005",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-005"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/4"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/5"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-006",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-006"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/5"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/6"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-007",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-007"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/6"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/7"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-008",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-008"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/7"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/8"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-009",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-009"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/8"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/9"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-010",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-010"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/9"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-011",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-011"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/10"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST"
+      ],
+      "id": "RO-AC-012",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/acceptance_criteria/11"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/0"
+      ],
+      "id": "RO-CAP-001",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/0"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/1"
+      ],
+      "id": "RO-CAP-002",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/1"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/2"
+      ],
+      "id": "RO-CAP-003",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/2"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/3"
+      ],
+      "id": "RO-CAP-004",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/3"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/4"
+      ],
+      "id": "RO-CAP-005",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/4"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "capability_operation_refs": [
+        "spec-contract.json#/capability_operations/5"
+      ],
+      "id": "RO-CAP-006",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "spec-contract.json#/capability_operations/5"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-001",
+      "must_preserve_refs": [
+        "MP-001"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-001"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-002",
+      "must_preserve_refs": [
+        "MP-002"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-002"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-003",
+      "must_preserve_refs": [
+        "MP-003"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-003"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-004",
+      "must_preserve_refs": [
+        "MP-004"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-004"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-005",
+      "must_preserve_refs": [
+        "MP-005"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-005"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-006",
+      "must_preserve_refs": [
+        "MP-006"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-006"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-007",
+      "must_preserve_refs": [
+        "MP-007"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-007"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-008",
+      "must_preserve_refs": [
+        "MP-008"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-008"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-009",
+      "must_preserve_refs": [
+        "MP-009"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-009"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "id": "RO-MP-010",
+      "must_preserve_refs": [
+        "MP-010"
+      ],
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-001",
+        "RS-AC-002",
+        "RS-AC-003",
+        "RS-AC-004",
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-007",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-010",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "MP-010"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "consequence_obligation_ids": [
+        "CA-001"
+      ],
+      "id": "RO-CA-001",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "CA-001"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "consequence_obligation_ids": [
+        "CA-002"
+      ],
+      "id": "RO-CA-002",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "CA-002"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "consequence_obligation_ids": [
+        "CA-003"
+      ],
+      "id": "RO-CA-003",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "CA-003"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/1",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/6",
+        "spec-contract.json#/acceptance_criteria/7",
+        "spec-contract.json#/acceptance_criteria/8",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "consequence_obligation_ids": [
+        "CA-004"
+      ],
+      "id": "RO-CA-004",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-005",
+        "RS-AC-006",
+        "RS-AC-008",
+        "RS-AC-009",
+        "RS-AC-011",
+        "RS-AC-012"
+      ],
+      "source_ref": "CA-004"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST",
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "RO-UI-001",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-004",
+        "RS-AC-010",
+        "RS-AC-011"
+      ],
+      "source_ref": "plan-contract.json#/ui_design_contract"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/3",
+        "spec-contract.json#/acceptance_criteria/9",
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "entrypoint_ids": [
+        "EP-EXAMPLE-LIST",
+        "EP-EXAMPLE-COPY"
+      ],
+      "id": "RO-UI-002",
+      "required": true,
+      "scenario_ids": [
+        "RS-AC-004",
+        "RS-AC-010",
+        "RS-AC-011"
+      ],
+      "source_ref": "DESIGN.md@sha256:2c0d7b74b07d861e123a8c5619b0165907d1b32151b384b4aa2e87a7ea54f2aa"
+    }
+  ],
+  "repair_cycles": [],
+  "revalidations": [],
+  "review_assignments": [],
+  "review_exceptions": [],
+  "reviewed_runtime_targets": [],
+  "rounds": [],
+  "scenarios": [
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/0"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-LIST for AC-001.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "expected_results": [
+        "Exact ten approved IDs, stacks, themes and source directories exist exactly once.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-001",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-001 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/1"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-LIST for AC-002.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "expected_results": [
+        "Every sample is standalone, MIT licensed, locked, deterministic, stack-native and Launchdeck-pure.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-002",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-002 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/2"
+      ],
+      "actions": [
+        "Execute EP-LAUNCHDECK-MATRIX for AC-003.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-LAUNCHDECK-MATRIX",
+      "evidence": [],
+      "expected_results": [
+        "External candidate configs validate and complete applicable lifecycle steps in isolated copies.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-003",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-003 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/3"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-COPY for AC-004.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "expected_results": [
+        "List/copy honor human, JSON, compact, TTY and non-TTY contracts.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-004",
+      "kind": "interaction",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-004 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/4"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-COPY for AC-005.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "expected_results": [
+        "Copy rejects existing targets, atomically publishes same-parent staging and leaves no residue.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-005",
+      "kind": "interaction",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-005 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/5"
+      ],
+      "actions": [
+        "Execute EP-NPM-PACK for AC-006.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-NPM-PACK",
+      "evidence": [],
+      "expected_results": [
+        "The real npm package contains the gallery within size limits and required platform gates.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-006",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-006 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/6"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-LIST for AC-007.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "expected_results": [
+        "The catalog is the sole metadata authority for list, copy, README, tarball and matrices.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-007",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-007 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/7"
+      ],
+      "actions": [
+        "Execute EP-NATIVE-MATRIX for AC-008.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-NATIVE-MATRIX",
+      "evidence": [],
+      "expected_results": [
+        "All ten samples pass native lifecycle with reproducible seeds, unique ports and clean stop.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-008",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-008 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/8"
+      ],
+      "actions": [
+        "Execute EP-LAUNCHDECK-MATRIX for AC-009.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-LAUNCHDECK-MATRIX",
+      "evidence": [],
+      "expected_results": [
+        "Launchdeck receipts prove accurate tasks/ports without scoring language.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-009",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-009 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/9"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-LIST for AC-010.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-LIST",
+      "evidence": [],
+      "expected_results": [
+        "Human list is scannable and machine output is one schemaVersion 1 object matching catalog.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-010",
+      "kind": "interaction",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-010 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "actions": [
+        "Execute EP-EXAMPLE-COPY for AC-011.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-EXAMPLE-COPY",
+      "evidence": [],
+      "expected_results": [
+        "Copy exposes all declared outcomes with stable actionable results.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-011",
+      "kind": "interaction",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-011 required system review"
+    },
+    {
+      "acceptance_refs": [
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "actions": [
+        "Execute EP-NPM-PACK for AC-012.",
+        "Capture invocation, runtime and side-effect evidence."
+      ],
+      "entrypoint_id": "EP-NPM-PACK",
+      "evidence": [],
+      "expected_results": [
+        "Release blocks on inventory, forbidden-artifact, digest, size, skip or scope drift.",
+        "No silent skip, hidden prompt, overwrite, source mutation or residue."
+      ],
+      "id": "RS-AC-012",
+      "kind": "integration",
+      "preconditions": [
+        "Clean implementation snapshot and exact-ten catalog.",
+        "Required OS/tool prerequisite present; Docker absence is a failed prerequisite, never a skip."
+      ],
+      "required": true,
+      "required_evidence": [
+        "invocation",
+        "runtime_diagnostics",
+        "side_effect"
+      ],
+      "result": "pending",
+      "task_ids": [
+        "T029",
+        "T030"
+      ],
+      "title": "AC-012 required system review"
+    }
+  ],
+  "schema_ref": ".specify/templates/review-state-schema.json",
+  "source": {
+    "acceptance_finding_id": "",
+    "acceptance_finding_sha256": "",
+    "implementation_fingerprint": "cf714b5f275cdfc55d8f66a84dd9dd076b47c8e9d3d79cd0a33c9c47d60e636a",
+    "implementation_handoff_sha256": "905ef2e96c7c45452c95422997f56bc7204e282efed37637c9e77b878bb99b59",
+    "previous_review_state_sha256": "",
+    "review_cycle": 1,
+    "review_cycle_id": "1548fa6d0e8473988b648baf15d04402136572cf38d415e0ddd67c6d75ade76d",
+    "workflow_revision": 19
+  },
+  "status": "gathering",
+  "validation": {
+    "real_entrypoint_journeys": "pending",
+    "regression": "pending",
+    "startup": "pending",
+    "ui_verification": "pending"
+  },
+  "version": 2
+}

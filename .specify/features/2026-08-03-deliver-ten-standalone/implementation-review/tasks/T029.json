@@ -1,0 +1,69 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/quickstart-gallery.test.js",
+    "test/release/acceptance-coverage.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T029.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T029",
+  "task_ref": "task-index.json#/tasks/28",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/quickstart-gallery.test.js",
+      "evidence": "Quickstart test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check test/release/acceptance-coverage.test.js",
+      "evidence": "Coverage test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/quickstart-gallery.test.js test/release/acceptance-coverage.test.js",
+      "evidence": "8/8 passed, 0 skipped; real list/copy receipts and all required coverage universes passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=release tests do not depend on workflow feature archives test/repository-contract.test.js",
+      "evidence": "The release-archive independence contract passed 1/1.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- test/quickstart-gallery.test.js test/release/acceptance-coverage.test.js",
+      "evidence": "T029 test patch has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only the two T029-authorized test files were added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Real list/copy invocations emitted schemaVersion 1 envelopes; source/copy digests matched, no prompt/ANSI/network/home/staging residue occurred, and the owned temp root was removed.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

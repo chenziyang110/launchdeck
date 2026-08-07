@@ -1,0 +1,75 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/release/gallery-denominator.test.js"
+  ],
+  "concerns": [
+    "Actual native toolchain execution remains a CI responsibility; this join locks the complete denominator, fail-closed prerequisites, source-purity assertions, and CI invocations against scope reduction."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "test/release/gallery-denominator.test.js",
+      "consumer": "JP-06 release gate",
+      "entrypoint": "node --test --test-concurrency=1 test/release/gallery-denominator.test.js",
+      "kind": "real_entrypoint",
+      "producer": "native matrix, external Launchdeck matrix, and CI workflow",
+      "transformer": "gallery-denominator release join",
+      "validation": "Catalog contributes exactly four cells per sample, 40 unique release cells total, no skip surface, and CI invokes both matrices after Docker prerequisites."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "Exact catalog-derived cell IDs, per-sample count of four, 40 unique consumer/cell keys, and skip-prohibition assertions pass.",
+      "obligation": "The approved denominator cannot shrink or silently skip."
+    },
+    {
+      "evidence": "Gallery CI excludes macOS and both matrix suites retain sourceUnchanged plus residue assertions.",
+      "obligation": "Cross-platform claims are limited to Windows/Linux and sample sources stay pure."
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "RED first failed because the release join test did not exist; adding the scoped contract produced GREEN 3/3."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T028",
+  "testImpact": {
+    "affectedTests": [
+      "test/release/gallery-denominator.test.js"
+    ],
+    "changedBehavior": "Adds a release-level join that freezes the 20 native plus 20 Launchdeck denominator and CI consumption contract.",
+    "expectedRegressionScope": "Catalog denominator, matrix no-skip policy, CI OS/Docker wiring, and source-purity evidence.",
+    "requiredHeavyGates": [
+      "Final npm test and CI-hosted Windows/Linux lifecycle execution remain pending in T030/external CI."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "node --check test/release/gallery-denominator.test.js",
+      "evidence": "Release denominator test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/release/gallery-denominator.test.js",
+      "evidence": "3/3 passed: exact 40 cells, CI Docker/OS contract, and source-purity/no-skip evidence.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- test/release/gallery-denominator.test.js",
+      "evidence": "Join test has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only test/release/gallery-denominator.test.js was added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "The release test consumes both runtime matrix builders and the parsed CI workflow, proving 40 unique cells, fail-closed Docker ordering, source unchanged/residue assertions, and no gallery macOS claim.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

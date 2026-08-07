@@ -30,6 +30,12 @@ import {
   writeJson as writeJsonEnvelope
 } from './output.js';
 import {
+  copyExample,
+  listExamples,
+  resolveExampleSelection,
+  loadCatalog
+} from './examples/index.js';
+import {
   addProjectToRegistry,
   assertTaskPortsAvailable,
   buildGlobalStatus,
@@ -112,9 +118,12 @@ export async function main(argv = process.argv.slice(2), io = defaultIo(), depen
   let options = { json: argv.includes('--json'), compact: argv.includes('--compact') };
   io = withJsonOptions(io, options);
   let command = 'help';
+  let positionals = [];
 
   try {
-    const { positionals, options: parsedOptions } = parseArgs(argv);
+    const parsed = parseArgs(argv);
+    positionals = parsed.positionals;
+    const { options: parsedOptions } = parsed;
     options = parsedOptions;
     io = withJsonOptions(io, options);
     command = positionals[0] ?? 'help';
@@ -138,6 +147,10 @@ export async function main(argv = process.argv.slice(2), io = defaultIo(), depen
 
     if (command === 'config') {
       return configCommand(positionals, options, io);
+    }
+
+    if (command === 'example') {
+      return await exampleCommand(positionals, options, io);
     }
 
     if (command === 'capabilities') {
@@ -263,13 +276,80 @@ export async function main(argv = process.argv.slice(2), io = defaultIo(), depen
     if (options.json) {
       writeJson(
         io,
-        failureEnvelope(command, caughtError, contextFromError(caughtError))
+        failureEnvelope(
+          command === 'example' && positionals[1]
+            ? `example ${positionals[1]}`
+            : command,
+          caughtError,
+          contextFromError(caughtError)
+        )
       );
     } else {
       writeError(io, `launchdeck: [${payload.code}] ${payload.message}\n`);
     }
     return 1;
   }
+}
+
+async function exampleCommand(positionals, options, io) {
+  const subcommand = positionals[1];
+  if (subcommand === 'list') {
+    if (positionals.length > 2) {
+      throw new LaunchdeckError(
+        'command_usage_error',
+        'Usage: launchdeck example list [--json] [--compact] [--no-color].'
+      );
+    }
+
+    const result = listExamples({
+      json: options.json,
+      compact: options.compact,
+      noColor: options.noColor,
+      isTTY: io.stdout?.isTTY === true,
+      columns: io.stdout?.columns
+    });
+    if (options.json || options.compact) {
+      writeJson(io, result);
+    } else {
+      write(io, result);
+    }
+    return 0;
+  }
+
+  if (subcommand === 'copy') {
+    if (positionals.length > 4) {
+      throw new LaunchdeckError(
+        'command_usage_error',
+        'Usage: launchdeck example copy [<id>] [<destination>] [--json] [--compact] [--no-color].'
+      );
+    }
+
+    const entries = loadCatalog();
+    const id = await resolveExampleSelection({
+      id: positionals[2],
+      entries,
+      json: options.json,
+      compact: options.compact,
+      input: io.stdin ?? process.stdin,
+      output: io.stdout ?? process.stdout,
+      isTTY: io.stdin?.isTTY === true && io.stdout?.isTTY === true
+    });
+    const destination = positionals[3] ?? path.resolve(process.cwd(), id);
+    const receipt = copyExample({ id, destination, catalog: entries });
+    const result = createSuccessEnvelope('example copy', receipt);
+
+    if (options.json || options.compact) {
+      writeJson(io, result);
+    } else {
+      write(io, `Copied ${receipt.id} to ${receipt.destination}\n`);
+    }
+    return 0;
+  }
+
+  throw new LaunchdeckError(
+    'command_usage_error',
+    'Usage: launchdeck example list | launchdeck example copy [<id>] [<destination>].'
+  );
 }
 
 function initCommand(options, io) {
@@ -4307,6 +4387,8 @@ function helpText() {
 
 Usage:
   launchdeck init [--nested] [--force]
+  launchdeck example list [--json] [--compact] [--no-color]
+  launchdeck example copy [<id>] [<destination>] [--json] [--compact] [--no-color]
   launchdeck config validate [--json] [--compact]
   launchdeck config propose --task name --command command [--cwd dir] [--workspace] [--long-running] [--port number] [--risk low|medium] [--json] [--compact]
   launchdeck config patch --task name --command command [--cwd dir] [--workspace] [--long-running] [--port number] [--risk low|medium] [--expected-digest sha256:...] [--overwrite] --yes [--json] [--compact]

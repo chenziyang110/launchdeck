@@ -253,7 +253,8 @@ const SCALAR_KEYS = [
   'agent',
   'force',
   'source',
-  'result'
+  'result',
+  'entries'
 ];
 
 const SECTION_KEYS = [

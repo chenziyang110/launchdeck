@@ -1,0 +1,57 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/examples/purity.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Exact-ten sample inventory and source purity join passed.",
+      "id": "CA-004"
+    },
+    {
+      "evidence": "All ten approved sample IDs are present with source directories.",
+      "id": "AC-001"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": null,
+  "result_ref": "worker-results/T013.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T013",
+  "task_ref": "task-index.json#/tasks/12",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --test --test-concurrency=1 test/examples/purity.test.js test/examples/catalog.test.js test/repository-contract.test.js",
+      "output": "7 tests passed, 0 failed; exact ten catalog and purity join verified.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "The only changed product-side artifact is test/examples/purity.test.js, which is inside T013 expected scope.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Focused repository/catalog/purity checks passed; all ten sample roots retain native manifests/locks, MIT licenses, and no forbidden Launchdeck artifacts.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

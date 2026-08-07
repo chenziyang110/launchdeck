@@ -1,0 +1,67 @@
+{
+  "blocker_schema_ref": ".specify/templates/task-lifecycle-schema.json#/$defs/blocker",
+  "blockers": [],
+  "changed_paths": [
+    "test/fixtures/gallery-fastapi-native.js",
+    "test/gallery-fastapi-native.test.js"
+  ],
+  "execution_mode": "leader-direct",
+  "obligation_evidence": [
+    {
+      "evidence": "Representative fixture defines native locked install/test/seed/start/health/stop/cleanup phases with no source mutation or residue.",
+      "id": "CA-002"
+    },
+    {
+      "evidence": "Fresh copy digest and catalog-derived source path are checked before lifecycle execution.",
+      "id": "CA-004"
+    }
+  ],
+  "packet_ref": null,
+  "recovery": {
+    "actions": [
+      "Run the full T022 native lifecycle in a Poetry-enabled Windows/Linux matrix; local Poetry prerequisite is unavailable."
+    ]
+  },
+  "result_ref": "worker-results/T022.json",
+  "review": null,
+  "revision": 3,
+  "source_revision": 1,
+  "status": "accepted",
+  "task_id": "T022",
+  "task_ref": "task-index.json#/tasks/21",
+  "ui_verification": {
+    "applicable": false,
+    "contract_check": "not-run",
+    "evidence": [],
+    "evidence_scope": "task",
+    "fidelity_status": "not-applicable",
+    "human_review_ref": null,
+    "integration_base_ref": null,
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "visual_comparison": "not-applicable"
+  },
+  "validation": [
+    {
+      "command": "node --check test/fixtures/gallery-fastapi-native.js test/gallery-fastapi-native.test.js",
+      "output": "Representative FastAPI fixture and test passed syntax checks.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern='contract is catalog-derived' test/gallery-fastapi-native.test.js",
+      "output": "Catalog-derived external-isolation contract passed; complete lifecycle is reserved for Poetry-enabled matrix environments.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "output": "Only the two T022 fixture/test files changed.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "output": "Fixture copies fastapi-inventory to an isolated temp root, keeps external fixture/config outside source, records source/copy digests, and defines bounded install/test/seed/start/health/stop/cleanup receipts.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

@@ -1,0 +1,69 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "examples/sample-projects/docker-compose-helpdesk/.dockerignore",
+    "examples/sample-projects/docker-compose-helpdesk/.gitignore",
+    "examples/sample-projects/docker-compose-helpdesk/Dockerfile",
+    "examples/sample-projects/docker-compose-helpdesk/LICENSE",
+    "examples/sample-projects/docker-compose-helpdesk/README.md",
+    "examples/sample-projects/docker-compose-helpdesk/compose.yaml",
+    "examples/sample-projects/docker-compose-helpdesk/db/seed.json",
+    "examples/sample-projects/docker-compose-helpdesk/package-lock.json",
+    "examples/sample-projects/docker-compose-helpdesk/package.json",
+    "examples/sample-projects/docker-compose-helpdesk/public/index.html",
+    "examples/sample-projects/docker-compose-helpdesk/scripts/healthcheck.mjs",
+    "examples/sample-projects/docker-compose-helpdesk/scripts/seed.mjs",
+    "examples/sample-projects/docker-compose-helpdesk/src/server.mjs",
+    "examples/sample-projects/docker-compose-helpdesk/src/store.mjs",
+    "examples/sample-projects/docker-compose-helpdesk/test/server.test.mjs",
+    "examples/sample-projects/docker-compose-helpdesk/test/store.test.mjs"
+  ],
+  "obligation_evidence": [
+    {
+      "evidence": "Real Docker Compose helpdesk with persistent ticket storage, deterministic seed/reset, browser UI, JSON API, healthcheck, native tests, license, lock data, and README.",
+      "ref": "standalone sample source"
+    },
+    {
+      "evidence": "Heavy lifecycle deferred to downstream validation.",
+      "ref": "native lifecycle matrix"
+    }
+  ],
+  "status": "success",
+  "suggested_recovery_actions": [
+    "Run owner-managed Windows/Linux native Compose lifecycle matrix with install, tests, startup, health, stop, and cleanup."
+  ],
+  "task_id": "T010",
+  "validation_results": [
+    {
+      "check": "Check changed files stay inside expected_write_scope.",
+      "evidence": "All changed files are under the T010 sample scope.",
+      "status": "passed"
+    },
+    {
+      "check": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Node syntax checks and docker compose config validation passed; no runtime artifacts were created.",
+      "status": "passed"
+    },
+    {
+      "check": "JavaScript syntax checks.",
+      "evidence": "node --check passed for all sample modules.",
+      "status": "passed"
+    },
+    {
+      "check": "Manifest, lock, and seed JSON.",
+      "evidence": "Native JSON manifests parsed; lockfile and deterministic seed verified.",
+      "status": "passed"
+    },
+    {
+      "check": "Native Compose manifest.",
+      "evidence": "docker compose config validation passed.",
+      "status": "passed"
+    },
+    {
+      "check": "Standalone purity and required assets.",
+      "evidence": "Compose files, Dockerfile, MIT license, lock data, seed, persistence, page/API/health, native tests, port override, and README are present.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}

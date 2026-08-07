@@ -1,0 +1,495 @@
+{
+  "acceptance_evidence": [],
+  "blockers": [],
+  "changed_files": [],
+  "concerns": [
+    "This submission intentionally keeps operational decision data inside observations[] because unsupported top-level keys are dropped by runtime normalization."
+  ],
+  "consequence_evidence": [],
+  "consumer_evidence": [],
+  "failed_assumptions": [],
+  "findings": [
+    {
+      "claim": "The CLI currently has no example command dispatch or help surface, so implementation must add a new command family rather than wiring into existing lifecycle aliases.",
+      "evidence": [
+        "src/cli.js:111-256",
+        "src/cli.js:4305-4347",
+        "README.md:258-297"
+      ],
+      "id": "FIND-001",
+      "severity": "high"
+    },
+    {
+      "claim": "Stable example-specific failures require public error-code work because existing error normalization turns unknown contract codes into internal_error.",
+      "evidence": [
+        "src/errors.js:1-111",
+        "test/cli-contract.test.js:25-60"
+      ],
+      "id": "FIND-002",
+      "severity": "high"
+    },
+    {
+      "claim": "The npm payload currently cannot satisfy gallery publication acceptance because examples/sample-projects is not in the package allowlist and package:check is only npm pack --dry-run.",
+      "evidence": [
+        "package.json:24-38",
+        "test/repository-contract.test.js:13-19"
+      ],
+      "id": "FIND-003",
+      "severity": "high"
+    }
+  ],
+  "manual_evidence": [],
+  "must_preserve_evidence": [],
+  "obligation_ids": [],
+  "observations": [
+    {
+      "detail": "Own gallery behavior in new focused modules: src/examples/catalog.js validates the single catalog and source roots; src/examples/list.js maps catalog entries to human and JSON payloads; src/examples/copy.js owns destination preflight, staging, cleanup, and receipt data; src/examples/index.js exposes listExamples and copyExample for CLI use. Keep src/cli.js as command router and output caller only, matching current central dispatch and catch envelope authority. Add packaged data under examples/sample-projects with the exact ten confirmed IDs from spec.md Confirmed Scope; package.json must include that gallery because current npm allowlist omits examples.",
+      "id": "ARCH-001",
+      "refs": [
+        "src/cli.js:111-271",
+        "package.json:24-30",
+        "spec.md#Confirmed Scope *(mandatory)*",
+        "spec-contract.json#/acceptance_criteria/0",
+        "spec-contract.json#/acceptance_criteria/6"
+      ],
+      "title": "Module ownership"
+    },
+    {
+      "detail": "Consumer inputs: launchdeck example list plus existing --json, --compact, --no-color flags from parseArgs; catalog loader; terminal columns/noColor from io/runtime. Producer outputs: human scan list of exactly ten entries, or one schemaVersion 1 success envelope command=example list with entries derived exactly from catalog fields id,title,stack,theme,requirements,ports,sourcePath. No prompts, no filesystem mutation, no Launchdeck config lookup. Compact must go through output.js compact handling rather than a separate schema authority.",
+      "id": "ARCH-002",
+      "refs": [
+        "src/cli.js:3988-4065",
+        "src/output.js:8-20",
+        "src/output.js:80-129",
+        "DESIGN.md:141-142",
+        "spec-contract.json#/acceptance_criteria/9"
+      ],
+      "title": "List interface map"
+    },
+    {
+      "detail": "Consumer inputs: launchdeck example copy [id] [destination], catalog lookup, optional TTY searchable selector only when id is omitted and json is false and terminal is TTY, and destination default path.resolve(cwd,id). Producer outputs: success receipt only after rename publishes the copied tree, or stable typed outcomes for unknown ID, missing ID without TTY, no-match, cancel, destination conflict, catalog/source invalid, copy failure, and rename failure. The command must not install dependencies, run projects, initialize Git, write .launchdeck.yml, access network, or touch Launchdeck runtime state.",
+      "id": "ARCH-003",
+      "refs": [
+        "src/cli.js:2635-2640",
+        "src/agent/lifecycle-prompter.js:57-77",
+        "src/output.js:22-47",
+        "spec.md#Confirmed Scope *(mandatory)*",
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "title": "Copy interface map"
+    },
+    {
+      "detail": "Algorithm: load catalog and validate exact ten unique IDs; resolve source path below examples/sample-projects using path.resolve plus inside-root check; lstat source tree and reject symlinks, .launchdeck.yml, Launchdeck artifacts, and missing dirs; resolve destination and parent; reject existing destination of any type with lstat before staging; create a unique staging directory in the same destination parent using fs.mkdtemp with a hidden basename prefix; copy recursively into staging; recheck destination absence immediately before publish; fs.rename staging to destination; on any pre-rename or copy failure rm staging recursively and leave destination absent; on rename failure attempt rm staging and any owned unpublished destination only if safe, then return typed failure. Same-parent staging is required for same-filesystem rename; use a target-specific lock directory or lock file to reduce Launchdeck concurrent copies.",
+      "id": "ARCH-004",
+      "refs": [
+        "src/cli.js:4223-4226",
+        "spec.md#Consequence Analysis",
+        "spec-contract.json#/acceptance_criteria/4",
+        "spec-contract.json#/acceptance_criteria/10"
+      ],
+      "title": "Atomic destination algorithm"
+    },
+    {
+      "detail": "Do not couple sample sources to Launchdeck. Compatibility proof should be an external fixture that copies each sample to a temp dir, creates a reviewable candidate .launchdeck.yml outside the sample source, runs doctor and applicable setup/build/test/start/HTTP-or-API-health/stop, then cleans in finally. Gallery copy must not register projects or mutate .launchdeck runtime state as a side effect.",
+      "id": "ARCH-005",
+      "refs": [
+        "README.md:82-89",
+        "README.md:159-170",
+        "README.md:307-313",
+        "spec.md#Confirmed Scope *(mandatory)*",
+        "spec-contract.json#/acceptance_criteria/2",
+        "spec-contract.json#/acceptance_criteria/8"
+      ],
+      "title": "Lifecycle compatibility architecture"
+    },
+    {
+      "detail": "Expand package files and repository contract tests so the actual npm tarball contains exactly the gallery plus existing package surfaces, with packed \u003c=5 MiB and unpacked \u003c=20 MiB. Current package scripts only run build-agent-plugins prepack and npm pack --dry-run; current CI package job only runs npm audit and npm run package:check on ubuntu. Add a package inventory gate that snapshots ten catalog sources and forbidden files, and add Windows/Linux native matrix checks for sample install/test/start/health/stop without making sample dependencies part of root npm ci.",
+      "id": "ARCH-006",
+      "refs": [
+        "package.json:31-38",
+        "package.json:40-49",
+        ".github/workflows/ci.yml:52-74",
+        "test/repository-contract.test.js:7-22",
+        "spec-contract.json#/acceptance_criteria/5",
+        "spec-contract.json#/acceptance_criteria/11"
+      ],
+      "title": "Packaging and CI gates"
+    },
+    {
+      "detail": "The implementation inventory is exactly vite-react-habit-tracker, nextjs-blog-manager, nestjs-url-shortener, fastapi-inventory, django-events, go-webhook-inbox, spring-boot-orders, aspnet-library-catalog, docker-compose-helpdesk, and node-python-issue-tracker under examples/sample-projects. This is not an extensibility promise; additions, replacement, merge, or reduction require reopening scope.",
+      "id": "ARCH-007",
+      "refs": [
+        "spec.md#Confirmed Scope *(mandatory)*"
+      ],
+      "title": "Confirmed ten-project inventory"
+    },
+    {
+      "detail": "CA-001 protects npm size without reducing sample scope; CA-002 requires repairing failed sample/OS cells rather than skipping; CA-003 requires no published or staging residue after cancel/filesystem failure; CA-004 blocks release on repository/catalog/copied/tarball mismatch. The OCD observations carry these refs outcome-by-outcome in runtime-preserved observation entries.",
+      "id": "ARCH-008",
+      "refs": [
+        "spec.md#Consequence Analysis",
+        "spec-contract.json#/entrypoint_outcome_contract"
+      ],
+      "title": "Consequence analysis mapping"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "Not applicable; list has no interactive cancel state.",
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "consumer_owner": "human TTY, human non-TTY, JSON automation",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "No prompt; render human scan list or one schemaVersion 1 JSON/compact object from catalog only.",
+        "outcome_ref": "OUT-EX-LIST-OK",
+        "producer_result_ref": "OUT-EX-LIST-OK",
+        "recovery_cleanup": "If catalog read fails, do not emit partial entries; route to OUT-EX-CATALOG-INVALID.",
+        "request_retention": "None; read-only repeatable command.",
+        "retry_identity": "Same invocation is safe and idempotent because no filesystem mutation occurs.",
+        "state_transition": "catalog-valid -\u003e reported",
+        "stop_reopen_condition": "Reopen if list output is not derived from the single catalog, omits any of the ten confirmed IDs, emits more than one JSON object, or relies on color for meaning.",
+        "validation_refs": [
+          "AC-010",
+          "AC-007",
+          "test/cli-contract.test.js:301-321",
+          "test/cli/agent-lifecycle-visual.test.js:122-143"
+        ]
+      },
+      "id": "OCD-001",
+      "title": "OUT-EX-LIST-OK operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No cancel after mutation boundary; before staging, cancel routes to OUT-EX-CANCEL.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "CLI caller and destination parent filesystem",
+        "interaction_owner": "Launchdeck CLI plus local filesystem",
+        "interaction_policy": "Explicit ID is deterministic; omitted ID may use TTY selector before mutation; receipt is emitted only after rename succeeds.",
+        "outcome_ref": "OUT-EX-COPY-OK",
+        "producer_result_ref": "OUT-EX-COPY-OK",
+        "recovery_cleanup": "No cleanup after successful publish except fixture teardown in tests; published destination is user-owned result.",
+        "request_retention": "Receipt retains selected ID, source catalog entry, and resolved destination.",
+        "retry_identity": "Same command after success is a new invocation that must fail as destination conflict, not overwrite.",
+        "state_transition": "selected -\u003e destination-preflight-passed -\u003e staged -\u003e atomically-published",
+        "stop_reopen_condition": "Reopen if success can be reported before atomic rename, if retry overwrites, or if copied tree includes Launchdeck artifacts.",
+        "validation_refs": [
+          "AC-005",
+          "AC-011",
+          "spec.md#Consequence Analysis",
+          "test/cli-control-plane-contract.test.js:184-210"
+        ]
+      },
+      "id": "OCD-002",
+      "title": "OUT-EX-COPY-OK operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No mutation and no cancel state.",
+        "consequence_refs": [
+          "CA-003",
+          "CA-004"
+        ],
+        "consumer_owner": "CLI caller",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Return command_usage_error with valid example syntax; do not load catalog, prompt, stage, or mutate filesystem.",
+        "outcome_ref": "OUT-EX-USAGE",
+        "producer_result_ref": "OUT-EX-USAGE",
+        "recovery_cleanup": "No cleanup needed because operation is refused before dispatch.",
+        "request_retention": "Caller keeps original args externally; response gives corrected command shape.",
+        "retry_identity": "New corrected invocation.",
+        "state_transition": "parse-failed -\u003e no-dispatch",
+        "stop_reopen_condition": "Reopen if invalid syntax reaches catalog/copy execution or emits unstable/internal error codes.",
+        "validation_refs": [
+          "AC-004",
+          "AC-011",
+          "src/cli.js:256-271",
+          "src/cli.js:4197-4219"
+        ]
+      },
+      "id": "OCD-003",
+      "title": "OUT-EX-USAGE operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No prompt or mutation.",
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "consumer_owner": "package/gallery maintainer and CLI caller",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Typed package-integrity failure; no partial list, no selector options, and no copy attempt.",
+        "outcome_ref": "OUT-EX-CATALOG-INVALID",
+        "producer_result_ref": "OUT-EX-CATALOG-INVALID",
+        "recovery_cleanup": "No destination staging may exist; failure happens before copy preflight.",
+        "request_retention": "None; package/source must be repaired before retry.",
+        "retry_identity": "New invocation after catalog/package repair.",
+        "state_transition": "catalog-read -\u003e package-integrity-failed",
+        "stop_reopen_condition": "Reopen if catalog accepts duplicate IDs, missing IDs, escaped paths, extra fields, or mismatched source roots.",
+        "validation_refs": [
+          "AC-001",
+          "AC-007",
+          "AC-010",
+          "test/repository-contract.test.js:7-22"
+        ]
+      },
+      "id": "OCD-004",
+      "title": "OUT-EX-CATALOG-INVALID operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "Omit retry or cancel by ending command; no mutation occurred.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "CLI caller",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Recoverable user input; explicit retry only with a valid catalog ID or use example list.",
+        "outcome_ref": "OUT-EX-UNKNOWN-ID",
+        "producer_result_ref": "OUT-EX-UNKNOWN-ID",
+        "recovery_cleanup": "No staging created; destination remains absent.",
+        "request_retention": "Retain destination and flags; replace ID.",
+        "retry_identity": "New invocation with corrected ID.",
+        "security_constraints": "Resolve IDs only by exact catalog key before any path resolution; never interpolate raw ID into filesystem paths; expose only catalog IDs as safe alternatives.",
+        "state_transition": "validation-failed -\u003e corrected-invocation",
+        "stop_reopen_condition": "Reopen if unknown ID is treated as path input, creates a destination, or hides valid recovery action.",
+        "validation_refs": [
+          "AC-011",
+          "spec-contract.json#/entrypoint_outcome_contract/outcome_dispositions/4",
+          "test/cli-control-plane-contract.test.js:107-176"
+        ]
+      },
+      "id": "OCD-005",
+      "title": "OUT-EX-UNKNOWN-ID operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "Do not retry automatically; no prompt cancellation exists.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "noninteractive caller or JSON automation",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Recoverable user input; never prompt in non-TTY, --json, or --compact modes; require explicit ID.",
+        "outcome_ref": "OUT-EX-NO-TTY-ID",
+        "producer_result_ref": "OUT-EX-NO-TTY-ID",
+        "recovery_cleanup": "No staging created; no terminal decoration in JSON.",
+        "request_retention": "Retain destination and flags; add explicit ID.",
+        "retry_identity": "New invocation with ID.",
+        "security_constraints": "No TTY UI or terminal prose in machine mode; do not infer sample ID from cwd, destination, environment, or partial user text.",
+        "state_transition": "input-required -\u003e corrected-invocation",
+        "stop_reopen_condition": "Reopen if JSON/non-TTY emits prompt text, blocks waiting for input, or mutates filesystem before ID.",
+        "validation_refs": [
+          "AC-004",
+          "AC-011",
+          "src/cli.js:2635-2640",
+          "test/cli/agent-lifecycle-visual.test.js:122-143"
+        ]
+      },
+      "id": "OCD-006",
+      "title": "OUT-EX-NO-TTY-ID operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "Typed cancellation leaves no target or staging path.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "human TTY user",
+        "interaction_owner": "TTY selector",
+        "interaction_policy": "Recoverable user input inside omitted-ID TTY flow; retain query, show explicit no-match state, allow edit or cancellation before mutation.",
+        "outcome_ref": "OUT-EX-NO-MATCH",
+        "producer_result_ref": "OUT-EX-NO-MATCH",
+        "recovery_cleanup": "No filesystem action before a valid catalog selection.",
+        "request_retention": "Retain in-session query and destination preview only until selection/cancel.",
+        "retry_identity": "Same prompt session until selection, edited query, or cancel.",
+        "security_constraints": "Search filters catalog records only; query must not probe arbitrary filesystem paths, shell commands, network, or package metadata beyond the catalog.",
+        "state_transition": "search-active -\u003e search-empty -\u003e search-active or cancelled",
+        "stop_reopen_condition": "Reopen if no-match exits as unknown ID without edit path, creates staging, or offers non-catalog choices.",
+        "validation_refs": [
+          "AC-011",
+          "DESIGN.md:141-164",
+          "src/agent/lifecycle-prompter.js:57-77",
+          "spec-contract.json#/entrypoint_outcome_contract/outcome_dispositions/6"
+        ]
+      },
+      "id": "OCD-007",
+      "title": "OUT-EX-NO-MATCH operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "Return cancelled outcome/effect none; no destination and no staging residue.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "human TTY user",
+        "interaction_owner": "TTY selector and Launchdeck CLI",
+        "interaction_policy": "Cancellation is a typed no-effect outcome before copy preflight; do not convert to success copy or filesystem failure.",
+        "outcome_ref": "OUT-EX-CANCEL",
+        "producer_result_ref": "OUT-EX-CANCEL",
+        "recovery_cleanup": "No staging should exist; if a selector implementation allocates preview state, discard it in memory.",
+        "request_retention": "None; user starts a new command if desired.",
+        "retry_identity": "New invocation.",
+        "state_transition": "selection-active -\u003e cancelled",
+        "stop_reopen_condition": "Reopen if cancel exits with success receipt, leaves staging/target, or loses typed cancelled behavior.",
+        "validation_refs": [
+          "AC-011",
+          "src/agent/lifecycle-prompter.js:30-35",
+          "src/agent/lifecycle-prompter.js:57-77",
+          "test/cli/agent-lifecycle-visual.test.js:253-292"
+        ]
+      },
+      "id": "OCD-008",
+      "title": "OUT-EX-CANCEL operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No staging created; no cleanup beyond releasing any in-memory lock.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "CLI caller and destination parent filesystem",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Reject any existing destination path of any type before staging; no overwrite, merge, or prompt-to-overwrite mode.",
+        "outcome_ref": "OUT-EX-DEST-CONFLICT",
+        "producer_result_ref": "OUT-EX-DEST-CONFLICT",
+        "recovery_cleanup": "Destination remains untouched; staging path must not exist.",
+        "request_retention": "Retain selected ID; caller chooses absent destination.",
+        "retry_identity": "New invocation with a non-existing destination.",
+        "state_transition": "destination-preflight -\u003e refused-before-staging",
+        "stop_reopen_condition": "Reopen if existing empty directories are allowed, if --force/overwrite appears, or if conflict is detected after partial copy.",
+        "validation_refs": [
+          "AC-005",
+          "AC-011",
+          "spec.md#Consequence Analysis",
+          "src/errors.js:1-52"
+        ]
+      },
+      "id": "OCD-009",
+      "title": "OUT-EX-DEST-CONFLICT operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No prompt or mutation.",
+        "consequence_refs": [
+          "CA-004"
+        ],
+        "consumer_owner": "package/gallery maintainer and CLI caller",
+        "interaction_owner": "Launchdeck CLI",
+        "interaction_policy": "Typed package/source integrity failure when catalog source is missing, escaped, impure, or mismatched with tarball/source snapshot; no copy attempt.",
+        "outcome_ref": "OUT-EX-SOURCE-MISSING",
+        "producer_result_ref": "OUT-EX-SOURCE-MISSING",
+        "recovery_cleanup": "Destination must remain absent; no staging created.",
+        "request_retention": "None; package/source inventory must be repaired.",
+        "retry_identity": "New invocation after package/source repair.",
+        "state_transition": "source-validation -\u003e package-integrity-failed",
+        "stop_reopen_condition": "Reopen if source drift is tolerated, release continues, or copy fabricates sample content.",
+        "validation_refs": [
+          "AC-001",
+          "AC-006",
+          "AC-012",
+          "package.json:24-30",
+          "test/repository-contract.test.js:13-19"
+        ]
+      },
+      "id": "OCD-010",
+      "title": "OUT-EX-SOURCE-MISSING operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No interactive cancel during copy; interruption/failure must cleanup staging before returning.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "CLI caller and destination parent filesystem",
+        "interaction_owner": "Launchdeck CLI filesystem copy engine",
+        "interaction_policy": "Terminal filesystem failure after automatic cleanup; user explicitly retries after fixing permissions/disk/source.",
+        "outcome_ref": "OUT-EX-COPY-FAIL",
+        "producer_result_ref": "OUT-EX-COPY-FAIL",
+        "recovery_cleanup": "Remove staging recursively; destination remains absent; release blocks on any residue.",
+        "request_retention": "Error retains ID, destination, and staging failure details sufficient for explicit retry.",
+        "retry_identity": "New invocation with new staging identity.",
+        "state_transition": "staging-copy -\u003e cleanup -\u003e failed",
+        "stop_reopen_condition": "Reopen if staging remains, destination partially appears, failure is reported as success, or retry reuses stale staging.",
+        "validation_refs": [
+          "AC-005",
+          "AC-011",
+          "spec.md#Consequence Analysis",
+          "test/cli/agent-lifecycle-visual.test.js:145-242"
+        ]
+      },
+      "id": "OCD-011",
+      "title": "OUT-EX-COPY-FAIL operational consequence decision"
+    },
+    {
+      "decision": {
+        "cancel_behavior": "No cancel during rename; cleanup owned staging and any owned unpublished destination if safe.",
+        "consequence_refs": [
+          "CA-003"
+        ],
+        "consumer_owner": "CLI caller and destination parent filesystem",
+        "interaction_owner": "Launchdeck CLI filesystem publish engine",
+        "interaction_policy": "Terminal filesystem failure; never fall back to merge/copy-over publish; explicit user retry after cleanup/inspection.",
+        "outcome_ref": "OUT-EX-RENAME-FAIL",
+        "producer_result_ref": "OUT-EX-RENAME-FAIL",
+        "recovery_cleanup": "Remove staging; remove only owned unpublished destination artifact if created by failed rename; otherwise report indeterminate cleanup and block release.",
+        "request_retention": "Error retains ID, destination, and publish failure details.",
+        "retry_identity": "New invocation after inspecting parent/destination; new staging identity.",
+        "state_transition": "atomic-rename -\u003e cleanup -\u003e failed",
+        "stop_reopen_condition": "Reopen if implementation falls back to non-atomic copy, leaves staging, overwrites existing target, or cannot prove no residue after rename failure.",
+        "validation_refs": [
+          "AC-005",
+          "AC-011",
+          "spec.md#Consequence Analysis",
+          "test/cli/agent-lifecycle-visual.test.js:145-242"
+        ]
+      },
+      "id": "OCD-012",
+      "title": "OUT-EX-RENAME-FAIL operational consequence decision"
+    }
+  ],
+  "packet_id": "",
+  "reported_status": "success",
+  "rule_acknowledgement": {
+    "context_bundle_read": true,
+    "critical_notes": [
+      "No direct file edits, creations, deletions, moves, formatting, or reverts were performed.",
+      "Submitted exactly one replacement runtime result for architecture-interface.",
+      "OCD data is nested under observations[] to survive normalizeWorkerTaskResult."
+    ],
+    "forbidden_drift_respected": true,
+    "paths_read": [
+      "No new repository exploration for final schema repair; reused prior canonical/runtime-read evidence and previous accepted lane content."
+    ],
+    "required_references_read": true
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "summary": "Final schema repair completed. The 12 operational consequence decisions are now encoded as OCD-001..OCD-012 inside observations[] so runtime normalization preserves them, while ARCH-001..ARCH-008 remain preserved.",
+  "task_id": "architecture-interface",
+  "ui_evidence": [],
+  "ui_verification": {
+    "accepted_deviations": [],
+    "approved_handoff_ref": "",
+    "approved_handoff_sha256": "",
+    "approved_manifest_sha256": "",
+    "approved_preview_sha256": "",
+    "approved_visual_ref": "",
+    "comparison_report_ref": "",
+    "comparison_report_sha256": "",
+    "comparison_tolerance": {},
+    "contract_check": "not-run",
+    "covered_decision_ids": [],
+    "covered_handoff_contract_ids": [],
+    "fidelity_status": "not-applicable",
+    "implementation_capture_refs": [],
+    "reviewer": "agent",
+    "runtime_evidence": "not-run",
+    "structural_differences": [],
+    "visual_comparison": "unavailable",
+    "visual_differences": []
+  },
+  "validation_results": [],
+  "wave": ""
+}

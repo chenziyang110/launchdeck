@@ -1,0 +1,87 @@
+{
+  "blockers": [],
+  "changed_files": [
+    "test/quickstart-gallery.test.js",
+    "test/release/acceptance-coverage.test.js"
+  ],
+  "concerns": [
+    "Poetry is unavailable locally, so T029 deliberately links the native lifecycle contract without installing or claiming the missing toolchain; external Launchdeck evidence is contract-only here and full matrices remain CI-owned."
+  ],
+  "consumerEvidence": [
+    {
+      "boundaryOrExecutor": "test/quickstart-gallery.test.js; test/release/acceptance-coverage.test.js",
+      "consumer": "developer quickstart and T030 release review",
+      "entrypoint": "node --test --test-concurrency=1 test/quickstart-gallery.test.js test/release/acceptance-coverage.test.js",
+      "kind": "real_entrypoint",
+      "producer": "Launchdeck example list/copy and stable release coverage manifest",
+      "transformer": "quickstart plus acceptance-coverage tests",
+      "validation": "Real list/copy succeeded with matching SHA-256 and clean side effects; 12 acceptance, 8 human, 6 capability, 10 must-preserve, and 4 consequence entries map to concrete tests."
+    }
+  ],
+  "mustPreserveEvidence": [
+    {
+      "evidence": "Single JSON envelopes, no prompt/ANSI, exact digest parity, no isolated-home/staging residue, and owned temp deletion passed.",
+      "obligation": "Quickstart remains standalone, non-interactive, source-pure, and network-free."
+    },
+    {
+      "evidence": "A stable in-test manifest validates every concrete scenario file/title and passes the repository ban on workflow feature archives.",
+      "obligation": "Coverage cannot use empty or workflow-archive-dependent catch-alls."
+    }
+  ],
+  "recovery": {
+    "attempted": true,
+    "notes": "Two explicit RED collectors failed first; scoped implementations produced GREEN 8/8. The design was corrected before implementation to avoid runtime dependency on Spec Kit feature archives."
+  },
+  "status": "success",
+  "suggested_recovery_actions": [],
+  "task_id": "T029",
+  "testImpact": {
+    "affectedTests": [
+      "test/quickstart-gallery.test.js",
+      "test/release/acceptance-coverage.test.js"
+    ],
+    "changedBehavior": "Adds executable quickstart list/copy evidence and a release-stable obligation coverage manifest.",
+    "expectedRegressionScope": "CLI JSON/copy side effects, FastAPI source contract, archive-independent acceptance/human/capability/must-preserve/consequence coverage.",
+    "requiredHeavyGates": [
+      "Full npm test, audit, package, and external Windows/Linux evidence remain pending in T030/CI."
+    ]
+  },
+  "validation_results": [
+    {
+      "command": "node --check test/quickstart-gallery.test.js",
+      "evidence": "Quickstart test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --check test/release/acceptance-coverage.test.js",
+      "evidence": "Coverage test syntax passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 test/quickstart-gallery.test.js test/release/acceptance-coverage.test.js",
+      "evidence": "8/8 passed, 0 skipped; real list/copy receipts and all required coverage universes passed.",
+      "status": "passed"
+    },
+    {
+      "command": "node --test --test-concurrency=1 --test-name-pattern=release tests do not depend on workflow feature archives test/repository-contract.test.js",
+      "evidence": "The release-archive independence contract passed 1/1.",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check -- test/quickstart-gallery.test.js test/release/acceptance-coverage.test.js",
+      "evidence": "T029 test patch has no whitespace errors.",
+      "status": "passed"
+    },
+    {
+      "command": "Check changed files stay inside expected_write_scope.",
+      "evidence": "Only the two T029-authorized test files were added.",
+      "status": "passed"
+    },
+    {
+      "command": "Record invocation, runtime and side-effect evidence for the real consumer.",
+      "evidence": "Real list/copy invocations emitted schemaVersion 1 envelopes; source/copy digests matched, no prompt/ANSI/network/home/staging residue occurred, and the owned temp root was removed.",
+      "status": "passed"
+    }
+  ],
+  "version": 1
+}
