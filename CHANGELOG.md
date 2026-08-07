@@ -2,6 +2,22 @@
 
 All notable changes to Launchdeck are documented in this file. This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.5.5] - 2026-08-07
+
+### Added
+
+- Added a standalone sample-project gallery under `examples/sample-projects` with catalog-backed `launchdeck example list` / `example copy` flows for multi-stack local demos.
+- Clarified agent surface layering in README and the `launchdeck-agent` Skill: Skill is policy, MCP is the narrow preferred transport, CLI is the full surface with pre-dispatch-only fallback, and Kernel remains the sole execution authority.
+
+### Changed
+
+- Documented config authoring and lifecycle mutation as separate intent chains, including explicit missing-config authoring rules and post-dispatch no-surface-switch recovery.
+- Regenerated the installer payload inventory, compatibility manifests, and evidence-index candidate binding after Skill narrative updates.
+
+### Security
+
+- Preserved installer-never-authors-`.launchdeck.yml`, explicit configuration-authoring gates, payload digest integrity checks, and existing low-risk Agent operation boundaries.
+
 ## [0.5.4] - 2026-07-30
 
 ### Added
